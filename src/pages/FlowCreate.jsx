@@ -18,6 +18,7 @@ const CHANNEL_ICONS = {
   phone:    { Icon: Phone,         color: "#64748B", label: "Phone"    },
 };
 
+
 function ChannelIcon({ type }) {
   const meta = CHANNEL_ICONS[type];
   if (!meta) return null;
