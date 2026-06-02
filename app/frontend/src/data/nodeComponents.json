@@ -1,0 +1,106 @@
+{
+  "categories": [
+    {
+      "id": "communication",
+      "name": "Communication",
+      "color": "#6C3AE8",
+      "bg": "#F1ECFE",
+      "items": [
+        { "slug": "whatsapp", "name": "WhatsApp", "kind": "channel", "subtype": "whatsapp", "icon": "MessageCircle", "color": "#10B981" },
+        { "slug": "email", "name": "Email", "kind": "channel", "subtype": "email", "icon": "Mail", "color": "#3B82F6" },
+        { "slug": "sms", "name": "SMS", "kind": "channel", "subtype": "sms", "icon": "MessageSquare", "color": "#8B5CF6" },
+        { "slug": "rcs", "name": "RCS", "kind": "channel", "subtype": "rcs", "icon": "MessageCircleMore", "color": "#6366F1" },
+        { "slug": "web_push", "name": "Web Push", "kind": "channel", "subtype": "push", "icon": "Bell", "color": "#F59E0B" },
+        { "slug": "notification", "name": "Notification", "kind": "channel", "subtype": "inapp", "icon": "Smartphone", "color": "#14B8A6" },
+        { "slug": "ai_calling", "name": "AI Calling", "kind": "generic", "subtype": "ai_calling", "icon": "Phone", "color": "#EC4899" },
+        { "slug": "ai_chatbot", "name": "AI Chatbot", "kind": "generic", "subtype": "ai_chatbot", "icon": "Bot", "color": "#8B5CF6" }
+      ]
+    },
+    {
+      "id": "action",
+      "name": "Action",
+      "color": "#F97316",
+      "bg": "#FFEDD5",
+      "items": [
+        { "slug": "ai_content", "name": "AI Content", "kind": "generic", "subtype": "ai_content", "icon": "Sparkles", "color": "#F97316" },
+        { "slug": "ai_social_proof", "name": "AI Social Proof", "kind": "generic", "subtype": "ai_social_proof", "icon": "ThumbsUp", "color": "#F97316" }
+      ]
+    },
+    {
+      "id": "shopify",
+      "name": "Shopify",
+      "color": "#10B981",
+      "bg": "#DCFCE7",
+      "items": [
+        { "slug": "customer_tag", "name": "Customer Tag Creation", "kind": "generic", "subtype": "customer_tag", "icon": "Tag", "color": "#10B981" },
+        { "slug": "discount_code", "name": "Discount Code", "kind": "generic", "subtype": "discount_code", "icon": "Percent", "color": "#10B981" },
+        { "slug": "add_order_tag", "name": "Add order tag", "kind": "generic", "subtype": "add_order_tag", "icon": "Tags", "color": "#10B981" },
+        { "slug": "add_order_notes", "name": "Add order notes", "kind": "generic", "subtype": "add_order_notes", "icon": "FileText", "color": "#10B981" }
+      ]
+    },
+    {
+      "id": "integrations",
+      "name": "Integrations",
+      "color": "#3B82F6",
+      "bg": "#DBEAFE",
+      "items": [
+        { "slug": "judge_me", "name": "Judge Me", "kind": "generic", "subtype": "judge_me", "icon": "Star", "color": "#3B82F6" },
+        { "slug": "razorpay", "name": "Razor Pay", "kind": "generic", "subtype": "razorpay", "icon": "CreditCard", "color": "#3B82F6" },
+        { "slug": "freshdesk", "name": "Freshdesk", "kind": "generic", "subtype": "freshdesk", "icon": "Headphones", "color": "#3B82F6" }
+      ]
+    },
+    {
+      "id": "notes",
+      "name": "Notes",
+      "color": "#F59E0B",
+      "bg": "#FEF3C7",
+      "items": [
+        { "slug": "sticky_notes", "name": "Sticky Notes", "kind": "generic", "subtype": "sticky_notes", "icon": "StickyNote", "color": "#F59E0B" }
+      ]
+    },
+    {
+      "id": "flow_control",
+      "name": "Flow Control",
+      "color": "#64748B",
+      "bg": "#E2E8F0",
+      "items": [
+        { "slug": "conditional_split", "name": "Conditional Split", "kind": "condition", "subtype": null, "icon": "GitFork", "color": "#F59E0B" },
+        { "slug": "delay_node", "name": "Delay Node", "kind": "wait", "subtype": null, "icon": "Clock", "color": "#64748B" },
+        { "slug": "ai_predict", "name": "AI Predict", "kind": "generic", "subtype": "ai_predict", "icon": "Brain", "color": "#8B5CF6" },
+        { "slug": "ai_best_channel", "name": "AI Best Channel", "kind": "generic", "subtype": "ai_best_channel", "icon": "Compass", "color": "#8B5CF6" }
+      ]
+    },
+    {
+      "id": "google_sheet",
+      "name": "Google Sheet",
+      "color": "#22C55E",
+      "bg": "#DCFCE7",
+      "items": [
+        { "slug": "gs_add_row", "name": "Add row", "kind": "generic", "subtype": "gs_add_row", "icon": "Plus", "color": "#22C55E" },
+        { "slug": "gs_update_row", "name": "Update row", "kind": "generic", "subtype": "gs_update_row", "icon": "Pencil", "color": "#22C55E" },
+        { "slug": "gs_get_row", "name": "Get row data", "kind": "generic", "subtype": "gs_get_row", "icon": "Download", "color": "#22C55E" }
+      ]
+    },
+    {
+      "id": "user_profile",
+      "name": "User Profile",
+      "color": "#6366F1",
+      "bg": "#E0E7FF",
+      "items": [
+        { "slug": "update_profile_tag", "name": "Update profile tag", "kind": "generic", "subtype": "update_profile_tag", "icon": "UserCog", "color": "#6366F1" }
+      ]
+    },
+    {
+      "id": "ticket",
+      "name": "Ticket",
+      "color": "#EC4899",
+      "bg": "#FCE7F3",
+      "items": [
+        { "slug": "ticket_add_event", "name": "Add event", "kind": "generic", "subtype": "ticket_add_event", "icon": "CalendarPlus", "color": "#EC4899" },
+        { "slug": "ticket_creation", "name": "Ticket Creation", "kind": "generic", "subtype": "ticket_creation", "icon": "Ticket", "color": "#EC4899" },
+        { "slug": "ticket_assign", "name": "Assign ticket", "kind": "generic", "subtype": "ticket_assign", "icon": "UserCheck", "color": "#EC4899" },
+        { "slug": "ticket_status", "name": "Change status", "kind": "generic", "subtype": "ticket_status", "icon": "CircleDot", "color": "#EC4899" }
+      ]
+    }
+  ]
+}

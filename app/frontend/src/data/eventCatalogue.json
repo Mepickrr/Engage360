@@ -1,0 +1,5947 @@
+{
+  "catalogue": {
+    "Ecommerce": {
+      "Shopping behaviour": [
+        {
+          "name": "App/Website open",
+          "description": "User opens app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Product viewed",
+          "description": "User views a product detail page on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Add to cart",
+          "description": "Product added to active cart on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Search",
+          "description": "Product is searched in search box on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Sign Up",
+          "description": "User signs up on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Purchased a Product",
+          "description": "When a product is purchased on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Checkout started",
+          "description": "User enters checkout flow on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Added to Wishlist",
+          "description": "This event gets triggered when a product is added to the wishlist on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Review Created",
+          "description": "This is an event from Judge Me whenever a user adds a review  on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Remove from Cart",
+          "description": "When a product is removed from cart",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Abandoned Product",
+          "description": "When a product is abandoned without purchase",
+          "attribute_allowed": true,
+          "advance_evaluate": true,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Abandoned Cart",
+          "description": "When a cart is abandoned without purchase",
+          "attribute_allowed": true,
+          "advance_evaluate": true,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Abandoned Checkout",
+          "description": "When a cart checkout is abanoned without purchase",
+          "attribute_allowed": true,
+          "advance_evaluate": true,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Shopping behaviour"
+        }
+      ],
+      "Order": [
+        {
+          "name": "Order placed",
+          "description": "Payment confirmed by Shopify",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Order"
+        },
+        {
+          "name": "Draft order placed",
+          "description": "Merchant creates draft order",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Order"
+        },
+        {
+          "name": "Custom SDK event",
+          "description": "Any wigzo.track() call from your store",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Order"
+        }
+      ]
+    },
+    "ALL": {
+      "Shopping behaviour": [
+        {
+          "name": "Remove from Cart",
+          "description": "When a product is removed from cart",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Abandoned Product",
+          "description": "When a product is abandoned without purchase",
+          "attribute_allowed": true,
+          "advance_evaluate": true,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Abandoned Cart",
+          "description": "When a cart is abandoned without purchase",
+          "attribute_allowed": true,
+          "advance_evaluate": true,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Abandoned Checkout",
+          "description": "When a cart checkout is abanoned without purchase",
+          "attribute_allowed": true,
+          "advance_evaluate": true,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "App/Website open",
+          "description": "User opens app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Product viewed",
+          "description": "User views a product detail page on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Add to cart",
+          "description": "Product added to active cart on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Search",
+          "description": "Product is searched in search box on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Sign Up",
+          "description": "User signs up on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Purchased a Product",
+          "description": "When a product is purchased on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Checkout started",
+          "description": "User enters checkout flow on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Added to Wishlist",
+          "description": "This event gets triggered when a product is added to the wishlist on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Review Created",
+          "description": "This is an event from Judge Me whenever a user adds a review  on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Remove from Cart",
+          "description": "When a product is removed from cart",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Abandoned Product",
+          "description": "When a product is abandoned without purchase",
+          "attribute_allowed": true,
+          "advance_evaluate": true,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Abandoned Cart",
+          "description": "When a cart is abandoned without purchase",
+          "attribute_allowed": true,
+          "advance_evaluate": true,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Abandoned Checkout",
+          "description": "When a cart checkout is abanoned without purchase",
+          "attribute_allowed": true,
+          "advance_evaluate": true,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Remove from Cart",
+          "description": "When a product is removed from cart",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Abandoned Product",
+          "description": "When a product is abandoned without purchase",
+          "attribute_allowed": true,
+          "advance_evaluate": true,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Abandoned Cart",
+          "description": "When a cart is abandoned without purchase",
+          "attribute_allowed": true,
+          "advance_evaluate": true,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Abandoned Checkout",
+          "description": "When a cart checkout is abanoned without purchase",
+          "attribute_allowed": true,
+          "advance_evaluate": true,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        }
+      ],
+      "Order": [
+        {
+          "name": "Order placed",
+          "description": "Payment confirmed by Shopify",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Order"
+        },
+        {
+          "name": "Draft order placed",
+          "description": "Merchant creates draft order",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Order"
+        },
+        {
+          "name": "Custom SDK event",
+          "description": "Any wigzo.track() call from your store",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Order"
+        }
+      ],
+      "Fulfilment": [
+        {
+          "name": "Order shipped",
+          "description": "Tracking number assigned",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Fulfilment"
+        },
+        {
+          "name": "Out for delivery",
+          "description": "Last-mile carrier update",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Fulfilment"
+        },
+        {
+          "name": "Product Delivered",
+          "description": "When an individual product is delivered",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Fulfilment"
+        },
+        {
+          "name": "Order delivered",
+          "description": "Delivery confirmed by carrier on all products delivered]\\",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Fulfilment"
+        },
+        {
+          "name": "Order Delay",
+          "description": "When order delay event is recieved",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Fulfilment"
+        },
+        {
+          "name": "Order cancelled",
+          "description": "Cancellation confirmed",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Fulfilment"
+        },
+        {
+          "name": "Refund issued",
+          "description": "Refund processed to customer",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Fulfilment"
+        },
+        {
+          "name": "Returned",
+          "description": "Order/Product has been returend",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Fulfilment"
+        }
+      ],
+      "Segment membership": [
+        {
+          "name": "Segment entry",
+          "description": "User qualifies for a saved segment",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Segment membership"
+        },
+        {
+          "name": "Segment exit",
+          "description": "User leaves a saved segment",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Segment membership"
+        }
+      ],
+      "Flow state": [
+        {
+          "name": "Flow completed",
+          "description": "User reached end of another flow",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Flow state"
+        },
+        {
+          "name": "Flow exited early",
+          "description": "Cancel trigger removed user mid-flow",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Flow state"
+        },
+        {
+          "name": "Communication",
+          "description": "When user gets a particular template being used in any of the flows in past or current",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Flow state"
+        }
+      ],
+      "WhatsApp": [
+        {
+          "name": "WhatsApp message received",
+          "description": "User sends any message to your WABA",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "WhatsApp"
+        },
+        {
+          "name": "Click-to-WhatsApp ad",
+          "description": "User clicks WhatsApp entry-point ad",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "WhatsApp"
+        },
+        {
+          "name": "Button reply received",
+          "description": "User taps a quick-reply button",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "WhatsApp"
+        }
+      ],
+      "Instagram": [
+        {
+          "name": "DM Recieved",
+          "description": "When a seller recived dm in Instagram Inbox",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Instagram"
+        },
+        {
+          "name": "Comment Recieved",
+          "description": "When a seller recieve comment in Instagram Inbox",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Instagram"
+        },
+        {
+          "name": "Story Tag",
+          "description": "When a seller story is tagged",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Instagram"
+        }
+      ],
+      "Email": [
+        {
+          "name": "Email Recieved",
+          "description": "This event gets triggered whenever email received from customer",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Email"
+        },
+        {
+          "name": "Email Unsubscribed",
+          "description": "When email gets unsubscribed",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Email"
+        }
+      ],
+      "User date attributes": [
+        {
+          "name": "Birthday",
+          "description": "Fires on user birth date attribute",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "User date attributes"
+        },
+        {
+          "name": "Anniversary",
+          "description": "N years since first order or signup",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "User date attributes"
+        },
+        {
+          "name": "Custom date attribute",
+          "description": "Any date field on customer profile",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "User date attributes"
+        }
+      ],
+      "Product": [
+        {
+          "name": "Back in Stock",
+          "description": "Flow start when a product is Back in Stock",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Product"
+        },
+        {
+          "name": "Price Drop",
+          "description": "Flow start when a product has a price drop",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Product"
+        }
+      ],
+      "External signals": [
+        {
+          "name": "Webhook trigger",
+          "description": "Third-party system sends data to your URL",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "External signals"
+        },
+        {
+          "name": "API trigger",
+          "description": "Developer calls E360 REST endpoint",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "External signals"
+        }
+      ],
+      "Audience source": [
+        {
+          "name": "Saved segment",
+          "description": "Pick a pre-built segment as audience",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
+          "time_attribute_allow": true,
+          "header": "ALL",
+          "section": "Audience source"
+        },
+        {
+          "name": "CSV upload",
+          "description": "Upload phone list with variable columns",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
+          "time_attribute_allow": true,
+          "header": "ALL",
+          "section": "Audience source"
+        }
+      ],
+      "Agent": [
+        {
+          "name": "Task",
+          "description": "This event gets triggered whenever a task is created either by agent or ai agent",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Agent"
+        },
+        {
+          "name": "Task Stage Change",
+          "description": "This event gets triggered whenever a task is closed either by agent or via auto close setup by brands",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Agent"
+        },
+        {
+          "name": "Reassigned Agent",
+          "description": "This event gets triggered when every time the ticket stage changes",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Agent"
+        }
+      ]
+    },
+    "Post-purchase": {
+      "Fulfilment": [
+        {
+          "name": "Order shipped",
+          "description": "Tracking number assigned",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Post-purchase",
+          "section": "Fulfilment"
+        },
+        {
+          "name": "Out for delivery",
+          "description": "Last-mile carrier update",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Post-purchase",
+          "section": "Fulfilment"
+        },
+        {
+          "name": "Product Delivered",
+          "description": "When an individual product is delivered",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Post-purchase",
+          "section": "Fulfilment"
+        },
+        {
+          "name": "Order delivered",
+          "description": "Delivery confirmed by carrier on all products delivered]\\",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Post-purchase",
+          "section": "Fulfilment"
+        },
+        {
+          "name": "Order Delay",
+          "description": "When order delay event is recieved",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Post-purchase",
+          "section": "Fulfilment"
+        },
+        {
+          "name": "Order cancelled",
+          "description": "Cancellation confirmed",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Post-purchase",
+          "section": "Fulfilment"
+        },
+        {
+          "name": "Refund issued",
+          "description": "Refund processed to customer",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Post-purchase",
+          "section": "Fulfilment"
+        },
+        {
+          "name": "Returned",
+          "description": "Order/Product has been returend",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Post-purchase",
+          "section": "Fulfilment"
+        }
+      ]
+    },
+    "Segment and state": {
+      "Segment membership": [
+        {
+          "name": "Segment entry",
+          "description": "User qualifies for a saved segment",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Segment and state",
+          "section": "Segment membership"
+        },
+        {
+          "name": "Segment exit",
+          "description": "User leaves a saved segment",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Segment and state",
+          "section": "Segment membership"
+        }
+      ]
+    },
+    "Communication": {
+      "Flow state": [
+        {
+          "name": "Flow completed",
+          "description": "User reached end of another flow",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Communication",
+          "section": "Flow state"
+        },
+        {
+          "name": "Flow exited early",
+          "description": "Cancel trigger removed user mid-flow",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Communication",
+          "section": "Flow state"
+        },
+        {
+          "name": "Communication",
+          "description": "When user gets a particular template being used in any of the flows in past or current",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Communication",
+          "section": "Flow state"
+        }
+      ]
+    },
+    "Inbound message": {
+      "WhatsApp": [
+        {
+          "name": "WhatsApp message received",
+          "description": "User sends any message to your WABA",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Inbound message",
+          "section": "WhatsApp"
+        },
+        {
+          "name": "Click-to-WhatsApp ad",
+          "description": "User clicks WhatsApp entry-point ad",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Inbound message",
+          "section": "WhatsApp"
+        },
+        {
+          "name": "Button reply received",
+          "description": "User taps a quick-reply button",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Inbound message",
+          "section": "WhatsApp"
+        }
+      ],
+      "Instagram": [
+        {
+          "name": "DM Recieved",
+          "description": "When a seller recived dm in Instagram Inbox",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Inbound message",
+          "section": "Instagram"
+        },
+        {
+          "name": "Comment Recieved",
+          "description": "When a seller recieve comment in Instagram Inbox",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Inbound message",
+          "section": "Instagram"
+        },
+        {
+          "name": "Story Tag",
+          "description": "When a seller story is tagged",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Inbound message",
+          "section": "Instagram"
+        }
+      ],
+      "Email": [
+        {
+          "name": "Email Recieved",
+          "description": "This event gets triggered whenever email received from customer",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Inbound message",
+          "section": "Email"
+        },
+        {
+          "name": "Email Unsubscribed",
+          "description": "When email gets unsubscribed",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Inbound message",
+          "section": "Email"
+        }
+      ]
+    },
+    "Date and time": {
+      "User date attributes": [
+        {
+          "name": "Birthday",
+          "description": "Fires on user birth date attribute",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Date and time",
+          "section": "User date attributes"
+        },
+        {
+          "name": "Anniversary",
+          "description": "N years since first order or signup",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Date and time",
+          "section": "User date attributes"
+        },
+        {
+          "name": "Custom date attribute",
+          "description": "Any date field on customer profile",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Date and time",
+          "section": "User date attributes"
+        }
+      ],
+      "Product": [
+        {
+          "name": "Back in Stock",
+          "description": "Flow start when a product is Back in Stock",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Date and time",
+          "section": "Product"
+        },
+        {
+          "name": "Price Drop",
+          "description": "Flow start when a product has a price drop",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Date and time",
+          "section": "Product"
+        }
+      ]
+    },
+    "Webhook and API": {
+      "External signals": [
+        {
+          "name": "Webhook trigger",
+          "description": "Third-party system sends data to your URL",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Webhook and API",
+          "section": "External signals"
+        },
+        {
+          "name": "API trigger",
+          "description": "Developer calls E360 REST endpoint",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Webhook and API",
+          "section": "External signals"
+        }
+      ]
+    },
+    "Broadcast": {
+      "Audience source": [
+        {
+          "name": "Saved segment",
+          "description": "Pick a pre-built segment as audience",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
+          "time_attribute_allow": true,
+          "header": "Broadcast",
+          "section": "Audience source"
+        },
+        {
+          "name": "CSV upload",
+          "description": "Upload phone list with variable columns",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
+          "time_attribute_allow": true,
+          "header": "Broadcast",
+          "section": "Audience source"
+        }
+      ]
+    },
+    "Agent": {
+      "Agent": [
+        {
+          "name": "Task",
+          "description": "This event gets triggered whenever a task is created either by agent or ai agent",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
+          "time_attribute_allow": false,
+          "header": "Agent",
+          "section": "Agent"
+        },
+        {
+          "name": "Task Stage Change",
+          "description": "This event gets triggered whenever a task is closed either by agent or via auto close setup by brands",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
+          "time_attribute_allow": false,
+          "header": "Agent",
+          "section": "Agent"
+        },
+        {
+          "name": "Reassigned Agent",
+          "description": "This event gets triggered when every time the ticket stage changes",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
+          "time_attribute_allow": false,
+          "header": "Agent",
+          "section": "Agent"
+        }
+      ]
+    }
+  },
+  "attributes_by_event": {
+    "Purchase a Product": [
+      {
+        "name": "Order ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "SR1101",
+          "SR1102",
+          "SR1103",
+          "SR1104",
+          "SR1105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Order Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "#1101",
+          "#1102",
+          "#1103",
+          "#1104",
+          "#1105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Price",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Customer ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "CUST8801",
+          "CUST8802",
+          "CUST8803",
+          "CUST8804",
+          "CUST8805"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Variant Id",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "VAR2201",
+          "VAR2202",
+          "VAR2203",
+          "VAR2204",
+          "VAR2205"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Total Amount",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "User Amount",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Order Tag",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "VIP",
+          "FirstOrder",
+          "Repeat",
+          "HighValue",
+          "Winback"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Is COD",
+        "data_type": "boolean",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "TRUE",
+          "FALSE"
+        ],
+        "operators": [
+          "True",
+          "Is False"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Discount Code",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "BOGO",
+          "FREE",
+          "FIRST50",
+          "TRYME",
+          "KSALE"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Classic Kurta Set",
+          "Running Sneakers",
+          "Hydrating Face Serum",
+          "Cotton Joggers",
+          "Silk Saree"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "PROD5501",
+          "PROD5502",
+          "PROD5503",
+          "PROD5504",
+          "PROD5505"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "SKU ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "SKU-KRT-BLU-M",
+          "SKU-SNK-WHT-42",
+          "SKU-SRM-30ML",
+          "SKU-JOG-BLK-L",
+          "SKU-SAR-RED-FS"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Number of Items",
+        "data_type": "integer",
+        "selection_option": "value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Variant Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Blue / Medium",
+          "White / UK42",
+          "30ml",
+          "Black / Large",
+          "Red / Free Size"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Variant ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "VAR2201",
+          "VAR2202",
+          "VAR2203",
+          "VAR2204",
+          "VAR2205"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Discount Code",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "BOGO",
+          "FREE",
+          "FIRST50",
+          "TRYME",
+          "KSALE"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Cart Value",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Shipping Price",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Order Cancelled": [
+      {
+        "name": "Order ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "SR1101",
+          "SR1102",
+          "SR1103",
+          "SR1104",
+          "SR1105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Order Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "#1101",
+          "#1102",
+          "#1103",
+          "#1104",
+          "#1105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Price",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Customer ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "CUST8801",
+          "CUST8802",
+          "CUST8803",
+          "CUST8804",
+          "CUST8805"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Variant Id",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "VAR2201",
+          "VAR2202",
+          "VAR2203",
+          "VAR2204",
+          "VAR2205"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Total Amount",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "User Amount",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Order Tag",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "VIP",
+          "FirstOrder",
+          "Repeat",
+          "HighValue",
+          "Winback"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Is COD",
+        "data_type": "boolean",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "TRUE",
+          "FALSE"
+        ],
+        "operators": [
+          "True",
+          "Is False"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Discount Code",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "BOGO",
+          "FREE",
+          "FIRST50",
+          "TRYME",
+          "KSALE"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Classic Kurta Set",
+          "Running Sneakers",
+          "Hydrating Face Serum",
+          "Cotton Joggers",
+          "Silk Saree"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "PROD5501",
+          "PROD5502",
+          "PROD5503",
+          "PROD5504",
+          "PROD5505"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "SKU ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "SKU-KRT-BLU-M",
+          "SKU-SNK-WHT-42",
+          "SKU-SRM-30ML",
+          "SKU-JOG-BLK-L",
+          "SKU-SAR-RED-FS"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Number of Items",
+        "data_type": "integer",
+        "selection_option": "value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Variant Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Blue / Medium",
+          "White / UK42",
+          "30ml",
+          "Black / Large",
+          "Red / Free Size"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Variant ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "VAR2201",
+          "VAR2202",
+          "VAR2203",
+          "VAR2204",
+          "VAR2205"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Discount Code",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "BOGO",
+          "FREE",
+          "FIRST50",
+          "TRYME",
+          "KSALE"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Cart Value",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Shipping Price",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Product Delivered": [
+      {
+        "name": "Order ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "SR1101",
+          "SR1102",
+          "SR1103",
+          "SR1104",
+          "SR1105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Order Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "#1101",
+          "#1102",
+          "#1103",
+          "#1104",
+          "#1105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Price",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Customer ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "CUST8801",
+          "CUST8802",
+          "CUST8803",
+          "CUST8804",
+          "CUST8805"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Variant Id",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "VAR2201",
+          "VAR2202",
+          "VAR2203",
+          "VAR2204",
+          "VAR2205"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Total Amount",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "User Amount",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Order Tag",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "VIP",
+          "FirstOrder",
+          "Repeat",
+          "HighValue",
+          "Winback"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Is COD",
+        "data_type": "boolean",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "TRUE",
+          "FALSE"
+        ],
+        "operators": [
+          "True",
+          "Is False"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Discount Code",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "BOGO",
+          "FREE",
+          "FIRST50",
+          "TRYME",
+          "KSALE"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Classic Kurta Set",
+          "Running Sneakers",
+          "Hydrating Face Serum",
+          "Cotton Joggers",
+          "Silk Saree"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "PROD5501",
+          "PROD5502",
+          "PROD5503",
+          "PROD5504",
+          "PROD5505"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "SKU ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "SKU-KRT-BLU-M",
+          "SKU-SNK-WHT-42",
+          "SKU-SRM-30ML",
+          "SKU-JOG-BLK-L",
+          "SKU-SAR-RED-FS"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Number of Items",
+        "data_type": "integer",
+        "selection_option": "value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Variant Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Blue / Medium",
+          "White / UK42",
+          "30ml",
+          "Black / Large",
+          "Red / Free Size"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Variant ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "VAR2201",
+          "VAR2202",
+          "VAR2203",
+          "VAR2204",
+          "VAR2205"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Discount Code",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "BOGO",
+          "FREE",
+          "FIRST50",
+          "TRYME",
+          "KSALE"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Cart Value",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Shipping Price",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Delayed Delivery",
+        "data_type": "boolean",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "FALSE",
+          "TRUE"
+        ],
+        "operators": [
+          "True",
+          "Is False"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Shipment Company",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Delhivery",
+          "Xpressbees",
+          "Bluedart",
+          "DTDC",
+          "Shadowfax"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Order Delivered": [
+      {
+        "name": "Order ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "SR1101",
+          "SR1102",
+          "SR1103",
+          "SR1104",
+          "SR1105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Order Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "#1101",
+          "#1102",
+          "#1103",
+          "#1104",
+          "#1105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Price",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Customer ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "CUST8801",
+          "CUST8802",
+          "CUST8803",
+          "CUST8804",
+          "CUST8805"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Variant Id",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "VAR2201",
+          "VAR2202",
+          "VAR2203",
+          "VAR2204",
+          "VAR2205"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Total Amount",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "User Amount",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Order Tag",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "VIP",
+          "FirstOrder",
+          "Repeat",
+          "HighValue",
+          "Winback"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Is COD",
+        "data_type": "boolean",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "TRUE",
+          "FALSE"
+        ],
+        "operators": [
+          "True",
+          "Is False"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Discount Code",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "BOGO",
+          "FREE",
+          "FIRST50",
+          "TRYME",
+          "KSALE"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Classic Kurta Set",
+          "Running Sneakers",
+          "Hydrating Face Serum",
+          "Cotton Joggers",
+          "Silk Saree"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "PROD5501",
+          "PROD5502",
+          "PROD5503",
+          "PROD5504",
+          "PROD5505"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "SKU ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "SKU-KRT-BLU-M",
+          "SKU-SNK-WHT-42",
+          "SKU-SRM-30ML",
+          "SKU-JOG-BLK-L",
+          "SKU-SAR-RED-FS"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Number of Items",
+        "data_type": "integer",
+        "selection_option": "value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Variant Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Blue / Medium",
+          "White / UK42",
+          "30ml",
+          "Black / Large",
+          "Red / Free Size"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Variant ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "VAR2201",
+          "VAR2202",
+          "VAR2203",
+          "VAR2204",
+          "VAR2205"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Discount Code",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "BOGO",
+          "FREE",
+          "FIRST50",
+          "TRYME",
+          "KSALE"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Cart Value",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Shipping Price",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Delayed Delivery",
+        "data_type": "boolean",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "FALSE",
+          "TRUE"
+        ],
+        "operators": [
+          "True",
+          "Is False"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Shipment Company",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Delhivery",
+          "Xpressbees",
+          "Bluedart",
+          "DTDC",
+          "Shadowfax"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Delivery Cancelled": [
+      {
+        "name": "Order ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "SR1101",
+          "SR1102",
+          "SR1103",
+          "SR1104",
+          "SR1105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Order Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "#1101",
+          "#1102",
+          "#1103",
+          "#1104",
+          "#1105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Price",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Customer ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "CUST8801",
+          "CUST8802",
+          "CUST8803",
+          "CUST8804",
+          "CUST8805"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Variant Id",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "VAR2201",
+          "VAR2202",
+          "VAR2203",
+          "VAR2204",
+          "VAR2205"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Total Amount",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "User Amount",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Order Tag",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "VIP",
+          "FirstOrder",
+          "Repeat",
+          "HighValue",
+          "Winback"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Is COD",
+        "data_type": "boolean",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "TRUE",
+          "FALSE"
+        ],
+        "operators": [
+          "True",
+          "Is False"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Discount Code",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "BOGO",
+          "FREE",
+          "FIRST50",
+          "TRYME",
+          "KSALE"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Classic Kurta Set",
+          "Running Sneakers",
+          "Hydrating Face Serum",
+          "Cotton Joggers",
+          "Silk Saree"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "PROD5501",
+          "PROD5502",
+          "PROD5503",
+          "PROD5504",
+          "PROD5505"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "SKU ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "SKU-KRT-BLU-M",
+          "SKU-SNK-WHT-42",
+          "SKU-SRM-30ML",
+          "SKU-JOG-BLK-L",
+          "SKU-SAR-RED-FS"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Number of Items",
+        "data_type": "integer",
+        "selection_option": "value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Variant Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Blue / Medium",
+          "White / UK42",
+          "30ml",
+          "Black / Large",
+          "Red / Free Size"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Variant ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "VAR2201",
+          "VAR2202",
+          "VAR2203",
+          "VAR2204",
+          "VAR2205"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Discount Code",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "BOGO",
+          "FREE",
+          "FIRST50",
+          "TRYME",
+          "KSALE"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Cart Value",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Shipping Price",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Delayed Delivery",
+        "data_type": "boolean",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "FALSE",
+          "TRUE"
+        ],
+        "operators": [
+          "True",
+          "Is False"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Shipment Company",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Delhivery",
+          "Xpressbees",
+          "Bluedart",
+          "DTDC",
+          "Shadowfax"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Cancellation Reason",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Size not available",
+          "Changed mind",
+          "Found better price elsewhere",
+          "Ordered by mistake",
+          "Delivery taking too long"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Keyword Search": [
+      {
+        "name": "Keyword",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Website/App Open": [
+      {
+        "name": "UTM Source",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "UTM Medium",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "UTM Campaign",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Added to Wishlist": [
+      {
+        "name": "UTM Source",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "UTM Medium",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "UTM Campaign",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Classic Kurta Set",
+          "Running Sneakers",
+          "Hydrating Face Serum",
+          "Cotton Joggers",
+          "Silk Saree"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "PROD5501",
+          "PROD5502",
+          "PROD5503",
+          "PROD5504",
+          "PROD5505"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "SKU ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "SKU-KRT-BLU-M",
+          "SKU-SNK-WHT-42",
+          "SKU-SRM-30ML",
+          "SKU-JOG-BLK-L",
+          "SKU-SAR-RED-FS"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Price",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Discount Applied",
+        "data_type": "boolean",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "TRUE",
+          "FALSE"
+        ],
+        "operators": [
+          "True",
+          "Is False"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Collection Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Ethnic Wear",
+          "Footwear",
+          "Skincare",
+          "Bottomwear",
+          "Sarees"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Collection ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "COL101",
+          "COL102",
+          "COL103",
+          "COL104",
+          "COL105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "TAG",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "loyal_customer",
+          "new_user",
+          "repeat_buyer",
+          "churned_user",
+          "high_ltv"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Product View": [
+      {
+        "name": "UTM Source",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "UTM Medium",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "UTM Campaign",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Classic Kurta Set",
+          "Running Sneakers",
+          "Hydrating Face Serum",
+          "Cotton Joggers",
+          "Silk Saree"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "PROD5501",
+          "PROD5502",
+          "PROD5503",
+          "PROD5504",
+          "PROD5505"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "SKU ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "SKU-KRT-BLU-M",
+          "SKU-SNK-WHT-42",
+          "SKU-SRM-30ML",
+          "SKU-JOG-BLK-L",
+          "SKU-SAR-RED-FS"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Price",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Discount Applied",
+        "data_type": "boolean",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "TRUE",
+          "FALSE"
+        ],
+        "operators": [
+          "True",
+          "Is False"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Collection Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Ethnic Wear",
+          "Footwear",
+          "Skincare",
+          "Bottomwear",
+          "Sarees"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Collection ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "COL101",
+          "COL102",
+          "COL103",
+          "COL104",
+          "COL105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "TAG",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "loyal_customer",
+          "new_user",
+          "repeat_buyer",
+          "churned_user",
+          "high_ltv"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Abandoned Product": [
+      {
+        "name": "UTM Source",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "UTM Medium",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "UTM Campaign",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Classic Kurta Set",
+          "Running Sneakers",
+          "Hydrating Face Serum",
+          "Cotton Joggers",
+          "Silk Saree"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "PROD5501",
+          "PROD5502",
+          "PROD5503",
+          "PROD5504",
+          "PROD5505"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "SKU ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "SKU-KRT-BLU-M",
+          "SKU-SNK-WHT-42",
+          "SKU-SRM-30ML",
+          "SKU-JOG-BLK-L",
+          "SKU-SAR-RED-FS"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Price",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Discount Applied",
+        "data_type": "boolean",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "TRUE",
+          "FALSE"
+        ],
+        "operators": [
+          "True",
+          "Is False"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Collection Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Ethnic Wear",
+          "Footwear",
+          "Skincare",
+          "Bottomwear",
+          "Sarees"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Collection ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "COL101",
+          "COL102",
+          "COL103",
+          "COL104",
+          "COL105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "TAG",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "loyal_customer",
+          "new_user",
+          "repeat_buyer",
+          "churned_user",
+          "high_ltv"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Viewed",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "First Product Viewd",
+          "Last Product View"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Frequent Product View",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Maximun Product Viewed",
+          "Lear Product Viewed"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Product Viewed Price",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Most Priced Product",
+          "Least Priced Product"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Product Quantity",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Highest Quantity",
+          "Least Quantity"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      }
+    ],
+    "Abandoned Cart": [
+      {
+        "name": "Product Viewed",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "First Product Viewd",
+          "Last Product View"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Frequent Product View",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Maximun Product Viewed",
+          "Lear Product Viewed"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Product Viewed Price",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Most Priced Product",
+          "Least Priced Product"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Product Quantity",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Highest Quantity",
+          "Least Quantity"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Discount",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "AttemptClicked",
+          "Selected",
+          "Removed"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Frequent Product Add to Cart",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Most Product Add to Cart",
+          "Least Product Add to Cart"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Frequent Product Remove from Cart",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Most Product Remove from Cart",
+          "Least Product Remove from Cart"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      }
+    ],
+    "Abandoned Checkout": [
+      {
+        "name": "Product Viewed",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "First Product Viewd",
+          "Last Product View"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Frequent Product View",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Maximun Product Viewed",
+          "Lear Product Viewed"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Product Viewed Price",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Most Priced Product",
+          "Least Priced Product"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Product Quantity",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Highest Quantity",
+          "Least Quantity"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Discount",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "AttemptClicked",
+          "Selected",
+          "Removed"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Frequent Product Add to Cart",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Most Product Add to Cart",
+          "Least Product Add to Cart"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Frequent Product Remove from Cart",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Most Product Remove from Cart",
+          "Least Product Remove from Cart"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      }
+    ],
+    "Add to Cart": [
+      {
+        "name": "Product Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Classic Kurta Set",
+          "Running Sneakers",
+          "Hydrating Face Serum",
+          "Cotton Joggers",
+          "Silk Saree"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "PROD5501",
+          "PROD5502",
+          "PROD5503",
+          "PROD5504",
+          "PROD5505"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "SKU ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "SKU-KRT-BLU-M",
+          "SKU-SNK-WHT-42",
+          "SKU-SRM-30ML",
+          "SKU-JOG-BLK-L",
+          "SKU-SAR-RED-FS"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Price",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Discount Applied",
+        "data_type": "boolean",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "TRUE",
+          "FALSE"
+        ],
+        "operators": [
+          "True",
+          "Is False"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Collection Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Ethnic Wear",
+          "Footwear",
+          "Skincare",
+          "Bottomwear",
+          "Sarees"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Collection ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "COL101",
+          "COL102",
+          "COL103",
+          "COL104",
+          "COL105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "TAG",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "loyal_customer",
+          "new_user",
+          "repeat_buyer",
+          "churned_user",
+          "high_ltv"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Cart Value",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Cart Discount",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "FLAT10",
+          "SAVE20",
+          "FESTIVE15",
+          "GIFT25",
+          "WELCOME50"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Checkout Started": [
+      {
+        "name": "Product Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Classic Kurta Set",
+          "Running Sneakers",
+          "Hydrating Face Serum",
+          "Cotton Joggers",
+          "Silk Saree"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "PROD5501",
+          "PROD5502",
+          "PROD5503",
+          "PROD5504",
+          "PROD5505"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "SKU ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "SKU-KRT-BLU-M",
+          "SKU-SNK-WHT-42",
+          "SKU-SRM-30ML",
+          "SKU-JOG-BLK-L",
+          "SKU-SAR-RED-FS"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Price",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Discount Applied",
+        "data_type": "boolean",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "TRUE",
+          "FALSE"
+        ],
+        "operators": [
+          "True",
+          "Is False"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Collection Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Ethnic Wear",
+          "Footwear",
+          "Skincare",
+          "Bottomwear",
+          "Sarees"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Collection ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "COL101",
+          "COL102",
+          "COL103",
+          "COL104",
+          "COL105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "TAG",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "loyal_customer",
+          "new_user",
+          "repeat_buyer",
+          "churned_user",
+          "high_ltv"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Cart Value",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Cart Discount",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "FLAT10",
+          "SAVE20",
+          "FESTIVE15",
+          "GIFT25",
+          "WELCOME50"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Payment Gateway",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Razorpay",
+          "COD",
+          "PayU",
+          "Stripe",
+          "Juspay"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Remove from Cart": [
+      {
+        "name": "Product Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Classic Kurta Set",
+          "Running Sneakers",
+          "Hydrating Face Serum",
+          "Cotton Joggers",
+          "Silk Saree"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "PROD5501",
+          "PROD5502",
+          "PROD5503",
+          "PROD5504",
+          "PROD5505"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "SKU ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "SKU-KRT-BLU-M",
+          "SKU-SNK-WHT-42",
+          "SKU-SRM-30ML",
+          "SKU-JOG-BLK-L",
+          "SKU-SAR-RED-FS"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Price",
+        "data_type": "integer",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Greater Than",
+          "Less Than",
+          "Greater Than or Equal",
+          "Less Than or Equal",
+          "Between",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Collection Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Ethnic Wear",
+          "Footwear",
+          "Skincare",
+          "Bottomwear",
+          "Sarees"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Collection ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "COL101",
+          "COL102",
+          "COL103",
+          "COL104",
+          "COL105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "TAG",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "loyal_customer",
+          "new_user",
+          "repeat_buyer",
+          "churned_user",
+          "high_ltv"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Segment entry": [
+      {
+        "name": "Segment name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "loyal_customer",
+          "new_user",
+          "repeat_buyer",
+          "churned_user",
+          "high_ltv"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Segment exit": [
+      {
+        "name": "Segment name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "loyal_customer",
+          "new_user",
+          "repeat_buyer",
+          "churned_user",
+          "high_ltv"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Flow completed": [
+      {
+        "name": "Flow name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Flow ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Flow exited early": [
+      {
+        "name": "Flow name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "windback flow",
+          "Csv 18April",
+          "Sales Inbound"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Flow ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "23212",
+          "24223",
+          "212443",
+          "43245"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Communication": [
+      {
+        "name": "Template Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "temp1",
+          "temp2",
+          "tempsale",
+          "sale5",
+          "sale1"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Communication Channel",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Whatsapp",
+          "Email",
+          "RCS",
+          "SMS",
+          "Instagram"
+        ],
+        "operators": [
+          "Is",
+          "Is Not"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Communication sent date",
+        "data_type": "date",
+        "selection_option": "Date picker",
+        "examples": [],
+        "operators": [
+          "On",
+          "Before",
+          "After",
+          "In between"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Delivery Status",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Sent",
+          "Delivered",
+          "Failed",
+          "Read",
+          "Reply"
+        ],
+        "operators": [
+          "Is",
+          "Is Not"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "WhatsApp message received": [
+      {
+        "name": "Keyword",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Click-to-WhatsApp ad": [
+      {
+        "name": "Keyword",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Button reply received": [
+      {
+        "name": "Template Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "temp1",
+          "temp2",
+          "tempsale",
+          "sale5",
+          "sale1"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Button Body",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Confirm Order",
+          "Cancel Order"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "DM Recieved": [
+      {
+        "name": "Keyword",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Comment Recieved": [
+      {
+        "name": "Keyword",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Story Tag": [
+      {
+        "name": "Keyword",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Email Recieved": [
+      {
+        "name": "Keyword",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Email Unsubscribed": [
+      {
+        "name": "Date unsubscribed",
+        "data_type": "date",
+        "selection_option": "Date picker",
+        "examples": [],
+        "operators": [
+          "On",
+          "Before",
+          "After",
+          "In between"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Birthday": [
+      {
+        "name": "Birthdate",
+        "data_type": "date",
+        "selection_option": "Date picker",
+        "examples": [],
+        "operators": [
+          "On",
+          "Before",
+          "After",
+          "In between"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "source",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "profile",
+          "form",
+          "pos"
+        ],
+        "operators": [
+          "Is",
+          "Is Not"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Anniversary": [
+      {
+        "name": "Anniversary Date",
+        "data_type": "date",
+        "selection_option": "Date picker",
+        "examples": [],
+        "operators": [
+          "On",
+          "Before",
+          "After",
+          "In between"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "source",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "profile",
+          "form",
+          "pos"
+        ],
+        "operators": [
+          "Is",
+          "Is Not"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Custom date attribute": [
+      {
+        "name": "Variable with Date",
+        "data_type": "date",
+        "selection_option": "Single select and range picker",
+        "examples": [
+          "Anniversary_date",
+          "birth_date",
+          "first_order",
+          "subscription_end_date"
+        ],
+        "operators": [
+          "On",
+          "Before",
+          "After",
+          "In between",
+          "X days After",
+          "X days before"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Back in Stock": [
+      {
+        "name": "Product ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "PROD5501",
+          "PROD5502",
+          "PROD5503",
+          "PROD5504",
+          "PROD5505"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Classic Kurta Set",
+          "Running Sneakers",
+          "Hydrating Face Serum",
+          "Cotton Joggers",
+          "Silk Saree"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Collection Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Ethnic Wear",
+          "Footwear",
+          "Skincare",
+          "Bottomwear",
+          "Sarees"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Collection ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "COL101",
+          "COL102",
+          "COL103",
+          "COL104",
+          "COL105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Price Drop": [
+      {
+        "name": "Product ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "PROD5501",
+          "PROD5502",
+          "PROD5503",
+          "PROD5504",
+          "PROD5505"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Product Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Classic Kurta Set",
+          "Running Sneakers",
+          "Hydrating Face Serum",
+          "Cotton Joggers",
+          "Silk Saree"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Collection Name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Ethnic Wear",
+          "Footwear",
+          "Skincare",
+          "Bottomwear",
+          "Sarees"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Collection ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "COL101",
+          "COL102",
+          "COL103",
+          "COL104",
+          "COL105"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Audience segment": [
+      {
+        "name": "Segment name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "loyal_customer",
+          "new_user",
+          "repeat_buyer",
+          "churned_user",
+          "high_ltv"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Create segment",
+        "data_type": "action",
+        "selection_option": "Segment Creation",
+        "examples": [],
+        "operators": [],
+        "is_evaluate": false
+      }
+    ],
+    "Task": [
+      {
+        "name": "Task CreationDate",
+        "data_type": "date",
+        "selection_option": "Date picker",
+        "examples": [],
+        "operators": [
+          "On",
+          "Before",
+          "After",
+          "In between"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Created by agent name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "AI",
+          "Meenal",
+          "Kirt",
+          "Rahul"
+        ],
+        "operators": [
+          "Is",
+          "Is Not"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Task assgined",
+        "data_type": "boolean",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "TRUE",
+          "FALSE"
+        ],
+        "operators": [
+          "True",
+          "Is False"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Assigned to Agent name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "AI",
+          "Meenal",
+          "Kirt",
+          "Rahul"
+        ],
+        "operators": [
+          "Is",
+          "Is Not"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Task ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "PD5501",
+          "PD5502",
+          "PD5503",
+          "PD5504",
+          "PROD5505"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Task Stage",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Created",
+          "Closed",
+          "Open",
+          "Processing"
+        ],
+        "operators": [
+          "Is",
+          "Is Not"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Task Tag",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Payment",
+          "Whatsapp",
+          "Onboarding"
+        ],
+        "operators": [
+          "Is",
+          "Is Not"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Task Stage Change": [
+      {
+        "name": "Task Stage Before, Task Stage After",
+        "data_type": "string,string",
+        "selection_option": "Transition Select",
+        "examples": [
+          "Closed",
+          "Open",
+          "Processing"
+        ],
+        "operators": [
+          "Before and After"
+        ],
+        "is_evaluate": false
+      }
+    ],
+    "Reassigned Agent": [
+      {
+        "name": "Resassigned Date",
+        "data_type": "date",
+        "selection_option": "Date picker",
+        "examples": [],
+        "operators": [
+          "On",
+          "Before",
+          "After",
+          "In between"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Task Creation Date",
+        "data_type": "date",
+        "selection_option": "Date picker",
+        "examples": [],
+        "operators": [
+          "On",
+          "Before",
+          "After",
+          "In between"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Reassigned by agent name",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "AI",
+          "Meenal",
+          "Kirt",
+          "Rahul"
+        ],
+        "operators": [
+          "Is",
+          "Is Not"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Task ID",
+        "data_type": "id",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "PD5501",
+          "PD5502",
+          "PD5503",
+          "PD5504",
+          "PROD5505"
+        ],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Task Stage",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Created",
+          "Closed",
+          "Open",
+          "Processing"
+        ],
+        "operators": [
+          "Is",
+          "Is Not"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Resigned agent",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "AI",
+          "Meenal",
+          "Kirt",
+          "Rahul"
+        ],
+        "operators": [
+          "Is",
+          "Is Not"
+        ],
+        "is_evaluate": false
+      },
+      {
+        "name": "Reassigned reason",
+        "data_type": "string",
+        "selection_option": "Multiple Select",
+        "examples": [
+          "Payment",
+          "Whatsapp",
+          "Onboarding"
+        ],
+        "operators": [
+          "Is",
+          "Is Not"
+        ],
+        "is_evaluate": false
+      }
+    ]
+  },
+  "shopify_mocks": {
+    "products": [
+      "Aurora Cotton Tee",
+      "Midnight Hoodie",
+      "Solstice Denim",
+      "Velvet Crew Socks",
+      "Crimson Cap",
+      "Mono Tote",
+      "Lumen Trainers",
+      "Halo Beanie",
+      "Echo Joggers",
+      "Drift Backpack"
+    ],
+    "skus": [
+      "AUR-001-BLK-M",
+      "MID-002-GRY-L",
+      "SOL-003-BLU-32",
+      "VEL-004-NAV-O",
+      "CRM-005-RED-O",
+      "MNO-006-BLK-O",
+      "LUM-007-WHT-9",
+      "HAL-008-CHR-O",
+      "ECH-009-OLV-M",
+      "DFT-010-NVY-O"
+    ],
+    "collections": [
+      "Summer 26",
+      "Essentials",
+      "Streetwear",
+      "Activewear",
+      "Best Sellers",
+      "New Arrivals",
+      "Final Sale",
+      "Limited Drop"
+    ]
+  }
+}

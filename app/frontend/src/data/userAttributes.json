@@ -1,0 +1,90 @@
+{
+  "groups": {
+    "Audience Type": [
+      { "name": "Audience Type", "data_type": "enum", "description": "Engage Identified, Known, or All users.", "allowed_values": ["Engage Identified", "Known", "All"] }
+    ],
+    "Predictive Insights": [
+      { "name": "Best Time to Send Email", "data_type": "time_slot", "description": "ML-computed optimal time to reach this user via email.", "allowed_values": ["Morning", "Afternoon", "Evening", "Night"] },
+      { "name": "Best Time to Send WhatsApp", "data_type": "time_slot", "description": "ML-computed optimal send window for WhatsApp.", "allowed_values": ["Morning", "Afternoon", "Evening", "Night"] },
+      { "name": "Best Time to Send SMS", "data_type": "time_slot", "description": "Optimal SMS delivery window.", "allowed_values": ["Morning", "Afternoon", "Evening", "Night"] },
+      { "name": "Best Time to Send Push", "data_type": "time_slot", "description": "Optimal push notification window.", "allowed_values": ["Morning", "Afternoon", "Evening", "Night"] },
+      { "name": "Most Preferred Channel", "data_type": "enum", "description": "Channel the user most frequently engages with.", "allowed_values": ["Email", "WhatsApp", "SMS", "Push", "Web Push"] }
+    ],
+    "Shiprocket Buyer": [
+      { "name": "LIFETIME_ORDERS", "data_type": "integer", "description": "Total lifetime orders attributed to this buyer." },
+      { "name": "LIFETIME_AOV", "data_type": "decimal", "description": "Average order value across lifetime." },
+      { "name": "LIFETIME_ORDERS_DELIVERED", "data_type": "integer", "description": "Total lifetime orders delivered." },
+      { "name": "THREE_MONTHS_ORDERS", "data_type": "integer", "description": "Orders in last 3 months." },
+      { "name": "SIX_MONTHS_AOV", "data_type": "decimal", "description": "Avg order value last 6 months." },
+      { "name": "TWELVE_MONTHS_ORDERS", "data_type": "integer", "description": "Orders in last 12 months." },
+      { "name": "RTO_RISK", "data_type": "decimal", "description": "Risk of RTO on next order (0–1)." },
+      { "name": "CANCEL_RISK", "data_type": "decimal", "description": "Risk of cancellation (0–1)." },
+      { "name": "DISCOUNT_AFFINITY", "data_type": "decimal", "description": "Buyer's affinity to discounted purchases." },
+      { "name": "PREPAID_AFFINITY", "data_type": "decimal", "description": "Buyer's affinity to prepaid orders." },
+      { "name": "PREFERRED_CATEGORY", "data_type": "string", "description": "Most frequently bought category." },
+      { "name": "BUYING_TIME", "data_type": "string", "description": "Predominant buying time of day." },
+      { "name": "GENDER", "data_type": "enum", "description": "Buyer gender", "allowed_values": ["Male", "Female", "Other", "Unknown"] },
+      { "name": "AMOUNT_SPENT_LAST_7D", "data_type": "decimal", "description": "Spend in last 7 days." }
+    ],
+    "Lifecycle": [
+      { "name": "First Seen", "data_type": "datetime", "description": "Timestamp of first interaction." },
+      { "name": "Last Seen", "data_type": "datetime", "description": "Most recent session timestamp." },
+      { "name": "LTV", "data_type": "decimal", "description": "Lifetime revenue attributed to this user." },
+      { "name": "No. of Conversions", "data_type": "integer", "description": "Total conversion events recorded." },
+      { "name": "No. of Sessions", "data_type": "integer", "description": "Total sessions recorded." },
+      { "name": "User Creation Source", "data_type": "enum", "description": "How this profile was created.", "allowed_values": ["Shopify", "API import", "SDK signup", "Manual upload", "CSV"] }
+    ],
+    "Acquisition": [
+      { "name": "Template name", "data_type": "string", "description": "Template via which the user was acquired." },
+      { "name": "UTM Source", "data_type": "string", "description": "UTM source of first touch." },
+      { "name": "UTM Medium", "data_type": "string", "description": "UTM medium of first touch." },
+      { "name": "UTM Campaign", "data_type": "string", "description": "UTM campaign of first touch." },
+      { "name": "First App Install Source", "data_type": "string", "description": "Source of first app install." },
+      { "name": "Referral Source", "data_type": "enum", "description": "Acquisition referral channel.", "allowed_values": ["direct", "organic", "paid", "affiliate"] }
+    ],
+    "Install": [
+      { "name": "Install Status", "data_type": "enum", "description": "Current install state.", "allowed_values": ["installed", "uninstalled", "reinstalled"] },
+      { "name": "Uninstall time", "data_type": "datetime", "description": "Timestamp of uninstall (if any)." }
+    ],
+    "Reachability": [
+      { "name": "Reachability Push", "data_type": "boolean", "description": "User is reachable via any push channel." },
+      { "name": "Reachability Push Android", "data_type": "boolean", "description": "User is reachable via Android push." },
+      { "name": "Reachability Push iOS", "data_type": "boolean", "description": "User is reachable via iOS push." },
+      { "name": "Reachability Push Web", "data_type": "boolean", "description": "User is reachable via web push." },
+      { "name": "SMS Subscription Status", "data_type": "enum", "description": "SMS opt-in state.", "allowed_values": ["subscribed", "unsubscribed", "pending"] }
+    ],
+    "Localization": [
+      { "name": "Last Known City", "data_type": "string", "description": "City from IP geolocation or profile." },
+      { "name": "Last Known Country", "data_type": "string", "description": "ISO 3166 country code." },
+      { "name": "Last Known State", "data_type": "string", "description": "State or province." },
+      { "name": "Last Known Pincode", "data_type": "string", "description": "Postal code." },
+      { "name": "User Time Zone Offset (Mins)", "data_type": "integer", "description": "Offset from UTC in minutes." }
+    ],
+    "Email": [
+      { "name": "Email Opt-in Status", "data_type": "enum", "description": "Current opt-in state.", "allowed_values": ["opted_in", "opted_out", "pending"] },
+      { "name": "Hard Bounce", "data_type": "boolean", "description": "Whether email hard-bounced." },
+      { "name": "Spam", "data_type": "boolean", "description": "Whether marked as spam." },
+      { "name": "Unsubscribe", "data_type": "boolean", "description": "Whether the user unsubscribed." }
+    ],
+    "Device": [
+      { "name": "Mobile User", "data_type": "boolean", "description": "Whether the most recent session was on mobile." },
+      { "name": "OS Version iOS", "data_type": "string", "description": "iOS OS version string." },
+      { "name": "Browser Details", "data_type": "string", "description": "Browser name and version." }
+    ],
+    "Standard": [
+      { "name": "Email", "data_type": "string", "description": "Standard email field." },
+      { "name": "ID", "data_type": "string", "description": "Internal user ID." },
+      { "name": "First name", "data_type": "string", "description": "Given name." },
+      { "name": "Last Name", "data_type": "string", "description": "Family name." },
+      { "name": "Locale Country", "data_type": "string", "description": "Browser/device locale country." },
+      { "name": "Locale Language", "data_type": "string", "description": "Browser/device locale language." },
+      { "name": "Mobile number Standard", "data_type": "string", "description": "Standard mobile number field." },
+      { "name": "Name", "data_type": "string", "description": "Display name." },
+      { "name": "WhatsApp Subscription Status", "data_type": "enum", "description": "WhatsApp opt-in state.", "allowed_values": ["subscribed", "unsubscribed", "pending"] }
+    ],
+    "Tracked Custom": [
+      { "name": "Tag_webengage", "data_type": "string", "description": "Free-form tag synced from external CDP." },
+      { "name": "Order_status_page", "data_type": "string", "description": "Custom event-derived page identifier." }
+    ]
+  }
+}

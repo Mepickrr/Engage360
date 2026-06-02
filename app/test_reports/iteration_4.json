@@ -1,0 +1,46 @@
+{
+  "summary": "RETEST PASS — Phase 2 marquee handoff fully unblocked. Backend pytest 12/12 PASS (10 prior + 2 new: TestFromBriefHandoff.test_create_from_brief_id end-to-end + test_from_brief_id_400_when_no_artefact). Frontend end-to-end Aryan 'Build this' → Conversation Panel → message-artefact-cta → Build Mode → flow-brief-preview (7 nodes) → flow-approve → /flows/builder/flow_954656a338 with 7 react-flow nodes rendered — verified in ~45s via Playwright. New completed task 'Dev built Payday Push — Top Buyers (3-day lead)' appears in /api/tasks?status=completed (now 3 total). GET /api/flows includes the new flow_954656a338 with 7 nodes / 6 edges on the detail endpoint. Orchestrator hardening confirmed: POST /api/conversations {seed_message:'Build a payday window automation flow', pinned_agent:'dev'} deterministically returns routing.artefact_type='flow_brief' and stores pending_artefact_type='flow_brief' on the agent reply. POST /api/flows {from_brief_id:<empty-conv>} returns HTTP 400 with detail 'No flow_brief artefact found on the source conversation. Generate the artefact first via /generate-artefact.' — exactly per spec. Fixed one residual issue in RightPanel.jsx where the Analytics tab was still HTML-disabled on draft flows, preventing the new analytics-disabled placeholder from rendering; after fix, clicking the tab on flow_review_req_01 (DRAFT) renders <div data-testid='analytics-disabled'> with copy 'Analytics will light up once this flow is published. Drafts don't collect performance data yet.' — verified via Playwright.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/flows/{id}/messages", "issue": "Carried-over from iteration_3 — LLM dev modify path is occasionally non-mutating (text-only reply, no node delta). Inconsistent. Not retested here."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/flows/builder/* (any)", "issues": ["React Flow warning: 'nodeTypes or edgeTypes created inline — please memoize outside the component'. Cosmetic only, but worth fixing (perf hint from React Flow)."]},
+      {"screen": "Conversation Panel modal", "issues": ["Radix DialogContent warning: 'Missing Description or aria-describedby' — a11y minor."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_phase2_flows.py",
+    "/app/test_reports/pytest/phase2_results.xml"
+  ],
+  "action_items": [
+    "OPTIONAL: memoize React Flow nodeTypes/edgeTypes outside the FlowCanvas component to eliminate the perf warning.",
+    "OPTIONAL: add aria-describedby (or a <DialogDescription>) to the ConversationPanel Dialog for a11y.",
+    "OPTIONAL: improve /api/flows/{id}/messages so a mutation prompt always returns is_modification=true with at least one node change (existing minor issue)."
+  ],
+  "critical_code_review_comments": [
+    "Orchestrator hardening in /app/backend/llm/orchestrator.py is correct and now deterministic for the (dev + build/flow verbs) pair — confirmed via direct curl. The pending_artefact_type-then-generate-on-demand design keeps chat snappy and works well with the build-mode CTA.",
+    "/app/backend/routes/flows.py _build_from_brief() now properly returns None when no flow_brief artefact exists, and the POST /api/flows handler raises HTTP 400 with the expected detail — verified via pytest.",
+    "/app/frontend/src/components/flows/builder/RightPanel.jsx previously still had `disabled={analyticsDisabled}` on the analytics TabsTrigger AND `disabled:opacity-50`. The new analytics-disabled placeholder inside AnalyticsTab.jsx could never render because Radix wouldn't switch the panel content while the trigger was disabled. FIXED in this iteration: removed `disabled` prop so the tab is always clickable and the AnalyticsTab itself renders the placeholder when status==='draft'.",
+    "Console still emits a React Flow warning about non-memoized nodeTypes/edgeTypes on every builder mount — fixable by moving the maps outside the component."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_phase2_flows.py (TestFromBriefHandoff now actively tests generate-artefact + from_brief_id end-to-end; added test_from_brief_id_400_when_no_artefact)",
+    "/app/frontend/src/components/flows/builder/RightPanel.jsx (removed `disabled={analyticsDisabled}` on right-tab-analytics so the analytics-disabled placeholder can actually render on draft flows)"
+  ],
+  "success_rate": {
+    "backend": "100% (12/12 pytest)",
+    "frontend": "100% — marquee handoff PASS, analytics-disabled placeholder PASS, plus all iteration_3 regressions still PASS"
+  },
+  "test_credentials": "N/A — Phase 2 remains auth-free",
+  "seed_data_creation": "Reseeded before AND after the handoff playwright run. Final state restored to baseline: agents=6, intelligence_cards=4, reports=2, tasks=10 (3/3/2/2), flows=4.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All Phase 2 retest items from iteration_3 are now GREEN. The flow_brief artefact is generated lazily by POST /api/conversations/{cid}/messages/{mid}/generate-artefact (called by the frontend when the user clicks the message-artefact-cta button in the conversation panel). pending_artefact_type='flow_brief' is set on the agent message thanks to orchestrator._harden_artefact() when (pinned_agent='dev' AND prompt contains build/flow/journey verbs). The new built flow id pattern matches /^flow_[a-f0-9]+$/. The only remaining minor issues are cosmetic (React Flow memoize warning, Dialog aria-describedby) and the carried-over flaky /messages modification path.",
+  "rca of the issue": "Root cause of iteration_3 handoff block: the LLM orchestrator was free to pick any artefact_type (and picked creative_preview for Aryan's payday text). Fix landed in /app/backend/llm/orchestrator.py via _harden_artefact() — when pinned_agent='dev' and the prompt contains build/flow/journey/automation keywords, the routing is deterministically promoted to artefact_type='flow_brief' with primary_agent='dev'. Frontend IntelligenceCards.jsx now seeds Aryan's 'Build this' CTA with pinned_agent='dev' and an explicit 'Build a flow to act on this opportunity: …' opener that triggers the hardening rule. Additionally fixed: RightPanel.jsx had a stale `disabled` prop on the analytics tab that prevented the new analytics-disabled placeholder div (added inside AnalyticsTab.jsx) from ever rendering on draft flows — the click silently did nothing. Removing the prop lets Radix switch panels and the placeholder shows."
+}

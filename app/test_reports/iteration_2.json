@@ -1,0 +1,51 @@
+{
+  "summary": "Engage 360 Phase 1 — Backend 17/17 pytest PASS. Frontend: all 6 sections render, team modal flow, intel-card → conv-panel → build-mode → artefact preview, ask-AI, model switcher (label updates correctly), task approval, AI widget pill — all PASS. Conversations persist in Mongo; orchestrator routes correctly on unpinned conversations. Two minor naming mismatches between spec text and implementation noted (no functional impact).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "GET /api/intelligence-cards", "issue": "Field name is `urgency` (not `severity` as spec wording implied). Frontend reads the same key — works end-to-end. Spec/code naming inconsistency only."},
+      {"endpoint": "POST /api/conversations/{id}/messages", "issue": "When a conversation was created with pinned_agent, ALL followup messages stay pinned to that agent (routes/conversations.py line 319: `body.pinned_agent or convo.get('pinned_agent')`). Spec example expected followup 'Who are my highest-intent unconverted users?' on a dev-pinned convo to re-route to meera. Currently it stays on dev. Workaround tested with fresh unpinned convo: orchestrator correctly picks meera."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Agents page greeting", "issue": "Spec asks for data-testid='agent-home-greeting' but implementation uses 'agents-greeting'. Greeting text 'Hello, Himanshu' renders fine; only the testid name diverges.", "selector": "[data-testid='agents-greeting']", "priority": "LOW"}
+    ],
+    "integration_issues": [
+      {"flow": "Aryan intel-card 'Build this' → artefact preview", "issue": "Spec assumed flow-brief-preview would render, but the LLM orchestrator classified the Aryan payday-window prompt as `creative_preview` (legitimate artefact_type). Build Mode panel opens and Creative variants render correctly. No bug — spec text was overly specific about artefact type for an LLM-decided value.", "affected_selectors": ["[data-testid='flow-brief-preview']", "[data-testid^='flow-node-']"]}
+    ],
+    "design_issues": [
+      {"screen": "Agent Detail Modal", "issues": ["React a11y warning: `DialogContent requires a DialogTitle` — purely a11y/console warning, no runtime impact. Add VisuallyHidden DialogTitle in shadcn Dialog wrapper used by AgentDetailModal and/or BuildMode."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_phase1_api.py",
+    "/app/backend/tests/test_phase0_api.py",
+    "/app/test_reports/pytest/phase1_results.xml"
+  ],
+  "action_items": [
+    "Decide intended naming: rename intelligence card field `urgency` → `severity` everywhere OR update spec; current behavior is consistent FE↔BE.",
+    "Allow followup messages to re-route via orchestrator when prompt clearly belongs to a different domain (today they stick to original pinned_agent). E.g., add `re_route_on_intent_mismatch` toggle or detect strong domain switch in orchestrator.",
+    "Add data-testid='agent-home-greeting' alias on the greeting block (or update spec to use existing 'agents-greeting').",
+    "Wrap shadcn DialogContent usages with a (VisuallyHidden) DialogTitle to silence the Radix a11y warning."
+  ],
+  "critical_code_review_comments": [
+    "routes/conversations.py: pinned_agent is sticky across all followups — see Action Items #2. Either intentional and worth documenting in API spec, or a bug.",
+    "routes/conversations.py is doing a lot (orchestrate + chat + persist + optional artefact). Consider splitting into a service layer once Phase 2 lands so the route stays thin.",
+    "All LLM calls are sequential (orchestrator → chat → optional artefact). For Phase 2 consider parallelising orchestrator+chat when artefact_type isn't needed, or stream the agent reply over SSE — current p95 latency is ~25–35s on POST /api/conversations.",
+    "Seed is idempotent only on the agents/store_stats/etc collections by count — once tasks are approved/rejected they aren't restored on next boot; for repeatable demos add a `--reset-tasks` admin endpoint."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_phase1_api.py (new — 17 tests, JUnit XML)"
+  ],
+  "success_rate": {
+    "backend": "100% (17/17 pytest)",
+    "frontend": "~95% — all critical flows PASS; only naming/spec mismatches and one a11y warning"
+  },
+  "test_credentials": "Not applicable — Phase 1 is auth-free by design. /api/me returns hardcoded Himanshu.",
+  "seed_data_creation": "Backend tests approved task-awaiting-1 and rejected task-awaiting-2; UI test approved task-awaiting-3. After this run: awaiting=0, completed=5, ongoing=3, scheduled=2, total=10. Seed is idempotent on cold start by count, so tasks won't auto-restore — drop the `tasks` collection and restart backend to reset.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Phase 1 acceptance: 17/17 backend pytest PASS at /app/backend/tests/test_phase1_api.py. Frontend testids verified: store-stats-row, meet-the-team, team-card-{aryan|zara|meera|rishi|dev|priya}, agent-modal-{id}, agent-modal-prompt-{id}-N, agent-modal-send-{id}, intelligence-cards, intel-card-{id} + intel-card-primary-{id} + intel-card-secondary-{id} + intel-card-refresh-{id}, ask-ai-bar, ask-ai-input, ask-ai-send, ask-ai-model-trigger, ask-ai-model-option-{provider}-{model-slug-dashed}, scheduled-reports, report-card-*, task-board, task-tab-{awaiting|ongoing|scheduled|completed}, task-review-task-awaiting-N, task-approval-approve-task-awaiting-N, conversation-panel, conversation-panel-close, message-user-*, message-agent-*, message-artefact-cta-*, build-mode-panel, flow-brief-preview / segment-preview / creative-preview, flow-node-* (only flow_brief), ai-widget-pill. Greeting uses 'agents-greeting' not 'agent-home-greeting'. The LLM-decided artefact_type may not always match spec expectations — Aryan payday → creative_preview, Dev cart-abandonment → flow_brief (verified). For repeatable runs, drop 'tasks' collection between iterations.",
+  "rca of the issue": "Followup routing sticking: in routes/conversations.py POST /messages handler, `pinned_agent=body.pinned_agent or convo.get('pinned_agent')` always forwards the original pin to orchestrator.route which then force-sets primary_agent. Repro: create convo with pinned_agent='dev', send 'Who are my highest-intent unconverted users?' as a followup → primary_agent=dev. Mitigation: either (a) ignore convo.pinned_agent on followups, or (b) detect explicit domain switch via orchestrator and override the sticky pin."
+}
