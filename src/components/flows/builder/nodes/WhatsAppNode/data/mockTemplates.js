@@ -163,9 +163,10 @@ export const defaultWANodeData = {
   smartRetry: { enabled: false, mode: "smart", smartWindow: "72", manualSlots: [] },
   fallback: { enabled: false, template: null },
   outputConfig: {
-    deliveryOutputs: ["next_step"],   // array of selected DELIVERY_OUTPUT_OPTIONS ids
+    routingMode: "next_step",         // "next_step" | "branches"
+    deliveryOutputs: [],              // branch status ids selected when routingMode === "branches"
     noResponseValue: 5,
     noResponseUnit: "hours",
-    wiredPorts: [],                   // which ports have been connected on canvas
+    wiredPorts: [],
   },
 };

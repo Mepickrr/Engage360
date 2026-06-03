@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { AlertTriangle, Plus, Trash2, Upload } from "lucide-react";
-import TemplatePreview from "./TemplatePreview";
 import TemplatePicker from "./TemplatePicker";
 import TemplateEditor from "./TemplateEditor";
 import {
@@ -121,38 +120,83 @@ function InlineTemplateForm({ draft, onChange }) {
           style={{ width: "100%", padding: "8px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", resize: "none", lineHeight: 1.55, color: PRIMARY, fontFamily: "inherit" }} />
       </div>
 
-      {/* Variable mapping */}
+      {/* Variable mapping — OR chain per variable */}
       {vars.length > 0 && (
         <div>
-          <Label>Variable Mapping</Label>
-          <table style={{ width: "100%", border: `1px solid ${BORDER}`, borderRadius: 8, borderCollapse: "separate", borderSpacing: 0, overflow: "hidden" }}>
-            <thead>
-              <tr style={{ background: "#F8FAFC" }}>
-                <th style={{ padding: "8px 10px", fontSize: 11, fontWeight: 700, color: "#374151", textAlign: "left", borderBottom: `1px solid ${BORDER}`, width: "35%" }}>Variable</th>
-                <th style={{ padding: "8px 10px", fontSize: 11, fontWeight: 700, color: "#374151", textAlign: "left", borderBottom: `1px solid ${BORDER}` }}>Maps to</th>
-              </tr>
-            </thead>
-            <tbody>
-              {vars.map((v, i) => (
-                <tr key={v} style={{ borderBottom: i < vars.length - 1 ? `1px solid ${BORDER}` : "none" }}>
-                  <td style={{ padding: "7px 10px", borderRight: `1px solid ${BORDER}` }}>
-                    <span style={{ fontFamily: "monospace", fontSize: 11, color: "#374151" }}>{`{{${v}}}`}</span>
-                  </td>
-                  <td style={{ padding: 0 }}>
-                    <select value={(draft.variableMap || {})[v] || ""} onChange={(e) => patch({ variableMap: { ...(draft.variableMap || {}), [v]: e.target.value } })}
-                      style={{ width: "100%", padding: "7px 8px", fontSize: 12, border: "none", background: "transparent", outline: "none", cursor: "pointer" }}>
-                      <option value="">Select attribute…</option>
-                      {Object.entries(SYSTEM_VARIABLES).map(([group, svars]) => (
-                        <optgroup key={group} label={group}>
-                          {svars.map((sv) => <option key={sv.key} value={sv.key}>{sv.label} · {sv.example}</option>)}
-                        </optgroup>
-                      ))}
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+            <Label>Variable Mapping</Label>
+            <span style={{ fontSize: 10, color: MUTED }}>First non-empty value is used</span>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {vars.map((v) => {
+              // Normalise to array — backward-compat with old string format
+              const rawVal = (draft.variableMap || {})[v];
+              const chain = Array.isArray(rawVal) ? rawVal : rawVal ? [rawVal] : [""];
+
+              const updateChain = (newChain) =>
+                patch({ variableMap: { ...(draft.variableMap || {}), [v]: newChain } });
+
+              return (
+                <div key={v} style={{ border: `1px solid ${BORDER}`, borderRadius: 8, overflow: "hidden" }}>
+                  {/* Variable token header */}
+                  <div style={{ padding: "6px 10px", background: "#F8FAFC", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontFamily: "monospace", fontSize: 11, fontWeight: 700, color: PRIMARY }}>{`{{${v}}}`}</span>
+                    <span style={{ fontSize: 10, color: MUTED }}>OR chain</span>
+                  </div>
+
+                  {/* OR entries */}
+                  {chain.map((entry, idx) => (
+                    <div key={idx}>
+                      {/* OR divider (between items) */}
+                      {idx > 0 && (
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "0 10px" }}>
+                          <div style={{ flex: 1, height: 1, background: BORDER }} />
+                          <span style={{ fontSize: 9, fontWeight: 700, color: "#94A3B8", padding: "1px 6px", borderRadius: 10, background: "#F1F5F9", letterSpacing: 1 }}>OR</span>
+                          <div style={{ flex: 1, height: 1, background: BORDER }} />
+                        </div>
+                      )}
+                      {/* Select row */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
+                        <select
+                          value={entry || ""}
+                          onChange={(e) => { const c = [...chain]; c[idx] = e.target.value; updateChain(c); }}
+                          style={{ flex: 1, padding: "7px 8px", fontSize: 12, border: "none", background: "transparent", outline: "none", cursor: "pointer", minWidth: 0 }}
+                        >
+                          <option value="">Select attribute…</option>
+                          {Object.entries(SYSTEM_VARIABLES).map(([group, svars]) => (
+                            <optgroup key={group} label={group}>
+                              {svars.map((sv) => <option key={sv.key} value={sv.key}>{sv.label} · {sv.example}</option>)}
+                            </optgroup>
+                          ))}
+                        </select>
+                        {/* Remove this OR entry — only shown when chain has more than 1 item */}
+                        {chain.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => updateChain(chain.filter((_, j) => j !== idx))}
+                            style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer", color: MUTED, padding: "4px 8px", fontSize: 13, lineHeight: 1 }}
+                            onMouseEnter={(e) => e.currentTarget.style.color = "#EF4444"}
+                            onMouseLeave={(e) => e.currentTarget.style.color = MUTED}
+                          >×</button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Add fallback */}
+                  <div style={{ borderTop: `1px solid ${BORDER}` }}>
+                    <button
+                      type="button"
+                      onClick={() => updateChain([...chain, ""])}
+                      style={{ width: "100%", padding: "6px 10px", background: "transparent", border: "none", cursor: "pointer", fontSize: 11, color: PRIMARY, fontWeight: 600, textAlign: "left" }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "#F5F3FF"}
+                      onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                    >+ Add fallback</button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
@@ -310,10 +354,10 @@ function TemplateTab({ data, patch }) {
               </button>
             </div>
           ) : (
-            /* Template selected — show structured block (Path 2 editable view) */
+            /* Template selected — edit form, canvas node is the live preview */
             <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
-              <TemplatePreview template={template} variableMap={data.variableMap || {}} />
-              <div style={{ padding: "8px 12px", borderTop: `1px solid ${BORDER}`, background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              {/* Action bar */}
+              <div style={{ padding: "8px 12px", background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{template.name}</span>
                 <div style={{ display: "flex", gap: 10, flexShrink: 0 }}>
                   <button onClick={() => { setEditingFallback(false); setShowEditor(true); }} style={{ fontSize: 11, color: "#64748B", background: "none", border: "none", cursor: "pointer" }}>Edit</button>
@@ -322,7 +366,7 @@ function TemplateTab({ data, patch }) {
                 </div>
               </div>
 
-              {/* Inline editable fields for selected template */}
+              {/* Inline editable fields */}
               <div style={{ padding: "12px", borderTop: `1px solid ${BORDER}` }}>
                 <InlineTemplateForm
                   draft={{
@@ -341,7 +385,7 @@ function TemplateTab({ data, patch }) {
           )}
         </div>
 
-        {/* Template Type */}
+        {/* Template Type — hidden for now
         {template && (
           <div>
             <Label>Template Type</Label>
@@ -357,6 +401,7 @@ function TemplateTab({ data, patch }) {
             )}
           </div>
         )}
+        */}
 
         {/* Fallback template */}
         {template && (
@@ -374,10 +419,9 @@ function TemplateTab({ data, patch }) {
                 </button>
               ) : (
                 <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
-                  <TemplatePreview template={fallback.template} variableMap={{}} />
-                  <div style={{ padding: "8px 12px", borderTop: `1px solid ${BORDER}`, background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A" }}>{fallback.template.name}</span>
-                    <div style={{ display: "flex", gap: 10 }}>
+                  <div style={{ padding: "8px 12px", background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{fallback.template.name}</span>
+                    <div style={{ display: "flex", gap: 10, flexShrink: 0 }}>
                       <button onClick={() => { setEditingFallback(true); setShowEditor(true); }} style={{ fontSize: 11, color: "#64748B", background: "none", border: "none", cursor: "pointer" }}>Edit</button>
                       <button onClick={() => setShowFallbackPicker(true)} style={{ fontSize: 11, color: PRIMARY, fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}>Change</button>
                       <button onClick={() => patch({ fallback: { ...fallback, template: null } })} style={{ fontSize: 11, color: "#EF4444", background: "none", border: "none", cursor: "pointer" }}>Remove</button>
@@ -466,62 +510,111 @@ function DeliveryTab({ data, patch }) {
 }
 
 // ── Output Tab ──────────────────────────────────────────────────
-function OutputTab({ data, patch }) {
-  const template         = data?.template;
-  const outputCfg        = data?.outputConfig ?? { deliveryOutputs: ["next_step"], noResponseValue: 5, noResponseUnit: "hours", wiredPorts: [] };
-  const selectedIds      = outputCfg.deliveryOutputs ?? ["next_step"];
-  const connectableBtns  = (template?.buttons ?? []).filter(isConnectable);
+const BRANCH_OPTIONS = DELIVERY_OUTPUT_OPTIONS.filter((o) => o.id !== "next_step");
 
-  const toggleOutput = (id) => {
-    const next = selectedIds.includes(id) ? selectedIds.filter((x) => x !== id) : [...selectedIds, id];
-    patch({ outputConfig: { ...outputCfg, deliveryOutputs: next.length ? next : ["next_step"] } });
+function OutputTab({ data, patch }) {
+  const template        = data?.template;
+  const outputCfg       = data?.outputConfig ?? { routingMode: "next_step", deliveryOutputs: [], noResponseValue: 5, noResponseUnit: "hours", wiredPorts: [] };
+  const routingMode     = outputCfg.routingMode ?? "next_step";
+  const selectedBranches = outputCfg.deliveryOutputs ?? [];
+  const connectableBtns = (template?.buttons ?? []).filter(isConnectable);
+
+  const setMode = (mode) => {
+    patch({ outputConfig: { ...outputCfg, routingMode: mode, deliveryOutputs: mode === "next_step" ? [] : (selectedBranches.length ? selectedBranches : ["delivered"]) } });
   };
 
-  const totalPorts = selectedIds.length + connectableBtns.length;
+  const toggleBranch = (id) => {
+    const next = selectedBranches.includes(id) ? selectedBranches.filter((x) => x !== id) : [...selectedBranches, id];
+    patch({ outputConfig: { ...outputCfg, deliveryOutputs: next } });
+  };
+
+  const deliveryPortCount = routingMode === "next_step" ? 1 : Math.max(selectedBranches.length, 1);
+  const totalPorts = deliveryPortCount + connectableBtns.length;
+
+  const radioStyle = (active) => ({
+    display: "flex", alignItems: "flex-start", gap: 10, padding: "12px 14px",
+    border: `1.5px solid ${active ? WA_GREEN : BORDER}`,
+    borderRadius: 10, cursor: "pointer", background: active ? "#F0FDF4" : "#fff",
+    transition: "all 0.15s",
+  });
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <p style={{ fontSize: 11, color: MUTED, lineHeight: 1.6, margin: 0 }}>
-        Select which output ports appear on the canvas node. Each selected option creates a connection point you can wire to the next step.
+        Choose how this node routes users after the message is sent. Each mode creates different output ports on the canvas.
       </p>
 
-      {/* Delivery Outputs */}
+      {/* Mode toggle — MECE */}
       <div>
-        <Label>Delivery Outputs</Label>
-        <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
-          {DELIVERY_OUTPUT_OPTIONS.map((opt, i) => {
-            const selected = selectedIds.includes(opt.id);
-            return (
-              <div key={opt.id} style={{
-                display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
-                borderBottom: i < DELIVERY_OUTPUT_OPTIONS.length - 1 ? `1px solid ${BORDER}` : "none",
-                background: selected ? "#F0FDF4" : "#fff", cursor: "pointer", transition: "background 0.15s",
-              }} onClick={() => toggleOutput(opt.id)}>
-                <input type="checkbox" readOnly checked={selected} style={{ accentColor: WA_GREEN, width: 14, height: 14, cursor: "pointer" }} />
-                <span style={{ fontSize: 13, color: "#0F172A", flex: 1 }}>{opt.label}</span>
-                {/* Time config for "No response" */}
-                {opt.hasTimeConfig && selected && (
-                  <div style={{ display: "flex", gap: 6, alignItems: "center" }} onClick={(e) => e.stopPropagation()}>
-                    <input type="number" min={1} value={outputCfg.noResponseValue ?? 5}
-                      onChange={(e) => patch({ outputConfig: { ...outputCfg, noResponseValue: parseInt(e.target.value) || 1 } })}
-                      style={{ width: 44, padding: "3px 6px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, outline: "none" }} />
-                    <select value={outputCfg.noResponseUnit ?? "hours"}
-                      onChange={(e) => patch({ outputConfig: { ...outputCfg, noResponseUnit: e.target.value } })}
-                      style={{ padding: "3px 6px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, background: "#fff", outline: "none", cursor: "pointer" }}>
-                      <option value="hours">Hours</option>
-                      <option value="days">Days</option>
-                      <option value="minutes">Minutes</option>
-                    </select>
-                  </div>
-                )}
-                {opt.id === "next_step" && (
-                  <span style={{ fontSize: 9, background: "#EEF2FF", color: "#4338CA", padding: "1px 6px", borderRadius: 8, fontWeight: 600 }}>DEFAULT</span>
-                )}
+        <Label>Routing Mode</Label>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+
+          {/* Option A — Next Step */}
+          <div style={radioStyle(routingMode === "next_step")} onClick={() => setMode("next_step")}>
+            <div style={{ marginTop: 2, width: 15, height: 15, borderRadius: "50%", border: `2px solid ${routingMode === "next_step" ? WA_GREEN : BORDER}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              {routingMode === "next_step" && <div style={{ width: 7, height: 7, borderRadius: "50%", background: WA_GREEN }} />}
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>Next Step</div>
+              <div style={{ fontSize: 11, color: MUTED, marginTop: 2, lineHeight: 1.5 }}>
+                Single output port — all users continue to the same next node regardless of delivery status.
               </div>
-            );
-          })}
+            </div>
+          </div>
+
+          {/* Option B — Delivery Branches */}
+          <div style={radioStyle(routingMode === "branches")} onClick={() => setMode("branches")}>
+            <div style={{ marginTop: 2, width: 15, height: 15, borderRadius: "50%", border: `2px solid ${routingMode === "branches" ? WA_GREEN : BORDER}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              {routingMode === "branches" && <div style={{ width: 7, height: 7, borderRadius: "50%", background: WA_GREEN }} />}
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>Delivery Branches</div>
+              <div style={{ fontSize: 11, color: MUTED, marginTop: 2, lineHeight: 1.5 }}>
+                Separate output port per delivery status — route users differently based on whether the message was sent, read, failed, etc.
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Branch checkboxes — only when mode is "branches" */}
+      {routingMode === "branches" && (
+        <div>
+          <Label>Select Branch Statuses</Label>
+          <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
+            {BRANCH_OPTIONS.map((opt, i) => {
+              const selected = selectedBranches.includes(opt.id);
+              return (
+                <div key={opt.id} style={{
+                  display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
+                  borderBottom: i < BRANCH_OPTIONS.length - 1 ? `1px solid ${BORDER}` : "none",
+                  background: selected ? "#F0FDF4" : "#fff", cursor: "pointer", transition: "background 0.15s",
+                }} onClick={() => toggleBranch(opt.id)}>
+                  <input type="checkbox" readOnly checked={selected} style={{ accentColor: WA_GREEN, width: 14, height: 14, cursor: "pointer" }} />
+                  <span style={{ fontSize: 13, color: "#0F172A", flex: 1 }}>{opt.label}</span>
+                  {opt.hasTimeConfig && selected && (
+                    <div style={{ display: "flex", gap: 6, alignItems: "center" }} onClick={(e) => e.stopPropagation()}>
+                      <input type="number" min={1} value={outputCfg.noResponseValue ?? 5}
+                        onChange={(e) => patch({ outputConfig: { ...outputCfg, noResponseValue: parseInt(e.target.value) || 1 } })}
+                        style={{ width: 44, padding: "3px 6px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, outline: "none" }} />
+                      <select value={outputCfg.noResponseUnit ?? "hours"}
+                        onChange={(e) => patch({ outputConfig: { ...outputCfg, noResponseUnit: e.target.value } })}
+                        style={{ padding: "3px 6px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, background: "#fff", outline: "none", cursor: "pointer" }}>
+                        <option value="minutes">Minutes</option>
+                        <option value="hours">Hours</option>
+                        <option value="days">Days</option>
+                      </select>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          {selectedBranches.length === 0 && (
+            <p style={{ fontSize: 11, color: "#EF4444", marginTop: 6 }}>Select at least one status to create output ports.</p>
+          )}
+        </div>
+      )}
 
       {/* Response Outputs from buttons */}
       {connectableBtns.length > 0 && (
@@ -536,7 +629,9 @@ function OutputTab({ data, patch }) {
               }}>
                 <div style={{ width: 10, height: 10, borderRadius: "50%", background: WA_GREEN, flexShrink: 0 }} />
                 <span style={{ fontSize: 13, color: "#0F172A", flex: 1 }}>{btn.label}</span>
-                <span style={{ fontSize: 10, padding: "1px 7px", borderRadius: 8, fontWeight: 500, background: btn.type === "QUICK_REPLY" ? "#EFF6FF" : "#F3E8FF", color: btn.type === "QUICK_REPLY" ? "#2563EB" : "#7C3AED" }}>{btn.type === "QUICK_REPLY" ? "Quick Reply" : "URL"}</span>
+                <span style={{ fontSize: 10, padding: "1px 7px", borderRadius: 8, fontWeight: 500, background: btn.type === "QUICK_REPLY" ? "#EFF6FF" : "#F3E8FF", color: btn.type === "QUICK_REPLY" ? "#2563EB" : "#7C3AED" }}>
+                  {btn.type === "QUICK_REPLY" ? "Quick Reply" : "URL"}
+                </span>
               </div>
             ))}
           </div>
@@ -570,25 +665,45 @@ const TABS = [
 
 export default function WhatsAppRightPanel({ node, updateNodeData, removeNode }) {
   const [tab, setTab] = useState("template");
+  const [editingLabel, setEditingLabel] = useState(false);
   if (!node) return null;
 
   const data  = node.data || {};
   const patch = (p) => updateNodeData(node.id, p);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", color: "#0F172A" }}>
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, color: "#0F172A" }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderBottom: `1px solid ${BORDER}`, flexShrink: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1, minWidth: 0 }}>
           <div style={{ width: 28, height: 28, borderRadius: "50%", background: WA_GREEN, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <span style={{ color: "#fff", fontSize: 13 }}>✓</span>
           </div>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>Send WhatsApp</div>
-            <div style={{ fontSize: 10, color: MUTED }}>Configure message & delivery</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {editingLabel ? (
+              <input
+                autoFocus
+                value={data.label || ""}
+                onChange={(e) => patch({ label: e.target.value })}
+                onBlur={() => setEditingLabel(false)}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === "Escape") setEditingLabel(false); }}
+                placeholder="Send WhatsApp"
+                style={{ fontSize: 13, fontWeight: 700, color: "#0F172A", border: "none", borderBottom: `1.5px solid ${WA_GREEN}`, outline: "none", background: "transparent", width: "100%", padding: "0 0 1px" }}
+              />
+            ) : (
+              <div
+                onClick={() => setEditingLabel(true)}
+                title="Click to rename"
+                style={{ fontSize: 13, fontWeight: 700, color: "#0F172A", cursor: "text", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+              >
+                {data.label || "Send WhatsApp"}
+                <span style={{ fontSize: 9, color: MUTED, marginLeft: 5, fontWeight: 400 }}>✎</span>
+              </div>
+            )}
+            <div style={{ fontSize: 10, color: MUTED }}>Configure message &amp; delivery</div>
           </div>
         </div>
-        <button onClick={() => removeNode(node.id)} style={{ fontSize: 11, color: "#EF4444", background: "none", border: "none", cursor: "pointer", padding: "4px 8px", borderRadius: 6 }}
+        <button onClick={() => removeNode(node.id)} style={{ fontSize: 11, color: "#EF4444", background: "none", border: "none", cursor: "pointer", padding: "4px 8px", borderRadius: 6, flexShrink: 0 }}
           onMouseEnter={(e) => e.currentTarget.style.background = "#FEF2F2"} onMouseLeave={(e) => e.currentTarget.style.background = "none"}>
           Delete
         </button>

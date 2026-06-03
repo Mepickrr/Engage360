@@ -385,3 +385,14 @@ export function renderExitSummary(exit) {
     .join(" AND ");
   return { short: `Exit: ${events.length} conditions`, full: `Exit: ${full}` };
 }
+
+
+export function emptyConditionBlock(type = "property") {
+  return {
+    id: `b_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    type,
+    conditions: [],
+    segments: [],
+    combinator: "AND",
+  };
+}

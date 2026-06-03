@@ -107,7 +107,7 @@ export default function AnalyticsTab() {
 
   return (
     <div
-      className="p-4 space-y-4 overflow-y-auto h-full"
+      className="absolute inset-0 p-4 space-y-4 overflow-y-auto"
       data-testid="right-analytics-tab"
     >
       <div className="grid grid-cols-2 gap-2">

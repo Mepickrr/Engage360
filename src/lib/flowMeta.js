@@ -20,7 +20,10 @@ import {
   TimerReset,
   CircleStop,
   Target,
+  PhoneCall,
 } from "lucide-react";
+import { defaultAiCallingNodeData } from "@/components/flows/builder/nodes/AiCallingNode/data/mockData";
+import { defaultRCSNodeData } from "@/components/flows/builder/nodes/RCSNode/data/mockData";
 
 export const CHANNEL_META = {
   whatsapp: { label: "WhatsApp", color: "#10B981", Icon: MessageCircle },
@@ -69,6 +72,12 @@ export const PALETTE_CATALOGUE = [
     ],
   },
   {
+    group: "AI",
+    items: [
+      { kind: "aicalling", subtype: null, label: "AI Call", description: "AI-powered voice call", Icon: PhoneCall, color: "#4F46E5" },
+    ],
+  },
+  {
     group: "Exits",
     items: [
       { kind: "end", subtype: null, label: "End", description: "Flow finishes", Icon: CircleStop, color: "#64748B" },
@@ -79,6 +88,10 @@ export const PALETTE_CATALOGUE = [
 
 export function defaultDataForPaletteItem(item) {
   switch (item.kind) {
+    case "rcs":
+      return { ...defaultRCSNodeData };
+    case "aicalling":
+      return { ...defaultAiCallingNodeData };
     case "whatsapp":
       return {
         label: "Send WhatsApp",

@@ -15,6 +15,7 @@ import Canvas from "@/components/flows/builder/Canvas";
 import RightPanel from "@/components/flows/builder/RightPanel";
 import { toast } from "sonner";
 import StartTriggerWizard from "@/components/flows/builder/trigger/StartTriggerWizard";
+import AiCallingGlobalWizard from "@/components/flows/builder/nodes/AiCallingNode/AiCallingGlobalWizard";
 
 const AUTOSAVE_DEBOUNCE_MS = 1500;
 
@@ -25,6 +26,7 @@ export default function FlowBuilder() {
   // Show trigger-selection modal whenever the builder opens for a new flow
   const isNew = !id || id === "new";
   const [triggerModalOpen, setTriggerModalOpen] = useState(isNew);
+  const [aiCallingWizardOpen, setAiCallingWizardOpen] = useState(false);
   // Ref so onClose can check without stale closure issues
   const triggerConfigured = useRef(false);
   const queryClient = useQueryClient();
@@ -40,6 +42,8 @@ export default function FlowBuilder() {
   const setAutosaveStatus = useFlowBuilderStore((s) => s.setAutosaveStatus);
   const removeNode = useFlowBuilderStore((s) => s.removeNode);
   const selectedNodeId = useFlowBuilderStore((s) => s.selectedNodeId);
+  const aiCallingGlobal = useFlowBuilderStore((s) => s.aiCallingGlobal);
+  const setAiCallingGlobal = useFlowBuilderStore((s) => s.setAiCallingGlobal);
 
   // Reset store when route changes or unmounts
   useEffect(() => {
@@ -131,6 +135,27 @@ export default function FlowBuilder() {
       });
     },
     [upsertNode],
+  );
+
+  // Derive existing trigger config from the canvas node (for edit pre-population)
+  const existingTriggerConfig = nodes?.find((n) => n.id === "start-trigger-node")?.data?.config ?? null;
+
+  // Open AI Calling global wizard whenever an aicalling node is selected and not yet configured
+  useEffect(() => {
+    if (!selectedNodeId) return;
+    const node = useFlowBuilderStore.getState().nodes.find((n) => n.id === selectedNodeId);
+    if (node?.type === "aicalling" && !useFlowBuilderStore.getState().aiCallingGlobal?.configured) {
+      setAiCallingWizardOpen(true);
+    }
+  }, [selectedNodeId]);
+
+  const handleAiCallingGlobalComplete = useCallback(
+    (globalConfig) => {
+      setAiCallingGlobal(globalConfig);
+      setAiCallingWizardOpen(false);
+      toast.success("AI Calling configured");
+    },
+    [setAiCallingGlobal],
   );
 
   // Fires when the wizard completes (any path: step1-skip, step2-finish, broadcast)
@@ -254,11 +279,19 @@ export default function FlowBuilder() {
 
       <StartTriggerWizard
         open={triggerModalOpen}
+        initialConfig={existingTriggerConfig}
         onClose={() => {
           setTriggerModalOpen(false);
           if (!triggerConfigured.current && isNew) navigate(-1);
         }}
         onComplete={handleTriggerComplete}
+      />
+
+      <AiCallingGlobalWizard
+        open={aiCallingWizardOpen}
+        initialGlobal={aiCallingGlobal}
+        onClose={() => setAiCallingWizardOpen(false)}
+        onComplete={handleAiCallingGlobalComplete}
       />
     </>
   );

@@ -6,16 +6,17 @@ import EventPickerModal from "./EventPickerModal";
 import Step1WhenContent, { emptyGroup } from "./Step1WhenContent";
 import Step2WhoContent from "./Step2WhoContent";
 import BroadcastConfig from "./BroadcastConfig";
-import { mockedAudienceCount } from "./triggerHelpers";
+import { mockedAudienceCount, emptyConditionBlock } from "./triggerHelpers";
 
 function emptyAudience() {
   return {
     include_all: true,
-    include: { conditions: [], combinator: "AND" },
+    include: { blocks: [emptyConditionBlock("property")], blocksCombinator: "AND" },
     exclude_enabled: false,
-    exclude: { conditions: [], combinator: "AND" },
+    exclude: { blocks: [emptyConditionBlock("behavior")], blocksCombinator: "AND" },
     limit_enabled: false,
-    limit_days: 30,
+    limit_entry: { count: 1, window: 1, unit: "days" },
+    audience_kind: "all",
     global_control: false,
     flow_control: false,
   };

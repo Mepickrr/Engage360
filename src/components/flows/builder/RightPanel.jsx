@@ -20,7 +20,7 @@ export default function RightPanel() {
   return (
     <aside
       data-testid="builder-right-panel"
-      className="w-[360px] border-l border-border bg-app-bg flex-shrink-0 flex flex-col"
+      className="w-[360px] border-l border-border bg-app-bg flex-shrink-0 flex flex-col overflow-hidden"
     >
       <Tabs value={tab} onValueChange={setTab} className="flex-1 flex flex-col">
         <TabsList className="flex border-b border-border bg-surface rounded-none p-0 h-10 flex-shrink-0">
@@ -46,13 +46,13 @@ export default function RightPanel() {
             Analytics
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="config" className="flex-1 min-h-0 m-0">
+        <TabsContent value="config" className="flex-1 min-h-0 m-0 relative">
           <ConfigTab />
         </TabsContent>
-        <TabsContent value="ai" className="flex-1 min-h-0 m-0">
+        <TabsContent value="ai" className="flex-1 min-h-0 m-0 relative">
           <AiTab />
         </TabsContent>
-        <TabsContent value="analytics" className="flex-1 min-h-0 m-0">
+        <TabsContent value="analytics" className="flex-1 min-h-0 m-0 relative">
           <AnalyticsTab />
         </TabsContent>
       </Tabs>

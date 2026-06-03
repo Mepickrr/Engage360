@@ -23,65 +23,151 @@ function fmtConditionLine(c) {
 }
 
 function summariseAudienceNew(audience) {
-  if (!audience || audience.include_all) return { whoLine: null, whoExtraCount: 0, frequencyLine: null };
+  if (!audience || audience.include_all) {
+    return {
+      whoLine: null,
+      whoExtraCount: 0,
+      frequencyLine: null,
+      audienceTypePill: audience?.include_all ? "All Users" : null,
+      audienceTab: null,
+      audienceConditions: [],
+      audienceCombinator: "AND",
+    };
+  }
 
+  const kindMap = { all: "All Users", known: "Known Users", identified: "Engage Identified", custom: "Custom" };
+  const audienceTypePill = kindMap[audience.audience_kind] || (audience.include_all ? "All Users" : null);
+
+  const frequencyLine = audience.limit_enabled
+    ? `Max ${audience.limit_entry?.count ?? 1}× / ${audience.limit_entry?.window ?? 1} ${audience.limit_entry?.unit || "days"}`
+    : null;
+
+  // ── New blocks format ─────────────────────────────────────────
+  const blocks = audience.include?.blocks;
+  if (blocks?.length) {
+    const blocksCombinator = audience.include.blocksCombinator || "AND";
+    const allLines = [];
+    for (const block of blocks) {
+      if (block.type === "segment") {
+        const segs = (block.segments || []).filter(Boolean);
+        segs.slice(0, 2).forEach((s) => allLines.push(`In segment "${trunc(s, 16)}"`));
+      } else if (block.type === "affinity") {
+        (block.conditions || []).filter((c) => c.event).slice(0, 2).forEach((c) => allLines.push(`Affinity: ${c.event}`));
+      } else if (block.type === "behavior") {
+        (block.conditions || []).filter((c) => c.event).slice(0, 2).forEach((c) => {
+          const q = c.qualifier === "has_not_executed" ? "Has not done" : "Has done";
+          allLines.push(`${q} ${c.event}`);
+        });
+      } else {
+        (block.conditions || []).filter((c) => c.property).slice(0, 2).forEach((c) => {
+          const line = fmtConditionLine(c);
+          if (line) allLines.push(line);
+        });
+      }
+    }
+    const shown = allLines.slice(0, 4);
+    return {
+      whoLine: shown[0] || null,
+      whoExtraCount: Math.max(0, allLines.length - 1),
+      frequencyLine,
+      audienceTypePill,
+      audienceTab: blocks[0]?.type || null,
+      audienceConditions: shown,
+      audienceCombinator: blocksCombinator,
+    };
+  }
+
+  // ── Legacy tabs format ────────────────────────────────────────
   const tabs = audience.include?.tabs || {};
 
   // User property conditions
   const propConds = (tabs.property?.conditions || []).filter((c) => c.property);
   if (propConds.length) {
-    const first = propConds[0];
+    const lines = propConds.slice(0, 4).map((c) => fmtConditionLine(c) || c.property).filter(Boolean);
     return {
-      whoLine: fmtConditionLine(first) || `${first.property}`,
+      whoLine: lines[0] || null,
       whoExtraCount: propConds.length - 1,
-      frequencyLine: audience.limit_enabled
-        ? `Max ${audience.limit_entry?.count ?? 1}× / ${audience.limit_entry?.window ?? 1} ${audience.limit_entry?.unit || "days"}`
-        : null,
+      frequencyLine,
+      audienceTypePill,
+      audienceTab: "property",
+      audienceConditions: lines,
+      audienceCombinator: tabs.property?.combinator || "AND",
     };
   }
 
   // User behavior conditions
   const behConds = (tabs.behavior?.conditions || []).filter((c) => c.event);
   if (behConds.length) {
-    const c = behConds[0];
-    const q = c.qualifier === "has_not_executed" ? "Has not done" : "Has done";
+    const lines = behConds.slice(0, 4).map((c) => {
+      const q = c.qualifier === "has_not_executed" ? "Has not done" : "Has done";
+      return `${q} ${c.event}`;
+    });
     return {
-      whoLine: `${q} ${c.event}`,
+      whoLine: lines[0] || null,
       whoExtraCount: behConds.length - 1,
-      frequencyLine: null,
+      frequencyLine,
+      audienceTypePill,
+      audienceTab: "behavior",
+      audienceConditions: lines,
+      audienceCombinator: tabs.behavior?.combinator || "AND",
     };
   }
 
   // Affinity conditions
   const affConds = (tabs.affinity?.conditions || []).filter((c) => c.event);
   if (affConds.length) {
-    const c = affConds[0];
+    const lines = affConds.slice(0, 4).map((c) => `Affinity: ${c.event}`);
     return {
-      whoLine: `Affinity: ${c.event}`,
+      whoLine: lines[0] || null,
       whoExtraCount: affConds.length - 1,
-      frequencyLine: null,
+      frequencyLine,
+      audienceTypePill,
+      audienceTab: "affinity",
+      audienceConditions: lines,
+      audienceCombinator: tabs.affinity?.combinator || "AND",
     };
   }
 
   // Segment
   const segs = (tabs.segment?.segments || []).filter(Boolean);
   if (segs.length) {
-    return { whoLine: `In segment "${trunc(segs[0], 16)}"`, whoExtraCount: segs.length - 1, frequencyLine: null };
+    const lines = segs.slice(0, 4).map((s) => `In segment "${trunc(s, 16)}"`);
+    return {
+      whoLine: lines[0] || null,
+      whoExtraCount: segs.length - 1,
+      frequencyLine,
+      audienceTypePill,
+      audienceTab: "segment",
+      audienceConditions: lines,
+      audienceCombinator: "OR",
+    };
   }
 
-  return { whoLine: null, whoExtraCount: 0, frequencyLine: null };
+  return {
+    whoLine: null,
+    whoExtraCount: 0,
+    frequencyLine,
+    audienceTypePill,
+    audienceTab: null,
+    audienceConditions: [],
+    audienceCombinator: "AND",
+  };
 }
 
 function summariseExitNew(exitTrigger) {
-  if (!exitTrigger?.open) return { exitLine: null, exitExtraCount: 0, noExit: true };
+  if (!exitTrigger?.open) return { exitLine: null, exitExtraCount: 0, noExit: true, exitEvents: [], exitCombinator: "OR" };
   const events = (exitTrigger.events || []).filter((e) => e.event);
-  if (!events.length) return { exitLine: null, exitExtraCount: 0, noExit: true };
-  const first = events[0];
-  const q = first.qualifier === "has_not_done" ? "Has not done" : "Has done";
+  if (!events.length) return { exitLine: null, exitExtraCount: 0, noExit: true, exitEvents: [], exitCombinator: "OR" };
+  const lines = events.slice(0, 4).map((e) => {
+    const q = e.qualifier === "has_not_done" ? "Has not done" : "Has done";
+    return `${q} ${e.event}`;
+  });
   return {
-    exitLine: `${q} ${first.event}`,
+    exitLine: lines[0] || null,
     exitExtraCount: events.length - 1,
     noExit: false,
+    exitEvents: lines,
+    exitCombinator: exitTrigger.combinator || "OR",
   };
 }
 
@@ -108,19 +194,22 @@ function summariseNewFormat(config) {
   const triggerGroups = shownGroups.map((group) => {
     const eventName = group.event || "Event";
     const conditions = (group.conditions || []).filter((c) => c.property);
-    const firstFilter = conditions.length ? fmtConditionLine(conditions[0]) : null;
-    const extraFilterCount = Math.max(0, conditions.length - 1);
+    const allFilters = conditions.map((c) => fmtConditionLine(c)).filter(Boolean);
+    const firstFilter = allFilters[0] || null;
+    const extraFilterCount = Math.max(0, allFilters.length - 1);
     return {
       events: [eventName],
       eventExtra: 0,
       firstFilter,
       extraFilterCount,
+      allFilters,
+      filterCombinator: group.combinator || "AND",
       hasEvaluate: (group.evaluate || []).length > 0,
     };
   });
 
-  const { whoLine, whoExtraCount, frequencyLine } = summariseAudienceNew(config.audience);
-  const { exitLine, exitExtraCount, noExit } = summariseExitNew(config.exitTrigger);
+  const { whoLine, whoExtraCount, frequencyLine, audienceTypePill, audienceTab, audienceConditions, audienceCombinator } = summariseAudienceNew(config.audience);
+  const { exitLine, exitExtraCount, noExit, exitEvents, exitCombinator } = summariseExitNew(config.exitTrigger);
   const { scheduleLine, audienceLine } = isBroadcast ? summariseBroadcastNew(config.broadcast) : {};
 
   return {
@@ -137,6 +226,12 @@ function summariseNewFormat(config) {
     exitLine,
     exitExtraCount,
     noExitCondition: noExit,
+    audienceTypePill: audienceTypePill || null,
+    audienceTab: audienceTab || null,
+    audienceConditions: audienceConditions || [],
+    audienceCombinator: audienceCombinator || "AND",
+    exitEvents: exitEvents || [],
+    exitCombinator: exitCombinator || "OR",
   };
 }
 
@@ -190,21 +285,36 @@ function summariseOldFormat(config) {
       eventExtra = events.length - 1;
     }
     const filters = (group.filters || []).filter((f) => f.property || f.propertyLabel);
+    const allFilters = filters.map((f) => formatFilter(f)).filter(Boolean);
     return {
       events: eventDisplay,
       eventExtra,
-      firstFilter: filters.length ? formatFilter(filters[0]) : null,
-      extraFilterCount: Math.max(0, filters.length - 1),
+      firstFilter: allFilters[0] || null,
+      extraFilterCount: Math.max(0, allFilters.length - 1),
+      allFilters,
+      filterCombinator: group.combinator || "AND",
       hasEvaluate: !!group.evaluate?.computation,
     };
   });
 
-  let whoLine = null, whoExtraCount = 0;
+  let whoLine = null, whoExtraCount = 0, audienceTypePill = null, audienceTab = null, audienceConditions = [];
   if (config.audience) {
-    if (config.audience.mode === "all_users") { whoLine = "All users"; }
-    else {
+    if (config.audience.mode === "all_users") {
+      whoLine = "All users";
+      audienceTypePill = "All Users";
+    } else {
       const allConds = (config.audience.filterGroups || []).flatMap((g) => g.conditions || []);
-      if (allConds.length) { whoLine = formatCondition(allConds[0]); whoExtraCount = allConds.length - 1; }
+      if (allConds.length) {
+        whoLine = formatCondition(allConds[0]);
+        whoExtraCount = allConds.length - 1;
+        audienceConditions = allConds.slice(0, 3).map(formatCondition).filter(Boolean);
+        // Detect tab from condition types
+        const firstType = allConds[0]?.type;
+        if (firstType === "user_property") audienceTab = "property";
+        else if (firstType === "user_behavior") audienceTab = "behavior";
+        else if (firstType === "user_affinity") audienceTab = "affinity";
+        else if (firstType === "custom_segment") audienceTab = "segment";
+      }
     }
   }
 
@@ -240,6 +350,10 @@ function summariseOldFormat(config) {
     if (c.event) return c.event.replace(/_/g, " ");
     return formatCondition(c);
   })() : null;
+  const exitEvents = exitConds.slice(0, 4).map((c) => {
+    if (c.event) return c.event.replace(/_/g, " ");
+    return formatCondition(c);
+  }).filter(Boolean);
 
   return {
     headerLabel: isBroadcast ? "Broadcast" : "Start Trigger",
@@ -255,6 +369,12 @@ function summariseOldFormat(config) {
     exitLine,
     exitExtraCount: Math.max(0, exitConds.length - 1),
     noExitCondition: !exitLine,
+    audienceTypePill,
+    audienceTab,
+    audienceConditions,
+    audienceCombinator: "AND",
+    exitEvents,
+    exitCombinator: "OR",
   };
 }
 

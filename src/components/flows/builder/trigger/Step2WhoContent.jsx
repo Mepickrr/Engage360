@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Plus, Loader2, Trash2 } from "lucide-react";
+import { Plus, Loader2, Trash2, ChevronDown, Bookmark } from "lucide-react";
 import UserPropertyConditions from "./audience/UserPropertyConditions";
 import UserBehaviorConditions from "./audience/UserBehaviorConditions";
 import UserAffinityConditions from "./audience/UserAffinityConditions";
-import EventActionRow, {
-  emptyEventAction,
-} from "./audience/EventActionRow";
+import CombinatorPill from "./audience/CombinatorPill";
+import { emptyConditionBlock } from "./triggerHelpers";
+import { toast } from "sonner";
 
-const TABS = [
+const BLOCK_TYPES = [
   { id: "property", label: "User property" },
   { id: "behavior", label: "User behavior" },
   { id: "affinity", label: "User affinity" },
@@ -22,9 +22,9 @@ const MOCK_SEGMENTS = [
   "Newsletter subscribers",
 ];
 
-const AUDIENCE_TYPES = [
+const AUDIENCE_KINDS = [
   { id: "all", label: "All Users" },
-  { id: "engage_identified", label: "Engage Identified User" },
+  { id: "identified", label: "Engage Identified" },
   { id: "known", label: "Known User" },
 ];
 
@@ -65,59 +65,52 @@ export default function Step2WhoContent({
 
       {!audience.include_all && (
         <>
-          {/* Audience Type pills */}
-          <AudienceTypeBlock
-            value={audience.audience_type || "all"}
-            onChange={(v) => setAudience({ ...audience, audience_type: v })}
+          {/* Audience kind pills */}
+          <AudienceKindBlock
+            value={audience.audience_kind || "all"}
+            onChange={(v) => setAudience({ ...audience, audience_kind: v })}
           />
           <div className="h-px bg-border" />
 
-          <FilterTabsBlock
-            block={audience.include || {}}
+          {/* Include blocks */}
+          <ConditionBlockList
+            blockSet={audience.include || { blocks: [emptyConditionBlock("property")], blocksCombinator: "AND" }}
             onChange={(b) => setAudience({ ...audience, include: b })}
             testIdPrefix="audience-include"
           />
         </>
       )}
 
-      {/* Exclude Users — event-based list (Has Done / Has Not Done + event) */}
+      {/* Exclude Users */}
       <div className="border-t border-border pt-4">
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
             checked={!!audience.exclude_enabled}
-            onChange={(e) =>
-              setAudience({ ...audience, exclude_enabled: e.target.checked })
-            }
+            onChange={(e) => setAudience({ ...audience, exclude_enabled: e.target.checked })}
             data-testid="audience-exclude-toggle"
             className="accent-primary"
           />
-          <span className="text-sm font-medium text-text-primary">
-            Exclude Users
-          </span>
+          <span className="text-sm font-medium text-text-primary">Exclude Users</span>
         </label>
         {audience.exclude_enabled && (
           <div className="mt-3">
-            <ExcludeEventList
-              events={audience.exclude?.events}
-              onChange={(events) =>
-                setAudience({ ...audience, exclude: { events } })
-              }
+            <ConditionBlockList
+              blockSet={audience.exclude || { blocks: [emptyConditionBlock("behavior")], blocksCombinator: "AND" }}
+              onChange={(b) => setAudience({ ...audience, exclude: b })}
               testIdPrefix="audience-exclude"
             />
           </div>
         )}
       </div>
 
-      {/* Limit entry frequency — screenshot 7 format */}
+      {/* Limit entry frequency */}
       <div className="border-t border-border pt-4 space-y-3">
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
             checked={!!audience.limit_enabled}
-            onChange={(e) =>
-              setAudience({ ...audience, limit_enabled: e.target.checked })
-            }
+            onChange={(e) => setAudience({ ...audience, limit_enabled: e.target.checked })}
             className="accent-primary"
             data-testid="audience-limit-toggle"
           />
@@ -131,13 +124,7 @@ export default function Step2WhoContent({
               min={1}
               value={audience.limit_entry?.count ?? 1}
               onChange={(e) =>
-                setAudience({
-                  ...audience,
-                  limit_entry: {
-                    ...(audience.limit_entry || {}),
-                    count: Number(e.target.value),
-                  },
-                })
+                setAudience({ ...audience, limit_entry: { ...(audience.limit_entry || {}), count: Number(e.target.value) } })
               }
               data-testid="audience-limit-count"
               className="w-16 px-2 py-1.5 text-sm rounded-md border border-border bg-surface"
@@ -148,13 +135,7 @@ export default function Step2WhoContent({
               min={1}
               value={audience.limit_entry?.window ?? 1}
               onChange={(e) =>
-                setAudience({
-                  ...audience,
-                  limit_entry: {
-                    ...(audience.limit_entry || {}),
-                    window: Number(e.target.value),
-                  },
-                })
+                setAudience({ ...audience, limit_entry: { ...(audience.limit_entry || {}), window: Number(e.target.value) } })
               }
               data-testid="audience-limit-window"
               className="w-16 px-2 py-1.5 text-sm rounded-md border border-border bg-surface"
@@ -162,13 +143,7 @@ export default function Step2WhoContent({
             <select
               value={audience.limit_entry?.unit || "days"}
               onChange={(e) =>
-                setAudience({
-                  ...audience,
-                  limit_entry: {
-                    ...(audience.limit_entry || {}),
-                    unit: e.target.value,
-                  },
-                })
+                setAudience({ ...audience, limit_entry: { ...(audience.limit_entry || {}), unit: e.target.value } })
               }
               data-testid="audience-limit-unit"
               className="h-9 text-sm rounded-md border border-border bg-surface px-2"
@@ -183,9 +158,7 @@ export default function Step2WhoContent({
           <input
             type="checkbox"
             checked={!!audience.global_control}
-            onChange={(e) =>
-              setAudience({ ...audience, global_control: e.target.checked })
-            }
+            onChange={(e) => setAudience({ ...audience, global_control: e.target.checked })}
             className="accent-primary"
           />
           <span className="text-sm font-medium">Global control group</span>
@@ -194,9 +167,7 @@ export default function Step2WhoContent({
           <input
             type="checkbox"
             checked={!!audience.flow_control}
-            onChange={(e) =>
-              setAudience({ ...audience, flow_control: e.target.checked })
-            }
+            onChange={(e) => setAudience({ ...audience, flow_control: e.target.checked })}
             className="accent-primary"
           />
           <span className="text-sm font-medium">Flow control group</span>
@@ -216,15 +187,8 @@ export default function Step2WhoContent({
           Show count
         </button>
         {count != null && (
-          <span
-            className="text-sm text-text-primary"
-            data-testid="audience-count-value"
-          >
-            ≈{" "}
-            <span className="font-semibold">
-              {count.toLocaleString("en-IN")}
-            </span>{" "}
-            users will enter
+          <span className="text-sm text-text-primary" data-testid="audience-count-value">
+            ≈ <span className="font-semibold">{count.toLocaleString("en-IN")}</span> users will enter
           </span>
         )}
       </div>
@@ -232,15 +196,15 @@ export default function Step2WhoContent({
   );
 }
 
-// ───────── Audience Type pills ─────────
-function AudienceTypeBlock({ value, onChange }) {
+// ─── Audience Kind pills ───────────────────────────────────────
+function AudienceKindBlock({ value, onChange }) {
   return (
     <div className="space-y-2" data-testid="audience-type-block">
       <div className="text-[12px] font-medium uppercase tracking-wide text-text-muted">
         Audience Type
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        {AUDIENCE_TYPES.map((t) => {
+        {AUDIENCE_KINDS.map((t) => {
           const active = value === t.id;
           return (
             <button
@@ -263,58 +227,109 @@ function AudienceTypeBlock({ value, onChange }) {
   );
 }
 
-// ───────── Filter Tabs Block (4 tabs, include path only) ─────────
-function FilterTabsBlock({ block, onChange, testIdPrefix }) {
-  const [tab, setTab] = useState("property");
-  const tabsState = block.tabs || {};
-  const setTabBlock = (id, b) =>
-    onChange({ ...block, tabs: { ...tabsState, [id]: b } });
+// ─── Multi-block condition list ────────────────────────────────
+function ConditionBlockList({ blockSet, onChange, testIdPrefix }) {
+  const blocks = blockSet.blocks?.length
+    ? blockSet.blocks
+    : [emptyConditionBlock("property")];
+  const blocksCombinator = blockSet.blocksCombinator || "AND";
+
+  const updateBlock = (id, updates) =>
+    onChange({ ...blockSet, blocks: blocks.map((b) => (b.id === id ? { ...b, ...updates } : b)) });
+
+  const removeBlock = (id) =>
+    onChange({ ...blockSet, blocks: blocks.filter((b) => b.id !== id) });
+
+  const addBlock = (type) =>
+    onChange({ ...blockSet, blocks: [...blocks, emptyConditionBlock(type)] });
+
+  const setCombinator = (v) =>
+    onChange({ ...blockSet, blocksCombinator: v });
 
   return (
-    <div className="border border-border rounded-lg bg-surface">
-      <div className="border-b border-border px-3 pt-2 flex gap-1">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setTab(t.id)}
-            data-testid={`${testIdPrefix}-tab-${t.id}`}
-            className={`px-3 py-2 text-xs font-medium border-b-2 -mb-px transition-colors ${
-              tab === t.id
-                ? "border-primary text-primary"
-                : "border-transparent text-text-secondary hover:text-text-primary"
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
+    <div className="space-y-1">
+      {blocks.map((block, idx) => (
+        <React.Fragment key={block.id}>
+          {idx > 0 && (
+            <div className="py-1">
+              <CombinatorPill
+                value={blocksCombinator}
+                onChange={setCombinator}
+                testId={`${testIdPrefix}-blocks-combinator`}
+              />
+            </div>
+          )}
+          <ConditionBlock
+            block={block}
+            onUpdate={(updates) => updateBlock(block.id, updates)}
+            onRemove={blocks.length > 1 ? () => removeBlock(block.id) : null}
+            testIdPrefix={`${testIdPrefix}-block-${idx}`}
+          />
+        </React.Fragment>
+      ))}
+
+      {/* Add block + Save as segment */}
+      <div className="flex items-center gap-2 pt-2">
+        <AddBlockMenu onAdd={addBlock} testIdPrefix={testIdPrefix} />
+        <SaveAsSegmentButton blockSet={blockSet} />
       </div>
-      <div className="p-4">
-        {tab === "property" && (
+    </div>
+  );
+}
+
+// ─── Single condition block ────────────────────────────────────
+function ConditionBlock({ block, onUpdate, onRemove, testIdPrefix }) {
+  const typeLabel = BLOCK_TYPES.find((t) => t.id === block.type)?.label || "Condition";
+
+  const handleTypeChange = (newType) => {
+    // Reset conditions when type changes
+    onUpdate({ type: newType, conditions: [], segments: [], combinator: "AND" });
+  };
+
+  return (
+    <div className="border border-border rounded-lg bg-surface overflow-hidden">
+      {/* Block header */}
+      <div className="flex items-center justify-between px-3 py-2 bg-slate-50 border-b border-border">
+        <BlockTypePicker value={block.type} onChange={handleTypeChange} />
+        {onRemove && (
+          <button
+            type="button"
+            onClick={onRemove}
+            className="p-1 text-text-muted hover:text-rose-600 rounded hover:bg-rose-50 transition-colors"
+            aria-label="Remove block"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
+
+      {/* Block body */}
+      <div className="p-3">
+        {block.type === "property" && (
           <UserPropertyConditions
-            block={tabsState.property || { conditions: [], combinator: "AND" }}
-            onChange={(b) => setTabBlock("property", b)}
+            block={{ conditions: block.conditions || [], combinator: block.combinator || "AND" }}
+            onChange={(b) => onUpdate({ conditions: b.conditions, combinator: b.combinator })}
             testIdPrefix={`${testIdPrefix}-property`}
           />
         )}
-        {tab === "behavior" && (
+        {block.type === "behavior" && (
           <UserBehaviorConditions
-            block={tabsState.behavior || { conditions: [], combinator: "AND" }}
-            onChange={(b) => setTabBlock("behavior", b)}
+            block={{ conditions: block.conditions || [], combinator: block.combinator || "AND" }}
+            onChange={(b) => onUpdate({ conditions: b.conditions, combinator: b.combinator })}
             testIdPrefix={`${testIdPrefix}-behavior`}
           />
         )}
-        {tab === "affinity" && (
+        {block.type === "affinity" && (
           <UserAffinityConditions
-            block={tabsState.affinity || { conditions: [], combinator: "AND" }}
-            onChange={(b) => setTabBlock("affinity", b)}
+            block={{ conditions: block.conditions || [], combinator: block.combinator || "AND" }}
+            onChange={(b) => onUpdate({ conditions: b.conditions, combinator: b.combinator })}
             testIdPrefix={`${testIdPrefix}-affinity`}
           />
         )}
-        {tab === "segment" && (
+        {block.type === "segment" && (
           <SegmentList
-            block={tabsState.segment || { segments: [] }}
-            onChange={(b) => setTabBlock("segment", b)}
+            block={{ segments: block.segments || [] }}
+            onChange={(b) => onUpdate({ segments: b.segments })}
             testIdPrefix={`${testIdPrefix}-segment`}
           />
         )}
@@ -323,11 +338,149 @@ function FilterTabsBlock({ block, onChange, testIdPrefix }) {
   );
 }
 
+// ─── Block type dropdown ───────────────────────────────────────
+function BlockTypePicker({ value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const label = BLOCK_TYPES.find((t) => t.id === value)?.label || "Select type";
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((p) => !p)}
+        className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-text-primary hover:text-primary transition-colors"
+      >
+        {label}
+        <ChevronDown className="w-3.5 h-3.5" />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute top-full left-0 mt-1 z-20 bg-white border border-border rounded-lg shadow-lg py-1 min-w-[160px]">
+            {BLOCK_TYPES.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => { onChange(t.id); setOpen(false); }}
+                className={`w-full text-left px-3 py-2 text-sm hover:bg-primary-tint transition-colors ${
+                  t.id === value ? "text-primary font-medium" : "text-text-primary"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ─── Add block dropdown button ─────────────────────────────────
+function AddBlockMenu({ onAdd, testIdPrefix }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((p) => !p)}
+        data-testid={`${testIdPrefix}-add-block`}
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-hover"
+      >
+        <Plus className="w-3.5 h-3.5" />
+        Add condition block
+        <ChevronDown className="w-3 h-3" />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute bottom-full left-0 mb-1 z-20 bg-white border border-border rounded-lg shadow-lg py-1 min-w-[160px]">
+            {BLOCK_TYPES.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => { onAdd(t.id); setOpen(false); }}
+                className="w-full text-left px-3 py-2 text-sm text-text-primary hover:bg-primary-tint hover:text-primary transition-colors"
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ─── Save as segment ──────────────────────────────────────────
+function SaveAsSegmentButton({ blockSet }) {
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState("");
+
+  const hasConditions = (blockSet.blocks || []).some((b) => {
+    if (b.type === "segment") return (b.segments || []).some(Boolean);
+    return (b.conditions || []).some((c) => c.property || c.event);
+  });
+
+  if (!hasConditions) return null;
+
+  const handleSave = () => {
+    if (!name.trim()) return;
+    toast.success(`Segment "${name.trim()}" saved`);
+    MOCK_SEGMENTS.unshift(name.trim());
+    setName("");
+    setEditing(false);
+  };
+
+  if (editing) {
+    return (
+      <div className="flex items-center gap-1.5">
+        <input
+          autoFocus
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") setEditing(false); }}
+          placeholder="Segment name…"
+          className="h-7 px-2 text-xs rounded-md border border-primary/50 bg-surface focus:outline-none focus:border-primary w-40"
+        />
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={!name.trim()}
+          className="px-2 py-1 text-xs font-medium bg-primary text-white rounded-md disabled:opacity-40 hover:bg-primary-hover"
+        >
+          Save
+        </button>
+        <button
+          type="button"
+          onClick={() => setEditing(false)}
+          className="px-2 py-1 text-xs text-text-muted hover:text-text-primary"
+        >
+          Cancel
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => setEditing(true)}
+      className="inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-primary transition-colors"
+    >
+      <Bookmark className="w-3.5 h-3.5" />
+      Save as segment
+    </button>
+  );
+}
+
+// ─── Segment picker list ───────────────────────────────────────
 function SegmentList({ block, onChange, testIdPrefix }) {
   const segments = block.segments || [];
 
   React.useEffect(() => {
-    if ((block.segments || []).length === 0) {
+    if (segments.length === 0) {
       onChange({ ...block, segments: [""] });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -340,36 +493,25 @@ function SegmentList({ block, onChange, testIdPrefix }) {
           <select
             value={s}
             onChange={(e) =>
-              onChange({
-                ...block,
-                segments: segments.map((x, idx) =>
-                  idx === i ? e.target.value : x,
-                ),
-              })
+              onChange({ ...block, segments: segments.map((x, idx) => (idx === i ? e.target.value : x)) })
             }
             data-testid={`${testIdPrefix}-${i}`}
             className="h-9 text-sm flex-1 rounded-md border border-border bg-surface px-2"
           >
             <option value="">Select a segment</option>
             {MOCK_SEGMENTS.map((m) => (
-              <option key={m} value={m}>
-                {m}
-              </option>
+              <option key={m} value={m}>{m}</option>
             ))}
           </select>
-          <button
-            type="button"
-            onClick={() =>
-              onChange({
-                ...block,
-                segments: segments.filter((_, idx) => idx !== i),
-              })
-            }
-            className="p-1.5 text-text-muted hover:text-rose-600 rounded-md"
-            aria-label="Remove segment"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          {segments.length > 1 && (
+            <button
+              type="button"
+              onClick={() => onChange({ ...block, segments: segments.filter((_, idx) => idx !== i) })}
+              className="p-1.5 text-text-muted hover:text-rose-600 rounded-md"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
         </div>
       ))}
       <button
@@ -380,47 +522,6 @@ function SegmentList({ block, onChange, testIdPrefix }) {
       >
         <Plus className="w-3.5 h-3.5" />
         Add segment (OR)
-      </button>
-    </div>
-  );
-}
-
-// ───────── Exclude Users — list of EventActionRow ─────────
-function ExcludeEventList({ events, onChange, testIdPrefix }) {
-  const list = events || [];
-
-  React.useEffect(() => {
-    if ((events || []).length === 0) {
-      onChange([emptyEventAction()]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return (
-    <div className="space-y-2 border border-border rounded-lg bg-surface p-3">
-      {list.map((row, i) => (
-        <EventActionRow
-          key={i}
-          value={row}
-          onChange={(v) =>
-            onChange(list.map((x, idx) => (idx === i ? v : x)))
-          }
-          onRemove={
-            list.length > 1
-              ? () => onChange(list.filter((_, idx) => idx !== i))
-              : undefined
-          }
-          testId={`${testIdPrefix}-row-${i}`}
-        />
-      ))}
-      <button
-        type="button"
-        onClick={() => onChange([...list, emptyEventAction()])}
-        data-testid={`${testIdPrefix}-add`}
-        className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:text-primary-hover"
-      >
-        <Plus className="w-3.5 h-3.5" />
-        Add condition
       </button>
     </div>
   );

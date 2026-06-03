@@ -11,6 +11,7 @@ export const useFlowBuilderStore = create((set, get) => ({
   selectedNodeId: null,
   autosaveStatus: "idle", // "idle" | "saving" | "saved" | "error"
   preAiSnapshot: null,    // {nodes, edges} for undo
+  aiCallingGlobal: { voiceId: "varsha", tone: "professional", goal: "", configured: false },
 
   setFlowId: (id) => set({ flowId: id }),
   hydrate: (flow) =>
@@ -58,6 +59,7 @@ export const useFlowBuilderStore = create((set, get) => ({
       ),
     }),
   addEdge: (edge) => set({ edges: [...get().edges, edge] }),
+  setAiCallingGlobal: (patch) => set({ aiCallingGlobal: { ...get().aiCallingGlobal, ...patch } }),
 
   // For AI undo
   takeAiSnapshot: () =>
@@ -79,5 +81,6 @@ export const useFlowBuilderStore = create((set, get) => ({
       selectedNodeId: null,
       autosaveStatus: "idle",
       preAiSnapshot: null,
+      aiCallingGlobal: { voiceId: "varsha", tone: "professional", goal: "", configured: false },
     }),
 }));

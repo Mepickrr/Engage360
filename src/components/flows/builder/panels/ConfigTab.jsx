@@ -3,6 +3,8 @@ import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import { CHANNEL_META } from "@/lib/flowMeta";
 import DelayConfig from "./DelayConfig";
 import WhatsAppRightPanel from "@/components/flows/builder/nodes/WhatsAppNode/WhatsAppRightPanel";
+import AiCallingRightPanel from "@/components/flows/builder/nodes/AiCallingNode/AiCallingRightPanel";
+import RCSRightPanel from "@/components/flows/builder/nodes/RCSNode/RCSRightPanel";
 
 function NumberInput({ label, value, onChange, testId, suffix }) {
   return (
@@ -329,7 +331,7 @@ export default function ConfigTab() {
   // WhatsApp node gets its own full-panel UI (handles template picker, delivery, output)
   if (node?.type === "whatsapp") {
     return (
-      <div className="h-full overflow-hidden" data-testid="right-config-tab">
+      <div className="absolute inset-0 overflow-hidden flex flex-col" data-testid="right-config-tab">
         <WhatsAppRightPanel
           node={node}
           updateNodeData={updateNodeData}
@@ -339,8 +341,24 @@ export default function ConfigTab() {
     );
   }
 
+  if (node?.type === "aicalling") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col">
+        <AiCallingRightPanel />
+      </div>
+    );
+  }
+
+  if (node?.type === "rcs") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col">
+        <RCSRightPanel />
+      </div>
+    );
+  }
+
   return (
-    <div className="p-4 overflow-y-auto h-full" data-testid="right-config-tab">
+    <div className="absolute inset-0 p-4 overflow-y-auto" data-testid="right-config-tab">
       {node ? (
         <NodeConfig
           node={node}

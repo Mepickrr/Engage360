@@ -106,7 +106,7 @@ export default function AiTab() {
   };
 
   return (
-    <div className="flex flex-col h-full" data-testid="right-ai-tab">
+    <div className="absolute inset-0 flex flex-col" data-testid="right-ai-tab">
       <div className="px-4 py-3 border-b border-border bg-surface">
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 rounded-full bg-slate-500 text-white text-[10px] font-semibold flex items-center justify-center">

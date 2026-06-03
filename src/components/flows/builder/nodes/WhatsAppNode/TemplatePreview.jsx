@@ -2,6 +2,13 @@ import React from "react";
 
 const WA_GREEN = "#25D366";
 
+function resolveVar(varKey, variableMap = {}) {
+  const val = variableMap[varKey];
+  if (!val) return null;
+  if (Array.isArray(val)) return val.find((v) => v) || null;
+  return val;
+}
+
 function renderBody(text, variableMap = {}) {
   const parts = text.split(/(\*[^*\n]+\*|_[^_\n]+_|{{[^}]+}}|\n)/g);
   return parts.map((part, i) => {
@@ -10,13 +17,13 @@ function renderBody(text, variableMap = {}) {
     if (/^_[^_]+_$/.test(part))   return <em key={i}>{part.slice(1, -1)}</em>;
     if (/^{{[^}]+}}$/.test(part)) {
       const varKey = part.slice(2, -2);
-      const mapped = variableMap[varKey];
+      const resolved = resolveVar(varKey, variableMap);
       return (
         <span
           key={i}
           style={{ background: "#EEF2FF", color: "#6C3AE8", padding: "0 3px", borderRadius: 3, fontFamily: "monospace", fontSize: 11 }}
         >
-          {mapped ? `{{${mapped}}}` : part}
+          {resolved ? `{{${resolved}}}` : part}
         </span>
       );
     }
