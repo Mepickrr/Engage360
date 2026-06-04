@@ -18,6 +18,8 @@ import StartTriggerNode from "./nodes/StartTriggerNode";
 import WhatsAppNode from "./nodes/WhatsAppNode";
 import AiCallingNode from "./nodes/AiCallingNode";
 import RCSNode from "./nodes/RCSNode";
+import AiPredictNode from "./nodes/AiPredictNode";
+import StartFlowNode from "./nodes/StartFlowNode";
 
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import { defaultDataForPaletteItem } from "@/lib/flowMeta";
@@ -31,6 +33,8 @@ const nodeTypes = {
   whatsapp:        WhatsAppNode,  // dedicated WhatsApp canvas block
   aicalling:       AiCallingNode,
   rcs:             RCSNode,
+  aipredict:       AiPredictNode,
+  startflow:       StartFlowNode,
   channel:         ChannelNode,
   action:          ChannelNode,   // Shopify, Integrations, AI actions etc.
   note:            ChannelNode,   // Sticky notes

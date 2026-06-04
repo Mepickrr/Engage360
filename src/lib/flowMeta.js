@@ -24,6 +24,8 @@ import {
 } from "lucide-react";
 import { defaultAiCallingNodeData } from "@/components/flows/builder/nodes/AiCallingNode/data/mockData";
 import { defaultRCSNodeData } from "@/components/flows/builder/nodes/RCSNode/data/mockData";
+import { defaultAiPredictNodeData } from "@/components/flows/builder/nodes/AiPredictNode/data/mockData";
+import { defaultStartFlowNodeData } from "@/components/flows/builder/nodes/StartFlowNode/data/mockData";
 
 export const CHANNEL_META = {
   whatsapp: { label: "WhatsApp", color: "#10B981", Icon: MessageCircle },
@@ -75,6 +77,7 @@ export const PALETTE_CATALOGUE = [
     group: "AI",
     items: [
       { kind: "aicalling", subtype: null, label: "AI Call", description: "AI-powered voice call", Icon: PhoneCall, color: "#4F46E5" },
+      { kind: "aipredict", subtype: null, label: "AI Predict", description: "ML-powered audience scoring", Icon: Zap, color: "#6D28D9" },
     ],
   },
   {
@@ -92,6 +95,10 @@ export function defaultDataForPaletteItem(item) {
       return { ...defaultRCSNodeData };
     case "aicalling":
       return { ...defaultAiCallingNodeData };
+    case "aipredict":
+      return { ...defaultAiPredictNodeData };
+    case "startflow":
+      return { ...defaultStartFlowNodeData };
     case "whatsapp":
       return {
         label: "Send WhatsApp",
@@ -157,6 +164,10 @@ export function rendererTypeForKind(kind) {
   if (kind === "trigger") return "trigger";
   if (kind === "channel") return "channel";
   if (kind === "end" || kind === "goal") return "exit";
+  if (kind === "aicalling") return "aicalling";
+  if (kind === "rcs") return "rcs";
+  if (kind === "aipredict")  return "aipredict";
+  if (kind === "startflow")  return "startflow";
   return "logic"; // wait, condition, split, wait_until
 }
 

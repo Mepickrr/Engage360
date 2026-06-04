@@ -16,7 +16,7 @@ import {
   BellRing, Bell, PhoneCall, Bot, Sparkles, Award,
   ShoppingCart, Tag, Percent, ClipboardList, StickyNote,
   Plug, Star, CreditCard, Headphones,
-  GitBranch, GitFork, Clock, Brain, Route,
+  GitBranch, GitFork, Clock, Brain, Route, LogIn,
   Table, CirclePlus, Pencil, ArrowUpFromLine,
   UserCircle, Tags, Ticket, CalendarCheck,
   FilePlus, UserCheck, RefreshCw, FileText,
@@ -79,8 +79,9 @@ const CATEGORIES = [
     nodes: [
       { id:"condsplit",  name:"Conditional Split", Icon:GitFork, kind:"condition", subtype:null },
       { id:"delay",      name:"Delay Node",        Icon:Clock,   kind:"wait",      subtype:null },
-      { id:"aipredict",  name:"AI Predict",        Icon:Brain,   kind:"action",    subtype:"aipredict" },
+      { id:"aipredict",  name:"AI Predict",        Icon:Brain,   kind:"aipredict", subtype:null },
       { id:"aibestch",   name:"AI Best Channel",   Icon:Route,   kind:"action",    subtype:"aibestch"  },
+      { id:"startflow",  name:"Start Flow",        Icon:LogIn,   kind:"startflow", subtype:null },
     ],
   },
   {

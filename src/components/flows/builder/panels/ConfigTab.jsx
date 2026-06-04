@@ -5,6 +5,8 @@ import DelayConfig from "./DelayConfig";
 import WhatsAppRightPanel from "@/components/flows/builder/nodes/WhatsAppNode/WhatsAppRightPanel";
 import AiCallingRightPanel from "@/components/flows/builder/nodes/AiCallingNode/AiCallingRightPanel";
 import RCSRightPanel from "@/components/flows/builder/nodes/RCSNode/RCSRightPanel";
+import AiPredictRightPanel from "@/components/flows/builder/nodes/AiPredictNode/AiPredictRightPanel";
+import StartFlowRightPanel from "@/components/flows/builder/nodes/StartFlowNode/StartFlowRightPanel";
 
 function NumberInput({ label, value, onChange, testId, suffix }) {
   return (
@@ -353,6 +355,22 @@ export default function ConfigTab() {
     return (
       <div className="absolute inset-0 overflow-hidden flex flex-col">
         <RCSRightPanel />
+      </div>
+    );
+  }
+
+  if (node?.type === "aipredict") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col">
+        <AiPredictRightPanel />
+      </div>
+    );
+  }
+
+  if (node?.type === "startflow") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col">
+        <StartFlowRightPanel />
       </div>
     );
   }
