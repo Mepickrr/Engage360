@@ -13,7 +13,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   MessageCircle, Mail, MessageSquare, MessagesSquare,
-  BellRing, Bell, PhoneCall, Bot, Sparkles, Award,
+  BellRing, Bell, PhoneCall, Bot, Sparkles, Award, BrainCog,
   ShoppingCart, Tag, Percent, ClipboardList, StickyNote,
   Plug, Star, CreditCard, Headphones,
   GitBranch, GitFork, Clock, Brain, Route, LogIn,
@@ -42,18 +42,21 @@ const CATEGORIES = [
     id: "communication", label: "Communication", Icon: MessageSquare, color: "purple",
     nodes: [
       { id:"whatsapp",     name:"WhatsApp",       Icon:MessageCircle,  kind:"whatsapp", subtype:"whatsapp" },
-      { id:"email",        name:"Email",          Icon:Mail,           kind:"channel", subtype:"email"    },
-      { id:"sms",          name:"SMS",            Icon:MessageSquare,  kind:"channel", subtype:"sms"      },
+      { id:"email",        name:"Email",          Icon:Mail,           kind:"email",   subtype:null       },
+      { id:"sms",          name:"SMS",            Icon:MessageSquare,  kind:"sms",     subtype:null       },
       { id:"rcs",          name:"RCS",            Icon:MessagesSquare, kind:"rcs",     subtype:"rcs"      },
-      { id:"webpush",      name:"Web Push",       Icon:BellRing,       kind:"channel", subtype:"push"     },
-      { id:"notification", name:"Notification",   Icon:Bell,           kind:"channel", subtype:"inapp"    },
+      { id:"webpush",      name:"Push Notification", Icon:BellRing,     kind:"push",    subtype:null       },
+      { id:"onsite",       name:"Onsite",          Icon:Bell,           kind:"onsite",  subtype:null       },
+      { id:"inapp",        name:"InApp",           Icon:BellRing,       kind:"inapp",   subtype:null       },
       { id:"aicalling",    name:"AI Calling",     Icon:PhoneCall,      kind:"aicalling", subtype:"aicalling" },
-      { id:"aichatbot",    name:"AI Chatbot",     Icon:Bot,            kind:"action",  subtype:"aichatbot" },
+      { id:"aichatbot",    name:"AI Chatbot",     Icon:Bot,            kind:"aichatbot", subtype:null },
     ],
   },
   {
     id: "action", label: "Action", Icon: Sparkles, color: "coral",
     nodes: [
+      { id:"nextbestaction",    name:"Next Best Action",      Icon:BrainCog, kind:"nextbestaction",    subtype:null },
+      { id:"smartflowoptimizer",name:"Smart Flow Optimizer",  Icon:Route,    kind:"smartflowoptimizer",subtype:null },
       { id:"aicontent", name:"AI Content",      Icon:Sparkles, kind:"action", subtype:"aicontent" },
       { id:"aisocial",  name:"AI Social Proof", Icon:Award,    kind:"action", subtype:"aisocial"  },
     ],
@@ -78,7 +81,7 @@ const CATEGORIES = [
   {
     id: "flowcontrol", label: "Flow Control", Icon: GitBranch, color: "teal",
     nodes: [
-      { id:"condsplit",  name:"Conditional Split", Icon:GitFork, kind:"condition", subtype:null },
+      { id:"condsplit",  name:"Conditional Split", Icon:GitFork, kind:"conditionalsplit", subtype:null },
       { id:"delay",      name:"Delay Node",        Icon:Clock,   kind:"wait",      subtype:null },
       { id:"aipredict",  name:"AI Predict",        Icon:Brain,   kind:"aipredict", subtype:null },
       { id:"aibestch",   name:"AI Best Channel",   Icon:Route,   kind:"action",    subtype:"aibestch"  },
@@ -132,7 +135,7 @@ CATEGORIES.forEach((cat) => {
   cat.nodes.forEach((n) => { NODE_MAP[n.id] = { ...n, color: cat.color, catLabel: cat.label }; });
 });
 
-export default function NodePalette({ onNodeAdd }) {
+export default function NodePalette({ onNodeAdd, allowedNodeIds = null }) {
   const [pinned,    setPinned]    = useState(true);
   const [hovered,   setHovered]   = useState(false);
   // In pinned mode every category is open by default; null = all open.
@@ -204,10 +207,17 @@ export default function NodePalette({ onNodeAdd }) {
 
   const lq = search.trim().toLowerCase();
   const filteredCats = CATEGORIES.map((cat) => {
-    if (!lq) return cat;
-    const matched = cat.nodes.filter((n) => n.name.toLowerCase().includes(lq));
+    // Apply allowlist filter first (V2 mode)
+    const visibleNodes = allowedNodeIds
+      ? cat.nodes.filter((n) => allowedNodeIds.includes(n.id))
+      : cat.nodes;
+    if (allowedNodeIds && visibleNodes.length === 0) return null;
+
+    // Then apply search filter
+    if (!lq) return { ...cat, nodes: visibleNodes };
+    const matched = visibleNodes.filter((n) => n.name.toLowerCase().includes(lq));
     if (!matched.length && !cat.label.toLowerCase().includes(lq)) return null;
-    return { ...cat, nodes: matched.length ? matched : cat.nodes };
+    return { ...cat, nodes: matched.length ? matched : visibleNodes };
   }).filter(Boolean);
 
   // ── shared inline-style helpers ───────────────────────────────

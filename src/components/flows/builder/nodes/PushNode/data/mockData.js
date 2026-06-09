@@ -1,0 +1,162 @@
+export const PUSH_TEMPLATE_STYLES = [
+  {
+    id: "basic",
+    name: "Basic notification",
+    platforms: ["android", "ios"],
+    description: "Simple title and body",
+  },
+  {
+    id: "stylized_basic",
+    name: "Stylized basic",
+    platforms: ["android", "ios"],
+    description: "Colored accent styling",
+  },
+  {
+    id: "image_carousel",
+    name: "Simple image carousel",
+    platforms: ["android"],
+    description: "Swipeable image carousel",
+  },
+  {
+    id: "image_banner",
+    name: "Image banner with text overlay",
+    platforms: ["android", "ios"],
+    description: "Large hero image with text",
+  },
+  {
+    id: "timer",
+    name: "Timer",
+    platforms: ["android"],
+    description: "Countdown timer notification",
+  },
+];
+
+export const MOCK_PUSH_TEMPLATES = [
+  {
+    id: "push_001",
+    name: "Cart Recovery Basic",
+    style: "basic",
+    title: "You left something behind!",
+    body: "{{customer.firstName}}, your cart is waiting. Complete your purchase now.",
+    landingUrl: "https://store.com/cart?ref=push",
+    iconUrl: "",
+    iconType: "org",
+    imageUrl: "",
+    hasImage: false,
+    tags: "cart_recovery",
+    renotify: false,
+    persistNotification: false,
+    utm: { enabled: true, utm_source: "push", utm_medium: "journey", utm_campaign: "cart_recovery" },
+    callToAction: false,
+    platforms: { android: true, ios: true, web: true },
+    lastUpdated: "2025-05-10",
+  },
+  {
+    id: "push_002",
+    name: "Flash Sale Alert",
+    style: "image_banner",
+    title: "⚡ Flash Sale — 50% OFF Today Only!",
+    body: "Hurry! Offer ends in 2 hours. Shop your favorites now.",
+    landingUrl: "https://store.com/sale",
+    iconUrl: "",
+    iconType: "org",
+    imageUrl: "https://placehold.co/400x200/F59E0B/white?text=Sale+50%25+OFF",
+    hasImage: true,
+    tags: "flash_sale",
+    renotify: true,
+    persistNotification: false,
+    utm: { enabled: true, utm_source: "push", utm_medium: "journey", utm_campaign: "flash_sale" },
+    callToAction: false,
+    platforms: { android: true, ios: true, web: true },
+    lastUpdated: "2025-05-08",
+  },
+  {
+    id: "push_003",
+    name: "Order Shipped Update",
+    style: "basic",
+    title: "Your order is on the way! 📦",
+    body: "Order #{{order.id}} has been shipped. Track it now.",
+    landingUrl: "https://store.com/track/{{order.id}}",
+    iconUrl: "",
+    iconType: "org",
+    imageUrl: "",
+    hasImage: false,
+    tags: "order_update",
+    renotify: false,
+    persistNotification: true,
+    utm: { enabled: false, utm_source: "push", utm_medium: "journey", utm_campaign: "" },
+    callToAction: false,
+    platforms: { android: true, ios: true, web: true },
+    lastUpdated: "2025-04-22",
+  },
+  {
+    id: "push_004",
+    name: "Back in Stock",
+    style: "stylized_basic",
+    title: "{{product.name}} is back in stock!",
+    body: "You asked, we listened. Grab yours before it sells out again.",
+    landingUrl: "https://store.com/product/{{product.id}}",
+    iconUrl: "",
+    iconType: "url",
+    imageUrl: "",
+    hasImage: false,
+    tags: "back_in_stock",
+    renotify: true,
+    persistNotification: false,
+    utm: { enabled: true, utm_source: "push", utm_medium: "journey", utm_campaign: "back_in_stock" },
+    callToAction: false,
+    platforms: { android: true, ios: false, web: true },
+    lastUpdated: "2025-05-01",
+  },
+];
+
+export const PUSH_PLACEHOLDER_VARS = {
+  Customer: [
+    { key: "{{customer.firstName}}", label: "First Name",   example: "Priya"    },
+    { key: "{{customer.lastName}}",  label: "Last Name",    example: "Sharma"   },
+    { key: "{{customer.name}}",      label: "Full Name",    example: "Priya Sharma" },
+  ],
+  Order: [
+    { key: "{{order.id}}",     label: "Order ID",     example: "#ORD-7842" },
+    { key: "{{order.amount}}", label: "Order Amount", example: "₹1,299"   },
+    { key: "{{order.status}}", label: "Order Status", example: "Shipped"  },
+  ],
+  Product: [
+    { key: "{{product.name}}",  label: "Product Name", example: "Rosemary Water" },
+    { key: "{{product.price}}", label: "Price",        example: "₹399"           },
+    { key: "{{product.id}}",    label: "Product ID",   example: "PROD_001"       },
+  ],
+  Store: [
+    { key: "{{store.name}}", label: "Store Name", example: "Avimee Herbal" },
+    { key: "{{store.url}}",  label: "Store URL",  example: "https://avimee.com" },
+  ],
+};
+
+export const PUSH_DELIVERY_OPTIONS = [
+  { id: "next_step", label: "Next Step",  isDefault: true  },
+  { id: "clicked",   label: "Clicked",   isDefault: false },
+  { id: "dismissed", label: "Dismissed", isDefault: false },
+  { id: "delivered", label: "Delivered", isDefault: false },
+];
+
+export const PUSH_PREVIEW_PLATFORMS = [
+  { id: "mac",     label: "Mac"       },
+  { id: "windows", label: "Windows"   },
+  { id: "win10",   label: "Windows 10"},
+  { id: "android", label: "Android"   },
+];
+
+export const defaultPushNodeData = {
+  label: "Push Notification",
+  template: null,
+  variableMap: {},
+  platforms: { android: true, ios: true, web: true },
+  iosSendMode: "all",
+  outputConfig: {
+    routingMode:     "next_step",
+    deliveryOutputs: [],
+    wiredPorts:      [],
+  },
+  aiBestTime:  false,
+  smartRetry:  { enabled: false, mode: "smart" },
+};

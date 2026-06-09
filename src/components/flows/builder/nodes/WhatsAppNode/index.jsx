@@ -1,6 +1,7 @@
 import React from "react";
 import { Handle, Position } from "reactflow";
 import { DELIVERY_OUTPUT_OPTIONS, isConnectable, WABA_NUMBERS } from "./data/mockTemplates";
+import NodeAnalyticsFooter from "@/components/flows/analytics/NodeAnalyticsFooter";
 
 const WA_GREEN = "#25D366";
 const BORDER   = "#E5E7EB";
@@ -124,6 +125,47 @@ function ButtonPortRow({ portId, label, wired }) {
   );
 }
 
+// ── Carousel canvas preview ─────────────────────────────────────
+const CAROUSEL_BLUE_NODE = "#3D3CB8";
+
+function CarouselNodePreview({ template }) {
+  const body  = template?.body  || "";
+  const cards = template?.cards || [];
+  return (
+    <div style={{ margin: "0 8px 8px", background: "#E5DDD5", borderRadius: 8, padding: 6 }}>
+      {body && (
+        <div style={{ background: "#fff", borderRadius: "8px 8px 8px 3px", padding: "6px 10px", marginBottom: 5, boxShadow: "0 1px 2px rgba(0,0,0,0.1)" }}>
+          <div style={{ fontSize: 11, color: "#111", lineHeight: 1.5 }}>{body.slice(0, 80)}{body.length > 80 ? "…" : ""}</div>
+          <div style={{ textAlign: "right", fontSize: 9, color: "#aaa", marginTop: 2 }}>16:48 ✓✓</div>
+        </div>
+      )}
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        {cards.slice(0, 3).map((card, i) => (
+          <div key={i} style={{ background: "#fff", borderRadius: 8, overflow: "hidden", boxShadow: "0 1px 2px rgba(0,0,0,0.1)" }}>
+            <div style={{ height: 44, background: card.mediaUrl ? "#D1FAE5" : "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              {card.mediaUrl ? <span style={{ fontSize: 16 }}>🖼</span> : <span style={{ fontSize: 9, color: "#94A3B8" }}>No image</span>}
+            </div>
+            {card.cardBody && (
+              <div style={{ padding: "4px 8px", fontSize: 10, color: "#374151", lineHeight: 1.4 }}>
+                {card.cardBody.slice(0, 45)}{card.cardBody.length > 45 ? "…" : ""}
+              </div>
+            )}
+            {(card.buttons || []).filter((b) => b.label).map((btn, bi) => (
+              <div key={bi} style={{ padding: "3px 8px", borderTop: "1px solid #F3F4F6", fontSize: 10, color: CAROUSEL_BLUE_NODE, fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}>
+                <span style={{ fontSize: 8 }}>{btn.type === "URL" ? "↗" : "↩"}</span>
+                {btn.label}
+              </div>
+            ))}
+          </div>
+        ))}
+        {cards.length > 3 && (
+          <div style={{ textAlign: "center", fontSize: 9, color: "#94A3B8", padding: "2px 0" }}>+{cards.length - 3} more cards</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Main node ───────────────────────────────────────────────────
 export default function WhatsAppNode({ id, data, selected }) {
   const template    = data?.template ?? null;
@@ -134,7 +176,8 @@ export default function WhatsAppNode({ id, data, selected }) {
   const outputCfg   = data?.outputConfig ?? { deliveryOutputs: ["next_step"], noResponseValue: 5, noResponseUnit: "hours", wiredPorts: [] };
   const wiredPorts  = outputCfg.wiredPorts ?? [];
 
-  const isEmpty = !template;
+  const isEmpty    = !template;
+  const isCarousel = data?.templateStyle === "carousel" && template?.isCarousel && (template?.cards?.length > 0);
 
   // Delivery ports — based on routingMode
   const routingMode = outputCfg.routingMode ?? "next_step";
@@ -166,6 +209,8 @@ export default function WhatsAppNode({ id, data, selected }) {
   ].filter(Boolean);
 
   const borderColor = isEmpty ? "rgba(37,211,102,0.4)" : template?.status === "In Review" ? "#F59E0B" : WA_GREEN;
+  const analyticsData = data?.analyticsData ?? null;
+  const cardRadius = analyticsData ? "12px 12px 0 0" : 12;
 
   return (
     <div
@@ -173,7 +218,7 @@ export default function WhatsAppNode({ id, data, selected }) {
       style={{
         background: "#fff",
         border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${borderColor}`,
-        borderRadius: 12,
+        borderRadius: cardRadius,
         boxShadow: selected ? "0 0 0 3px rgba(37,211,102,0.15)" : "0 1px 6px rgba(0,0,0,0.07)",
         width: 290,
         position: "relative",
@@ -219,7 +264,10 @@ export default function WhatsAppNode({ id, data, selected }) {
             <StatusPill status={template.status} />
           </div>
 
-          {/* ── WhatsApp message bubble ── */}
+          {/* ── Message bubble / carousel preview ── */}
+          {isCarousel ? (
+            <CarouselNodePreview template={template} />
+          ) : (
           <div style={{ margin: "0 8px 8px", background: "#E5DDD5", borderRadius: 8, padding: 6 }}>
             <div style={{ background: "#fff", borderRadius: "8px 8px 8px 3px", overflow: "hidden", boxShadow: "0 1px 2px rgba(0,0,0,0.1)" }}>
 
@@ -274,6 +322,7 @@ export default function WhatsAppNode({ id, data, selected }) {
               </div>
             </div>
           </div>
+          )}
 
           {/* ── Button response ports (output handles) ── */}
           {connectableButtons.length > 0 && connectableButtons.map((btn, i) => (
@@ -318,6 +367,7 @@ export default function WhatsAppNode({ id, data, selected }) {
           )}
         </>
       )}
+      <NodeAnalyticsFooter type="whatsapp" analyticsData={analyticsData} />
     </div>
   );
 }

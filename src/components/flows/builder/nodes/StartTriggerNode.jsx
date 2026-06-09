@@ -1,4 +1,5 @@
 import React from "react";
+import NodeAnalyticsFooter from "@/components/flows/analytics/NodeAnalyticsFooter";
 import { Handle, Position } from "reactflow";
 import {
   Zap, Radio, ShoppingBag, ShoppingCart, CreditCard, Package,
@@ -191,9 +192,10 @@ function getAudiencePillStyle(pill) {
 
 // ── Main node ─────────────────────────────────────────────────
 export default function StartTriggerNode({ data, selected }) {
-  const config  = data?.config;
-  const onEdit  = data?.onEdit;
-  const summary = summariseTriggerConfig(config);
+  const config        = data?.config;
+  const onEdit        = data?.onEdit;
+  const summary       = summariseTriggerConfig(config);
+  const analyticsData = data?.analyticsData ?? null;
 
   if (!summary) {
     return (
@@ -228,7 +230,7 @@ export default function StartTriggerNode({ data, selected }) {
   return (
     <div
       data-testid="rf-start-trigger-node"
-      className={`w-[268px] bg-white rounded-xl shadow-md transition-all ${selected ? "ring-2 ring-primary" : ""}`}
+      className={`w-[268px] bg-white shadow-md transition-all ${analyticsData ? "rounded-t-xl" : "rounded-xl"} ${selected ? "ring-2 ring-primary" : ""}`}
       style={{ border: `1.5px solid ${PRIMARY}22` }}
     >
       {/* ── Header ── */}
@@ -336,6 +338,7 @@ export default function StartTriggerNode({ data, selected }) {
         position={Position.Bottom}
         style={{ background: PRIMARY, width: 8, height: 8 }}
       />
+      <NodeAnalyticsFooter type="start-trigger" analyticsData={analyticsData} borderRadius="0 0 12px 12px" />
     </div>
   );
 }

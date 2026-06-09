@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import {
@@ -8,59 +8,184 @@ import {
   pauseFlow,
   resumeFlow,
 } from "@/lib/flowsApi";
-import StatusPill from "@/components/flows/StatusPill";
-import { ArrowLeft, Check, CircleAlert, Loader2, Pause, Play, Rocket, Save } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  CircleAlert,
+  Loader2,
+  Play,
+  BarChart2,
+  Download,
+  MoreHorizontal,
+  Clock,
+  FlaskConical,
+} from "lucide-react";
 import { toast } from "sonner";
 
-function SaveIndicator({ status }) {
+// ── Status config ────────────────────────────────────────────────────────────
+const STATUS_CONFIG = {
+  active:   { label: "Active",   bg: "bg-emerald-50",  text: "text-emerald-700",  dot: "bg-emerald-500" },
+  paused:   { label: "Paused",   bg: "bg-amber-50",    text: "text-amber-700",    dot: "bg-amber-400"   },
+  draft:    { label: "Draft",    bg: "bg-slate-100",   text: "text-slate-600",    dot: "bg-slate-400"   },
+  test:     { label: "Test",     bg: "bg-violet-50",   text: "text-violet-700",   dot: "bg-violet-500"  },
+  inactive: { label: "Inactive", bg: "bg-slate-100",   text: "text-slate-500",    dot: "bg-slate-300"   },
+};
+
+function StatusBadge({ status }) {
+  const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.draft;
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold ${cfg.bg} ${cfg.text}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+      {cfg.label}
+    </span>
+  );
+}
+
+// ── Active toggle ────────────────────────────────────────────────────────────
+function ActiveToggle({ active, disabled, onToggle }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={active}
+      onClick={onToggle}
+      disabled={disabled}
+      title={active ? "Click to pause" : "Click to activate"}
+      className={`relative inline-flex w-9 h-5 rounded-full transition-colors duration-200 flex-shrink-0 focus:outline-none disabled:opacity-50 ${
+        active ? "bg-primary" : "bg-slate-300"
+      }`}
+    >
+      <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${active ? "translate-x-4" : "translate-x-0"}`} />
+    </button>
+  );
+}
+
+// ── Autosave / last-saved indicator ─────────────────────────────────────────
+function SaveIndicator({ status, lastSavedAt }) {
+  const [label, setLabel] = useState("");
+
+  useEffect(() => {
+    if (status === "saving") { setLabel(""); return; }
+    if (status === "error")  { setLabel(""); return; }
+    if (!lastSavedAt) return;
+    function compute() {
+      const diff = Math.round((Date.now() - lastSavedAt) / 1000);
+      if (diff < 5)   return "Just saved";
+      if (diff < 60)  return `Saved ${diff}s ago`;
+      const mins = Math.round(diff / 60);
+      if (mins < 60)  return `Saved ${mins}m ago`;
+      const hrs  = Math.round(mins / 60);
+      if (hrs < 24)   return `Saved ${hrs}h ago`;
+      return `Saved ${Math.round(hrs / 24)}d ago`;
+    }
+    setLabel(compute());
+    const id = setInterval(() => setLabel(compute()), 30_000);
+    return () => clearInterval(id);
+  }, [status, lastSavedAt]);
+
   if (status === "saving")
     return (
       <span className="inline-flex items-center gap-1 text-[11px] text-text-muted">
-        <Loader2 className="w-3 h-3 animate-spin" /> Saving...
-      </span>
-    );
-  if (status === "saved")
-    return (
-      <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600">
-        <Check className="w-3 h-3" /> Saved
+        <Loader2 className="w-3 h-3 animate-spin" /> Saving…
       </span>
     );
   if (status === "error")
     return (
-      <span className="inline-flex items-center gap-1 text-[11px] text-rose-600">
+      <span className="inline-flex items-center gap-1 text-[11px] text-rose-500">
         <CircleAlert className="w-3 h-3" /> Save failed
+      </span>
+    );
+  if (label)
+    return (
+      <span className="inline-flex items-center gap-1 text-[11px] text-text-muted">
+        <Clock className="w-3 h-3" /> {label}
       </span>
     );
   return null;
 }
 
-export default function BuilderTopbar() {
+// ── More menu ────────────────────────────────────────────────────────────────
+function MoreMenu({ onDownload }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return;
+    function onDoc(e) { if (!ref.current?.contains(e.target)) setOpen(false); }
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [open]);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="w-8 h-8 rounded-md flex items-center justify-center border border-border text-text-secondary hover:bg-slate-50 hover:text-text-primary transition-colors"
+      >
+        <MoreHorizontal className="w-4 h-4" />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-border rounded-lg shadow-lg z-50 py-1 overflow-hidden">
+          <button
+            type="button"
+            onClick={() => { onDownload(); setOpen(false); }}
+            className="w-full text-left flex items-center gap-2.5 px-3 py-2 text-[13px] text-text-primary hover:bg-slate-50"
+          >
+            <Download className="w-3.5 h-3.5 text-text-muted" />
+            Download report
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Divider ──────────────────────────────────────────────────────────────────
+function Divider() {
+  return <div className="w-px h-5 bg-border flex-shrink-0" />;
+}
+
+// ── Main topbar ──────────────────────────────────────────────────────────────
+export default function BuilderTopbar({ basePath = "/flows" }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const flowId = useFlowBuilderStore((s) => s.flowId);
-  const meta = useFlowBuilderStore((s) => s.meta);
+
+  const flowId         = useFlowBuilderStore((s) => s.flowId);
+  const meta           = useFlowBuilderStore((s) => s.meta);
+  const nodes          = useFlowBuilderStore((s) => s.nodes);
+  const edges          = useFlowBuilderStore((s) => s.edges);
   const autosaveStatus = useFlowBuilderStore((s) => s.autosaveStatus);
-  const patchMeta = useFlowBuilderStore((s) => s.patchMeta);
+  const patchMeta      = useFlowBuilderStore((s) => s.patchMeta);
+  const setFlowId      = useFlowBuilderStore((s) => s.setFlowId);
   const setAutosaveStatus = useFlowBuilderStore((s) => s.setAutosaveStatus);
 
-  const [editing, setEditing] = useState(false);
-  const [draftName, setDraftName] = useState(meta?.name || "");
+  const [editing, setEditing]       = useState(false);
+  const [draftName, setDraftName]   = useState(meta?.name || "Untitled flow");
+  const [lastSavedAt, setLastSavedAt] = useState(null);
   const inputRef = useRef(null);
 
+  // Sync draft name when meta loads
+  useEffect(() => { setDraftName(meta?.name || "Untitled flow"); }, [meta?.name]);
+  useEffect(() => { if (editing) inputRef.current?.focus(); }, [editing]);
+  // Record timestamp whenever autosave succeeds
   useEffect(() => {
-    setDraftName(meta?.name || "");
-  }, [meta?.name]);
+    if (autosaveStatus === "saved") setLastSavedAt(Date.now());
+  }, [autosaveStatus]);
 
-  useEffect(() => {
-    if (editing) inputRef.current?.focus();
-  }, [editing]);
+  const status = meta?.status || "draft";
+  const isActive = status === "active";
 
+  // ── Mutations ────────────────────────────────────────────────────────────
   const renameMut = useMutation({
     mutationFn: ({ name }) => updateFlow(flowId, { name }),
     onMutate: () => setAutosaveStatus("saving"),
-    onSuccess: () => {
-      setAutosaveStatus("saved");
+    onSuccess: (saved) => {
       patchMeta({ name: draftName });
+      if (saved?.id && saved.id !== flowId) {
+        setFlowId(saved.id);
+        navigate(`${basePath}/builder/${saved.id}`, { replace: true });
+      }
+      setAutosaveStatus("saved");
       queryClient.invalidateQueries({ queryKey: ["flows"] });
     },
     onError: () => setAutosaveStatus("error"),
@@ -71,9 +196,11 @@ export default function BuilderTopbar() {
     onSuccess: (doc) => {
       patchMeta({ status: doc.status });
       queryClient.invalidateQueries({ queryKey: ["flows"] });
-      toast.success("Flow is now live");
+      toast.success("Flow is now live 🚀");
     },
+    onError: () => toast.error("Failed to publish"),
   });
+
   const pauseMut = useMutation({
     mutationFn: () => pauseFlow(flowId),
     onSuccess: (doc) => {
@@ -81,7 +208,9 @@ export default function BuilderTopbar() {
       queryClient.invalidateQueries({ queryKey: ["flows"] });
       toast.success("Flow paused");
     },
+    onError: () => toast.error("Failed to pause"),
   });
+
   const resumeMut = useMutation({
     mutationFn: () => resumeFlow(flowId),
     onSuccess: (doc) => {
@@ -89,134 +218,162 @@ export default function BuilderTopbar() {
       queryClient.invalidateQueries({ queryKey: ["flows"] });
       toast.success("Flow resumed");
     },
+    onError: () => toast.error("Failed to resume"),
   });
 
-  // Manual save — bypasses the 1.5s autosave debounce. Pipes through the same
-  // autosaveStatus indicator so the user sees "Saving..." → "Saved" inline.
   const saveMut = useMutation({
     mutationFn: () =>
-      updateFlow(flowId, {
-        nodes,
-        edges,
-        name: meta?.name,
-        description: meta?.description,
-      }),
+      updateFlow(flowId, { nodes, edges, name: meta?.name, description: meta?.description }),
     onMutate: () => setAutosaveStatus("saving"),
-    onSuccess: () => {
+    onSuccess: (saved) => {
+      // Seed converted to real/local copy — update store ID and URL
+      if (saved?.id && saved.id !== flowId) {
+        setFlowId(saved.id);
+        navigate(`${basePath}/builder/${saved.id}`, { replace: true });
+        toast.success("Flow saved — you can now find it in your flows list");
+      }
       setAutosaveStatus("saved");
       queryClient.invalidateQueries({ queryKey: ["flows"] });
-      setTimeout(() => setAutosaveStatus("idle"), 1500);
     },
     onError: () => setAutosaveStatus("error"),
   });
 
+  // ── Handlers ──────────────────────────────────────────────────────────────
   const commitName = () => {
     setEditing(false);
-    if (draftName.trim() && draftName !== meta?.name && flowId) {
-      renameMut.mutate({ name: draftName.trim() });
+    const trimmed = draftName.trim();
+    if (trimmed && trimmed !== meta?.name && flowId) {
+      renameMut.mutate({ name: trimmed });
     } else {
-      setDraftName(meta?.name || "");
+      setDraftName(meta?.name || "Untitled flow");
     }
   };
 
-  const status = meta?.status || "draft";
+  const handleToggle = () => {
+    if (!flowId) return;
+    if (isActive) pauseMut.mutate();
+    else if (status === "paused") resumeMut.mutate();
+    else publishMut.mutate(); // draft → activate
+  };
+
+  const handleTestFlow = () => {
+    toast.info("Test mode — flow will run with test data");
+    patchMeta({ status: "test" });
+  };
+
+  const handleDownloadReport = () => {
+    toast.info("Generating report…");
+  };
+
+  const saving = saveMut.isPending || renameMut.isPending;
 
   return (
     <header
       data-testid="builder-topbar"
-      className="h-12 bg-surface border-b border-border flex items-center justify-between px-4 flex-shrink-0"
+      className="h-[52px] bg-surface border-b border-border flex items-center justify-between px-3 gap-3 flex-shrink-0"
     >
-      <div className="flex items-center gap-3 min-w-0">
+      {/* ── Left group ── */}
+      <div className="flex items-center gap-2.5 min-w-0">
+        {/* Back */}
         <button
           type="button"
           data-testid="builder-back"
-          onClick={() => navigate("/flows")}
-          className="p-1.5 rounded-md hover:bg-slate-100 text-text-secondary"
+          onClick={() => navigate(basePath)}
+          className="p-1.5 rounded-md hover:bg-slate-100 text-text-muted hover:text-text-primary transition-colors flex-shrink-0"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
-        <div className="flex items-center gap-2 min-w-0">
-          {editing ? (
-            <input
-              ref={inputRef}
-              type="text"
-              value={draftName}
-              onChange={(e) => setDraftName(e.target.value)}
-              onBlur={commitName}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") commitName();
-                if (e.key === "Escape") {
-                  setEditing(false);
-                  setDraftName(meta?.name || "");
-                }
-              }}
-              data-testid="builder-name-input"
-              className="text-[15px] font-semibold text-text-primary bg-transparent border-b border-primary outline-none min-w-[280px]"
-            />
-          ) : (
-            <button
-              type="button"
-              data-testid="builder-name"
-              onClick={() => flowId && setEditing(true)}
-              className="text-[15px] font-semibold text-text-primary hover:text-primary truncate max-w-[420px]"
-              disabled={!flowId}
-            >
-              {meta?.name || "Untitled flow"}
-            </button>
-          )}
-          <StatusPill status={status} testId="builder-status-pill" />
-          <SaveIndicator status={autosaveStatus} />
-        </div>
+
+        <Divider />
+
+        {/* Flow name */}
+        {editing ? (
+          <input
+            ref={inputRef}
+            type="text"
+            value={draftName}
+            onChange={(e) => setDraftName(e.target.value)}
+            onBlur={commitName}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commitName();
+              if (e.key === "Escape") { setEditing(false); setDraftName(meta?.name || "Untitled flow"); }
+            }}
+            data-testid="builder-name-input"
+            className="text-[14px] font-semibold text-text-primary bg-transparent border-b-2 border-primary outline-none max-w-[260px]"
+          />
+        ) : (
+          <button
+            type="button"
+            data-testid="builder-name"
+            onClick={() => flowId && setEditing(true)}
+            title="Click to rename"
+            className="text-[14px] font-semibold text-text-primary hover:text-primary truncate max-w-[240px] transition-colors"
+            disabled={!flowId}
+          >
+            {meta?.name || "Untitled flow"}
+          </button>
+        )}
+
+        {/* Active toggle */}
+        <ActiveToggle
+          active={isActive}
+          disabled={!flowId || pauseMut.isPending || resumeMut.isPending || publishMut.isPending}
+          onToggle={handleToggle}
+        />
+
+        {/* Status badge */}
+        <StatusBadge status={status} />
+
+        <Divider />
+
+        {/* Test Flow */}
+        <button
+          type="button"
+          data-testid="builder-test-flow"
+          onClick={handleTestFlow}
+          disabled={!flowId}
+          className="inline-flex items-center gap-1.5 px-3 h-8 rounded-md border border-primary text-primary text-[12px] font-medium hover:bg-primary/5 disabled:opacity-40 transition-colors flex-shrink-0"
+        >
+          <FlaskConical className="w-3.5 h-3.5" />
+          Test flow
+        </button>
       </div>
 
-      <div className="flex items-center gap-2">
-        {status === "active" && (
-          <button
-            type="button"
-            data-testid="builder-pause"
-            onClick={() => pauseMut.mutate()}
-            disabled={pauseMut.isPending}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-[12px] text-text-secondary hover:bg-slate-50"
-          >
-            <Pause className="w-3.5 h-3.5" />
-            Pause
-          </button>
-        )}
-        {status === "paused" && (
-          <button
-            type="button"
-            data-testid="builder-resume"
-            onClick={() => resumeMut.mutate()}
-            disabled={resumeMut.isPending}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-[12px] text-text-secondary hover:bg-slate-50"
-          >
-            <Play className="w-3.5 h-3.5" />
-            Resume
-          </button>
-        )}
+      {/* ── Center: last saved ── */}
+      <div className="flex-shrink-0">
+        <SaveIndicator status={autosaveStatus} lastSavedAt={lastSavedAt} />
+      </div>
+
+      {/* ── Right group ── */}
+      <div className="flex items-center gap-2 flex-shrink-0">
+        {/* View Analytics */}
+        <button
+          type="button"
+          data-testid="builder-analytics"
+          onClick={() => navigate(`/flows/builder/${flowId}/analytics`)}
+          disabled={!flowId}
+          className="inline-flex items-center gap-1.5 px-3 h-8 rounded-md text-[12px] font-medium text-primary hover:bg-primary/5 disabled:opacity-40 transition-colors"
+        >
+          <BarChart2 className="w-3.5 h-3.5" />
+          View Analytics
+        </button>
+
+        <Divider />
+
+        {/* Save Journey */}
         <button
           type="button"
           data-testid="builder-save"
           onClick={() => saveMut.mutate()}
-          disabled={saveMut.isPending || !flowId}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-[12px] text-text-secondary hover:bg-slate-50 hover:text-primary disabled:opacity-50 transition-colors"
-          title="Save now (autosave runs every 1.5s)"
+          disabled={saving || !flowId}
+          className="inline-flex items-center gap-1.5 px-4 h-8 rounded-md bg-primary text-white text-[12px] font-semibold hover:bg-primary-hover disabled:opacity-50 transition-colors"
         >
-          <Save className="w-3.5 h-3.5" />
-          Save
+          {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+          Save Journey
         </button>
-        {status === "draft" && (
-          <button
-            type="button"
-            data-testid="builder-publish"
-            onClick={() => publishMut.mutate()}
-            disabled={publishMut.isPending || !flowId}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-white text-[12px] font-medium hover:bg-primary-hover disabled:opacity-50"
-          >
-            <Rocket className="w-3.5 h-3.5" />
-            {publishMut.isPending ? "Publishing..." : "Publish"}
-          </button>
-        )}
+
+        {/* More */}
+        <MoreMenu onDownload={handleDownloadReport} />
       </div>
     </header>
   );

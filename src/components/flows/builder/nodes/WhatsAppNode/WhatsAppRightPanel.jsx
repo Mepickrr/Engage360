@@ -6,11 +6,23 @@ import {
   WABA_NUMBERS, SYSTEM_VARIABLES, isConnectable,
   DELIVERY_OUTPUT_OPTIONS,
 } from "./data/mockTemplates";
+import { useFlowVariant } from "@/components/flows/FlowVariantContext";
 
-const WA_GREEN = "#25D366";
-const PRIMARY  = "#6C3AE8";
-const BORDER   = "#E5E7EB";
-const MUTED    = "#94A3B8";
+const WA_GREEN       = "#25D366";
+const PRIMARY        = "#6C3AE8";
+const BORDER         = "#E5E7EB";
+const MUTED          = "#94A3B8";
+const CAROUSEL_BLUE  = "#3D3CB8";
+const MAX_CAROUSEL_BODY  = 1024;
+const MAX_CARD_BODY      = 160;
+const MAX_CAROUSEL_CARDS = 10;
+
+function defaultCarouselCard() {
+  return { mediaUrl: "", cardBody: "", buttons: [{ type: "QUICK_REPLY", label: "" }] };
+}
+function defaultCarouselDraft() {
+  return { name: "", category: "Marketing", language: "en", body: "", cards: [defaultCarouselCard(), defaultCarouselCard()] };
+}
 
 // ── Shared helpers ─────────────────────────────────────────────
 function Label({ children }) {
@@ -32,6 +44,102 @@ function SelectField({ value, onChange, options, style = {} }) {
     <select value={value || ""} onChange={(e) => onChange(e.target.value)} style={{ width: "100%", padding: "7px 28px 7px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", background: "#fff", appearance: "none", cursor: "pointer", ...style }}>
       {options.map((o) => <option key={typeof o === "string" ? o : o.value} value={typeof o === "string" ? o : o.value}>{typeof o === "string" ? o : o.label}</option>)}
     </select>
+  );
+}
+
+// ── Template Styles ─────────────────────────────────────────────
+const TEMPLATE_STYLES = [
+  { id: "standard",        label: "Standard",        emoji: "💬", desc: "Text body with image, video or document header and reply buttons" },
+  { id: "list",            label: "List",             emoji: "📋", desc: "Scrollable list of up to 10 sections with items" },
+  { id: "carousel",        label: "Carousel",         emoji: "🎠", desc: "Horizontal cards with images, text and buttons" },
+  { id: "address",         label: "Address",          emoji: "📍", desc: "Share a delivery or pickup address with map preview" },
+  { id: "catalog",         label: "Catalog",          emoji: "🛍️", desc: "Showcase products from your WhatsApp catalog" },
+  { id: "payment_link",    label: "Payment Link",     emoji: "💳", desc: "Send a UPI or payment link directly in chat" },
+  { id: "call_permission", label: "Call Permission",  emoji: "📞", desc: "Request permission to call the customer" },
+  { id: "audio",           label: "Audio",            emoji: "🎙️", desc: "Share a voice note or audio clip" },
+  { id: "location",        label: "Location",         emoji: "🗺️", desc: "Share a live or static location pin" },
+];
+
+// ── Template Style Picker ────────────────────────────────────────
+function TemplateStylePicker({ onSelect }) {
+  const [hovered, setHovered] = useState(null);
+  const [selected, setSelected] = useState(null);
+  const { allowedTemplateStyleIds } = useFlowVariant();
+
+  // Blueprint styles kept intact — filtered out in V2 via context.
+  // To re-enable a style in V2, add its id to allowedTemplateStyleIds in FlowBuilderV2.jsx.
+  // Hidden blueprint ids: "address", "catalog", "audio", "location"
+  const visibleStyles = allowedTemplateStyleIds
+    ? TEMPLATE_STYLES.filter((s) => allowedTemplateStyleIds.includes(s.id))
+    : TEMPLATE_STYLES;
+
+  return (
+    <div>
+      <div style={{ marginBottom: 4 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: "#0F172A" }}>Choose Template Style</div>
+        <div style={{ fontSize: 11, color: "#64748B", marginTop: 3 }}>Select the type of WhatsApp message you want to send</div>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginTop: 16 }}>
+        {visibleStyles.map((style) => {
+          const isSelected = selected === style.id;
+          const isHovered  = hovered  === style.id;
+          const highlight  = isSelected || isHovered;
+          return (
+            <div
+              key={style.id}
+              onClick={() => {
+                setSelected(style.id);
+                onSelect(style.id);
+              }}
+              onMouseEnter={() => setHovered(style.id)}
+              onMouseLeave={() => setHovered(null)}
+              style={{
+                position: "relative",
+                background: highlight ? "#F0FDF4" : "#fff",
+                border: `${isSelected ? 2 : 1.5}px solid ${highlight ? "#25D366" : "#E5E7EB"}`,
+                borderRadius: 10,
+                padding: 12,
+                cursor: "pointer",
+              }}
+            >
+              {/* Popular pill for Standard */}
+              {style.id === "standard" && (
+                <div style={{
+                  position: "absolute", top: 6, left: 6,
+                  fontSize: 8, fontWeight: 700, color: "#065F46",
+                  background: "#DCFCE7", borderRadius: 4, padding: "1px 5px",
+                }}>Popular</div>
+              )}
+
+              {/* Checkmark badge when selected */}
+              {isSelected && (
+                <div style={{
+                  position: "absolute", top: 6, right: 6,
+                  width: 12, height: 12, borderRadius: "50%",
+                  background: "#25D366", color: "#fff",
+                  fontSize: 9, fontWeight: 700,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>✓</div>
+              )}
+
+              {/* Emoji circle */}
+              <div style={{
+                width: 32, height: 32, borderRadius: "50%",
+                background: "#DCFCE7",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 17, margin: "0 auto",
+              }}>{style.emoji}</div>
+
+              {/* Name */}
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#0F172A", marginTop: 8, textAlign: "center" }}>{style.label}</div>
+
+              {/* Desc */}
+              <div style={{ fontSize: 10, color: "#64748B", marginTop: 3, lineHeight: 1.4, textAlign: "center" }}>{style.desc}</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -249,6 +357,192 @@ function InlineTemplateForm({ draft, onChange }) {
   );
 }
 
+// ── Carousel Card Thumbnail ─────────────────────────────────────
+function CarouselCardThumb({ card, index, isSelected, onSelect, onDelete, canDelete }) {
+  return (
+    <div onClick={onSelect} style={{
+      width: 72, flexShrink: 0, borderRadius: 8,
+      border: `2px solid ${isSelected ? CAROUSEL_BLUE : BORDER}`,
+      background: isSelected ? "#EEF2FF" : "#F8FAFC",
+      cursor: "pointer", overflow: "hidden", transition: "border-color 0.15s",
+    }}>
+      <div style={{ background: CAROUSEL_BLUE, padding: "4px 6px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <span style={{ fontSize: 9, fontWeight: 700, color: "#fff" }}>Card {index + 1}</span>
+        {canDelete && (
+          <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.7)", fontSize: 12, padding: 0, lineHeight: 1 }}>×</button>
+        )}
+      </div>
+      <div style={{ height: 44, background: card.mediaUrl ? "#D1FAE5" : "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        {card.mediaUrl ? <span style={{ fontSize: 16 }}>🖼</span> : <span style={{ fontSize: 14, color: CAROUSEL_BLUE, opacity: 0.35 }}>+</span>}
+      </div>
+      {(!card.mediaUrl || !card.cardBody) && (
+        <div style={{ padding: "3px 4px", textAlign: "center" }}>
+          <span style={{ fontSize: 8, color: "#F59E0B", fontWeight: 600 }}>Incomplete</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Carousel Card Editor ────────────────────────────────────────
+function CarouselCardEditor({ card, onChange }) {
+  const patch = (p) => onChange({ ...card, ...p });
+  const patchBtn = (i, p) => {
+    const btns = [...(card.buttons || [])];
+    btns[i] = { ...btns[i], ...p };
+    patch({ buttons: btns });
+  };
+  return (
+    <div style={{ display: "flex", gap: 0, border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
+      {/* Left — media */}
+      <div style={{ width: 116, flexShrink: 0, background: "#F8FAFC", borderRight: `1px solid ${BORDER}`, display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "12px 10px" }}>
+        <div style={{ width: "100%", height: 76, background: card.mediaUrl ? "#D1FAE5" : "#EEF2FF", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", border: `2px dashed ${BORDER}` }}
+          onClick={() => alert("Media upload — connect your media library")}>
+          {card.mediaUrl ? <span style={{ fontSize: 28 }}>🖼</span> : (
+            <div style={{ textAlign: "center" }}>
+              <Upload size={15} style={{ color: CAROUSEL_BLUE, opacity: 0.5 }} />
+              <div style={{ fontSize: 9, color: CAROUSEL_BLUE, marginTop: 3, opacity: 0.6 }}>Upload image</div>
+            </div>
+          )}
+        </div>
+        <input value={card.mediaUrl || ""} onChange={(e) => patch({ mediaUrl: e.target.value })}
+          placeholder="or paste URL" style={{ width: "100%", padding: "4px 6px", fontSize: 10, border: `1px solid ${BORDER}`, borderRadius: 6, outline: "none" }} />
+      </div>
+      {/* Right — body + buttons */}
+      <div style={{ flex: 1, padding: "10px", display: "flex", flexDirection: "column", gap: 8, minWidth: 0 }}>
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+            <span style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", letterSpacing: "0.07em" }}>Card Body</span>
+            <span style={{ fontSize: 10, color: MUTED }}>{(card.cardBody || "").length}/{MAX_CARD_BODY}</span>
+          </div>
+          <textarea value={card.cardBody || ""} onChange={(e) => patch({ cardBody: e.target.value.slice(0, MAX_CARD_BODY) })}
+            placeholder="Card message…" rows={3}
+            style={{ width: "100%", padding: "6px 8px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", resize: "none", lineHeight: 1.55, fontFamily: "inherit" }} />
+        </div>
+        <div>
+          <span style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", letterSpacing: "0.07em" }}>Buttons</span>
+          <div style={{ display: "flex", flexDirection: "column", gap: 5, marginTop: 5 }}>
+            {(card.buttons || []).map((btn, i) => (
+              <div key={i} style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                <select value={btn.type} onChange={(e) => patchBtn(i, { type: e.target.value })}
+                  style={{ padding: "4px 6px", fontSize: 10, border: `1px solid ${BORDER}`, borderRadius: 6, background: "#fff", outline: "none", cursor: "pointer", flexShrink: 0 }}>
+                  <option value="QUICK_REPLY">Reply</option>
+                  <option value="URL">URL</option>
+                </select>
+                <input value={btn.label} onChange={(e) => patchBtn(i, { label: e.target.value.slice(0, 25) })}
+                  placeholder="Button text" style={{ flex: 1, padding: "4px 6px", fontSize: 11, border: `1px solid ${BORDER}`, borderRadius: 6, outline: "none", minWidth: 0 }} />
+                {(card.buttons || []).length > 1 && (
+                  <button type="button" onClick={() => patch({ buttons: (card.buttons || []).filter((_, j) => j !== i) })}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: "2px 4px", fontSize: 13 }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = "#EF4444"} onMouseLeave={(e) => e.currentTarget.style.color = MUTED}>×</button>
+                )}
+              </div>
+            ))}
+            {(card.buttons || []).length < 2 && (
+              <button type="button" onClick={() => patch({ buttons: [...(card.buttons || []), { type: "QUICK_REPLY", label: "" }] })}
+                style={{ fontSize: 10, color: CAROUSEL_BLUE, background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "2px 0", fontWeight: 600 }}>
+                + Add Another Button
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Carousel Form ───────────────────────────────────────────────
+function CarouselForm({ initial, onApply, onCancel }) {
+  const [draft, setDraft] = useState(initial?.isCarousel ? initial : defaultCarouselDraft());
+  const [activeCardIdx, setActiveCardIdx] = useState(0);
+
+  const patchDraft = (p) => setDraft((d) => ({ ...d, ...p }));
+  const patchCard = (i, updated) => {
+    const cards = [...draft.cards];
+    cards[i] = updated;
+    patchDraft({ cards });
+  };
+  const addCard = () => {
+    if (draft.cards.length >= MAX_CAROUSEL_CARDS) return;
+    const cards = [...draft.cards, defaultCarouselCard()];
+    patchDraft({ cards });
+    setActiveCardIdx(cards.length - 1);
+  };
+  const deleteCard = (i) => {
+    if (draft.cards.length <= 1) return;
+    const cards = draft.cards.filter((_, j) => j !== i);
+    patchDraft({ cards });
+    setActiveCardIdx(Math.min(activeCardIdx, cards.length - 1));
+  };
+
+  const activeCard = draft.cards[activeCardIdx] || defaultCarouselCard();
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <div style={{ paddingBottom: 12, borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: "#0F172A" }}>Template Content</div>
+        <div style={{ fontSize: 11, color: MUTED, marginTop: 2 }}>🎠 Carousel · up to {MAX_CAROUSEL_CARDS} cards</div>
+      </div>
+
+      <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ flex: 1 }}>
+          <Label>Category</Label>
+          <SelectField value={draft.category || "Marketing"} onChange={(v) => patchDraft({ category: v })} options={["Marketing", "Utility"]} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <Label>Language</Label>
+          <SelectField value={draft.language || "en"} onChange={(v) => patchDraft({ language: v })} options={[{ value: "en", label: "English" }, { value: "hi", label: "Hindi" }]} />
+        </div>
+      </div>
+
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+          <Label>Template Body</Label>
+          <span style={{ fontSize: 10, color: MUTED }}>{(draft.body || "").length}/{MAX_CAROUSEL_BODY}</span>
+        </div>
+        <textarea value={draft.body || ""} onChange={(e) => patchDraft({ body: e.target.value.slice(0, MAX_CAROUSEL_BODY) })}
+          placeholder="Main message body shared across all cards…" rows={4}
+          style={{ width: "100%", padding: "8px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", resize: "none", lineHeight: 1.55, fontFamily: "inherit" }} />
+      </div>
+
+      <div>
+        <Label>Cards ({draft.cards.length})</Label>
+        <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 6 }}>
+          {draft.cards.map((card, i) => (
+            <CarouselCardThumb key={i} card={card} index={i} isSelected={activeCardIdx === i}
+              onSelect={() => setActiveCardIdx(i)} onDelete={() => deleteCard(i)} canDelete={draft.cards.length > 1} />
+          ))}
+          {draft.cards.length < MAX_CAROUSEL_CARDS && (
+            <div onClick={addCard} style={{
+              width: 72, flexShrink: 0, borderRadius: 8, border: `2px dashed ${BORDER}`,
+              background: "#F8FAFC", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+              minHeight: 82, transition: "border-color 0.15s",
+            }}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = CAROUSEL_BLUE}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = BORDER}>
+              <span style={{ fontSize: 20, color: MUTED }}>+</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <CarouselCardEditor card={activeCard} onChange={(updated) => patchCard(activeCardIdx, updated)} />
+
+      <div style={{ display: "flex", gap: 8, paddingTop: 8, borderTop: `1px solid ${BORDER}` }}>
+        <button type="button" onClick={onCancel}
+          style={{ flex: 1, padding: "9px", border: `1px solid ${BORDER}`, borderRadius: 8, background: "#fff", fontSize: 13, cursor: "pointer" }}>
+          Cancel
+        </button>
+        <button type="button" onClick={() => onApply(draft)}
+          style={{ flex: 1, padding: "9px", border: "none", borderRadius: 8, background: CAROUSEL_BLUE, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+          Apply Template
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Template Tab ────────────────────────────────────────────────
 function TemplateTab({ data, patch }) {
   const [showPicker,         setShowPicker]         = useState(false);
@@ -256,9 +550,20 @@ function TemplateTab({ data, patch }) {
   const [showEditor,         setShowEditor]         = useState(false);
   const [editingFallback,    setEditingFallback]    = useState(false);
   const [creatingNew,        setCreatingNew]        = useState(false);
+  const [editingCarousel,    setEditingCarousel]    = useState(false);
   const [newDraft,           setNewDraft]           = useState({ name: "", category: "Marketing", language: "en", status: "Draft", header: { type: "none" }, body: "", footer: "", buttons: [], variableMap: {} });
 
+  const templateStyle = data.templateStyle ?? null;
+  const isStandard    = templateStyle === "standard";
+  const isCarousel    = templateStyle === "carousel";
+  const styleInfo     = TEMPLATE_STYLES.find((s) => s.id === templateStyle);
+
   const { template, wabaNumberId, fallback = {}, templateType } = data;
+
+  // ── Step 0: pick a style first ──────────────────────────────
+  if (!templateStyle) {
+    return <TemplateStylePicker onSelect={(s) => patch({ templateStyle: s })} />;
+  }
 
   const handleTemplateSelect = (tpl) => {
     patch({ template: tpl, variableMap: {}, templateType: tpl.category || tpl.type });
@@ -279,8 +584,25 @@ function TemplateTab({ data, patch }) {
     setCreatingNew(false);
   };
 
-  // ── Path 1: Creating new template inline ──
-  if (creatingNew) {
+  // ── Carousel path — show full carousel form ──────────────────
+  if (isCarousel && (!template || editingCarousel)) {
+    return (
+      <CarouselForm
+        initial={template?.isCarousel ? template : null}
+        onCancel={() => {
+          if (template) setEditingCarousel(false);
+          else patch({ templateStyle: null });
+        }}
+        onApply={(carouselDraft) => {
+          patch({ template: { isCarousel: true, id: `carousel_${Date.now()}`, ...carouselDraft } });
+          setEditingCarousel(false);
+        }}
+      />
+    );
+  }
+
+  // ── Path 1: Creating new template inline (Standard only) ──
+  if (creatingNew && isStandard) {
     return (
       <div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, paddingBottom: 12, borderBottom: `1px solid ${BORDER}` }}>
@@ -311,6 +633,19 @@ function TemplateTab({ data, patch }) {
       )}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+
+        {/* Style chip */}
+        {styleInfo && (
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", background: "#F0FDF4", borderRadius: 20, border: "1px solid #BBF7D0", alignSelf: "flex-start" }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: "#065F46" }}>{styleInfo.emoji} {styleInfo.label}</span>
+            <span style={{ fontSize: 11, color: MUTED }}>·</span>
+            <span
+              onClick={() => patch({ templateStyle: null, template: null })}
+              style={{ fontSize: 11, color: WA_GREEN, cursor: "pointer", fontWeight: 500 }}
+            >Change</span>
+          </div>
+        )}
+
         {/* Sender Number */}
         <div>
           <Label>Sender Number</Label>
@@ -324,37 +659,85 @@ function TemplateTab({ data, patch }) {
         <div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
             <Label>Template</Label>
-            <button type="button" onClick={() => setCreatingNew(true)} style={{ fontSize: 11, color: PRIMARY, fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}>
-              + Create New
-            </button>
+            {isStandard && (
+              <button type="button" onClick={() => setCreatingNew(true)} style={{ fontSize: 11, color: PRIMARY, fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}>
+                + Create New
+              </button>
+            )}
           </div>
 
           {!template ? (
-            /* No template selected — show two CTAs */
-            <div style={{ display: "flex", gap: 8 }}>
-              <button type="button" onClick={() => setCreatingNew(true)} style={{
-                flex: 1, padding: "14px 10px", border: `1.5px dashed ${BORDER}`, borderRadius: 10,
-                background: "transparent", cursor: "pointer", fontSize: 12, color: "#475569", textAlign: "center",
-                transition: "all 0.15s",
-              }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = PRIMARY; e.currentTarget.style.color = PRIMARY; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.color = "#475569"; }}>
-                <div style={{ fontSize: 18, marginBottom: 4 }}>+</div>
-                Create New
-              </button>
-              <button type="button" onClick={() => setShowPicker(true)} style={{
-                flex: 1, padding: "14px 10px", border: `1.5px dashed ${BORDER}`, borderRadius: 10,
-                background: "transparent", cursor: "pointer", fontSize: 12, color: "#475569", textAlign: "center",
-                transition: "all 0.15s",
-              }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = WA_GREEN; e.currentTarget.style.color = WA_GREEN; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.color = "#475569"; }}>
-                <div style={{ fontSize: 18, marginBottom: 4 }}>☰</div>
-                Select Existing
-              </button>
+            /* No template selected — show CTAs based on style */
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {!isStandard && (
+                /* Non-Standard: amber notice instead of Create New */
+                <div style={{ background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 8, padding: 12 }}>
+                  <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 8 }}>
+                    <AlertTriangle size={13} style={{ color: "#F59E0B", flexShrink: 0, marginTop: 1 }} />
+                    <span style={{ fontSize: 11, color: "#92400E", lineHeight: 1.5 }}>
+                      <strong>{styleInfo?.label}</strong> templates must be created in WhatsApp Business Manager. Once approved, select them below.
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => window.open("https://business.facebook.com/wa/manage/message-templates/", "_blank")}
+                    style={{ fontSize: 11, color: PRIMARY, fontWeight: 600, background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                  >Open WhatsApp Manager →</button>
+                </div>
+              )}
+              <div style={{ display: "flex", gap: 8 }}>
+                {isStandard && (
+                  <button type="button" onClick={() => setCreatingNew(true)} style={{
+                    flex: 1, padding: "14px 10px", border: `1.5px dashed ${BORDER}`, borderRadius: 10,
+                    background: "transparent", cursor: "pointer", fontSize: 12, color: "#475569", textAlign: "center",
+                    transition: "all 0.15s",
+                  }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = PRIMARY; e.currentTarget.style.color = PRIMARY; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.color = "#475569"; }}>
+                    <div style={{ fontSize: 18, marginBottom: 4 }}>+</div>
+                    Create New
+                  </button>
+                )}
+                <button type="button" onClick={() => setShowPicker(true)} style={{
+                  flex: 1, padding: "14px 10px", border: `1.5px dashed ${BORDER}`, borderRadius: 10,
+                  background: "transparent", cursor: "pointer", fontSize: 12, color: "#475569", textAlign: "center",
+                  transition: "all 0.15s",
+                }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = WA_GREEN; e.currentTarget.style.color = WA_GREEN; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.color = "#475569"; }}>
+                  <div style={{ fontSize: 18, marginBottom: 4 }}>☰</div>
+                  Select Existing
+                </button>
+              </div>
+            </div>
+          ) : isCarousel ? (
+            /* Carousel configured — summary with mini card strip */
+            <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
+              <div style={{ padding: "8px 12px", background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A" }}>{template.category || "Marketing"} · {(template.cards || []).length} cards</span>
+                  <div style={{ fontSize: 10, color: MUTED, marginTop: 1 }}>{template.language === "hi" ? "Hindi" : "English"}</div>
+                </div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button onClick={() => setEditingCarousel(true)} style={{ fontSize: 11, color: "#64748B", background: "none", border: "none", cursor: "pointer" }}>Edit</button>
+                  <button onClick={() => patch({ template: null })} style={{ fontSize: 11, color: PRIMARY, fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}>Change</button>
+                </div>
+              </div>
+              <div style={{ padding: "10px 12px", display: "flex", gap: 6, overflowX: "auto" }}>
+                {(template.cards || []).map((card, i) => (
+                  <div key={i} style={{ width: 60, flexShrink: 0, borderRadius: 6, border: `1px solid ${BORDER}`, overflow: "hidden" }}>
+                    <div style={{ background: CAROUSEL_BLUE, padding: "2px 5px" }}>
+                      <span style={{ fontSize: 8, fontWeight: 700, color: "#fff" }}>Card {i + 1}</span>
+                    </div>
+                    <div style={{ height: 32, background: card.mediaUrl ? "#D1FAE5" : "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {card.mediaUrl ? <span style={{ fontSize: 12 }}>🖼</span> : <span style={{ fontSize: 8, color: MUTED }}>No img</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           ) : (
-            /* Template selected — edit form, canvas node is the live preview */
+            /* Standard/non-carousel template selected — inline edit form */
             <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
               {/* Action bar */}
               <div style={{ padding: "8px 12px", background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "space-between" }}>

@@ -11,6 +11,10 @@ import PushPage from "@/pages/Push";
 import FlowsPage from "@/pages/Flows";
 import FlowBuilder from "@/pages/FlowBuilder";
 import FlowCreatePage from "@/pages/FlowCreate";
+import FlowsV2Page from "@/pages/FlowsV2";
+import FlowBuilderV2 from "@/pages/FlowBuilderV2";
+import FlowCreateV2Page from "@/pages/FlowCreateV2";
+import FlowAnalyticsV2 from "@/pages/FlowAnalyticsV2";
 import InstagramPage from "@/pages/Instagram";
 import SegmentsPage from "@/pages/Segments";
 import AudiencePage from "@/pages/Audience";
@@ -20,6 +24,7 @@ import HomeV3Page from "@/pages/HomeV3";
 import HomeV4Page from "@/pages/HomeV4";
 import HomeV5Page from "@/pages/HomeV5";
 import AnalyticsPage from "@/pages/Analytics";
+import FlowAnalytics from "@/pages/FlowAnalytics";
 import SettingsPage from "@/pages/Settings";
 import NotFoundPage from "@/pages/NotFound";
 import ConversationPanel from "@/components/conversation/ConversationPanel";
@@ -53,6 +58,12 @@ function App() {
             <Route path="/flows/create" element={<FlowCreatePage />} />
             <Route path="/flows/builder/new" element={<FlowBuilder />} />
             <Route path="/flows/builder/:id" element={<FlowBuilder />} />
+            <Route path="/flows/builder/:id/analytics" element={<FlowAnalytics />} />
+            <Route path="/flows-v2" element={<FlowsV2Page />} />
+            <Route path="/flows-v2/create" element={<FlowCreateV2Page />} />
+            <Route path="/flows-v2/builder/new" element={<FlowBuilderV2 />} />
+            <Route path="/flows-v2/builder/:id" element={<FlowBuilderV2 />} />
+            <Route path="/flows-v2/builder/:id/analytics" element={<FlowAnalyticsV2 />} />
             <Route path="/instagram" element={<InstagramPage />} />
             <Route path="/segments" element={<SegmentsPage />} />
             <Route path="/audience" element={<AudiencePage />} />

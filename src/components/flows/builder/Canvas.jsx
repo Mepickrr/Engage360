@@ -17,10 +17,19 @@ import ExitNode from "./nodes/ExitNode";
 import StartTriggerNode from "./nodes/StartTriggerNode";
 import WhatsAppNode from "./nodes/WhatsAppNode";
 import AiCallingNode from "./nodes/AiCallingNode";
+import AiChatbotNode from "./nodes/AiChatbotNode";
 import RCSNode from "./nodes/RCSNode";
 import AiPredictNode from "./nodes/AiPredictNode";
 import StartFlowNode from "./nodes/StartFlowNode";
 import RazorpayNode from "./nodes/RazorpayNode";
+import SMSNode from "./nodes/SMSNode";
+import PushNode from "./nodes/PushNode";
+import ConditionalSplitNode from "./nodes/ConditionalSplitNode";
+import EmailNode from "./nodes/EmailNode";
+import OnsiteNode from "./nodes/OnsiteNode";
+import InAppNode from "./nodes/InAppNode";
+import NextBestActionNode from "./nodes/NextBestActionNode";
+import SmartFlowOptimizerNode from "./nodes/SmartFlowOptimizerNode";
 
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import { defaultDataForPaletteItem } from "@/lib/flowMeta";
@@ -31,12 +40,21 @@ import { defaultDataForPaletteItem } from "@/lib/flowMeta";
 const nodeTypes = {
   trigger:         TriggerNode,
   "start-trigger": StartTriggerNode,
-  whatsapp:        WhatsAppNode,  // dedicated WhatsApp canvas block
+  whatsapp:        WhatsAppNode,
+  email:           EmailNode,
+  onsite:          OnsiteNode,
+  inapp:              InAppNode,
+  nextbestaction:     NextBestActionNode,
+  smartflowoptimizer: SmartFlowOptimizerNode,
   aicalling:       AiCallingNode,
+  aichatbot:       AiChatbotNode,
   rcs:             RCSNode,
   aipredict:       AiPredictNode,
   startflow:       StartFlowNode,
   razorpay:        RazorpayNode,
+  sms:             SMSNode,
+  push:            PushNode,
+  conditionalsplit: ConditionalSplitNode,
   channel:         ChannelNode,
   action:          ChannelNode,   // Shopify, Integrations, AI actions etc.
   note:            ChannelNode,   // Sticky notes

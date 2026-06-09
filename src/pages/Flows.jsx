@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchFlows, pauseFlow, resumeFlow, deleteFlow } from "@/lib/flowsApi";
+import { SEED_FLOWS } from "@/data/seedFlows";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -507,22 +508,48 @@ function FlowsTable({ sampleFlows, apiFlows, deleteMut }) {
   const [stageFilter, setStage]     = useState("all");
   const [toggles, setToggles]       = useState({});
 
+  // Seed flows converted to the same row shape
+  const seedRows = useMemo(() =>
+    SEED_FLOWS.map((sf) => ({
+      id: sf.id,
+      name: sf.name,
+      lifecycle: sf.lifecycle_stage || null,
+      health: sf.health || "healthy",
+      status: sf.status || "draft",
+      sent: 0, delivered: 0, opened: 0, clicked: 0, orders: 0, revenue: 0,
+      isSeed: true,
+    })),
+  []);
+
   const rows = useMemo(() => {
-    const source = (apiFlows && apiFlows.length > 0)
-      ? apiFlows.map((f) => ({
-          id: f.id,
-          name: f.name,
-          lifecycle: f.lifecycle_stage || null,
-          health: f.health || "healthy",
-          status: f.status === "active" ? "active" : "inactive",
-          sent:      f.performance?.entered || 0,
-          delivered: Math.round((f.performance?.entered || 0) * 0.82),
-          opened:    Math.round((f.performance?.entered || 0) * 0.35),
-          clicked:   Math.round((f.performance?.entered || 0) * 0.10),
-          orders:    0,
-          revenue:   f.performance?.revenue_inr || 0,
-        }))
+    const mapFlow = (f) => ({
+      id: f.id,
+      name: f.name,
+      lifecycle: f.lifecycle_stage || null,
+      health: f.health || "healthy",
+      // Preserve draft/paused/test; map everything else to active/inactive
+      status: ["active", "paused", "draft", "test"].includes(f.status)
+        ? f.status
+        : f.status === "active" ? "active" : "inactive",
+      sent:      f.performance?.entered || 0,
+      delivered: Math.round((f.performance?.entered || 0) * 0.82),
+      opened:    Math.round((f.performance?.entered || 0) * 0.35),
+      clicked:   Math.round((f.performance?.entered || 0) * 0.10),
+      orders:    0,
+      revenue:   f.performance?.revenue_inr || 0,
+      isLocal:   f.id?.startsWith("local-"),
+    });
+
+    const apiRows = (apiFlows && apiFlows.length > 0)
+      ? apiFlows.map(mapFlow)
       : sampleFlows;
+
+    // Always show seed flows at top (deduplicated against API/local rows)
+    const apiIds = new Set(apiRows.map((r) => r.id));
+    const source = [
+      ...seedRows.filter((r) => !apiIds.has(r.id)),
+      ...apiRows,
+    ];
 
     return source.filter((f) => {
       if (statusFilter !== "all" && f.status !== statusFilter) return false;
@@ -530,9 +557,9 @@ function FlowsTable({ sampleFlows, apiFlows, deleteMut }) {
       if (search && !f.name.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
     });
-  }, [apiFlows, sampleFlows, statusFilter, stageFilter, search]);
+  }, [apiFlows, sampleFlows, seedRows, statusFilter, stageFilter, search]);
 
-  const isActive = (f) => (toggles[f.id] !== undefined ? toggles[f.id] : f.status === "active");
+  const isActive = (f) => (toggles[f.id] !== undefined ? toggles[f.id] : f.status === "active" || f.status === "inactive" ? f.status === "active" : false);
   const fmt = (n, total) => {
     if (n == null) return "—";
     if (pctView && total) return `${((n / total) * 100).toFixed(1)}%`;
@@ -640,13 +667,25 @@ function FlowsTable({ sampleFlows, apiFlows, deleteMut }) {
                       <div className="flex items-start gap-2">
                         <HealthDot health={f.health} />
                         <div className="min-w-0">
-                          <button
-                            type="button"
-                            onClick={() => navigate(`/flows/builder/${f.id}`)}
-                            className="font-semibold text-[13px] text-text-primary hover:text-primary text-left block"
-                          >
-                            {f.name}
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => navigate(`/flows/builder/${f.id}`)}
+                              className="font-semibold text-[13px] text-text-primary hover:text-primary text-left"
+                            >
+                              {f.name}
+                            </button>
+                            {f.isSeed && (
+                              <span className="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-violet-100 text-violet-600">
+                                Demo
+                              </span>
+                            )}
+                            {f.isLocal && (
+                              <span className="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
+                                Saved locally
+                              </span>
+                            )}
+                          </div>
                           <LifecycleChip stage={f.lifecycle} />
                         </div>
                       </div>
@@ -681,7 +720,7 @@ function FlowsTable({ sampleFlows, apiFlows, deleteMut }) {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-44">
                           <DropdownMenuItem onSelect={() => navigate(`/flows/builder/${f.id}`)}>Edit</DropdownMenuItem>
-                          <DropdownMenuItem onSelect={() => toast.info("Opening analytics…")}>View Analytics</DropdownMenuItem>
+                          <DropdownMenuItem onSelect={() => navigate(`/flows/builder/${f.id}/analytics`)}>View Analytics</DropdownMenuItem>
                           <DropdownMenuItem onSelect={() => toast.info("Duplicating…")}>Duplicate</DropdownMenuItem>
                           <DropdownMenuItem onSelect={() => toast.info("Rename…")}>Rename</DropdownMenuItem>
                           <DropdownMenuItem onSelect={() => toast.info("Archived.")}>Archive</DropdownMenuItem>

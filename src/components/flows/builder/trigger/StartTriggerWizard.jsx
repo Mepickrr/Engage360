@@ -157,6 +157,8 @@ export default function StartTriggerWizard({
         <DialogContent
           className="max-w-3xl p-0 max-h-[92vh] flex flex-col overflow-hidden"
           data-testid="trigger-wizard"
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onInteractOutside={(e) => e.preventDefault()}
         >
           <DialogTitle className="sr-only">Configure trigger</DialogTitle>
           <header className="px-5 py-4 border-b border-border flex items-center justify-between">

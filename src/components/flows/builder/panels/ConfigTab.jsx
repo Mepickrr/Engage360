@@ -4,10 +4,19 @@ import { CHANNEL_META } from "@/lib/flowMeta";
 import DelayConfig from "./DelayConfig";
 import WhatsAppRightPanel from "@/components/flows/builder/nodes/WhatsAppNode/WhatsAppRightPanel";
 import AiCallingRightPanel from "@/components/flows/builder/nodes/AiCallingNode/AiCallingRightPanel";
+import AiChatbotRightPanel from "@/components/flows/builder/nodes/AiChatbotNode/AiChatbotRightPanel";
 import RCSRightPanel from "@/components/flows/builder/nodes/RCSNode/RCSRightPanel";
 import AiPredictRightPanel from "@/components/flows/builder/nodes/AiPredictNode/AiPredictRightPanel";
 import StartFlowRightPanel from "@/components/flows/builder/nodes/StartFlowNode/StartFlowRightPanel";
 import RazorpayRightPanel from "@/components/flows/builder/nodes/RazorpayNode/RazorpayRightPanel";
+import SMSRightPanel from "@/components/flows/builder/nodes/SMSNode/SMSRightPanel";
+import PushRightPanel from "@/components/flows/builder/nodes/PushNode/PushRightPanel";
+import ConditionalSplitRightPanel from "@/components/flows/builder/nodes/ConditionalSplitNode/ConditionalSplitRightPanel";
+import EmailRightPanel from "@/components/flows/builder/nodes/EmailNode/EmailRightPanel";
+import OnsiteRightPanel from "@/components/flows/builder/nodes/OnsiteNode/OnsiteRightPanel";
+import InAppRightPanel from "@/components/flows/builder/nodes/InAppNode/InAppRightPanel";
+import NextBestActionRightPanel from "@/components/flows/builder/nodes/NextBestActionNode/NextBestActionRightPanel";
+import SmartFlowOptimizerRightPanel from "@/components/flows/builder/nodes/SmartFlowOptimizerNode/SmartFlowOptimizerRightPanel";
 
 function NumberInput({ label, value, onChange, testId, suffix }) {
   return (
@@ -352,6 +361,18 @@ export default function ConfigTab() {
     );
   }
 
+  if (node?.type === "aichatbot") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col" data-testid="right-config-tab">
+        <AiChatbotRightPanel
+          node={node}
+          updateNodeData={updateNodeData}
+          removeNode={removeNode}
+        />
+      </div>
+    );
+  }
+
   if (node?.type === "rcs") {
     return (
       <div className="absolute inset-0 overflow-hidden flex flex-col">
@@ -380,6 +401,98 @@ export default function ConfigTab() {
     return (
       <div className="absolute inset-0 overflow-hidden flex flex-col">
         <RazorpayRightPanel />
+      </div>
+    );
+  }
+
+  if (node?.type === "sms") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col" data-testid="right-config-tab">
+        <SMSRightPanel
+          node={node}
+          updateNodeData={updateNodeData}
+          removeNode={removeNode}
+        />
+      </div>
+    );
+  }
+
+  if (node?.type === "push") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col" data-testid="right-config-tab">
+        <PushRightPanel
+          node={node}
+          updateNodeData={updateNodeData}
+          removeNode={removeNode}
+        />
+      </div>
+    );
+  }
+
+  if (node?.type === "onsite") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col" data-testid="right-config-tab">
+        <OnsiteRightPanel
+          node={node}
+          updateNodeData={updateNodeData}
+          removeNode={removeNode}
+        />
+      </div>
+    );
+  }
+
+  if (node?.type === "inapp") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col" data-testid="right-config-tab">
+        <InAppRightPanel
+          node={node}
+          updateNodeData={updateNodeData}
+          removeNode={removeNode}
+        />
+      </div>
+    );
+  }
+
+  if (node?.type === "nextbestaction") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col" data-testid="right-config-tab">
+        <NextBestActionRightPanel
+          node={node}
+          updateNodeData={updateNodeData}
+          removeNode={removeNode}
+        />
+      </div>
+    );
+  }
+
+  if (node?.type === "smartflowoptimizer") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col" data-testid="right-config-tab">
+        <SmartFlowOptimizerRightPanel
+          node={node}
+          updateNodeData={updateNodeData}
+          removeNode={removeNode}
+        />
+      </div>
+    );
+  }
+
+  if (node?.type === "email") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col" data-testid="right-config-tab">
+        <EmailRightPanel
+          node={node}
+          updateNodeData={updateNodeData}
+          removeNode={removeNode}
+        />
+      </div>
+    );
+  }
+
+  if (node?.type === "conditionalsplit") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col">
+        <ConditionalSplitRightPanel />
       </div>
     );
   }

@@ -1,6 +1,7 @@
 import React from "react";
 import { Handle, Position } from "reactflow";
 import { Clock, GitFork, SplitSquareVertical, TimerReset } from "lucide-react";
+import NodeAnalyticsFooter from "@/components/flows/analytics/NodeAnalyticsFooter";
 
 const KIND_META = {
   wait: { Icon: Clock, label: "Wait", color: "#64748B" },
@@ -70,13 +71,14 @@ export default function LogicNode({ id, data, type, selected }) {
   const meta = KIND_META[kind] || KIND_META.wait;
   const Icon = meta.Icon;
   const hasTwoOutputs = kind === "condition" || kind === "split";
+  const analyticsData = data?.analyticsData ?? null;
 
   return (
     <div
       data-testid={`rf-logic-node-${kind}`}
-      className={`min-w-[220px] bg-white border-2 rounded-lg shadow-sm transition-all ${
+      className={`min-w-[220px] bg-white border-2 shadow-sm transition-all ${
         selected ? "ring-2 ring-primary" : ""
-      }`}
+      } ${analyticsData ? "rounded-t-lg" : "rounded-lg"}`}
       style={{ borderColor: meta.color }}
     >
       <Handle
@@ -133,6 +135,7 @@ export default function LogicNode({ id, data, type, selected }) {
           style={{ background: meta.color, width: 8, height: 8 }}
         />
       )}
+      <NodeAnalyticsFooter type={kind} analyticsData={analyticsData} borderRadius="0 0 6px 6px" />
     </div>
   );
 }

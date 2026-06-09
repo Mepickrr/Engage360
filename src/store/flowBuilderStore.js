@@ -3,6 +3,9 @@
 
 import { create } from "zustand";
 
+const DEFAULT_AI_CALLING_GLOBAL = { voiceId: "varsha", tone: "professional", goal: "", configured: false };
+const DEFAULT_AI_CHATBOT_GLOBAL = { tone: "professional", instructions: "", agentType: null, storeDataAccess: false, storeDataMode: "full", tools: [], handoverContext: [], configured: false };
+
 export const useFlowBuilderStore = create((set, get) => ({
   flowId: null,
   meta: null, // {name, description, status, audience, performance...}
@@ -11,7 +14,8 @@ export const useFlowBuilderStore = create((set, get) => ({
   selectedNodeId: null,
   autosaveStatus: "idle", // "idle" | "saving" | "saved" | "error"
   preAiSnapshot: null,    // {nodes, edges} for undo
-  aiCallingGlobal: { voiceId: "varsha", tone: "professional", goal: "", configured: false },
+  aiCallingGlobal: { ...DEFAULT_AI_CALLING_GLOBAL },
+  aiChatbotGlobal: { ...DEFAULT_AI_CHATBOT_GLOBAL },
 
   setFlowId: (id) => set({ flowId: id }),
   hydrate: (flow) =>
@@ -59,7 +63,8 @@ export const useFlowBuilderStore = create((set, get) => ({
       ),
     }),
   addEdge: (edge) => set({ edges: [...get().edges, edge] }),
-  setAiCallingGlobal: (patch) => set({ aiCallingGlobal: { ...get().aiCallingGlobal, ...patch } }),
+  setAiCallingGlobal:  (patch) => set({ aiCallingGlobal:  { ...get().aiCallingGlobal,  ...patch } }),
+  setAiChatbotGlobal:  (patch) => set({ aiChatbotGlobal:  { ...get().aiChatbotGlobal,  ...patch } }),
 
   // For AI undo
   takeAiSnapshot: () =>
@@ -81,6 +86,7 @@ export const useFlowBuilderStore = create((set, get) => ({
       selectedNodeId: null,
       autosaveStatus: "idle",
       preAiSnapshot: null,
-      aiCallingGlobal: { voiceId: "varsha", tone: "professional", goal: "", configured: false },
+      aiCallingGlobal: { ...DEFAULT_AI_CALLING_GLOBAL },
+      aiChatbotGlobal: { ...DEFAULT_AI_CHATBOT_GLOBAL },
     }),
 }));

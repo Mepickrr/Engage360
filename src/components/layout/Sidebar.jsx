@@ -68,6 +68,7 @@ export const SIDEBAR_ITEMS = [
   { label: "Campaigns", icon: Megaphone, route: "/campaigns", testId: "nav-campaigns" },
   { label: "Push", icon: Bell, route: "/push", testId: "nav-push" },
   { label: "Flows", icon: GitBranch, route: "/flows", testId: "nav-flows" },
+  { label: "Flows V2", icon: GitBranch, route: "/flows-v2", testId: "nav-flows-v2", matchPaths: ["/flows-v2", "/flows-v2/create", "/flows-v2/builder"] },
   { label: "Instagram", icon: Instagram, route: "/instagram", testId: "nav-instagram" },
   { label: "Segments", icon: PieChart, route: "/segments", testId: "nav-segments" },
   { label: "Audience", icon: Users, route: "/audience", testId: "nav-audience" },
@@ -108,7 +109,7 @@ export const Sidebar = () => {
   return (
     <aside
       data-testid="sidebar"
-      className="fixed top-12 left-0 bottom-0 w-14 bg-sidebar-bg flex flex-col items-center justify-between py-2 z-30 border-r border-white/5"
+      className="fixed top-12 left-0 bottom-0 w-14 bg-sidebar-bg text-slate-300 flex flex-col items-center justify-between py-2 z-30 border-r border-white/10"
     >
       <TooltipProvider delayDuration={120}>
         <nav className="flex flex-col items-center w-full" aria-label="Primary">
@@ -129,8 +130,8 @@ export const Sidebar = () => {
                       return cn(
                         "relative w-14 h-12 flex items-center justify-center transition-colors group focus:outline-none",
                         active
-                          ? "text-primary bg-[rgba(108,58,232,0.10)]"
-                          : "text-sidebar-fg hover:text-white hover:bg-white/[0.04]",
+                          ? "text-white bg-[rgba(108,58,232,0.18)]"
+                          : "text-slate-300 hover:text-white hover:bg-white/[0.07]",
                       );
                     }}
                   >
@@ -146,7 +147,7 @@ export const Sidebar = () => {
                           )}
                           <Icon
                             className="w-5 h-5"
-                            strokeWidth={active ? 2.25 : 1.75}
+                            strokeWidth={2}
                           />
                         </>
                       );

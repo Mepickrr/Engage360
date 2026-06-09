@@ -16,6 +16,7 @@ import RightPanel from "@/components/flows/builder/RightPanel";
 import { toast } from "sonner";
 import StartTriggerWizard from "@/components/flows/builder/trigger/StartTriggerWizard";
 import AiCallingGlobalWizard from "@/components/flows/builder/nodes/AiCallingNode/AiCallingGlobalWizard";
+import AiChatbotGlobalWizard from "@/components/flows/builder/nodes/AiChatbotNode/AiChatbotGlobalWizard";
 
 const AUTOSAVE_DEBOUNCE_MS = 1500;
 
@@ -26,7 +27,8 @@ export default function FlowBuilder() {
   // Show trigger-selection modal whenever the builder opens for a new flow
   const isNew = !id || id === "new";
   const [triggerModalOpen, setTriggerModalOpen] = useState(isNew);
-  const [aiCallingWizardOpen, setAiCallingWizardOpen] = useState(false);
+  const [aiCallingWizardOpen,  setAiCallingWizardOpen]  = useState(false);
+  const [aiChatbotWizardOpen,  setAiChatbotWizardOpen]  = useState(false);
   // Ref so onClose can check without stale closure issues
   const triggerConfigured = useRef(false);
   const queryClient = useQueryClient();
@@ -42,8 +44,10 @@ export default function FlowBuilder() {
   const setAutosaveStatus = useFlowBuilderStore((s) => s.setAutosaveStatus);
   const removeNode = useFlowBuilderStore((s) => s.removeNode);
   const selectedNodeId = useFlowBuilderStore((s) => s.selectedNodeId);
-  const aiCallingGlobal = useFlowBuilderStore((s) => s.aiCallingGlobal);
+  const aiCallingGlobal    = useFlowBuilderStore((s) => s.aiCallingGlobal);
   const setAiCallingGlobal = useFlowBuilderStore((s) => s.setAiCallingGlobal);
+  const aiChatbotGlobal    = useFlowBuilderStore((s) => s.aiChatbotGlobal);
+  const setAiChatbotGlobal = useFlowBuilderStore((s) => s.setAiChatbotGlobal);
 
   // Reset store when route changes or unmounts
   useEffect(() => {
@@ -147,6 +151,9 @@ export default function FlowBuilder() {
     if (node?.type === "aicalling" && !useFlowBuilderStore.getState().aiCallingGlobal?.configured) {
       setAiCallingWizardOpen(true);
     }
+    if (node?.type === "aichatbot" && !useFlowBuilderStore.getState().aiChatbotGlobal?.configured) {
+      setAiChatbotWizardOpen(true);
+    }
   }, [selectedNodeId]);
 
   const handleAiCallingGlobalComplete = useCallback(
@@ -156,6 +163,15 @@ export default function FlowBuilder() {
       toast.success("AI Calling configured");
     },
     [setAiCallingGlobal],
+  );
+
+  const handleAiChatbotGlobalComplete = useCallback(
+    (globalConfig) => {
+      setAiChatbotGlobal(globalConfig);
+      setAiChatbotWizardOpen(false);
+      toast.success("AI Chatbot configured");
+    },
+    [setAiChatbotGlobal],
   );
 
   // Fires when the wizard completes (any path: step1-skip, step2-finish, broadcast)
@@ -195,8 +211,13 @@ export default function FlowBuilder() {
     debounceRef.current = setTimeout(async () => {
       setAutosaveStatus("saving");
       try {
-        await updateFlow(flowId, { nodes, edges });
+        const saved = await updateFlow(flowId, { nodes, edges });
         lastSavedRef.current = { nodes, edges };
+        // Seed flow was converted to a real/local copy — update URL + store ID
+        if (saved?.id && saved.id !== flowId) {
+          setFlowId(saved.id);
+          navigate(`/flows/builder/${saved.id}`, { replace: true });
+        }
         setAutosaveStatus("saved");
         queryClient.invalidateQueries({ queryKey: ["flows"] });
         setTimeout(() => setAutosaveStatus("idle"), 1500);
@@ -209,7 +230,8 @@ export default function FlowBuilder() {
       }
     }, AUTOSAVE_DEBOUNCE_MS);
     return () => debounceRef.current && clearTimeout(debounceRef.current);
-  }, [flowId, nodes, edges, setAutosaveStatus, queryClient]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flowId, nodes, edges, setAutosaveStatus, setFlowId, navigate, queryClient]);
 
   // Autosave flow meta (name/description/audience) on change.
   const lastMetaRef = useRef(null);
@@ -292,6 +314,13 @@ export default function FlowBuilder() {
         initialGlobal={aiCallingGlobal}
         onClose={() => setAiCallingWizardOpen(false)}
         onComplete={handleAiCallingGlobalComplete}
+      />
+
+      <AiChatbotGlobalWizard
+        open={aiChatbotWizardOpen}
+        initialGlobal={aiChatbotGlobal}
+        onClose={() => setAiChatbotWizardOpen(false)}
+        onComplete={handleAiChatbotGlobalComplete}
       />
     </>
   );

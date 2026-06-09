@@ -241,14 +241,16 @@ export default function TwoPanelDropdown({
   );
 }
 
-// Uses onMouseDown + preventDefault so the browser doesn't move focus away from
-// the trigger before onChange fires, and the click is registered cleanly.
+// Uses onPointerDown for selection so it fires before Radix DismissableLayer
+// can call preventDefault() on the event chain and suppress the click.
 function ItemRow({ it, selected, onHover, onSelect, testId }) {
   return (
     <li
       onMouseEnter={onHover}
-      onMouseDown={(e) => e.preventDefault()}
-      onClick={() => onSelect(it.name)}
+      onPointerDown={(e) => {
+        e.preventDefault(); // prevent focus loss
+        onSelect(it.name);
+      }}
       data-testid={testId}
       className={`px-3 py-1.5 text-sm cursor-pointer select-none ${
         selected

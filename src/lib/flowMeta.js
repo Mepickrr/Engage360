@@ -23,17 +23,26 @@ import {
   PhoneCall,
 } from "lucide-react";
 import { defaultAiCallingNodeData } from "@/components/flows/builder/nodes/AiCallingNode/data/mockData";
+import { defaultAiChatbotNodeData } from "@/components/flows/builder/nodes/AiChatbotNode/data/mockData";
 import { defaultRCSNodeData } from "@/components/flows/builder/nodes/RCSNode/data/mockData";
 import { defaultAiPredictNodeData } from "@/components/flows/builder/nodes/AiPredictNode/data/mockData";
 import { defaultStartFlowNodeData } from "@/components/flows/builder/nodes/StartFlowNode/data/mockData";
 import { defaultRazorpayNodeData } from "@/components/flows/builder/nodes/RazorpayNode/data/mockData";
+import { defaultSMSNodeData } from "@/components/flows/builder/nodes/SMSNode/data/mockData";
+import { defaultPushNodeData } from "@/components/flows/builder/nodes/PushNode/data/mockData";
+import { defaultConditionalSplitData } from "@/components/flows/builder/nodes/ConditionalSplitNode/data/mockData";
+import { defaultEmailNodeData } from "@/components/flows/builder/nodes/EmailNode/data/mockData";
+import { defaultOnsiteNodeData } from "@/components/flows/builder/nodes/OnsiteNode/data/mockData";
+import { defaultInAppNodeData } from "@/components/flows/builder/nodes/InAppNode/data/mockData";
+import { defaultNBANodeData } from "@/components/flows/builder/nodes/NextBestActionNode/data/mockData";
+import { defaultSFONodeData } from "@/components/flows/builder/nodes/SmartFlowOptimizerNode/data/mockData";
 
 export const CHANNEL_META = {
   whatsapp: { label: "WhatsApp", color: "#10B981", Icon: MessageCircle },
   email: { label: "Email", color: "#3B82F6", Icon: Mail },
   sms: { label: "SMS", color: "#8B5CF6", Icon: MessageSquare },
   push: { label: "Push", color: "#F59E0B", Icon: Bell },
-  inapp: { label: "In-app", color: "#14B8A6", Icon: Smartphone },
+  inapp: { label: "InApp", color: "#7C3AED", Icon: Smartphone },
   rcs: { label: "RCS", color: "#6366F1", Icon: MessageCircleMore },
 };
 
@@ -58,10 +67,11 @@ export const PALETTE_CATALOGUE = [
     group: "Channels",
     items: [
       { kind: "channel", subtype: "whatsapp", label: "WhatsApp", description: "Send WhatsApp", Icon: MessageCircle, color: "#10B981" },
-      { kind: "channel", subtype: "email", label: "Email", description: "Send Email", Icon: Mail, color: "#3B82F6" },
+      { kind: "email", subtype: null, label: "Email", description: "Send Email", Icon: Mail, color: "#3B82F6" },
       { kind: "channel", subtype: "sms", label: "SMS", description: "Send SMS", Icon: MessageSquare, color: "#8B5CF6" },
       { kind: "channel", subtype: "push", label: "Push", description: "Send Push", Icon: Bell, color: "#F59E0B" },
-      { kind: "channel", subtype: "inapp", label: "In-app", description: "Show in-app message", Icon: Smartphone, color: "#14B8A6" },
+      { kind: "onsite", subtype: null, label: "Onsite", description: "Popup, banner or nudge", Icon: Smartphone, color: "#14B8A6" },
+      { kind: "inapp",  subtype: null, label: "InApp",  description: "Native mobile in-app message", Icon: Smartphone, color: "#7C3AED" },
       { kind: "channel", subtype: "rcs", label: "RCS", description: "Send RCS message", Icon: MessageCircleMore, color: "#6366F1" },
     ],
   },
@@ -77,8 +87,11 @@ export const PALETTE_CATALOGUE = [
   {
     group: "AI",
     items: [
-      { kind: "aicalling", subtype: null, label: "AI Call", description: "AI-powered voice call", Icon: PhoneCall, color: "#4F46E5" },
-      { kind: "aipredict", subtype: null, label: "AI Predict", description: "ML-powered audience scoring", Icon: Zap, color: "#6D28D9" },
+      { kind: "aicalling",         subtype: null, label: "AI Call",              description: "AI-powered voice call",                    Icon: PhoneCall, color: "#4F46E5" },
+      { kind: "aichatbot",         subtype: null, label: "AI Chatbot",           description: "Conversational AI for chat channels",       Icon: Zap,       color: "#0891B2" },
+      { kind: "aipredict",         subtype: null, label: "AI Predict",           description: "ML-powered audience scoring",               Icon: Zap,       color: "#6D28D9" },
+      { kind: "nextbestaction",    subtype: null, label: "Next Best Action",     description: "AI picks the best channel per user",        Icon: Zap,       color: "#10B981" },
+      { kind: "smartflowoptimizer",subtype: null, label: "Smart Flow Optimizer", description: "AI optimises across channel variants",      Icon: Zap,       color: "#6366F1" },
     ],
   },
   {
@@ -92,16 +105,34 @@ export const PALETTE_CATALOGUE = [
 
 export function defaultDataForPaletteItem(item) {
   switch (item.kind) {
+    case "email":
+      return { ...defaultEmailNodeData };
+    case "onsite":
+      return { ...defaultOnsiteNodeData };
+    case "inapp":
+      return { ...defaultInAppNodeData };
+    case "nextbestaction":
+      return { ...defaultNBANodeData };
+    case "smartflowoptimizer":
+      return { ...defaultSFONodeData };
     case "rcs":
       return { ...defaultRCSNodeData };
     case "aicalling":
       return { ...defaultAiCallingNodeData };
+    case "aichatbot":
+      return { ...defaultAiChatbotNodeData };
     case "aipredict":
       return { ...defaultAiPredictNodeData };
     case "startflow":
       return { ...defaultStartFlowNodeData };
     case "razorpay":
       return { ...defaultRazorpayNodeData };
+    case "sms":
+      return { ...defaultSMSNodeData };
+    case "push":
+      return { ...defaultPushNodeData };
+    case "conditionalsplit":
+      return { ...defaultConditionalSplitData };
     case "whatsapp":
       return {
         label: "Send WhatsApp",
@@ -165,13 +196,22 @@ export function defaultDataForPaletteItem(item) {
 // We have 4 renderers: trigger, channel, logic, exit.
 export function rendererTypeForKind(kind) {
   if (kind === "trigger") return "trigger";
+  if (kind === "email")  return "email";
+  if (kind === "onsite") return "onsite";
+  if (kind === "inapp")             return "inapp";
+  if (kind === "nextbestaction")    return "nextbestaction";
+  if (kind === "smartflowoptimizer") return "smartflowoptimizer";
   if (kind === "channel") return "channel";
   if (kind === "end" || kind === "goal") return "exit";
-  if (kind === "aicalling") return "aicalling";
+  if (kind === "aicalling")  return "aicalling";
+  if (kind === "aichatbot")  return "aichatbot";
   if (kind === "rcs") return "rcs";
   if (kind === "aipredict")  return "aipredict";
   if (kind === "startflow")  return "startflow";
   if (kind === "razorpay")   return "razorpay";
+  if (kind === "sms")        return "sms";
+  if (kind === "push")             return "push";
+  if (kind === "conditionalsplit") return "conditionalsplit";
   return "logic"; // wait, condition, split, wait_until
 }
 

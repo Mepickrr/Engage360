@@ -288,14 +288,16 @@ function ConditionBlock({ block, onUpdate, onRemove, testIdPrefix }) {
 
   return (
     <div className="border border-border rounded-lg bg-surface">
-      {/* Block header */}
-      <div className="flex items-center justify-between px-3 py-2 bg-slate-50 border-b border-border">
-        <BlockTypePicker value={block.type} onChange={handleTypeChange} />
+      {/* Block header — tab strip */}
+      <div className="flex items-end bg-slate-50 border-b border-border pl-1">
+        <div className="flex-1 overflow-x-auto">
+          <BlockTypePicker value={block.type} onChange={handleTypeChange} />
+        </div>
         {onRemove && (
           <button
             type="button"
             onClick={onRemove}
-            className="p-1 text-text-muted hover:text-rose-600 rounded hover:bg-rose-50 transition-colors"
+            className="flex-shrink-0 mb-1 mr-1 p-1 text-text-muted hover:text-rose-600 rounded hover:bg-rose-50 transition-colors"
             aria-label="Remove block"
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -338,40 +340,24 @@ function ConditionBlock({ block, onUpdate, onRemove, testIdPrefix }) {
   );
 }
 
-// ─── Block type dropdown ───────────────────────────────────────
+// ─── Block type tab strip ─────────────────────────────────────
 function BlockTypePicker({ value, onChange }) {
-  const [open, setOpen] = useState(false);
-  const label = BLOCK_TYPES.find((t) => t.id === value)?.label || "Select type";
-
   return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((p) => !p)}
-        className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-text-primary hover:text-primary transition-colors"
-      >
-        {label}
-        <ChevronDown className="w-3.5 h-3.5" />
-      </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute top-full left-0 mt-1 z-20 bg-white border border-border rounded-lg shadow-lg py-1 min-w-[160px]">
-            {BLOCK_TYPES.map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => { onChange(t.id); setOpen(false); }}
-                className={`w-full text-left px-3 py-2 text-sm hover:bg-primary-tint transition-colors ${
-                  t.id === value ? "text-primary font-medium" : "text-text-primary"
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
+    <div className="flex">
+      {BLOCK_TYPES.map((t) => (
+        <button
+          key={t.id}
+          type="button"
+          onClick={() => onChange(t.id)}
+          className={`px-3 py-2 text-[12px] font-medium whitespace-nowrap transition-colors border-b-2 ${
+            t.id === value
+              ? "text-primary border-primary"
+              : "text-text-muted border-transparent hover:text-text-primary"
+          }`}
+        >
+          {t.label}
+        </button>
+      ))}
     </div>
   );
 }
