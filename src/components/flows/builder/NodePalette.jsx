@@ -21,6 +21,7 @@ import {
   UserCircle, Tags, Ticket, CalendarCheck,
   FilePlus, UserCheck, RefreshCw, FileText,
   Pin, Lock, Search, ChevronDown,
+  Package, Truck, XCircle, RotateCcw, Barcode,
 } from "lucide-react";
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 
@@ -70,7 +71,7 @@ const CATEGORIES = [
     id: "integrations", label: "Integrations", Icon: Plug, color: "blue",
     nodes: [
       { id:"judgeme",   name:"Judge Me",  Icon:Star,       kind:"action", subtype:"judgeme"  },
-      { id:"razorpay",  name:"Razor Pay", Icon:CreditCard, kind:"action", subtype:"razorpay", comingSoon:true },
+      { id:"razorpay",  name:"Razor Pay", Icon:CreditCard, kind:"razorpay", subtype:null },
       { id:"freshdesk", name:"Freshdesk", Icon:Headphones, kind:"action", subtype:"freshdesk"},
     ],
   },
@@ -111,6 +112,16 @@ const CATEGORIES = [
     id: "notes", label: "Notes", Icon: FileText, color: "amber",
     nodes: [
       { id:"stickynote", name:"Sticky Notes", Icon:FileText, kind:"note", subtype:null },
+    ],
+  },
+  {
+    id: "shiprocket", label: "Shiprocket Checkout", Icon: Truck, color: "teal",
+    nodes: [
+      { id:"sr_shipment",  name:"Create Shipment",  Icon:Package,   kind:"action", subtype:"sr_shipment"  },
+      { id:"sr_track",     name:"Track Order",      Icon:Truck,     kind:"action", subtype:"sr_track"     },
+      { id:"sr_cancel",    name:"Cancel Shipment",  Icon:XCircle,   kind:"action", subtype:"sr_cancel"    },
+      { id:"sr_return",    name:"Create Return",    Icon:RotateCcw, kind:"action", subtype:"sr_return"    },
+      { id:"sr_awb",       name:"Get AWB",          Icon:Barcode,   kind:"action", subtype:"sr_awb"       },
     ],
   },
 ];

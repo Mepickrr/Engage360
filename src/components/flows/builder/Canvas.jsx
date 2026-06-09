@@ -20,6 +20,7 @@ import AiCallingNode from "./nodes/AiCallingNode";
 import RCSNode from "./nodes/RCSNode";
 import AiPredictNode from "./nodes/AiPredictNode";
 import StartFlowNode from "./nodes/StartFlowNode";
+import RazorpayNode from "./nodes/RazorpayNode";
 
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import { defaultDataForPaletteItem } from "@/lib/flowMeta";
@@ -35,6 +36,7 @@ const nodeTypes = {
   rcs:             RCSNode,
   aipredict:       AiPredictNode,
   startflow:       StartFlowNode,
+  razorpay:        RazorpayNode,
   channel:         ChannelNode,
   action:          ChannelNode,   // Shopify, Integrations, AI actions etc.
   note:            ChannelNode,   // Sticky notes

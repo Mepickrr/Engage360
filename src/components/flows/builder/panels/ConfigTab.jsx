@@ -7,6 +7,7 @@ import AiCallingRightPanel from "@/components/flows/builder/nodes/AiCallingNode/
 import RCSRightPanel from "@/components/flows/builder/nodes/RCSNode/RCSRightPanel";
 import AiPredictRightPanel from "@/components/flows/builder/nodes/AiPredictNode/AiPredictRightPanel";
 import StartFlowRightPanel from "@/components/flows/builder/nodes/StartFlowNode/StartFlowRightPanel";
+import RazorpayRightPanel from "@/components/flows/builder/nodes/RazorpayNode/RazorpayRightPanel";
 
 function NumberInput({ label, value, onChange, testId, suffix }) {
   return (
@@ -371,6 +372,14 @@ export default function ConfigTab() {
     return (
       <div className="absolute inset-0 overflow-hidden flex flex-col">
         <StartFlowRightPanel />
+      </div>
+    );
+  }
+
+  if (node?.type === "razorpay") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col">
+        <RazorpayRightPanel />
       </div>
     );
   }

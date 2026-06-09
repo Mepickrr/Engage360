@@ -26,6 +26,7 @@ import { defaultAiCallingNodeData } from "@/components/flows/builder/nodes/AiCal
 import { defaultRCSNodeData } from "@/components/flows/builder/nodes/RCSNode/data/mockData";
 import { defaultAiPredictNodeData } from "@/components/flows/builder/nodes/AiPredictNode/data/mockData";
 import { defaultStartFlowNodeData } from "@/components/flows/builder/nodes/StartFlowNode/data/mockData";
+import { defaultRazorpayNodeData } from "@/components/flows/builder/nodes/RazorpayNode/data/mockData";
 
 export const CHANNEL_META = {
   whatsapp: { label: "WhatsApp", color: "#10B981", Icon: MessageCircle },
@@ -99,6 +100,8 @@ export function defaultDataForPaletteItem(item) {
       return { ...defaultAiPredictNodeData };
     case "startflow":
       return { ...defaultStartFlowNodeData };
+    case "razorpay":
+      return { ...defaultRazorpayNodeData };
     case "whatsapp":
       return {
         label: "Send WhatsApp",
@@ -168,6 +171,7 @@ export function rendererTypeForKind(kind) {
   if (kind === "rcs") return "rcs";
   if (kind === "aipredict")  return "aipredict";
   if (kind === "startflow")  return "startflow";
+  if (kind === "razorpay")   return "razorpay";
   return "logic"; // wait, condition, split, wait_until
 }
 
