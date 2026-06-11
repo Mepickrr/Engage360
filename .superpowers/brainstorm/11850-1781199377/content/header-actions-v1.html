@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Builder Header — Action Design</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  background: #f1f3f7;
+  min-height: 100vh;
+  padding: 32px 24px;
+  color: #111827;
+}
+
+h1 { font-size: 18px; font-weight: 700; margin-bottom: 6px; color: #111827; }
+.page-subtitle { font-size: 13px; color: #6b7280; margin-bottom: 28px; }
+
+/* ── Section ── */
+.section { margin-bottom: 36px; }
+.section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+  margin-bottom: 12px;
+}
+
+/* ── Builder Frame ── */
+.builder-frame {
+  background: white;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  border: 1px solid #e5e7eb;
+}
+
+/* ── Topbar ── */
+.topbar {
+  height: 52px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  gap: 12px;
+}
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.back-btn {
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 7px;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 14px;
+  flex-shrink: 0;
+  background: none;
+}
+.flow-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+}
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+.status-draft { background: #fef3c7; color: #92400e; }
+.status-test  { background: #dbeafe; color: #1d4ed8; }
+.status-live  { background: #dcfce7; color: #166534; }
+.status-paused { background: #f3f4f6; color: #6b7280; }
+
+.save-indicator {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 11px; color: #10b981;
+}
+
+/* ── Right actions ── */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+/* Icon-only buttons */
+.btn-icon {
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.15s;
+}
+.btn-icon:hover { background: #f9fafb; border-color: #d1d5db; color: #374151; }
+
+/* Divider */
+.btn-divider {
+  width: 1px; height: 22px;
+  background: #e5e7eb;
+  margin: 0 2px;
+}
+
+.btn-secondary {
+  background: white;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+}
+.btn-secondary:hover { background: #f9fafb; border-color: #d1d5db; }
+
+.btn-save-journey {
+  background: white;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  position: relative;
+}
+.btn-save-journey:hover { background: #f9fafb; }
+
+.btn-primary {
+  background: #6C3AE8;
+  color: white;
+  border: 1px solid transparent;
+  box-shadow: 0 1px 4px rgba(108,58,232,0.25);
+}
+.btn-primary:hover { background: #5b2fd4; }
+
+.btn-test {
+  background: white;
+  border: 1px solid #bfdbfe;
+  color: #2563eb;
+}
+.btn-test:hover { background: #eff6ff; }
+
+/* ── Canvas placeholder ── */
+.canvas-area {
+  background: #f8f9fb;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.node {
+  background: white;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 11.5px;
+  color: #6b7280;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  text-align: center;
+}
+.node.trigger { border-color: #6C3AE8; color: #6C3AE8; font-weight: 700; }
+.arrow { color: #d1d5db; font-size: 16px; }
+
+/* ── Save Journey Dropdown ── */
+.dropdown-wrap { position: relative; display: inline-block; }
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  width: 280px;
+  padding: 8px;
+  z-index: 100;
+}
+.dropdown-header {
+  padding: 6px 10px 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid #f3f4f6;
+  margin-bottom: 6px;
+}
+.dropdown-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.dropdown-item:hover { background: #f8f9fb; }
+.dropdown-item.danger:hover { background: #fff5f5; }
+.dropdown-item-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.icon-purple { background: #f0ebff; }
+.icon-blue   { background: #eff6ff; }
+.icon-teal   { background: #f0fdf4; }
+.icon-orange { background: #fff7ed; }
+.icon-green  { background: #f0fdf4; }
+
+.dropdown-item-text .item-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.2;
+}
+.dropdown-item-text .item-desc {
+  font-size: 11.5px;
+  color: #6b7280;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: #f3f4f6;
+  margin: 6px 0;
+}
+
+/* ── Status states section ── */
+.states-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.state-card {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.state-card:hover { border-color: #6C3AE8; box-shadow: 0 2px 12px rgba(108,58,232,0.1); }
+.state-card.active { border-color: #6C3AE8; box-shadow: 0 2px 12px rgba(108,58,232,0.1); }
+
+.state-topbar {
+  height: 40px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  gap: 4px;
+}
+.state-name {
+  font-size: 9px;
+  font-weight: 700;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.state-btns {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+.mini-btn {
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 5px;
+  font-size: 8.5px;
+  font-weight: 600;
+  border: none;
+  white-space: nowrap;
+}
+.mini-btn-outline { background: white; border: 1px solid #e5e7eb; color: #374151; }
+.mini-btn-blue { background: #eff6ff; color: #2563eb; }
+.mini-btn-purple { background: #6C3AE8; color: white; }
+.mini-btn-green { background: #dcfce7; color: #166534; }
+.mini-btn-pause { background: white; border: 1px solid #e5e7eb; color: #6b7280; }
+.mini-icon { font-size: 10px; }
+
+.state-canvas {
+  height: 60px;
+  background: #f8f9fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.mini-node {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+  padding: 4px 7px;
+  font-size: 8px;
+  color: #9ca3af;
+}
+.mini-node.trigger-node { border-color: #6C3AE8; color: #6C3AE8; }
+.mini-arrow { font-size: 9px; color: #d1d5db; }
+
+.state-footer {
+  padding: 7px 8px;
+  font-size: 9.5px;
+  font-weight: 600;
+  text-align: center;
+}
+.state-footer.draft-f { color: #92400e; background: #fffbeb; }
+.state-footer.test-f  { color: #1d4ed8; background: #eff6ff; }
+.state-footer.live-f  { color: #166534; background: #f0fdf4; }
+.state-footer.paused-f { color: #6b7280; background: #f9fafb; }
+
+.state-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  color: #6b7280;
+  margin-top: 8px;
+}
+.selected-check {
+  display: none;
+  font-size: 11px;
+  color: #6C3AE8;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 4px;
+}
+.state-card.active .selected-check { display: block; }
+
+.note {
+  background: #f0ebff;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #5b21b6;
+  margin-top: 12px;
+}
+</style>
+</head>
+<body>
+
+<h1>Builder Header — Action Design</h1>
+<p class="page-subtitle">New header layout with Save Journey menu and status-based action states</p>
+
+<!-- SECTION 1: The Header -->
+<div class="section">
+  <div class="section-title">1 — New Builder Header (Draft state)</div>
+  <div class="builder-frame">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="back-btn">←</button>
+        <span class="flow-name">Abandoned Cart Recovery</span>
+        <span class="status-pill status-draft">● Draft</span>
+        <span class="save-indicator">✓ Saved</span>
+      </div>
+      <div class="topbar-right">
+        <!-- Preview -->
+        <button class="btn-icon" title="Preview journey">▶</button>
+        <!-- Divider -->
+        <div class="btn-divider"></div>
+        <!-- Test -->
+        <button class="btn btn-test">🧪 Test</button>
+        <!-- Save Journey dropdown trigger -->
+        <div class="dropdown-wrap">
+          <button class="btn btn-save-journey" onclick="toggleDropdown()">
+            Save Journey &nbsp;▾
+          </button>
+          <!-- Dropdown -->
+          <div class="dropdown-menu" id="saveMenu" style="display:none">
+            <div class="dropdown-header">Journey Setup</div>
+            <div class="dropdown-item">
+              <div class="dropdown-item-icon icon-purple">⚡</div>
+              <div class="dropdown-item-text">
+                <div class="item-label">Conversion Attribution</div>
+                <div class="item-desc">Set goals, attribution window, and revenue tracking</div>
+              </div>
+            </div>
+            <div class="dropdown-item">
+              <div class="dropdown-item-icon icon-blue">▶</div>
+              <div class="dropdown-item-text">
+                <div class="item-label">Preview Journey</div>
+                <div class="item-desc">Walk through the flow screen by screen, like Figma</div>
+              </div>
+            </div>
+            <div class="dropdown-item">
+              <div class="dropdown-item-icon icon-teal">🧪</div>
+              <div class="dropdown-item-text">
+                <div class="item-label">Test Mode</div>
+                <div class="item-desc">Run the flow live for selected test profiles</div>
+              </div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-item">
+              <div class="dropdown-item-icon icon-green">🚀</div>
+              <div class="dropdown-item-text">
+                <div class="item-label" style="color:#166534">Go Live</div>
+                <div class="item-desc">Publish and activate this flow for real users</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Go Live primary CTA -->
+        <button class="btn btn-primary">🚀 Go Live</button>
+      </div>
+    </div>
+    <div class="canvas-area">
+      <div class="node trigger">🎯 Abandoned Cart</div>
+      <div class="arrow">→</div>
+      <div class="node">⏱ Wait 1h</div>
+      <div class="arrow">→</div>
+      <div class="node">💬 WhatsApp</div>
+      <div class="arrow">→</div>
+      <div class="node">📧 Email</div>
+    </div>
+  </div>
+  <p style="font-size:11.5px;color:#6b7280;margin-top:8px;">Click <strong>Save Journey ▾</strong> to see the dropdown menu.</p>
+</div>
+
+<!-- SECTION 2: Status states -->
+<div class="section">
+  <div class="section-title">2 — Header Actions by Flow Status</div>
+  <div class="states-grid">
+
+    <!-- Draft -->
+    <div>
+      <div class="state-card">
+        <div class="state-topbar">
+          <span class="state-name">Cart Recovery</span>
+          <div class="state-btns">
+            <span class="mini-btn mini-btn-outline mini-icon">▶</span>
+            <span class="mini-btn mini-btn-blue">🧪 Test</span>
+            <span class="mini-btn mini-btn-outline">Save ▾</span>
+            <span class="mini-btn mini-btn-purple">🚀 Go Live</span>
+          </div>
+        </div>
+        <div class="state-canvas">
+          <div class="mini-node trigger-node">Trigger</div>
+          <div class="mini-arrow">→</div>
+          <div class="mini-node">WhatsApp</div>
+          <div class="mini-arrow">→</div>
+          <div class="mini-node">Email</div>
+        </div>
+        <div class="state-footer draft-f">● Draft</div>
+      </div>
+      <div class="state-label">Draft</div>
+    </div>
+
+    <!-- Test Mode -->
+    <div>
+      <div class="state-card">
+        <div class="state-topbar">
+          <span class="state-name">Cart Recovery</span>
+          <div class="state-btns">
+            <span class="mini-btn mini-btn-outline mini-icon">▶</span>
+            <span class="mini-btn mini-btn-outline">Stop Test</span>
+            <span class="mini-btn mini-btn-purple">🚀 Go Live</span>
+          </div>
+        </div>
+        <div class="state-canvas">
+          <div class="mini-node trigger-node">Trigger</div>
+          <div class="mini-arrow">→</div>
+          <div class="mini-node">WhatsApp</div>
+          <div class="mini-arrow">→</div>
+          <div class="mini-node">Email</div>
+        </div>
+        <div class="state-footer test-f">🧪 Test Mode</div>
+      </div>
+      <div class="state-label">Test Mode</div>
+    </div>
+
+    <!-- Live -->
+    <div>
+      <div class="state-card">
+        <div class="state-topbar">
+          <span class="state-name">Cart Recovery</span>
+          <div class="state-btns">
+            <span class="mini-btn mini-btn-outline mini-icon">▶</span>
+            <span class="mini-btn mini-btn-outline">Save ▾</span>
+            <span class="mini-btn mini-btn-pause">⏸ Pause</span>
+          </div>
+        </div>
+        <div class="state-canvas">
+          <div class="mini-node trigger-node">Trigger</div>
+          <div class="mini-arrow">→</div>
+          <div class="mini-node">WhatsApp</div>
+          <div class="mini-arrow">→</div>
+          <div class="mini-node">Email</div>
+        </div>
+        <div class="state-footer live-f">● Live</div>
+      </div>
+      <div class="state-label">Live</div>
+    </div>
+
+    <!-- Paused -->
+    <div>
+      <div class="state-card">
+        <div class="state-topbar">
+          <span class="state-name">Cart Recovery</span>
+          <div class="state-btns">
+            <span class="mini-btn mini-btn-outline mini-icon">▶</span>
+            <span class="mini-btn mini-btn-outline">Save ▾</span>
+            <span class="mini-btn mini-btn-green">▶ Resume</span>
+          </div>
+        </div>
+        <div class="state-canvas">
+          <div class="mini-node trigger-node">Trigger</div>
+          <div class="mini-arrow">→</div>
+          <div class="mini-node">WhatsApp</div>
+          <div class="mini-arrow">→</div>
+          <div class="mini-node">Email</div>
+        </div>
+        <div class="state-footer paused-f">⏸ Paused</div>
+      </div>
+      <div class="state-label">Paused</div>
+    </div>
+
+  </div>
+
+  <div class="note">
+    <strong>Status flow:</strong> Draft → Test Mode → Live → Paused → Live<br/>
+    <strong>Test Mode</strong> is a separate status between Draft and Live. "Stop Test" returns to Draft; "Go Live" promotes directly from Test to Live.
+  </div>
+</div>
+
+<script>
+function toggleDropdown() {
+  const menu = document.getElementById('saveMenu');
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.dropdown-wrap')) {
+    const menu = document.getElementById('saveMenu');
+    if (menu) menu.style.display = 'none';
+  }
+});
+</script>
+</body>
+</html>

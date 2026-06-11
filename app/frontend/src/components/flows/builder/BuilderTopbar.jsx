@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import {
@@ -9,8 +9,18 @@ import {
   resumeFlow,
 } from "@/lib/flowsApi";
 import StatusPill from "@/components/flows/StatusPill";
-import { ArrowLeft, Check, CircleAlert, Loader2, Pause, Play, Rocket, Save } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  CircleAlert,
+  Loader2,
+  Pause,
+  Play,
+  FlaskConical,
+  BookMarked,
+} from "lucide-react";
 import { toast } from "sonner";
+import SaveJourneyModal from "./SaveJourneyModal";
 
 function SaveIndicator({ status }) {
   if (status === "saving")
@@ -37,23 +47,32 @@ function SaveIndicator({ status }) {
 export default function BuilderTopbar() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const flowId = useFlowBuilderStore((s) => s.flowId);
-  const meta = useFlowBuilderStore((s) => s.meta);
+  const flowId        = useFlowBuilderStore((s) => s.flowId);
+  const meta          = useFlowBuilderStore((s) => s.meta);
+  const nodes         = useFlowBuilderStore((s) => s.nodes);
   const autosaveStatus = useFlowBuilderStore((s) => s.autosaveStatus);
-  const patchMeta = useFlowBuilderStore((s) => s.patchMeta);
+  const patchMeta     = useFlowBuilderStore((s) => s.patchMeta);
   const setAutosaveStatus = useFlowBuilderStore((s) => s.setAutosaveStatus);
 
   const [editing, setEditing] = useState(false);
   const [draftName, setDraftName] = useState(meta?.name || "");
+  const [saveJourneyOpen, setSaveJourneyOpen] = useState(false);
   const inputRef = useRef(null);
 
-  useEffect(() => {
-    setDraftName(meta?.name || "");
-  }, [meta?.name]);
+  useEffect(() => { setDraftName(meta?.name || ""); }, [meta?.name]);
+  useEffect(() => { if (editing) inputRef.current?.focus(); }, [editing]);
 
-  useEffect(() => {
-    if (editing) inputRef.current?.focus();
-  }, [editing]);
+  // Derive trigger event name from first trigger node on canvas
+  const triggerEventName = (() => {
+    const triggerNode = nodes?.find(
+      (n) => n.type === "trigger" || n.type === "startTrigger" || n.id === "start",
+    );
+    return (
+      triggerNode?.data?.event_name ||
+      triggerNode?.data?.groups?.[0]?.event ||
+      ""
+    );
+  })();
 
   const renameMut = useMutation({
     mutationFn: ({ name }) => updateFlow(flowId, { name }),
@@ -71,9 +90,11 @@ export default function BuilderTopbar() {
     onSuccess: (doc) => {
       patchMeta({ status: doc.status });
       queryClient.invalidateQueries({ queryKey: ["flows"] });
-      toast.success("Flow is now live");
+      toast.success("Flow is now live 🚀");
     },
+    onError: () => toast.error("Failed to publish"),
   });
+
   const pauseMut = useMutation({
     mutationFn: () => pauseFlow(flowId),
     onSuccess: (doc) => {
@@ -81,7 +102,9 @@ export default function BuilderTopbar() {
       queryClient.invalidateQueries({ queryKey: ["flows"] });
       toast.success("Flow paused");
     },
+    onError: () => toast.error("Failed to pause"),
   });
+
   const resumeMut = useMutation({
     mutationFn: () => resumeFlow(flowId),
     onSuccess: (doc) => {
@@ -89,25 +112,7 @@ export default function BuilderTopbar() {
       queryClient.invalidateQueries({ queryKey: ["flows"] });
       toast.success("Flow resumed");
     },
-  });
-
-  // Manual save — bypasses the 1.5s autosave debounce. Pipes through the same
-  // autosaveStatus indicator so the user sees "Saving..." → "Saved" inline.
-  const saveMut = useMutation({
-    mutationFn: () =>
-      updateFlow(flowId, {
-        nodes,
-        edges,
-        name: meta?.name,
-        description: meta?.description,
-      }),
-    onMutate: () => setAutosaveStatus("saving"),
-    onSuccess: () => {
-      setAutosaveStatus("saved");
-      queryClient.invalidateQueries({ queryKey: ["flows"] });
-      setTimeout(() => setAutosaveStatus("idle"), 1500);
-    },
-    onError: () => setAutosaveStatus("error"),
+    onError: () => toast.error("Failed to resume"),
   });
 
   const commitName = () => {
@@ -119,6 +124,20 @@ export default function BuilderTopbar() {
     }
   };
 
+  const handleGoLive = (payload) => {
+    patchMeta({ goals: payload.goals, attributionWindow: payload.attributionWindow });
+    publishMut.mutate();
+  };
+
+  const handleTestMode = (payload) => {
+    patchMeta({ goals: payload.goals, status: "test" });
+    toast.info("Test mode activated — the flow will run for selected test profiles");
+  };
+
+  const handlePreview = () => {
+    toast.info("Journey preview coming soon");
+  };
+
   const status = meta?.status || "draft";
 
   return (
@@ -126,6 +145,7 @@ export default function BuilderTopbar() {
       data-testid="builder-topbar"
       className="h-12 bg-surface border-b border-border flex items-center justify-between px-4 flex-shrink-0"
     >
+      {/* Left */}
       <div className="flex items-center gap-3 min-w-0">
         <button
           type="button"
@@ -169,6 +189,7 @@ export default function BuilderTopbar() {
         </div>
       </div>
 
+      {/* Right */}
       <div className="flex items-center gap-2">
         {status === "active" && (
           <button
@@ -190,34 +211,56 @@ export default function BuilderTopbar() {
             disabled={resumeMut.isPending}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-[12px] text-text-secondary hover:bg-slate-50"
           >
-            <Play className="w-3.5 h-3.5" />
             Resume
           </button>
         )}
+
+        {/* Play preview */}
         <button
           type="button"
-          data-testid="builder-save"
-          onClick={() => saveMut.mutate()}
-          disabled={saveMut.isPending || !flowId}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-[12px] text-text-secondary hover:bg-slate-50 hover:text-primary disabled:opacity-50 transition-colors"
-          title="Save now (autosave runs every 1.5s)"
+          data-testid="builder-play"
+          onClick={handlePreview}
+          disabled={!flowId}
+          title="Preview journey"
+          className="w-8 h-8 rounded-md flex items-center justify-center border border-border text-text-secondary hover:bg-slate-50 hover:text-primary disabled:opacity-40 transition-colors"
         >
-          <Save className="w-3.5 h-3.5" />
-          Save
+          <Play className="w-3.5 h-3.5" />
         </button>
-        {status === "draft" && (
-          <button
-            type="button"
-            data-testid="builder-publish"
-            onClick={() => publishMut.mutate()}
-            disabled={publishMut.isPending || !flowId}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-white text-[12px] font-medium hover:bg-primary-hover disabled:opacity-50"
-          >
-            <Rocket className="w-3.5 h-3.5" />
-            {publishMut.isPending ? "Publishing..." : "Publish"}
-          </button>
-        )}
+
+        {/* Test */}
+        <button
+          type="button"
+          data-testid="builder-test"
+          onClick={() => setSaveJourneyOpen(true)}
+          disabled={!flowId}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-blue-200 bg-blue-50 text-blue-700 text-[12px] font-semibold hover:bg-blue-100 disabled:opacity-40 transition-colors"
+        >
+          <FlaskConical className="w-3.5 h-3.5" />
+          Test
+        </button>
+
+        {/* Save Journey */}
+        <button
+          type="button"
+          data-testid="builder-save-journey"
+          onClick={() => setSaveJourneyOpen(true)}
+          disabled={!flowId}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-white text-[12px] font-semibold hover:bg-primary-hover disabled:opacity-50 transition-colors"
+        >
+          <BookMarked className="w-3.5 h-3.5" />
+          Save Journey
+        </button>
       </div>
+
+      {/* Save Journey Modal */}
+      <SaveJourneyModal
+        open={saveJourneyOpen}
+        onClose={() => setSaveJourneyOpen(false)}
+        triggerEventName={triggerEventName}
+        onGoLive={handleGoLive}
+        onTestMode={handleTestMode}
+        onPreview={handlePreview}
+      />
     </header>
   );
 }

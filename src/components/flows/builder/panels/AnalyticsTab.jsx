@@ -92,14 +92,16 @@ export default function AnalyticsTab() {
   if (status === "draft") {
     return (
       <div
-        className="p-6 text-center"
+        className="h-full flex items-center justify-center p-6 text-center"
         data-testid="analytics-disabled"
       >
-        <div className="text-sm font-medium text-text-primary mb-1">
-          Analytics will light up once this flow is published.
-        </div>
-        <div className="text-[12px] text-text-muted">
-          Drafts don't collect performance data yet.
+        <div>
+          <div className="text-sm font-medium text-text-primary mb-1">
+            Analytics will light up once this flow is published.
+          </div>
+          <div className="text-[12px] text-text-muted">
+            Drafts don't collect performance data yet.
+          </div>
         </div>
       </div>
     );
@@ -107,72 +109,77 @@ export default function AnalyticsTab() {
 
   return (
     <div
-      className="absolute inset-0 p-4 space-y-4 overflow-y-auto"
+      className="h-full overflow-y-auto"
       data-testid="right-analytics-tab"
     >
-      <div className="grid grid-cols-2 gap-2">
-        <Kpi label="Entered" value={(perf.entered || 0).toLocaleString("en-IN")} testId="analytics-entered" />
-        <Kpi label="Completed" value={(perf.completed || 0).toLocaleString("en-IN")} testId="analytics-completed" />
-        <Kpi label="Conversion" value={`${(perf.conversion_rate || 0).toFixed(1)}%`} testId="analytics-conv" />
-        <Kpi label="Revenue" value={formatINR(perf.revenue_inr)} testId="analytics-revenue" />
-      </div>
+      <div className="p-4 flex flex-col gap-4 pb-6">
+        {/* KPI grid */}
+        <div className="grid grid-cols-2 gap-2">
+          <Kpi label="Entered" value={(perf.entered || 0).toLocaleString("en-IN")} testId="analytics-entered" />
+          <Kpi label="Completed" value={(perf.completed || 0).toLocaleString("en-IN")} testId="analytics-completed" />
+          <Kpi label="Conversion" value={`${(perf.conversion_rate || 0).toFixed(1)}%`} testId="analytics-conv" />
+          <Kpi label="Revenue" value={formatINR(perf.revenue_inr)} testId="analytics-revenue" />
+        </div>
 
-      <div className="bg-surface border border-border rounded-md p-3">
-        <div className="text-[11px] uppercase tracking-wide text-text-muted font-medium mb-2">
-          7-day entry trend
-        </div>
-        <div className="h-32" data-testid="analytics-sparkline">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={sparkData}>
-              <CartesianGrid stroke="#E5E7EB" strokeDasharray="2 2" />
-              <XAxis dataKey="day" tick={TICK_STYLE} stroke="#94A3B8" />
-              <YAxis tick={TICK_STYLE} stroke="#94A3B8" width={28} />
-              <RechartsTooltip
-                contentStyle={TOOLTIP_CONTENT_STYLE}
-                labelStyle={TOOLTIP_LABEL_STYLE}
-              />
-              <Line
-                type="monotone"
-                dataKey="entered"
-                stroke="#6C3AE8"
-                strokeWidth={2}
-                dot={LINE_DOT_STYLE}
-                activeDot={LINE_ACTIVE_DOT_STYLE}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      <div>
-        <div className="text-[11px] uppercase tracking-wide text-text-muted font-medium mb-2">
-          Per-node delivery
-        </div>
-        {nodeBreakdown.length === 0 ? (
-          <div className="text-[11px] text-text-muted px-1">No data yet.</div>
-        ) : (
-          <div className="space-y-1.5" data-testid="analytics-nodes">
-            {nodeBreakdown.map((row) => (
-              <div
-                key={row.id}
-                className="bg-surface border border-border rounded-md px-2.5 py-1.5"
-              >
-                <div className="text-[12px] font-medium text-text-primary truncate">
-                  {row.label}
-                </div>
-                <div className="text-[10px] text-text-muted">
-                  {row.in.toLocaleString("en-IN")} → {row.out.toLocaleString("en-IN")} delivered ({row.rate.toFixed(1)}%)
-                </div>
-                <div className="h-1 rounded-full bg-slate-100 overflow-hidden mt-1">
-                  <div
-                    className="h-full bg-primary"
-                    style={{ width: `${Math.min(100, row.rate)}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+        {/* Sparkline */}
+        <div className="bg-surface border border-border rounded-md p-3">
+          <div className="text-[11px] uppercase tracking-wide text-text-muted font-medium mb-3">
+            7-day entry trend
           </div>
-        )}
+          <div className="h-36" data-testid="analytics-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={sparkData}>
+                <CartesianGrid stroke="#E5E7EB" strokeDasharray="2 2" />
+                <XAxis dataKey="day" tick={TICK_STYLE} stroke="#94A3B8" />
+                <YAxis tick={TICK_STYLE} stroke="#94A3B8" width={36} />
+                <RechartsTooltip
+                  contentStyle={TOOLTIP_CONTENT_STYLE}
+                  labelStyle={TOOLTIP_LABEL_STYLE}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="entered"
+                  stroke="#6C3AE8"
+                  strokeWidth={2}
+                  dot={LINE_DOT_STYLE}
+                  activeDot={LINE_ACTIVE_DOT_STYLE}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Per-node delivery */}
+        <div>
+          <div className="text-[11px] uppercase tracking-wide text-text-muted font-medium mb-2">
+            Per-node delivery
+          </div>
+          {nodeBreakdown.length === 0 ? (
+            <div className="text-[11px] text-text-muted px-1">No data yet.</div>
+          ) : (
+            <div className="flex flex-col gap-1.5" data-testid="analytics-nodes">
+              {nodeBreakdown.map((row) => (
+                <div
+                  key={row.id}
+                  className="bg-surface border border-border rounded-md px-3 py-2"
+                >
+                  <div className="text-[12px] font-medium text-text-primary truncate mb-0.5">
+                    {row.label}
+                  </div>
+                  <div className="text-[10px] text-text-muted mb-1.5">
+                    {row.in.toLocaleString("en-IN")} → {row.out.toLocaleString("en-IN")} delivered ({row.rate.toFixed(1)}%)
+                  </div>
+                  <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                    <div
+                      className="h-full bg-primary rounded-full"
+                      style={{ width: `${Math.min(100, row.rate)}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,28 @@
 {
   "catalogue": {
     "Ecommerce": {
+      "For You": [
+        {
+          "name": "Checkout started",
+          "description": "User enters checkout flow on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "For You"
+        },
+        {
+          "name": "Review Created",
+          "description": "This is an event from Judge Me whenever a user adds a review  on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "For You"
+        }
+      ],
       "Shopping behaviour": [
         {
           "name": "App/Website open",
@@ -163,6 +185,50 @@
           "time_attribute_allow": false,
           "header": "Ecommerce",
           "section": "Order"
+        }
+      ]
+    },
+    "Shiprocket Checkout": {
+      "Shiprocket Checkout": [
+        {
+          "name": "Address Filled",
+          "description": "When address is filled by user",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Shiprocket Checkout",
+          "section": "Shiprocket Checkout"
+        },
+        {
+          "name": "Checkout Started",
+          "description": "Event when checkout is started",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Shiprocket Checkout",
+          "section": "Shiprocket Checkout"
+        },
+        {
+          "name": "Payment Completed",
+          "description": "When payment is successfully completed",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Shiprocket Checkout",
+          "section": "Shiprocket Checkout"
+        },
+        {
+          "name": "Payment Failed",
+          "description": "When payment fails",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Shiprocket Checkout",
+          "section": "Shiprocket Checkout"
         }
       ]
     },
@@ -762,6 +828,92 @@
           "header": "ALL",
           "section": "Agent"
         }
+      ],
+      "For You": [
+        {
+          "name": "Checkout started",
+          "description": "User enters checkout flow on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "For You"
+        },
+        {
+          "name": "Review Created",
+          "description": "This is an event from Judge Me whenever a user adds a review  on app or website",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "For You"
+        }
+      ],
+      "Shiprocket Checkout": [
+        {
+          "name": "Address Filled",
+          "description": "When address is filled by user",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shiprocket Checkout"
+        },
+        {
+          "name": "Checkout Started",
+          "description": "Event when checkout is started",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shiprocket Checkout"
+        },
+        {
+          "name": "Payment Completed",
+          "description": "When payment is successfully completed",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shiprocket Checkout"
+        },
+        {
+          "name": "Payment Failed",
+          "description": "When payment fails",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shiprocket Checkout"
+        }
+      ],
+      "Custom Event": [
+        {
+          "name": "Spin popup Dismiss",
+          "description": "When a user dismisses the spin and win popup",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Custom Event"
+        },
+        {
+          "name": "Open Profile",
+          "description": "When profile section is opened",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Custom Event"
+        }
       ]
     },
     "Post-purchase": {
@@ -845,6 +997,30 @@
           "time_attribute_allow": false,
           "header": "Post-purchase",
           "section": "Fulfilment"
+        }
+      ]
+    },
+    "Custom Events": {
+      "Custom Event": [
+        {
+          "name": "Spin popup Dismiss",
+          "description": "When a user dismisses the spin and win popup",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Custom Events",
+          "section": "Custom Event"
+        },
+        {
+          "name": "Open Profile",
+          "description": "When profile section is opened",
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Custom Events",
+          "section": "Custom Event"
         }
       ]
     },

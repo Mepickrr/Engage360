@@ -18,10 +18,10 @@ function fmtINR(n) {
 
 function MetricCard({ label, value, sub, highlight }) {
   return (
-    <div className={`flex flex-col gap-0.5 px-5 py-3 border-r border-border last:border-r-0 min-w-0 flex-1 ${highlight ? "bg-violet-50/50" : ""}`}>
+    <div className={`flex flex-col justify-center gap-1 px-5 py-4 border-r border-border last:border-r-0 min-w-[130px] flex-1 ${highlight ? "bg-violet-50/50" : ""}`}>
       <span className="text-[10px] uppercase tracking-wider text-text-muted font-semibold whitespace-nowrap">{label}</span>
-      <span className={`text-[22px] font-bold tabular-nums leading-none ${highlight ? "text-primary" : "text-text-primary"}`}>{value}</span>
-      {sub && <span className="text-[10px] text-text-muted">{sub}</span>}
+      <span className={`text-[20px] font-bold tabular-nums leading-none ${highlight ? "text-primary" : "text-text-primary"}`}>{value}</span>
+      {sub && <span className="text-[10px] text-text-muted leading-snug">{sub}</span>}
     </div>
   );
 }
@@ -79,7 +79,7 @@ export default function OverallAnalyticsPanel({ overall = {}, viewMode, onViewMo
   return (
     <div className="bg-surface border-b border-border flex-shrink-0">
       {/* Metric cards row */}
-      <div className="flex items-stretch divide-x divide-border overflow-x-auto">
+      <div className="flex items-stretch divide-x divide-border overflow-x-auto min-h-[80px]">
         <MetricCard label="Triggered"           value={fmt(triggered)}          sub="users entered"           />
         <MetricCard label="Unique Customers"    value={fmt(unique_customers)}   sub="deduplicated"            />
         <MetricCard label="Messages Sent"       value={fmt(messages_sent)}      sub="across all channels"     />
@@ -89,7 +89,7 @@ export default function OverallAnalyticsPanel({ overall = {}, viewMode, onViewMo
       </div>
 
       {/* View toggle + more */}
-      <div className="flex items-center justify-between px-4 py-2 border-t border-border">
+      <div className="flex items-center justify-between px-4 py-2.5 border-t border-border">
         <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
           {[
             { id: "activity", icon: Activity,  label: "Activity View" },

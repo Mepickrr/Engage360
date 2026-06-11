@@ -10,7 +10,6 @@ import {
 } from "@/lib/flowsApi";
 import {
   ArrowLeft,
-  Check,
   CircleAlert,
   Loader2,
   Play,
@@ -19,8 +18,10 @@ import {
   MoreHorizontal,
   Clock,
   FlaskConical,
+  BookMarked,
 } from "lucide-react";
 import { toast } from "sonner";
+import SaveJourneyModal from "./SaveJourneyModal";
 
 // ── Status config ────────────────────────────────────────────────────────────
 const STATUS_CONFIG = {
@@ -238,6 +239,20 @@ export default function BuilderTopbar({ basePath = "/flows" }) {
     onError: () => setAutosaveStatus("error"),
   });
 
+  const [saveJourneyOpen, setSaveJourneyOpen] = useState(false);
+
+  // Derive trigger event name from the first trigger node in the canvas
+  const triggerEventName = (() => {
+    const triggerNode = nodes.find(
+      (n) => n.type === "trigger" || n.type === "startTrigger" || n.id === "start",
+    );
+    return (
+      triggerNode?.data?.event_name ||
+      triggerNode?.data?.groups?.[0]?.event ||
+      ""
+    );
+  })();
+
   // ── Handlers ──────────────────────────────────────────────────────────────
   const commitName = () => {
     setEditing(false);
@@ -253,12 +268,21 @@ export default function BuilderTopbar({ basePath = "/flows" }) {
     if (!flowId) return;
     if (isActive) pauseMut.mutate();
     else if (status === "paused") resumeMut.mutate();
-    else publishMut.mutate(); // draft → activate
+    else setSaveJourneyOpen(true); // draft → open Save Journey modal
   };
 
-  const handleTestFlow = () => {
-    toast.info("Test mode — flow will run with test data");
-    patchMeta({ status: "test" });
+  const handleGoLive = (payload) => {
+    patchMeta({ goals: payload.goals, attributionWindow: payload.attributionWindow });
+    publishMut.mutate();
+  };
+
+  const handleTestMode = (payload) => {
+    patchMeta({ goals: payload.goals, status: "test" });
+    toast.info("Test mode activated — the flow will run for selected test profiles");
+  };
+
+  const handlePreview = () => {
+    toast.info("Journey preview coming soon");
   };
 
   const handleDownloadReport = () => {
@@ -323,20 +347,6 @@ export default function BuilderTopbar({ basePath = "/flows" }) {
 
         {/* Status badge */}
         <StatusBadge status={status} />
-
-        <Divider />
-
-        {/* Test Flow */}
-        <button
-          type="button"
-          data-testid="builder-test-flow"
-          onClick={handleTestFlow}
-          disabled={!flowId}
-          className="inline-flex items-center gap-1.5 px-3 h-8 rounded-md border border-primary text-primary text-[12px] font-medium hover:bg-primary/5 disabled:opacity-40 transition-colors flex-shrink-0"
-        >
-          <FlaskConical className="w-3.5 h-3.5" />
-          Test flow
-        </button>
       </div>
 
       {/* ── Center: last saved ── */}
@@ -360,21 +370,83 @@ export default function BuilderTopbar({ basePath = "/flows" }) {
 
         <Divider />
 
+        {/* Pause / Resume for active/paused flows */}
+        {status === "active" && (
+          <button
+            type="button"
+            data-testid="builder-pause"
+            onClick={() => pauseMut.mutate()}
+            disabled={pauseMut.isPending}
+            className="inline-flex items-center gap-1.5 px-3 h-8 rounded-md border border-border text-[12px] text-text-secondary hover:bg-slate-50 disabled:opacity-50 transition-colors"
+          >
+            Pause
+          </button>
+        )}
+        {status === "paused" && (
+          <button
+            type="button"
+            data-testid="builder-resume"
+            onClick={() => resumeMut.mutate()}
+            disabled={resumeMut.isPending}
+            className="inline-flex items-center gap-1.5 px-3 h-8 rounded-md border border-border text-[12px] text-text-secondary hover:bg-slate-50 disabled:opacity-50 transition-colors"
+          >
+            Resume
+          </button>
+        )}
+
+        {/* Play preview */}
+        <button
+          type="button"
+          data-testid="builder-play"
+          onClick={handlePreview}
+          disabled={!flowId}
+          title="Preview journey"
+          className="w-8 h-8 rounded-md flex items-center justify-center border border-border text-text-secondary hover:bg-slate-50 hover:text-primary disabled:opacity-40 transition-colors"
+        >
+          <Play className="w-3.5 h-3.5" />
+        </button>
+
+        {/* Test */}
+        <button
+          type="button"
+          data-testid="builder-test"
+          onClick={() => setSaveJourneyOpen(true)}
+          disabled={!flowId}
+          className="inline-flex items-center gap-1.5 px-3 h-8 rounded-md border border-blue-200 bg-blue-50 text-blue-700 text-[12px] font-semibold hover:bg-blue-100 disabled:opacity-40 transition-colors"
+        >
+          <FlaskConical className="w-3.5 h-3.5" />
+          Test
+        </button>
+
         {/* Save Journey */}
         <button
           type="button"
-          data-testid="builder-save"
-          onClick={() => saveMut.mutate()}
-          disabled={saving || !flowId}
+          data-testid="builder-save-journey"
+          onClick={() => setSaveJourneyOpen(true)}
+          disabled={!flowId}
           className="inline-flex items-center gap-1.5 px-4 h-8 rounded-md bg-primary text-white text-[12px] font-semibold hover:bg-primary-hover disabled:opacity-50 transition-colors"
         >
-          {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+          {saving ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          ) : (
+            <BookMarked className="w-3.5 h-3.5" />
+          )}
           Save Journey
         </button>
 
         {/* More */}
         <MoreMenu onDownload={handleDownloadReport} />
       </div>
+
+      {/* Save Journey Modal */}
+      <SaveJourneyModal
+        open={saveJourneyOpen}
+        onClose={() => setSaveJourneyOpen(false)}
+        triggerEventName={triggerEventName}
+        onGoLive={handleGoLive}
+        onTestMode={handleTestMode}
+        onPreview={handlePreview}
+      />
     </header>
   );
 }

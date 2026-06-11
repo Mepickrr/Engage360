@@ -8,11 +8,16 @@ export const SEED_FLOWS = [
     name: "Cart Recovery — WhatsApp + SMS Fallback",
     description:
       "Sends a WhatsApp message 1 hour after cart abandonment. Automatically falls back to SMS if WhatsApp delivery fails.",
-    status: "draft",
+    status: "active",
     lifecycle_stage: "Conversion",
     health: "healthy",
     channels: ["whatsapp", "sms"],
-    performance: { entered: 0, revenue_inr: 0 },
+    performance: {
+      entered: 12847,
+      completed: 3218,
+      conversion_rate: 25.1,
+      revenue_inr: 1864320,
+    },
     updated_at: null,
 
     // ── Canvas nodes ──────────────────────────────────────────────────────────

@@ -1,0 +1,4 @@
+{"type":"server-started","port":60320,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:60320","screen_dir":"/Users/meenalkamalakar/Documents/dowl/.superpowers/brainstorm/11850-1781199377/content","state_dir":"/Users/meenalkamalakar/Documents/dowl/.superpowers/brainstorm/11850-1781199377/state"}
+{"type":"screen-added","file":"/Users/meenalkamalakar/Documents/dowl/.superpowers/brainstorm/11850-1781199377/content/goal-modal-v1.html"}
+{"type":"screen-added","file":"/Users/meenalkamalakar/Documents/dowl/.superpowers/brainstorm/11850-1781199377/content/header-actions-v1.html"}
+{"type":"server-stopped","reason":"idle timeout"}

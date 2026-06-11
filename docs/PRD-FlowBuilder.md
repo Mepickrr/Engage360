@@ -1,396 +1,667 @@
-# PRD — Flow Builder Layout & Interaction Model
+# Flow Builder — Product Requirements Document
 
-**Version:** 2.0  
-**Author:** Product — Engage 360  
-**Last Updated:** June 2026
+## Table of Contents
 
----
-
-## 1. Overview
-
-The Flow Builder is a full-screen, canvas-based flow authoring environment accessed at `/flows-v2/builder/:id`. It completely replaces the product's standard app chrome — no sidebar navigation, no page header — and takes over the entire viewport with its own four-panel layout.
-
-Its job is to let a marketer go from intent ("I want to recover abandoned carts") to a live, multi-channel automated flow without ever leaving the browser tab. Every configuration decision — which message to send, when to wait, how to branch on delivery outcomes — is made inline, directly on or adjacent to the canvas.
-
-The V2 builder is the production-forward version. It shares all infrastructure with V1 (`/flows/builder/:id`) but uses a `FlowVariantContext` and `allowedNodeIds` prop to expose a curated subset of nodes and template styles, without forking any shared component.
-
----
-
-## 2. Layout Structure
-
-```
-┌────────────────────────────────────────────────────────────────────────────┐
-│  Top Bar — 52px, full width, always visible                                │
-│  [← Back] [Flow Name ▾] [●Live] [Draft] [Test] ···     Saved     [Save ▼] │
-├─────────────┬──────────────────────────────────────┬───────────────────────┤
-│             │                                      │                       │
-│  Node       │   Canvas (ReactFlow)                 │   Right Panel         │
-│  Palette    │                                      │   360px               │
-│             │   drag-and-drop node graph           │                       │
-│  52–268px   │   dot-grid background                │   Config / AI / Stats │
-│  collapsible│   zoom · pan · minimap               │                       │
-│             │                                      │                       │
-└─────────────┴──────────────────────────────────────┴───────────────────────┘
-```
-
-The canvas and right panel are wrapped together inside a single `ReactFlowProvider`. The node palette is a sibling — it renders entirely outside ReactFlow's coordinate system and communicates drops to the canvas via the browser's native drag-and-drop API.
-
-The full page height is `calc(100vh - 3rem)` — subtracting the product's outer shell nav height. Overflow is hidden; all scrolling is managed per-panel.
+1. [What the Prototype Shows](#0-what-the-prototype-shows)
+2. [Feature Brief](#1-feature-brief)
+3. [The Job](#2-the-job)
+4. [Success Metrics](#3-success-metrics)
+5. [Who Uses This and When](#4-who-uses-this-and-when)
+6. [User Flows](#5-user-flows)
+7. [Functional Specification](#6-functional-specification)
+8. [States](#7-states)
+9. [Edge Cases](#8-edge-cases)
+10. [Non-Functional Requirements](#9-non-functional-requirements)
+11. [Analytics & Instrumentation](#10-analytics--instrumentation)
+12. [Copy](#11-copy)
+13. [Dependencies](#12-dependencies)
+14. [Out of Scope](#13-out-of-scope)
+15. [Open Questions](#14-open-questions)
+16. [Decision Log](#15-decision-log)
 
 ---
 
-## 3. Top Bar
+## 0. What the Prototype Shows
 
-The top bar is the persistent control surface for the flow as a whole. It is 52px tall, always on top, and never scrolls away. It is divided into three groups.
+**What's built and working:**
+- A canvas-based builder where nodes represent steps and edges represent connections between them
+- A trigger wizard that forces the marketer to define entry conditions before building — opens automatically on new flows, re-openable on existing ones
+- A browsable library of node types organised into categories (Communication, Flow Control, Integrations, etc.)
+- Node add via click or drag-and-drop onto the canvas
+- Node deletion via keyboard (Backspace / Delete) with a browser-native confirmation when the node has connections
+- A configuration panel that opens when a node is selected, with three tabs: Config, AI Dev, and Analytics
+- Autosave: canvas state (nodes + edges) and flow metadata (name, description) both save automatically after 1500ms of no changes
+- Flow lifecycle management: draft → active (publish) → paused → active (resume), controlled from the builder header
+- An inline editable flow name in the header
+- Two flow-level global wizards that run once per flow before certain node types can be configured: AI Calling and AI Chatbot
+- Keyboard delete guard: when deleting a node with connections, a native browser `window.confirm` dialog intercepts
 
-### 3.1 Left Group — flow Identity
+**What's incomplete (stubs):**
+- "Test flow" sets flow status to `test` and shows a toast — no actual test execution, no test user, no result feedback
+- "Download report" shows a toast — no file generated
+- View Analytics navigates to an analytics route that is separate from the builder — not validated as reachable
+- The AI Dev tab exists in the configuration panel but its full behaviour is not specified
+- The delete confirmation uses `window.confirm` — a native browser dialog that cannot be styled, blocked by pop-up suppressors, and gives no custom copy
 
-**Back arrow** — navigates to `/flows-v2` without confirmation. No dirty-state warning; autosave keeps work safe. In V1 the base path is `/flows`.
-
-**Flow name** — an inline-editable text button. In display mode it truncates at 240px. Clicking it converts to a borderless input with a primary-colored underline. Pressing Enter or blurring commits and calls `updateFlow()`. Pressing Escape cancels. The field is disabled until the flow has a server ID (i.e. until the first node has been dropped and the create API has resolved).
-
-**Active toggle** — a small pill toggle (36×20px) to the right of the name. It drives the three main lifecycle transitions:
-- Draft → Active: calls `publishFlow()`. Toast: "Flow is now live 🚀"
-- Active → Paused: calls `pauseFlow()`. Toast: "Flow paused"
-- Paused → Active: calls `resumeFlow()`. Toast: "Flow resumed"
-
-The toggle is disabled while any of these mutations is in-flight to prevent double-firing.
-
-**Status badge** — a color-coded pill immediately after the toggle. Read-only; driven purely by `meta.status`:
-
-| Status | Color | Meaning |
-|--------|-------|---------|
-| Draft | Slate | Not yet published; no users can enter |
-| Active | Emerald | Live; users enter on trigger |
-| Paused | Amber | No new entries; in-flight users continue |
-| Test | Violet | Test mode; test users only |
-| Inactive | Slate/muted | Manually deactivated |
-
-**Test Flow button** — an outlined pill (`FlaskConical` icon). Sets local status to "test" and shows a toast. It does not publish to production; it flags the flow so it only runs for designated test profiles.
-
-### 3.2 Center — Autosave Indicator
-
-The center of the topbar is reserved for a single-line save status. It is intentionally minimal — it should not draw attention unless something is wrong.
-
-The autosave loop fires 1,500ms after any change to nodes or edges. States cycle as follows:
-
-- **Saving…** — a spinning `Loader2` icon + "Saving…" text. Appears during the debounce window and during the API call itself.
-- **Just saved** — immediately after a successful save.
-- **Saved Xs ago / Saved Nm ago** — relative timestamp. Recomputes every 30 seconds. Thresholds: < 5s → "Just saved", < 60s → "Saved Xs ago", < 1h → "Saved Nm ago".
-- **Save failed** — red text with a `CircleAlert` icon. Appears on API error. The canvas remains fully usable; the indicator is informational, not a blocker.
-- **Idle (blank)** — shown before the first save event of the session.
-
-### 3.3 Right Group — Actions
-
-**View Analytics** — navigates to `/flows/builder/:id/analytics`. Disabled until the flow has an ID.
-
-**Save flow** — a filled primary button. Triggers an immediate `updateFlow()` call outside the autosave debounce, for moments when the marketer wants to force-save before navigating away. Shows a `Loader2` spinner while pending.
-
-**⋯ More** — opens a dropdown with one action: **Download Report**. The dropdown closes on outside click.
+**What's absent:**
+- No validation before publishing a flow — a flow with no nodes or no connection between start trigger and any other node can be activated
+- No undo / redo
+- No way to rename a node on the canvas
+- No duplicate node action
+- No zoom-to-fit or "find my nodes" when the marketer is lost on the canvas
+- No indication of which nodes are unreachable (not connected to the trigger)
+- No confirmation when navigating away with unsaved changes (only applies to the debounce window)
 
 ---
 
-## 4. Node Palette
+## 1. Feature Brief
 
-The node palette occupies the left edge of the builder. It is a collapsible accordion panel that collapses to a 52px icon rail when unpinned and expands to 268px on hover or when pinned. Width transition uses `cubic-bezier(0.4, 0, 0.2, 1)` over 220ms.
-
-### 4.1 Pin vs. Hover Mode
-
-The panel has two operating modes:
-
-**Hover mode (default when unpinned):** The panel expands when the cursor enters and collapses 280ms after the cursor leaves (the delay prevents accidental collapse when dragging slowly). In hover mode, only one category accordion is open at a time.
-
-**Pin mode:** The panel stays permanently expanded. All category accordions default to open. Individual categories can still be collapsed by clicking their header row. Toggled by clicking the pin button in the palette header.
-
-The pin button changes icon between `Pin` (pinnable) and `Lock` (pinned) to reflect current state.
-
-### 4.2 Collapsed State (52px)
-
-When collapsed, the panel shows only a column of category icon buttons. Each icon has a small count badge in the bottom-right corner showing how many nodes that category contains. Hovering any icon triggers the hover-mode expansion.
-
-### 4.3 Expanded State (268px)
-
-The expanded panel has four sections stacked vertically, each revealed with a `max-height` + opacity transition:
-
-**Header row** — pin button on the left, "COMPONENTS" label in small uppercase tracking.
-
-**Search** — a full-width input with a `Search` icon. Filters nodes by name across all categories simultaneously. As the user types, the category accordion auto-expands to reveal the first category with a matching result.
-
-**Recently Used** — a horizontal scroll row showing the last 4 nodes the marketer dragged onto the canvas. Each chip shows the node's icon and short name. Tracked per-session in local component state (not persisted). Initially shows "Drop a node to track it here" in italic placeholder text.
-
-**Category Accordion** — a vertical list of categories. Each category row shows:
-- A colored icon in a rounded 30×30px square using the category's color ramp
-- Category name
-- Node count
-- A `ChevronDown` that rotates 180° when the section is open
-- A left-edge color accent bar when the section is open
-
-The 10 categories and their accent colors:
-
-| Category | Accent |
-|----------|--------|
-| Communication | Purple |
-| Action | Coral |
-| Shopify | Green |
-| Integrations | Blue |
-| Flow Control | Teal |
-| Google Sheets | Green |
-| User Profile | Pink |
-| Ticket | Amber |
-| Notes | Amber |
-| Shiprocket Checkout | Teal |
-
-Nodes within an open category render in a 2-column grid. Each node chip is a 26px icon + 10px name label, with a hover scale (1.03×) and press scale (0.97×). Nodes marked `comingSoon` render at 50% opacity with a "Coming soon" badge and are non-interactive.
-
-In V2, the palette receives an `allowedNodeIds` prop. Any node whose ID is not in that list is hidden entirely. The category is still shown if it has at least one visible node; otherwise the category row itself is hidden.
-
-### 4.4 Adding Nodes to the Canvas
-
-Two interaction patterns, both produce the same result in the store:
-
-**Click** — places the node on the canvas at a cascading grid position. The formula is `x = 100 + (index % 3) * 240`, `y = 200 + floor(index / 3) * 160`, where `index` is the current node count. This creates an automatic 3-column staircase layout.
-
-**Drag** — drag from the palette and drop anywhere on the canvas. The drop target position is converted from screen to canvas coordinates by subtracting the canvas wrapper's bounding rect (`wrapperRef.getBoundingClientRect()`), with a −80/−20 pixel center offset so the node's visual center lands near the cursor tip.
-
-Both actions call `onCanvasDrop(newNode)` on the parent page, which calls `upsertNode` on the store and triggers the autosave debounce.
+The Flow Builder is where a marketer turns a campaign idea into a live automated journey. They define who enters, what happens at each step, and in what order — without writing logic or involving engineering. The builder must be capable enough to express complex multi-channel sequences yet approachable enough that a marketer with no technical background can operate it confidently. A flow that a marketer can understand while building is a flow they will maintain and improve over time.
 
 ---
 
-## 5. Canvas
+## 2. The Job
 
-The canvas is the central panel. It fills all remaining horizontal space between the palette and the right panel. It is a ReactFlow instance with a dot-grid background, zoom/pan controls, and a minimap.
+Let a marketer design, configure, and activate an automated customer journey entirely on their own.
 
-### 5.1 Visual Chrome
+Three things that, if missing, make it not worth shipping:
 
-**Background** — ReactFlow `<Background>` component, dot style, gap 20px, size 1px, color `#CBD5E1`. The dots give visual scale for judging spacing without cluttering the authoring surface.
-
-**Controls** — positioned bottom-left. The "toggle interactivity" button is hidden (`showInteractive={false}`) since the builder doesn't need a lock mode.
-
-**MiniMap** — positioned bottom-right. Both pannable and zoomable. Node color is `#CBD5E1`; mask color is `rgba(241,245,249,0.7)` (light slate overlay). The minimap is the fastest way to navigate a large multi-branch flow without losing local context.
-
-**Fit view on load** — the `fitView` prop is set with `padding: 0.25`. When a saved flow is hydrated from the server, the canvas automatically reframes to show all nodes with 25% breathing room on each edge.
-
-**Empty overlay** — when `nodes.length === 0`, a centered frosted-glass card reads: "Drag a node from the left panel, or click one to add it / Then connect channels and logic to build your flow." The card has `pointer-events: none` so it does not interfere with drops onto the empty canvas.
-
-### 5.2 Node Rendering
-
-Each node type is registered in a `nodeTypes` map that wires the type string to its React component. There are 22 registered types:
-
-| Type string | Renderer |
-|-------------|----------|
-| `start-trigger` | `StartTriggerNode` — flow root, non-deletable |
-| `whatsapp` | `WhatsAppNode` |
-| `email` | `EmailNode` |
-| `sms` | `SMSNode` |
-| `rcs` | `RCSNode` |
-| `push` | `PushNode` |
-| `onsite` | `OnsiteNode` |
-| `inapp` | `InAppNode` |
-| `aicalling` | `AiCallingNode` |
-| `aichatbot` | `AiChatbotNode` |
-| `conditionalsplit` | `ConditionalSplitNode` |
-| `wait` | `LogicNode` |
-| `aipredict` | `AiPredictNode` |
-| `startflow` | `StartFlowNode` |
-| `razorpay` | `RazorpayNode` |
-| `nextbestaction` | `NextBestActionNode` |
-| `smartflowoptimizer` | `SmartFlowOptimizerNode` |
-| `action` / `channel` / `note` | `ChannelNode` — generic fallback for Shopify, Integrations, AI actions, sticky notes |
-| `end` / `goal` | `ExitNode` |
-
-### 5.3 Edge Rendering
-
-All edges use the `smoothstep` type — a curved path that flows naturally between nodes regardless of handle orientation.
-
-Edge styling is dynamically computed from the edge's `sourceHandle` or `label`:
-- Handle/label `"yes"` → stroke `#10B981` (emerald/green)
-- Handle/label `"no"` → stroke `#EF4444` (red)
-- Anything else → stroke `#94A3B8` (slate/neutral)
-
-Every edge has a closed `ArrowClosed` marker at the target end in the same color as its stroke (`strokeWidth: 1.5`). Labels (where present) appear in 11px semibold text inside a white background pill, matching the stroke color. This color convention makes yes/no split outcomes instantly readable in a crowded graph; slate communicates neutral sequential flow.
-
-### 5.4 Interaction Model
-
-**Selecting a node** — clicking any node sets `selectedNodeId` in the Zustand store and opens the right panel to that node's Config tab. Clicking the canvas background deselects and returns the right panel to the FlowSettings view.
-
-**Connecting nodes** — dragging from any output handle to another node's input handle creates a new edge. The edge ID is auto-generated as `e{n}-{source}-{target}`.
-
-**Moving nodes** — standard ReactFlow drag. Position changes are written back to the store via `applyNodeChanges`, which triggers the autosave debounce.
-
-**Deleting nodes** — Backspace or Delete key removes the currently selected node. Ignored when the keyboard focus is in an input, textarea, or contentEditable. If the node has connected edges, a `window.confirm()` asks "Delete this node and its connections?" before proceeding. The `start-trigger` node is not removable by this shortcut. Deletion removes the node and all its incident edges simultaneously.
-
-**ID generation** — `nextId()` generates sequential IDs by finding the highest existing integer ID and incrementing, avoiding collisions with pre-existing nodes.
-
-### 5.5 Autosave Loop
-
-The autosave loop is wired in the page component (`FlowBuilderV2.jsx`) and subscribes to the Zustand `nodes` and `edges` slices. On any change:
-
-1. If `flowId` is not yet set, bail — the flow hasn't been created server-side yet.
-2. On the first run after hydration, record the current snapshot as the "already saved" baseline and bail — prevents immediately re-saving data just loaded from the server.
-3. If nodes and edges are reference-equal to the last saved snapshot, bail — no change.
-4. Otherwise, reset a 1,500ms debounce timer. On expiry: set status to "saving", call `updateFlow(flowId, { nodes, edges })`. On success: update the last-saved snapshot reference, set status to "saved", reset to "idle" after 1,500ms. On failure: set status to "error".
-5. If the save response carries a new ID (a seed flow converted to a real flow), update the store ID and replace the URL via React Router.
-
-Meta autosave (name and description) runs on a parallel 1,500ms debounce keyed to `meta.name|meta.description` — same guard pattern, same debounce, separate `lastMetaRef`.
+1. **Every step in the journey is reachable from the trigger.** A marketer who builds a flow must know, before they publish, whether their messages will actually send. Disconnected steps that silently do nothing destroy trust.
+2. **The flow saves without the marketer thinking about it.** Mid-build interruptions are inevitable. A marketer who loses work because they didn't click Save will not come back.
+3. **Testing is possible before going live.** Publishing a broken flow to real customers is not acceptable. The marketer must be able to verify behaviour on a controlled audience first.
 
 ---
 
-## 6. Right Panel
+## 3. Success Metrics
 
-The right panel is a 360px fixed-width aside permanently on the right edge. It cannot be collapsed. It is always in the DOM. Its content shifts based on `selectedNodeId` and the active tab.
-
-The panel is structured as a three-tab sheet:
-
-```
-┌────────────────────────────────────┐
-│  Config  │  AI (Dev)  │  Analytics │  ← 40px tab strip (h-10)
-├────────────────────────────────────┤
-│                                    │
-│  (active tab content)              │
-│  fills remaining height            │
-│  scrolls independently             │
-│                                    │
-└────────────────────────────────────┘
-```
-
-The tab strip uses a bottom-border active indicator. Tab labels: "Config", "AI (Dev)", "Analytics".
-
-### 6.1 Config Tab
-
-The Config tab is the primary node-configuration surface. Its content is driven entirely by which node is currently selected.
-
-**No node selected — Flow Settings view:**
-
-When nothing is selected on the canvas, the Config tab renders `<FlowSettings>`:
-- **Name** — same inline-editable field as the topbar, kept in sync via `patchMeta`
-- **Description** — multi-line textarea for internal documentation
-- **Audience segment** — read-only label of the segment name configured in the trigger wizard, plus an estimated user count formatted in Indian numbering (e.g. "~12,400 users")
-
-This makes the Config tab useful as a flow-settings sidebar even when the marketer isn't inside a node.
-
-**Node selected — Node Configuration view:**
-
-Each node type has a dedicated right panel component. The Config tab acts as a router: it reads `node.type`, maps it to the matching panel component, and mounts it as `absolute inset-0 overflow-hidden flex flex-col` so each panel can independently manage its internal scroll height. The types with dedicated panels:
-
-WhatsApp, AiCalling, AiChatbot, RCS, AiPredict, StartFlow, Razorpay, SMS, Push (web push), Onsite, InApp, NextBestAction, SmartFlowOptimizer, Email, ConditionalSplit.
-
-For any unrecognized node type, the generic `<NodeConfig>` fallback renders a label text field and a "Delete" text button that calls `removeNode(id)`.
-
-All panels write back to the store exclusively via `updateNodeData(nodeId, patch)` — a shallow merge into `node.data`. This triggers the canvas to re-render the node card and restarts the autosave debounce.
-
-### 6.2 AI (Dev) Tab
-
-The AI tab surfaces a conversational interface for asking "Dev" — the AI assistant — to make structural changes to the flow as a whole. It is not for configuring individual nodes; it is for issuing high-level intent about the flow shape.
-
-**Header** — a circular grey avatar badge ("D") and the label "Ask Dev to modify this flow".
-
-**Suggested prompts** — four pill buttons above the input field that submit pre-written instructions with a single click:
-- "Add a 24h wait after WhatsApp"
-- "Add an email fallback if no purchase"
-- "Move SMS before email"
-- "Add an A/B split on the message"
-
-These serve as entry-point examples for marketers discovering the feature.
-
-**Message thread** — a scrollable list of chat messages loaded from `fetchFlowConversation(flowId)`. User messages are right-aligned in a light-purple bubble. Dev responses are left-aligned next to the "D" avatar. The thread auto-scrolls to the bottom when new messages arrive or while a response is streaming.
-
-**Input** — a `textarea` that auto-expands (min 34px, max 100px). Enter submits; Shift+Enter inserts a newline. A send arrow button appears to the right.
-
-**Modification flow:**
-1. On submit, `sendFlowMessage(flowId, content)` is called.
-2. If the response includes a `modification` object (with updated `nodes` and `edges`):
-   - `takeAiSnapshot()` is called first to snapshot the current canvas state.
-   - Nodes and edges are replaced in the store with the AI's new graph.
-   - A toast notification confirms "Dev updated the flow" with an **Undo** action.
-3. Pressing Undo calls `restoreAiSnapshot()`, reverting to the pre-modification state.
-
-This is a single-level undo scoped exclusively to AI modifications — not a general undo stack. It is the only undo path in the builder.
-
-### 6.3 Analytics Tab
-
-The Analytics tab shows flow-level and node-level performance data. Content is conditional on `meta.status`.
-
-**Draft state** — a single placeholder: "Analytics will light up once this flow is published. Drafts don't collect performance data yet." The tab is always clickable; there is no disabled state, so marketers can discover what they'll see before going live.
-
-**Active / Paused / Inactive state:**
-
-*KPI grid (2×2):*
-- **Entered** — total users who have started this flow
-- **Completed** — total who reached an Exit node or the flow's end
-- **Conversion %** — formatted to 1 decimal place
-- **Revenue** — INR formatted: values ≥ 1,00,000 displayed as "₹2.40L"; smaller values use `en-IN` locale
-
-*7-day entry trend chart:*
-A Recharts `LineChart` showing daily entries across Mon–Sun. Line color: `#6C3AE8` (primary purple), 2px stroke. Dots are 2px radius, active dots 4px. Y axis auto-scales; X axis shows abbreviated day names. Background uses light slate `CartesianGrid` dashes.
-
-*Per-node delivery breakdown:*
-A vertical list of all canvas nodes sorted by their Y position (top-to-bottom flow order). Each row shows:
-- Node label (truncated)
-- Users in → users out with a computed delivery rate %
-- A slim horizontal progress bar (primary purple fill, slate background) proportional to the delivery rate
-
-The delivery rate models attrition: each step retains 65–96% of the previous step's audience, with the rate decaying as the flow progresses. This is a visualization model pending real per-node delivery data from the backend.
+| Metric | Baseline | Target (90 days) |
+|--------|----------|-----------------|
+| Flows published per marketer per month | Unknown — establish baseline | Grow 30% after builder ships |
+| % of new flows that reach "active" within 48h of creation | Unknown | > 50% |
+| Builder session abandonment rate (opens builder, exits without saving anything) | Unknown | < 20% |
+| Time from "Create Flow" to first node placed | Unknown | < 60 seconds (median) |
+| Support tickets citing "flow didn't send" caused by disconnected nodes | Baseline TBD | −70% after publish validation ships |
+| Flows tested before first activation | 0 (test stub not functional) | > 40% of new flows |
 
 ---
 
-## 7. State Architecture
+## 4. Who Uses This and When
 
-All mutable state lives in a single Zustand store (`useFlowBuilderStore`). The store is the single source of truth for everything visible in the builder.
+**Persona 1 — Campaign Marketer building their first automated flow**
 
-**State slices:**
-
-| Slice | Type | Purpose |
-|-------|------|---------|
-| `flowId` | `string \| null` | Current flow's server ID |
-| `meta` | `{ name, description, status, audience }` | flow metadata |
-| `nodes` | `Node[]` | ReactFlow node array |
-| `edges` | `Edge[]` | ReactFlow edge array |
-| `selectedNodeId` | `string \| null` | Drives right panel content |
-| `autosaveStatus` | `"idle" \| "saving" \| "saved" \| "error"` | Topbar indicator |
-| `preAiSnapshot` | `{ nodes, edges } \| null` | Single-level AI undo buffer |
-| `aiCallingGlobal` | object | Flow-level AI Calling voice/tone config |
-| `aiChatbotGlobal` | object | Flow-level AI Chatbot persona/tools config |
-
-**Key design principles:**
-
-- **No local state for node data.** Every node's configuration lives in `node.data` in the store. Right panel components read from the store and write via `updateNodeData`. The canvas card and right panel always reflect the same data without prop threading.
-- **Autosave is page-driven, not canvas-driven.** `FlowBuilderV2.jsx` subscribes to `nodes` and `edges` and runs the debounced save. The canvas component does not own persistence.
-- **`FlowVariantContext` is the only React context.** It carries V2 feature flags (`allowedTemplateStyleIds`) from the page to the WhatsApp node without prop drilling. Node data is never passed through context.
-- **Reset on unmount.** `store.reset()` is called in a `useEffect` cleanup when the builder page unmounts. Navigating away and back always produces a clean slate.
+Goal: Build a cart recovery sequence that sends a WhatsApp message 1 hour after abandonment, followed by an email 24 hours later if the user hasn't converted.
+Emotional state: Motivated but cautious. Hasn't done this before. Will stop and leave if they encounter an unexplained error or a step that doesn't work the way they expected.
+Success: Places the trigger, adds the two message nodes, connects them with a delay and a condition, and publishes — all in one session, under 30 minutes.
+Failure: Builds the entire flow and activates it, then discovers one of the message nodes was never connected to anything and never fired.
 
 ---
 
-## 8. Flow Lifecycle
+**Persona 2 — CRM Manager editing a live flow**
 
-### 8.1 Creating a New Flow
-
-New flows start at `/flows-v2/builder/new`. At this point the store has no `flowId` and the autosave loop is dormant. The canvas and right panel have `pointer-events: none` while the trigger wizard is open.
-
-Dropping the first node (after the trigger is configured) calls `onCanvasDrop(newNode)`. Because `flowId` is null, this triggers `createFlow({ name: "Untitled flow", nodes, edges })` as a background mutation. On success: the URL is replaced with `/flows-v2/builder/:newId` (using `replace: true` so the browser back button goes to `/flows-v2`, not a dead `/new` URL), and the autosave loop takes over.
-
-### 8.2 Loading an Existing Flow
-
-When navigating to `/flows-v2/builder/:id`, a `useQuery` fetches the flow. On success, `hydrate(flow)` replaces all store state. A `hydratedIdRef` guard ensures `hydrate` is called only once per flow ID — subsequent renders of the same flow do not re-hydrate and wipe local edits made since load.
-
-### 8.3 V2 vs. V1 Differences
-
-The V2 builder is a thin configuration layer on top of identical infrastructure.
-
-| Area | V1 | V2 |
-|------|----|----|
-| Route | `/flows/builder/:id` | `/flows-v2/builder/:id` |
-| Back navigation | `/flows` | `/flows-v2` |
-| Visible nodes | All 40+ palette nodes | 12 nodes via `allowedNodeIds` prop |
-| WhatsApp template styles | All 9 styles | 5 styles via `FlowVariantContext` |
-
-No component is forked. All filtering is additive — removing items from a list — so V1 never regresses when V2 adds nodes to its allow-list.
+Goal: Update the copy in a WhatsApp template on an active flow and add a new branch for users who have already purchased.
+Emotional state: Careful. This flow is running on real customers. A mistake costs money and credibility.
+Success: Opens the flow, makes the changes, sees the autosave indicator confirm it saved, and knows the live flow is now updated.
+Failure: Makes a change, navigates away to check something, and doesn't know if the change was saved or whether the live flow is now reflecting the edit.
 
 ---
 
-## 9. Open Questions
+**Persona 3 — Growth Marketer building a complex multi-channel sequence**
 
-1. **Undo/Redo** — The current undo is a single-level snapshot scoped to AI modifications. Is there appetite for a full CTRL+Z stack covering manual node moves and configuration edits?
-2. **Concurrent editing** — Two users opening the same flow simultaneously results in last-write-wins. Should the builder show a presence indicator or a "someone else is editing" warning?
-3. **Right panel width on small screens** — The right panel is always 360px wide. Should it collapse to zero width on viewports narrower than ~1200px to give the canvas more room?
-4. **Dirty state on navigation** — The back arrow navigates immediately because autosave is continuous. But if `autosaveStatus === "error"`, the user could lose recent changes. Should the back arrow show a confirmation in error state?
-5. **Per-node analytics data schema** — The per-node breakdown currently uses a modeled attrition function. When real delivery data is available from the backend, what is the shape — does it arrive via `meta.performance` or as a separate API call per node?
+Goal: Build a 6-step sequence across WhatsApp, Email, and AI Calling, with conditional branches for different customer segments.
+Emotional state: Confident and ambitious. Wants to push the product to its limits.
+Success: Uses conditional splits to create multiple paths, places all nodes, connects every branch, and validates the logic is correct before publishing.
+Failure: Gets lost on the canvas after adding 15+ nodes; can't tell which paths are complete and which are dead ends; gives up and uses a simpler single-channel flow instead.
+
+---
+
+## 5. User Flows
+
+### Flow 1: Create and publish a new flow
+
+1. Marketer enters the builder from the Flows list or the Create Flow page.
+2. The trigger configuration experience opens immediately. The marketer cannot place nodes until they have defined the entry condition (the event or schedule that starts the journey).
+3. Trigger configuration has two steps: *When* (what event or schedule starts the journey) and *Who* (which users qualify). The marketer can skip the "Who" step if the selected trigger type does not support audience filtering.
+4. On completing trigger configuration, the entry node appears on the canvas representing the configured trigger. The rest of the canvas is empty.
+5. The marketer adds a node from the node library. The node appears on the canvas and is immediately selected.
+6. The marketer connects the trigger node to the new node by drawing a connection from the trigger's output handle to the new node's input handle.
+7. The marketer opens the node's configuration and sets it up (template, timing, etc. — covered in individual node PRDs).
+8. The marketer repeats steps 5–7 until the journey is complete.
+9. The marketer activates the flow. The system validates that at least one node is reachable from the trigger (connected). If validation fails, the system surfaces which nodes are unreachable.
+10. On successful activation, the flow status changes to active. Users begin entering the flow in real time.
+
+---
+
+### Flow 2: Edit an existing active flow
+
+1. Marketer opens an existing active flow from the Flows list.
+2. The canvas loads with the saved state. The flow status is visible and indicates it is active.
+3. Marketer makes a change (reconfigures a node, adds a step, updates a connection).
+4. Autosave runs within 1500ms of the last change. The save state indicator communicates: saving → saved.
+5. The change is live immediately — there is no separate "deploy" step after save.
+6. If autosave fails, the indicator communicates an error and the marketer is prompted to retry manually.
+
+---
+
+### Flow 3: Pause a flow from the builder
+
+1. With an active flow open, the marketer triggers the pause action from the flow header controls.
+2. A confirmation is shown: pausing stops new users from entering; users already in-journey continue to their current step.
+3. On confirm: the flow status changes to paused. The canvas remains editable.
+4. The marketer makes changes to the paused flow.
+5. The marketer resumes the flow. Status returns to active.
+
+---
+
+### Flow 4: Test a flow before going live
+
+1. Marketer completes building the flow but does not yet activate it.
+2. Marketer triggers test mode. The system asks the marketer to specify a test user (by email, phone, or user ID).
+3. The flow runs against the test user. Each step executes in sequence, with delays compressed or skippable.
+4. The marketer can observe which steps the test user passed through and whether each step succeeded or failed.
+5. If a step fails, the marketer sees the reason (e.g. test user not subscribed on that channel).
+6. Marketer exits test mode. The flow returns to draft status. No changes to the flow state are made by testing.
+
+---
+
+### Flow 5: Reconfigure the trigger on an existing flow
+
+1. Marketer selects the trigger node on the canvas.
+2. The trigger configuration experience reopens, pre-populated with the existing configuration.
+3. Marketer edits the trigger (changes the event, adjusts audience conditions, modifies scheduling).
+4. On save: the trigger node on the canvas updates to reflect the new configuration. Autosave persists the change.
+
+---
+
+### Flow 6: Delete a node
+
+1. Marketer selects a node on the canvas.
+2. Marketer presses Backspace or Delete, or chooses a delete action from the node's context menu.
+3. If the node has connections: a confirmation is required before deletion. The confirmation communicates that connected edges will also be removed.
+4. On confirm: the node and all its edges are removed. Any downstream nodes that are now unreachable are visually indicated as disconnected.
+5. On cancel: nothing changes.
+
+---
+
+## 6. Functional Specification
+
+### 6.1 Flow Identity
+
+| Field | Type | Editable | Notes |
+|-------|------|----------|-------|
+| `name` | String | Yes — inline from builder header | Defaults to "Untitled flow". Saved on confirm (Enter key or focus loss). Max 80 characters. Cannot be empty — reverts to previous value if cleared. |
+| `description` | String | Yes | Optional. Autosaved. |
+| `status` | Enum | Via header controls | `draft`, `active`, `paused`. See lifecycle section. |
+
+---
+
+### 6.2 Trigger Configuration
+
+Every flow has exactly one trigger. The trigger defines the conditions under which a user enters the flow. It is configured before any nodes are placed and can be reconfigured at any time.
+
+**Trigger types (from the event catalogue):**
+
+| Category | Behaviour |
+|----------|-----------|
+| Event-based | User fires a specific event (e.g. `cart_abandoned`, `order_placed`). The trigger can require multiple events in combination (AND / OR groups). |
+| Broadcast | Flow runs once on a scheduled date/time against a fixed audience segment. No ongoing entry. |
+
+**Trigger configuration — "When" step:**
+
+| Element | Required | Behaviour |
+|---------|----------|---------|
+| Event picker | Yes | Marketer selects from the event catalogue. Events are browsable by category and searchable by name. |
+| Trigger groups | No | Multiple event conditions can be combined (e.g. "cart_abandoned AND page_viewed"). Each group can have its own event and condition set. Groups are combined with AND or OR. |
+| Exit trigger | No | An event that removes a user from the flow mid-journey (e.g. `order_placed` exits the cart recovery flow). |
+
+**Trigger configuration — "Who" step:**
+
+Available only on event-based triggers. Some event types do not support audience qualification (e.g. system-level events) — the Who step is skipped automatically for these.
+
+| Filter type | Behaviour |
+|-------------|---------|
+| User properties | Filter by user attributes (e.g. LTV, city, custom attributes). Operators: equals, does not equal, greater than, less than, contains, is set, is not set. |
+| User behaviour | Filter by past event activity (e.g. "has placed at least 2 orders in the last 30 days"). |
+| User affinity | Filter by AI-derived affinity tags (e.g. weekendShopper, bargainHunter). |
+| Audience inclusion/exclusion | Include all users matching conditions, or exclude a subset. |
+| Entry frequency limit | Cap how often a single user can re-enter the flow (e.g. once per 7 days). |
+| Global control group | Optionally exclude a holdout percentage from the flow for statistical comparison. |
+
+**Broadcast-specific configuration:**
+
+| Element | Required | Behaviour |
+|---------|----------|---------|
+| Schedule | Yes | Send now, or schedule for a specific date and time. |
+| Audience | Yes | Target all users, or a named audience segment. |
+
+---
+
+### 6.3 Node Library
+
+The node library is the source of all step types a marketer can add to a flow. It is always accessible while on the canvas.
+
+**Categories:**
+
+| Category | Node types |
+|----------|-----------|
+| Communication | WhatsApp, Email, SMS, RCS, Push Notification, Onsite, InApp, AI Calling, AI Chatbot |
+| Flow Control | Conditional Split, Delay, Start Another Flow |
+
+Additional categories (Shopify, Integrations, Google Sheets, User Profile, Ticket, Shiprocket) exist in the full node catalogue but are hidden in the current V1 release. They are available in the underlying code and can be re-enabled per release.
+
+**Node library behaviour:**
+- Marketer can search by node name.
+- Marketer can add a node by clicking it (places it on the canvas at an automatic position) or dragging it to a specific position.
+- Recently used nodes are surfaced for quick re-access.
+- The library remains accessible while a node is selected and being configured.
+
+---
+
+### 6.4 Canvas
+
+The canvas is the workspace where nodes are placed and connected into a journey.
+
+**Canvas interactions:**
+
+| Interaction | Behaviour |
+|-------------|---------|
+| Add node | Node appears on canvas. Newly added nodes are automatically selected. |
+| Select node | Clicking a node selects it. Configuration panel opens for the selected node. Only one node is selected at a time. |
+| Deselect | Clicking empty canvas space deselects the current node. Configuration panel returns to flow-level view. |
+| Move node | Drag a node to reposition it. Position is saved with autosave. |
+| Connect nodes | Draw a connection from one node's output handle to another node's input handle. |
+| Delete connection | Click an edge to select it; delete to remove. |
+| Delete node | Select a node and press Backspace or Delete. Requires confirmation if the node has connections. |
+| Pan | Drag empty canvas to pan. |
+| Zoom | Scroll to zoom in/out. Zoom range: 25% to 200%. |
+| Zoom to fit | Resets the viewport to show all nodes at once. |
+| Minimap | Overview of the full canvas; clicking a region navigates to it. |
+
+**Connection rules:**
+- Every node has at least one input handle (except the trigger, which has none).
+- Every node has at least one output handle (except exit nodes, which have none).
+- Conditional Split nodes have one input and multiple output handles (one per branch).
+- A handle can only have one connection in a given direction. An output handle that already has a connection cannot accept a second without removing the first.
+
+---
+
+### 6.5 Node Configuration
+
+When a node is selected, its configuration becomes accessible. Configuration is node-type-specific and is covered in individual node PRDs. What applies to all nodes:
+
+| Behaviour | Specification |
+|-----------|--------------|
+| Configuration persists on deselect | Changes made in the config are not lost when the marketer clicks elsewhere on the canvas. |
+| Configuration autosaves | Node configuration is part of the canvas state. It saves with the same 1500ms debounce as all other canvas changes. |
+| Configuration shows a completion indicator | A node whose required configuration is incomplete is visually distinguished on the canvas from a fully configured node. |
+
+**Configuration panel tabs:**
+
+| Tab | Purpose |
+|-----|---------|
+| Config | Node-specific settings. Template selection, timing, conditions — per node type. |
+| AI Dev | AI-assisted flow editing. The AI can suggest or apply changes to the canvas in response to natural language prompts. Changes made by the AI can be undone. |
+| Analytics | Per-node performance data (entered, delivered, opened, clicked, converted). Available only when the flow has been active. In draft status, this tab shows a placeholder. |
+
+---
+
+### 6.6 Flow-Level Global Configurations
+
+Two node types — AI Calling and AI Chatbot — require a one-time flow-level setup before any individual instance of that node can be configured. This setup runs automatically the first time the marketer places or selects one of these nodes.
+
+| Wizard | What it configures |
+|--------|-------------------|
+| AI Calling | Voice selection, tone (professional / casual / etc.), goal of the calling campaign |
+| AI Chatbot | Tone, system instructions, agent type, store data access permissions, enabled tools, handover context |
+
+Once configured, the global settings apply to all instances of that node type within the flow. The marketer can re-open the wizard at any time to update the global configuration. Changes to global configuration affect all instances.
+
+---
+
+### 6.7 Flow Lifecycle
+
+| Status | Meaning | Who enters the flow |
+|--------|---------|-------------------|
+| `draft` | Flow is being built. Not yet live. | Nobody |
+| `active` | Flow is live. Trigger is listening for qualifying events. | Any user who matches the trigger conditions |
+| `paused` | Flow is suspended. Trigger is not listening. | Nobody. Users mid-journey continue to their current step. |
+
+**Transitions:**
+
+| From | To | Action | Validation required |
+|------|----|---------|--------------------|
+| `draft` | `active` | Publish / Activate | At least one node is reachable from the trigger. All reachable nodes that have required configuration are fully configured. |
+| `active` | `paused` | Pause | Confirmation required. |
+| `paused` | `active` | Resume | None. |
+| Any | `draft` | — | Not a valid transition. A published flow cannot be returned to draft. |
+
+---
+
+### 6.8 Autosave
+
+Autosave runs automatically. The marketer does not need to trigger it.
+
+| Trigger | Debounce | What is saved |
+|---------|----------|--------------|
+| Any change to nodes or edges | 1500ms after last change | Full canvas state (all nodes + all edges) |
+| Any change to flow name or description | 1500ms after last change | Name, description |
+
+**Save state:**
+
+| State | Meaning |
+|-------|---------|
+| `idle` | No unsaved changes |
+| `saving` | Save in flight |
+| `saved` | Save confirmed by backend. Shown briefly, then returns to idle. |
+| `error` | Save failed. Marketer is notified and can retry manually. |
+
+The save state is always visible while in the builder. `error` state persists until the marketer retries or the next successful save.
+
+---
+
+### 6.9 Publish Validation
+
+Before a flow can be activated, the system checks:
+
+1. The flow has at least one node beyond the trigger.
+2. Every node on the canvas is reachable from the trigger (has a path of edges from the trigger to it).
+3. Every reachable node that has required configuration has been configured.
+
+If any check fails, activation is blocked. The marketer is shown which nodes failed which checks, with a direct action to navigate to each one.
+
+---
+
+## 7. States
+
+### Builder
+
+| State | Trigger | What the marketer sees | How it exits |
+|-------|---------|-----------------------|--------------|
+| Loading (new flow) | Builder opens for an unsaved flow | Trigger wizard opens immediately | Trigger configured → canvas with trigger node |
+| Loading (existing flow) | Builder opens for a saved flow | Canvas loads with saved state | Data arrives → canvas ready |
+| Ready | Canvas loaded | Full builder interface | — |
+| Error (load failed) | Flow data cannot be fetched | Error with retry | Retry → Loading |
+
+### Trigger Wizard
+
+| State | Trigger | What the marketer sees | How it exits |
+|-------|---------|-----------------------|--------------|
+| Event picker | Wizard opens | Full event catalogue to browse or search | Event selected → Step 1 |
+| Step 1 — When | Event selected | Trigger group configuration with selected event pre-filled | Next → Step 2, or Finish (if step 2 skipped) |
+| Step 2 — Who | Step 1 complete | Audience filter builder with estimated qualifying user count | Finish → wizard closes, trigger placed on canvas |
+| Broadcast | Broadcast event selected | Schedule and audience configuration | Finish → wizard closes, trigger placed on canvas |
+| Cancelled (new flow) | Marketer closes wizard on a new flow before configuring | Marketer is returned to the previous page | — |
+| Cancelled (existing flow) | Marketer closes wizard on an existing flow | Wizard closes, existing trigger config unchanged | — |
+
+### Node
+
+| State | Trigger | What the marketer sees |
+|-------|---------|-----------------------|
+| Unconnected | Node on canvas with no incoming or outgoing edge | Visual indicator distinguishes it from connected nodes |
+| Incomplete | Node is connected but required configuration is missing | Visual indicator on the node itself |
+| Complete | Node is connected and fully configured | Standard node appearance |
+| Selected | Marketer clicks node | Configuration panel opens |
+| Deleting | Delete key pressed with node selected | Confirmation shown if node has connections |
+
+### Autosave
+
+| State | What the marketer sees |
+|-------|----------------------|
+| `idle` | Save indicator is quiet — no unsaved changes |
+| `saving` | "Saving…" indicator visible |
+| `saved` | "Saved [N] ago" indicator visible briefly |
+| `error` | "Save failed" with a manual retry action |
+
+### Publish Validation
+
+| State | Trigger | What the marketer sees |
+|-------|---------|-----------------------|
+| Validation passing | All checks pass | Activate button is enabled |
+| Validation failing | One or more checks fail | Activate is blocked. A summary lists the failing nodes with navigation links. |
+
+---
+
+## 8. Edge Cases
+
+**Situation:** Marketer activates a flow where one branch of a Conditional Split has no nodes connected to it.
+**Wrong behaviour:** Flow activates. Users who route into the empty branch exit the flow silently.
+**Correct behaviour:** Publish validation treats every branch of every Conditional Split as a reachable path. An unconnected branch on any split fails validation with: "Conditional Split has an empty branch. Either add steps to this branch or remove it."
+
+---
+
+**Situation:** Marketer deletes a node that is the only connection between the trigger and a downstream sequence.
+**Wrong behaviour:** The downstream sequence disappears silently; the marketer doesn't notice they've disconnected half the flow.
+**Correct behaviour:** After deletion, the canvas visually marks all nodes that are now unreachable. A non-blocking notice reads: "Some nodes are no longer reachable from the trigger." The marketer can re-connect or delete the orphaned nodes.
+
+---
+
+**Situation:** Marketer opens the same flow in two browser tabs simultaneously, makes different edits in each, and saves both.
+**Wrong behaviour:** The second save silently overwrites the first. One set of edits is lost with no warning.
+**Correct behaviour:** On save, the backend checks a version/timestamp against the last known save. If a conflict is detected, the second tab shows: "This flow was updated in another tab. Reload to get the latest version, or force-save to overwrite it." The marketer chooses.
+
+---
+
+**Situation:** Marketer renames the flow to an empty string and navigates away.
+**Wrong behaviour:** Flow is saved with an empty name. The Flows list shows a blank row.
+**Correct behaviour:** On commit (Enter or focus loss), if the name is empty, the name field reverts to the previous value. An empty flow name is never saved.
+
+---
+
+**Situation:** Autosave is running when the browser tab is closed.
+**Wrong behaviour:** In-flight save is lost. Marketer reopens and finds work from before the last successful save.
+**Correct behaviour:** The autosave debounce is short (1500ms). The expected data loss window is at most 1500ms of changes. This is disclosed to the marketer in the "unsaved changes" copy. There is no additional browser-close guard because the debounce window is short enough that a guard dialog would be more disruptive than the potential loss.
+
+---
+
+**Situation:** An AI Calling or AI Chatbot node is added, the global wizard is dismissed without completing, and the marketer then tries to configure the individual node.
+**Wrong behaviour:** Individual node configuration opens but the global settings it depends on are empty — the node may appear configured but will fail at runtime.
+**Correct behaviour:** Individual node configuration for AI Calling and AI Chatbot is blocked until the global wizard is completed. A prompt within the node config reads: "Complete the AI Calling setup first." with a link to re-open the wizard.
+
+---
+
+**Situation:** Marketer places a node, connects it, and then the backend create fails (e.g. API is down at the moment of first save).
+**Wrong behaviour:** Node appears on canvas but is never persisted. On reload, it is gone. Marketer doesn't know.
+**Correct behaviour:** The canvas responds optimistically — the node appears immediately. If the first save fails, the autosave error state is shown. The node remains visible on the canvas until the marketer refreshes. If they refresh without a successful save, the node will not be there. The error state must make this risk clear: "Changes couldn't be saved. Don't refresh until this is resolved."
+
+---
+
+**Situation:** Marketer has a flow with 50+ nodes and is zoomed out to see all of them. They click to select a node and then press Delete — but the selection fell on a different node than the one they intended because the nodes are visually small at that zoom level.
+**Wrong behaviour:** The wrong node is deleted, possibly silently if it had no connections.
+**Correct behaviour:** The node name is always shown in the confirmation dialog regardless of zoom level, so the marketer can verify they're deleting the right one before confirming.
+
+---
+
+## 9. Non-Functional Requirements
+
+### Performance
+- Canvas with up to 50 nodes must load in under 2 seconds.
+- Adding a node to the canvas must be reflected in the UI in under 100ms (optimistic, before save).
+- Autosave must not cause any visible jank or interruption to canvas interaction — it runs in the background.
+- Trigger wizard must open in under 500ms.
+
+### Scale
+- Canvas must remain interactive at up to 200 nodes without frame-rate degradation. Beyond 200 nodes, a warning is shown: "Large flows may be slow to load."
+- The event catalogue in the trigger picker must support 500+ events with instant search (client-side after initial load).
+
+### Security
+- Editing a flow (adding nodes, changing configuration, publishing) requires write permission. Read-only users can open the builder but all edit interactions are disabled with an explanatory tooltip.
+- Node configuration may include API keys or webhook secrets. These values must be masked in the UI after entry and never logged.
+- Publish action requires write permission. The publish control is hidden (not just disabled) for read-only users.
+
+### Reliability
+- If the autosave API fails, the marketer's local canvas state must not be destroyed. The canvas remains fully usable. The error state must persist until a save succeeds or the marketer manually retries.
+- If the flow metadata API fails on load, the canvas should still load with whatever data is locally available (e.g. from the query cache). A banner communicates that the data may be stale.
+- The trigger wizard must be completable offline (data entered before an API failure should not be lost when the connection returns).
+
+---
+
+## 10. Analytics & Instrumentation
+
+### Events
+
+| Event | Trigger | Properties |
+|-------|---------|-----------|
+| `builder_opened` | Builder loads | `flow_id`, `is_new`, `node_count` (if existing) |
+| `trigger_wizard_completed` | Wizard finished | `flow_id`, `trigger_type` (event/broadcast), `has_audience_filter`, `has_exit_trigger` |
+| `trigger_wizard_abandoned` | Wizard closed without completing on a new flow | `flow_id`, `stage_reached` (picker/step1/step2) |
+| `node_added` | Node placed on canvas | `flow_id`, `node_type`, `method` (click/drag) |
+| `node_deleted` | Node removed | `flow_id`, `node_type`, `had_connections` |
+| `node_connected` | Edge drawn between nodes | `flow_id`, `source_type`, `target_type` |
+| `node_selected` | Node clicked | `flow_id`, `node_type` |
+| `flow_published` | Activate confirmed | `flow_id`, `node_count`, `time_to_publish_ms` |
+| `flow_paused` | Pause confirmed | `flow_id` |
+| `flow_resumed` | Resume confirmed | `flow_id` |
+| `flow_test_started` | Test mode entered | `flow_id` |
+| `autosave_failed` | Save API returns error | `flow_id`, `retry_count` |
+| `publish_validation_failed` | Activation blocked by validation | `flow_id`, `failure_reasons[]` |
+| `ai_dev_prompt_submitted` | AI Dev tab prompt sent | `flow_id`, `prompt_length` |
+| `ai_change_accepted` | Marketer accepts AI canvas modification | `flow_id` |
+| `ai_change_undone` | Marketer undoes AI canvas modification | `flow_id` |
+
+### Reporting Metrics
+
+| Metric | Definition | Where it surfaces |
+|--------|-----------|-------------------|
+| Flow completion rate | `flow_published / builder_opened` per session | Builder health dashboard |
+| Trigger wizard abandonment rate | `trigger_wizard_abandoned / trigger_wizard_opened` | Builder funnel |
+| Avg. nodes per published flow | `sum(node_count on publish) / flows_published` | Flow complexity trend |
+| Publish validation block rate | `publish_validation_failed / flow_published attempts` | Product quality signal |
+| Autosave error rate | `autosave_failed / autosave_triggered` | Reliability dashboard |
+| Test-before-publish rate | `flow_test_started before flow_published` | Quality adoption |
+
+---
+
+## 11. Copy
+
+### Flow name
+
+> Untitled flow *(default name — editable inline)*
+
+---
+
+### Autosave states
+
+> Saving…
+
+> Saved just now
+
+> Saved [N] minutes ago
+
+> Changes couldn't be saved. [Retry]
+
+> Changes couldn't be saved. Don't refresh until this is resolved.
+
+---
+
+### Trigger wizard
+
+> **Step 1 of 2 — When will users enter this flow?**
+
+> **Step 2 of 2 — Who can enter this flow?**
+
+> Estimated [X,XXX] users match these conditions
+
+> This trigger type doesn't support audience filtering. All qualifying users will enter. [Continue →]
+
+---
+
+### Node states
+
+> Not connected — this step won't run until it's connected to the flow.
+
+> Setup incomplete — finish configuring this step before activating.
+
+---
+
+### Publish validation failure
+
+> **This flow isn't ready to go live**
+> Fix the following before activating:
+> — [Node name]: not reachable from the trigger [Go to node]
+> — [Node name]: required configuration missing [Go to node]
+> — Conditional Split has an empty branch [Go to node]
+
+---
+
+### Node deletion confirmation
+
+> **Delete "[Node name]"?**
+> This will also remove [N] connection(s). This cannot be undone.
+> [Cancel] [Delete]
+
+---
+
+### Pause confirmation
+
+> **Pause this flow?**
+> No new users will enter. Users already in the journey will finish their current step.
+> [Cancel] [Pause]
+
+---
+
+### Concurrent edit conflict
+
+> This flow was updated in another tab.
+> [Reload to see latest] [Force-save my changes]
+
+---
+
+### Errors
+
+> Couldn't load this flow. [Try again]
+
+> Failed to publish. [Try again]
+
+> Failed to pause. [Try again]
+
+---
+
+## 12. Dependencies
+
+| Dependency | What is needed | If unavailable | Graceful degradation |
+|------------|---------------|---------------|---------------------|
+| Flows API (fetch) | Load existing flow data (nodes, edges, meta) | Flow cannot load | Error state with retry |
+| Flows API (create) | Create a new flow record on first node drop | Flow not persisted | Canvas still usable locally; autosave error shown |
+| Flows API (update) | Autosave canvas and meta changes | Saves fail | Autosave error state; canvas still usable |
+| Flows API (publish / pause / resume) | Lifecycle transitions | Transition fails | Error shown; status unchanged |
+| Event catalogue | Trigger event picker | Picker shows error; cannot complete trigger setup | Builder cannot open for new flows without this |
+| Audience count API | Estimated user count in trigger "Who" step | Count shows "—"; wizard still completable | Non-blocking |
+| Message delivery API | Test flow execution | Test mode unavailable | Draft mode still fully functional |
+| AI Dev API | AI-assisted canvas editing | AI Dev tab shows error | Config and Analytics tabs unaffected |
+
+---
+
+## 13. Out of Scope
+
+| Exclusion | Reason | What unlocks it |
+|-----------|--------|----------------|
+| Undo / redo | Requires full history stack on the canvas state. Not a trivial addition to the current Zustand store. | Canvas history PRD. |
+| Flow versioning and rollback | No version history model exists. | Versioning PRD. |
+| Collaborative editing (multiple users on the same canvas simultaneously) | Requires operational transforms or CRDT. | Collaboration infrastructure PRD. |
+| Mobile / tablet editing | Canvas-based drag-and-drop is not suited to touch without significant interaction redesign. | Mobile builder PRD. |
+| Per-node analytics deeper than what the Analytics tab shows | Node-level analytics deeper than entered/delivered/clicked belongs in the Flow Analytics page. | Flow Analytics PRD. |
+| Individual node specifications | Each node type (WhatsApp, Email, Conditional Split, etc.) has its own configuration surface. These are separate PRDs. | Individual node PRDs. |
+| Exporting a flow as JSON or importing from JSON | Not in scope for V1. | Import/Export PRD. |
+
+---
+
+## 14. Open Questions
+
+| Question | Why it's open | Owner | What resolves it |
+|----------|-------------|-------|-----------------|
+| When a draft flow is edited after being partially published, should the live version continue running while the draft is being edited? | Currently there is no concept of a "draft vs live" version separation — saving immediately affects the live flow. This is a significant product decision with trust implications. | Product + Engineering | Decision on whether the builder needs a "staged" or "versioned" editing model. |
+| What happens to users mid-journey when a node is deleted from an active flow? | If a user is currently waiting at a step that gets deleted, their journey state is undefined. | Engineering + Product | Defined behaviour for in-flight users when their current node is removed. |
+| Should publish validation block on incomplete optional nodes, or only required fields? | Currently no distinction is made between required and optional configuration within a node. | Product + Engineering | Field-level required/optional spec per node type. |
+| What is the maximum number of nodes a single flow should support? | There is no limit enforced. At high node counts the canvas becomes unwieldy and save payloads become large. | Engineering | Performance benchmarking + defined limit with UX handling at the threshold. |
+| Should the AI Dev tab allow the AI to delete nodes, or only add/modify them? | Unrestricted AI-driven deletion is higher-risk than addition. | Product | AI capability boundary definition for the Dev tab. |
+| Is test mode scoped to a single test user, or can it run against a small test segment? | Currently undefined — the stub only shows a toast. | Product + Engineering | Test mode PRD. |
+
+---
+
+## 15. Decision Log
+
+| Decision | Alternatives considered | Rationale | Tradeoff accepted |
+|----------|------------------------|-----------|------------------|
+| Trigger must be configured before any nodes can be placed | Allow nodes first, configure trigger later | A flow without a trigger has no entry point — every node a marketer places before defining the trigger is being placed without context. Forcing trigger first means every subsequent decision (which channel to use, what delay makes sense) is grounded in the actual entry event. | Slightly higher friction on the very first step. Acceptable because the trigger wizard can be completed in under 2 minutes. |
+| Autosave with 1500ms debounce over explicit Save button | Explicit Save button | A Save button puts cognitive load on the marketer. Autosave with a visible indicator gives the same safety guarantee with less interruption. | The debounce window means up to 1500ms of changes can be lost on sudden disconnection. Mitigated by the autosave error state. |
+| Optimistic canvas updates (node appears immediately before save confirms) | Block canvas until save confirms | Blocking the canvas on save would make the product feel slow and unresponsive, especially on poor connections. Optimistic updates make the product feel instant. | If the backend is down, nodes appear on canvas but aren't saved. The error state must make this clear. |
+| Publish validation at activation time, not continuously | Continuous validation as the marketer builds | Continuous validation creates noise — every half-built state would show errors, distracting the marketer while they're mid-thought. Validation at activation gives the marketer a clear moment to fix issues with full context. | Marketer can build an invalid flow and not discover the problem until they try to activate. |

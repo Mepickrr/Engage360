@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Conversion Goal Modal — Mockup</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  /* Blurred builder behind the modal */
+  .builder-bg {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #f8f9ff 0%, #eef0f7 100%);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    filter: blur(2px);
+    opacity: 0.6;
+  }
+  .builder-topbar {
+    height: 52px;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 12px;
+  }
+  .topbar-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .topbar-name { font-size: 14px; font-weight: 600; color: #111827; margin-left: 4px; }
+  .topbar-spacer { flex: 1; }
+  .topbar-btn {
+    padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;
+    background: #6C3AE8; color: white; border: none;
+  }
+  .builder-canvas {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 40px;
+  }
+  .mock-node {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-size: 12px;
+    color: #6b7280;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    white-space: nowrap;
+  }
+  .mock-node.trigger { border-color: #6C3AE8; color: #6C3AE8; font-weight: 600; }
+  .mock-arrow { color: #d1d5db; font-size: 18px; }
+
+  /* Overlay */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 10;
+  }
+
+  /* Modal */
+  .modal {
+    background: white;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 560px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  .modal-header {
+    padding: 22px 24px 18px;
+    border-bottom: 1px solid #f1f3f5;
+  }
+  .modal-header-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+  .modal-icon {
+    width: 36px; height: 36px;
+    background: #f0ebff;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 18px;
+  }
+  .modal-title { font-size: 16px; font-weight: 700; color: #111827; line-height: 1.3; }
+  .modal-subtitle { font-size: 12.5px; color: #6b7280; margin-top: 3px; line-height: 1.5; }
+  .ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #f0ebff;
+    color: #6C3AE8;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-top: 10px;
+  }
+
+  .modal-body { padding: 20px 24px; }
+
+  /* Goal card */
+  .goal-card {
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+    background: #fafafa;
+    position: relative;
+  }
+  .goal-card.primary { border-color: #6C3AE8; background: #faf8ff; }
+
+  .goal-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .goal-card-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .primary-pill {
+    font-size: 10px;
+    font-weight: 600;
+    background: #ede9fe;
+    color: #6C3AE8;
+    padding: 2px 7px;
+    border-radius: 20px;
+  }
+  .goal-card-remove {
+    width: 22px; height: 22px;
+    border: none; background: none;
+    color: #9ca3af;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 4px;
+  }
+
+  .goal-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .goal-field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .goal-field input, .goal-field select {
+    width: 100%;
+    height: 34px;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    padding: 0 10px;
+    font-size: 13px;
+    color: #111827;
+    background: white;
+    appearance: none;
+  }
+  .goal-field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+
+  .ai-prefill-note {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: #6C3AE8;
+    background: #f5f3ff;
+    border: 1px solid #ede9fe;
+    border-radius: 6px;
+    padding: 5px 9px;
+    margin-top: 8px;
+  }
+
+  .add-goal-btn {
+    width: 100%;
+    height: 36px;
+    border: 1.5px dashed #d1d5db;
+    border-radius: 8px;
+    background: none;
+    color: #6b7280;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 16px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .add-goal-btn:hover { border-color: #6C3AE8; color: #6C3AE8; }
+
+  /* Attribution */
+  .section-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 8px;
+  }
+  .attribution-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .attribution-row select {
+    height: 32px;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    padding: 0 28px 0 10px;
+    font-size: 13px;
+    color: #111827;
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center;
+    appearance: none;
+  }
+  .attribution-text {
+    font-size: 12.5px;
+    color: #6b7280;
+  }
+
+  /* Toggle row */
+  .toggle-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #f8f9fb;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    margin-bottom: 20px;
+  }
+  .toggle {
+    width: 36px; height: 20px;
+    background: #d1d5db;
+    border-radius: 20px;
+    position: relative;
+    flex-shrink: 0;
+    margin-top: 2px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .toggle.on { background: #6C3AE8; }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 14px; height: 14px;
+    background: white;
+    border-radius: 50%;
+    top: 3px; left: 3px;
+    transition: left 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle.on::after { left: 19px; }
+  .toggle-label { font-size: 13px; font-weight: 600; color: #111827; }
+  .toggle-desc { font-size: 12px; color: #6b7280; margin-top: 2px; line-height: 1.4; }
+
+  /* Footer */
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #f1f3f5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fcfcfc;
+  }
+  .btn-skip {
+    font-size: 13px;
+    color: #6b7280;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    padding: 8px 4px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .btn-skip:hover { color: #374151; }
+  .btn-publish {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 20px;
+    background: #6C3AE8;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(108,58,232,0.3);
+  }
+  .btn-publish:hover { background: #5b2fd4; }
+  .publish-icon { font-size: 14px; }
+</style>
+</head>
+<body>
+
+<!-- Blurred builder background -->
+<div class="builder-bg">
+  <div class="builder-topbar">
+    <div class="topbar-dot" style="background:#6C3AE8"></div>
+    <span class="topbar-name">Abandoned Cart Recovery</span>
+    <span style="font-size:11px;background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:20px;font-weight:600;margin-left:4px;">Draft</span>
+    <div class="topbar-spacer"></div>
+    <button class="topbar-btn">Publish</button>
+  </div>
+  <div class="builder-canvas">
+    <div class="mock-node trigger">🎯 Abandoned Cart</div>
+    <div class="mock-arrow">→</div>
+    <div class="mock-node">⏱ Wait 1 hour</div>
+    <div class="mock-arrow">→</div>
+    <div class="mock-node">💬 WhatsApp</div>
+    <div class="mock-arrow">→</div>
+    <div class="mock-node">📧 Email</div>
+  </div>
+</div>
+
+<!-- Modal overlay -->
+<div class="overlay">
+  <div class="modal">
+
+    <div class="modal-header">
+      <div class="modal-header-top">
+        <div class="modal-icon">🎯</div>
+        <div>
+          <div class="modal-title">Before you go live — track what matters</div>
+          <div class="modal-subtitle">Set a conversion goal so you know whether this flow is driving real outcomes. You can skip this and add goals later from Flow Settings.</div>
+        </div>
+      </div>
+      <div class="ai-badge">✦ AI suggested based on your trigger</div>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- Primary goal card -->
+      <div class="goal-card primary">
+        <div class="goal-card-header">
+          <div class="goal-card-title">
+            Goal 1
+            <span class="primary-pill">Primary</span>
+          </div>
+        </div>
+        <div class="goal-row">
+          <div class="goal-field">
+            <label>Goal name</label>
+            <input type="text" value="Conversion Goal"/>
+          </div>
+          <div class="goal-field">
+            <label>Conversion event</label>
+            <select>
+              <option selected>Order placed</option>
+              <option>Checkout started</option>
+              <option>Add to cart</option>
+              <option>Product viewed</option>
+            </select>
+          </div>
+        </div>
+        <div class="ai-prefill-note">
+          ✦ AI suggested "Order placed" based on your Abandoned Cart trigger
+        </div>
+      </div>
+
+      <!-- Add goal button -->
+      <button class="add-goal-btn">
+        <span style="font-size:16px;font-weight:300">+</span> Add another goal <span style="color:#9ca3af;font-size:11px">(up to 3)</span>
+      </button>
+
+      <!-- Attribution window -->
+      <div class="section-label">Attribution window</div>
+      <div class="attribution-row">
+        <select>
+          <option>1 day</option>
+          <option>6 hours</option>
+          <option>12 hours</option>
+          <option>3 days</option>
+          <option>7 days</option>
+          <option>30 days</option>
+        </select>
+        <span class="attribution-text">after a user receives or clicks a message in this flow</span>
+      </div>
+
+      <!-- Exit on conversion -->
+      <div class="toggle-row">
+        <div class="toggle" onclick="this.classList.toggle('on')"></div>
+        <div>
+          <div class="toggle-label">Exit flow on conversion</div>
+          <div class="toggle-desc">Remove users from the flow as soon as they complete the primary goal — no further messages sent.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-skip">Skip for now</button>
+      <button class="btn-publish">
+        <span class="publish-icon">🚀</span>
+        Save &amp; Publish
+      </button>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
