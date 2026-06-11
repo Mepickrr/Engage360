@@ -13,7 +13,8 @@ import {
 import {
   Search, Plus, GitBranch, MoreVertical, X, Sparkles,
   MessageCircle, Mail, MessageSquare, Bell, Phone,
-  ChevronDown, Download,
+  ChevronDown, Download, Pencil, BarChart2, Bot, Signal,
+  PhoneCall,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useConversationStore } from "@/store/uiStore";
@@ -37,10 +38,12 @@ function fmtNum(n) {
 
 // ── static sample data ────────────────────────────────────────────────────────
 const SAMPLE_FLOWS = [
-  { id: "s1", name: "Cart Recovery",      lifecycle: "Conversion",    health: "critical", status: "active",   sent: 12430, delivered: 8102, opened: 3241, clicked: 891,  orders: 204, revenue: 84200  },
-  { id: "s2", name: "Welcome Series",     lifecycle: "Acquisition",   health: "warning",  status: "active",   sent: 6820,  delivered: 6102, opened: 1840, clicked: 430,  orders: 12,  revenue: 4100   },
-  { id: "s3", name: "Checkout Recovery",  lifecycle: "Conversion",    health: "healthy",  status: "active",   sent: 9310,  delivered: 8840, opened: 4200, clicked: 1100, orders: 310, revenue: 184000 },
-  { id: "s4", name: "Re-engagement",      lifecycle: "Re-engagement", health: "healthy",  status: "inactive", sent: 3200,  delivered: 2900, opened: 980,  clicked: 210,  orders: 44,  revenue: 18400  },
+  { id: "s1", name: "Cart Recovery",      lifecycle: "Conversion",    health: "critical", status: "active",   channels: ["whatsapp", "email"],              audienceType: "all",       lastUpdate: "2 hrs ago",  sent: 12430, delivered: 8102, opened: 3241, clicked: 891,  orders: 204, revenue: 84200,  spent: 12400 },
+  { id: "s2", name: "Welcome Series",     lifecycle: "Acquisition",   health: "warning",  status: "active",   channels: ["whatsapp", "sms"],                audienceType: "engage360", lastUpdate: "1 day ago",  sent: 6820,  delivered: 6102, opened: 1840, clicked: 430,  orders: 12,  revenue: 4100,   spent: 5200  },
+  { id: "s3", name: "Checkout Recovery",  lifecycle: "Conversion",    health: "healthy",  status: "active",   channels: ["whatsapp", "email", "push"],       audienceType: "known",     lastUpdate: "3 hrs ago",  sent: 9310,  delivered: 8840, opened: 4200, clicked: 1100, orders: 310, revenue: 184000, spent: 8900  },
+  { id: "s4", name: "Re-engagement",      lifecycle: "Re-engagement", health: "healthy",  status: "draft",    channels: ["email", "sms", "push"],            audienceType: "all",       lastUpdate: "5 days ago", sent: 3200,  delivered: 2900, opened: 980,  clicked: 210,  orders: 44,  revenue: 18400,  spent: 3100  },
+  { id: "s5", name: "AI COD Confirmation", lifecycle: "Conversion",   health: "healthy",  status: "active",   channels: ["aicalling", "sms"],               audienceType: "known",     lastUpdate: "30 min ago", sent: 2140,  delivered: 2080, opened: 1920, clicked: 840,  orders: 198, revenue: 62000,  spent: 4800  },
+  { id: "s6", name: "Post-Purchase Review", lifecycle: "Retention",   health: "healthy",  status: "completed",channels: ["whatsapp", "aichatbot"],           audienceType: "engage360", lastUpdate: "2 days ago", sent: 5400,  delivered: 5100, opened: 2800, clicked: 920,  orders: 0,   revenue: 0,      spent: 2200  },
 ];
 
 const LIFECYCLE_COLORS = {
@@ -57,12 +60,28 @@ const HEALTH_META = {
   healthy:  { color: "#22C55E", title: "Healthy" },
 };
 
-const CHANNEL_ICONS = {
-  whatsapp: MessageCircle,
-  email: Mail,
-  sms: MessageSquare,
-  push: Bell,
-  phone: Phone,
+const CHANNEL_META = {
+  whatsapp:  { Icon: MessageCircle, color: "#25D366", label: "WhatsApp" },
+  email:     { Icon: Mail,          color: "#3B82F6", label: "Email"    },
+  sms:       { Icon: MessageSquare, color: "#64748B", label: "SMS"      },
+  push:      { Icon: Bell,          color: "#F59E0B", label: "Push"     },
+  aicalling: { Icon: PhoneCall,     color: "#8B5CF6", label: "AI Call"  },
+  aichatbot: { Icon: Bot,           color: "#6C3AE8", label: "AI Chatbot"},
+  rcs:       { Icon: Signal,        color: "#0EA5E9", label: "RCS"      },
+};
+
+const STATUS_META = {
+  active:    { label: "Live",        bg: "#ECFDF5", fg: "#065F46", dot: "#22C55E" },
+  draft:     { label: "Draft",       bg: "#F1F5F9", fg: "#475569", dot: "#94A3B8" },
+  completed: { label: "Completed",   bg: "#EFF6FF", fg: "#1D4ED8", dot: "#3B82F6" },
+  paused:    { label: "In Progress", bg: "#FFFBEB", fg: "#92400E", dot: "#F59E0B" },
+  inactive:  { label: "Inactive",    bg: "#F1F5F9", fg: "#6B7280", dot: "#D1D5DB" },
+};
+
+const AUDIENCE_META = {
+  all:       { label: "All Users",              bg: "#F1F5F9", fg: "#475569" },
+  engage360: { label: "Engage360 Identified",   bg: "#EFF6FF", fg: "#3B82F6" },
+  known:     { label: "Known Users",            bg: "#F0FDF4", fg: "#16A34A" },
 };
 
 const TIER_STYLES = {
@@ -310,15 +329,7 @@ function StatsRow() {
   const [dateRange, setDateRange] = useState("last30");
   return (
     <div>
-      <div className="flex items-center justify-end gap-4 mb-2">
-        <button type="button" className="text-[12px] text-primary hover:underline font-medium"
-          onClick={() => toast.info("Opening full analytics…")}>
-          View Full Analytics →
-        </button>
-        <button type="button" className="text-[12px] text-primary hover:underline font-medium"
-          onClick={() => toast.info("Opening all opportunities…")}>
-          Browse All Opportunities →
-        </button>
+      <div className="flex items-center justify-between gap-4 mb-2">
         <div className="relative">
           <select
             value={dateRange}
@@ -333,6 +344,10 @@ function StatsRow() {
           </select>
           <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-text-muted pointer-events-none" />
         </div>
+        <button type="button" className="text-[12px] text-primary hover:underline font-medium"
+          onClick={() => toast.info("Opening full analytics…")}>
+          View Full Analytics →
+        </button>
       </div>
       <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
         <StatCard label="Active Flows"       value="71"       delta={12.0} deltaUp={true}  />
@@ -506,50 +521,46 @@ function FlowsTable({ sampleFlows, apiFlows, deleteMut }) {
   const [search, setSearch]         = useState("");
   const [statusFilter, setStatus]   = useState("all");
   const [stageFilter, setStage]     = useState("all");
-  const [toggles, setToggles]       = useState({});
+  const [statuses, setStatuses]     = useState({});
 
-  // Seed flows converted to the same row shape
+  const SEED_DATES = ["Jun 9, 2026", "Jun 8, 2026", "Jun 7, 2026", "Jun 6, 2026", "Jun 5, 2026", "Jun 4, 2026"];
   const seedRows = useMemo(() =>
-    SEED_FLOWS.map((sf) => ({
-      id: sf.id,
-      name: sf.name,
+    SEED_FLOWS.map((sf, i) => ({
+      id: sf.id, name: sf.name,
       lifecycle: sf.lifecycle_stage || null,
       health: sf.health || "healthy",
       status: sf.status || "draft",
-      sent: 0, delivered: 0, opened: 0, clicked: 0, orders: 0, revenue: 0,
+      channels: sf.channels || [],
+      audienceType: sf.audienceType || "all",
+      lastUpdate: sf.lastUpdate || SEED_DATES[i % SEED_DATES.length],
+      sent: 0, delivered: 0, opened: 0, clicked: 0, orders: 0, revenue: 0, spent: 0,
       isSeed: true,
     })),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   []);
 
   const rows = useMemo(() => {
     const mapFlow = (f) => ({
-      id: f.id,
-      name: f.name,
+      id: f.id, name: f.name,
       lifecycle: f.lifecycle_stage || null,
       health: f.health || "healthy",
-      // Preserve draft/paused/test; map everything else to active/inactive
-      status: ["active", "paused", "draft", "test"].includes(f.status)
-        ? f.status
-        : f.status === "active" ? "active" : "inactive",
+      status: ["active", "paused", "draft", "completed"].includes(f.status) ? f.status : "draft",
+      channels: f.channels || [],
+      audienceType: f.audienceType || "all",
+      lastUpdate: f.lastUpdate || "—",
       sent:      f.performance?.entered || 0,
       delivered: Math.round((f.performance?.entered || 0) * 0.82),
       opened:    Math.round((f.performance?.entered || 0) * 0.35),
       clicked:   Math.round((f.performance?.entered || 0) * 0.10),
       orders:    0,
       revenue:   f.performance?.revenue_inr || 0,
+      spent:     f.spent || 0,
       isLocal:   f.id?.startsWith("local-"),
     });
 
-    const apiRows = (apiFlows && apiFlows.length > 0)
-      ? apiFlows.map(mapFlow)
-      : sampleFlows;
-
-    // Always show seed flows at top (deduplicated against API/local rows)
+    const apiRows = (apiFlows && apiFlows.length > 0) ? apiFlows.map(mapFlow) : sampleFlows;
     const apiIds = new Set(apiRows.map((r) => r.id));
-    const source = [
-      ...seedRows.filter((r) => !apiIds.has(r.id)),
-      ...apiRows,
-    ];
+    const source = [...seedRows.filter((r) => !apiIds.has(r.id)), ...apiRows];
 
     return source.filter((f) => {
       if (statusFilter !== "all" && f.status !== statusFilter) return false;
@@ -559,7 +570,9 @@ function FlowsTable({ sampleFlows, apiFlows, deleteMut }) {
     });
   }, [apiFlows, sampleFlows, seedRows, statusFilter, stageFilter, search]);
 
-  const isActive = (f) => (toggles[f.id] !== undefined ? toggles[f.id] : f.status === "active" || f.status === "inactive" ? f.status === "active" : false);
+  const getStatus = (f) => statuses[f.id] !== undefined ? statuses[f.id] : f.status;
+  const isLive = (f) => getStatus(f) === "active";
+
   const fmt = (n, total) => {
     if (n == null) return "—";
     if (pctView && total) return `${((n / total) * 100).toFixed(1)}%`;
@@ -572,31 +585,24 @@ function FlowsTable({ sampleFlows, apiFlows, deleteMut }) {
       <div className="flex items-center gap-2 flex-wrap mb-3">
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
             placeholder="Search flows..."
-            className="pl-8 pr-3 py-1.5 text-[12px] rounded-md border border-border bg-surface w-[180px] focus:outline-none focus:border-primary/60"
-          />
+            className="pl-8 pr-3 py-1.5 text-[12px] rounded-md border border-border bg-surface w-[180px] focus:outline-none focus:border-primary/60" />
         </div>
 
         <Select value={statusFilter} onValueChange={setStatus}>
-          <SelectTrigger className="w-[120px] h-8 text-[12px]">
-            <SelectValue placeholder="All Status" />
-          </SelectTrigger>
+          <SelectTrigger className="w-[120px] h-8 text-[12px]"><SelectValue placeholder="All Status" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="inactive">Inactive</SelectItem>
+            <SelectItem value="active">Live</SelectItem>
             <SelectItem value="draft">Draft</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
+            <SelectItem value="paused">In Progress</SelectItem>
           </SelectContent>
         </Select>
 
         <Select value={stageFilter} onValueChange={setStage}>
-          <SelectTrigger className="w-[130px] h-8 text-[12px]">
-            <SelectValue placeholder="All Stages" />
-          </SelectTrigger>
+          <SelectTrigger className="w-[130px] h-8 text-[12px]"><SelectValue placeholder="All Stages" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Stages</SelectItem>
             <SelectItem value="Acquisition">Acquisition</SelectItem>
@@ -607,27 +613,28 @@ function FlowsTable({ sampleFlows, apiFlows, deleteMut }) {
           </SelectContent>
         </Select>
 
-        <button
-          type="button"
+        <button type="button"
           className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-border text-[12px] text-text-secondary hover:bg-slate-50"
-          onClick={() => toast.info("Exporting flows as CSV…")}
-        >
+          onClick={() => toast.info("Exporting flows as CSV…")}>
           <Download className="w-3.5 h-3.5" />
           Export CSV
         </button>
 
         <div className="ml-auto flex items-center gap-2">
-          <span className="text-[11px] text-text-muted">% View</span>
-          <button
-            type="button"
-            onClick={() => setPctView((v) => !v)}
-            className={`relative w-8 h-4 rounded-full transition-colors ${pctView ? "bg-primary" : "bg-slate-200"}`}
-          >
-            <span
-              className={`absolute top-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-transform ${
-                pctView ? "translate-x-[18px]" : "translate-x-0.5"
-              }`}
-            />
+          <span className="text-[11px] font-medium" style={{ color: pctView ? PRIMARY : "#94A3B8" }}>% View</span>
+          <button type="button" onClick={() => setPctView((v) => !v)}
+            title={pctView ? "Switch to absolute numbers" : "Switch to % of sent"}
+            style={{
+              position: "relative", width: 40, height: 22, borderRadius: 11, flexShrink: 0,
+              background: pctView ? PRIMARY : "#E2E8F0", cursor: "pointer", border: "none",
+              display: "flex", alignItems: "center", padding: 2, transition: "background 0.2s",
+            }}>
+            <span style={{
+              width: 18, height: 18, borderRadius: "50%", background: "#fff",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.2)", transition: "transform 0.2s",
+              transform: pctView ? "translateX(18px)" : "translateX(0)",
+              flexShrink: 0,
+            }} />
           </button>
         </div>
       </div>
@@ -640,66 +647,77 @@ function FlowsTable({ sampleFlows, apiFlows, deleteMut }) {
             <div className="text-sm font-medium text-text-primary">No flows match your filters</div>
           </div>
         ) : (
-          <table className="w-full text-left min-w-[900px]">
+          <table className="w-full text-left" style={{ minWidth: 1200 }}>
             <thead className="bg-slate-50 border-b border-border">
               <tr className="text-[11px] uppercase tracking-wide text-text-muted">
-                <th className="px-4 py-2.5 font-medium">Flows Name</th>
-                <th className="px-3 py-2.5 font-medium">Status</th>
-                <th className="px-3 py-2.5 font-medium text-right">Sent</th>
-                <th className="px-3 py-2.5 font-medium text-right">Delivered</th>
-                <th className="px-3 py-2.5 font-medium text-right">Opened</th>
-                <th className="px-3 py-2.5 font-medium text-right">Clicked</th>
-                <th className="px-3 py-2.5 font-medium text-right">Orders</th>
-                <th className="px-3 py-2.5 font-medium text-right">Revenue</th>
-                <th className="px-3 py-2.5 font-medium w-10" />
+                <th className="px-4 py-2.5 font-medium" style={{ minWidth: 220 }}>Journey Name</th>
+                <th className="px-3 py-2.5 font-medium" style={{ minWidth: 130 }}>Channels</th>
+                <th className="px-3 py-2.5 font-medium text-right" style={{ minWidth: 70 }}>Sent</th>
+                <th className="px-3 py-2.5 font-medium text-right" style={{ minWidth: 80 }}>Delivered{pctView ? " %" : ""}</th>
+                <th className="px-3 py-2.5 font-medium text-right" style={{ minWidth: 70 }}>Opened{pctView ? " %" : ""}</th>
+                <th className="px-3 py-2.5 font-medium text-right" style={{ minWidth: 70 }}>Clicked{pctView ? " %" : ""}</th>
+                <th className="px-3 py-2.5 font-medium text-right" style={{ minWidth: 70 }}>Orders</th>
+                <th className="px-3 py-2.5 font-medium text-right" style={{ minWidth: 90 }}>Revenue</th>
+                <th className="px-3 py-2.5 font-medium text-right" style={{ minWidth: 70 }}>Spent</th>
+                <th className="px-3 py-2.5 font-medium" style={{ minWidth: 130 }}>Status</th>
+                <th className="px-3 py-2.5 font-medium text-center" style={{ minWidth: 90 }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((f) => {
-                const active = isActive(f);
+                const currentStatus = getStatus(f);
+                const live = isLive(f);
+                const sm = STATUS_META[currentStatus] || STATUS_META.draft;
+                const audience = AUDIENCE_META[f.audienceType] || AUDIENCE_META.all;
+
                 return (
-                  <tr
-                    key={f.id}
-                    className="border-t border-border hover:bg-slate-50/50 transition-colors"
-                  >
-                    {/* Name + health dot + lifecycle chip */}
+                  <tr key={f.id} className="border-t border-border hover:bg-slate-50/50 transition-colors">
+
+                    {/* Journey Name */}
                     <td className="px-4 py-3">
                       <div className="flex items-start gap-2">
                         <HealthDot health={f.health} />
                         <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <button
-                              type="button"
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <button type="button"
                               onClick={() => navigate(`/flows-v2/builder/${f.id}`)}
-                              className="font-semibold text-[13px] text-text-primary hover:text-primary text-left"
-                            >
+                              className="font-semibold text-[13px] text-text-primary hover:text-primary text-left truncate max-w-[160px]">
                               {f.name}
                             </button>
-                            {f.isSeed && (
-                              <span className="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-violet-100 text-violet-600">
-                                Demo
-                              </span>
-                            )}
-                            {f.isLocal && (
-                              <span className="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
-                                Saved locally
-                              </span>
-                            )}
+                            {f.isSeed && <span className="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-violet-100 text-violet-600">Demo</span>}
+                            {f.isLocal && <span className="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">Local</span>}
                           </div>
-                          <LifecycleChip stage={f.lifecycle} />
+                          {/* Audience type + last update */}
+                          <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                              style={{ background: audience.bg, color: audience.fg }}>
+                              {audience.label}
+                            </span>
+                            <span className="text-[10px] text-text-muted">{f.lastUpdate}</span>
+                          </div>
                         </div>
                       </div>
                     </td>
 
-                    {/* Status toggle */}
+                    {/* Channels */}
                     <td className="px-3 py-3">
-                      <StatusToggle
-                        active={active}
-                        onChange={(v) => {
-                          setToggles((p) => ({ ...p, [f.id]: v }));
-                          toast.success(v ? `${f.name} activated` : `${f.name} paused`);
-                        }}
-                      />
+                      <div className="flex items-center gap-1 flex-wrap">
+                        {(f.channels || []).map((ch) => {
+                          const meta = CHANNEL_META[ch];
+                          if (!meta) return null;
+                          const { Icon, color, label } = meta;
+                          return (
+                            <span key={ch} title={label}
+                              className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                              style={{ background: `${color}18` }}>
+                              <Icon className="w-3 h-3" style={{ color }} />
+                            </span>
+                          );
+                        })}
+                        {(!f.channels || f.channels.length === 0) && (
+                          <span className="text-[11px] text-text-muted">—</span>
+                        )}
+                      </div>
                     </td>
 
                     {/* Metrics */}
@@ -709,33 +727,70 @@ function FlowsTable({ sampleFlows, apiFlows, deleteMut }) {
                     <td className="px-3 py-3 text-right text-[12px] text-text-secondary tabular-nums">{fmt(f.clicked, f.sent)}</td>
                     <td className="px-3 py-3 text-right text-[12px] text-text-secondary tabular-nums">{fmtNum(f.orders)}</td>
                     <td className="px-3 py-3 text-right text-[12px] font-medium text-text-primary tabular-nums">{formatINR(f.revenue)}</td>
+                    <td className="px-3 py-3 text-right text-[12px] text-text-secondary tabular-nums">{formatINR(f.spent)}</td>
 
-                    {/* Actions ⋮ */}
+                    {/* Status — toggle + label */}
                     <td className="px-3 py-3">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button type="button" className="p-1 hover:bg-slate-100 rounded-md">
-                            <MoreVertical className="w-4 h-4 text-text-secondary" />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-44">
-                          <DropdownMenuItem onSelect={() => navigate(`/flows-v2/builder/${f.id}`)}>Edit</DropdownMenuItem>
-                          <DropdownMenuItem onSelect={() => navigate(`/flows-v2/builder/${f.id}/analytics`)}>View Analytics</DropdownMenuItem>
-                          <DropdownMenuItem onSelect={() => toast.info("Duplicating…")}>Duplicate</DropdownMenuItem>
-                          <DropdownMenuItem onSelect={() => toast.info("Rename…")}>Rename</DropdownMenuItem>
-                          <DropdownMenuItem onSelect={() => toast.info("Archived.")}>Archive</DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-rose-600"
-                            onSelect={() => deleteMut?.mutate(f.id)}
-                          >
-                            Delete
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onSelect={() => toast.info("Opening test mode…")}>Test</DropdownMenuItem>
-                          <DropdownMenuItem onSelect={() => toast.info("Opening chat history…")}>View All Chat</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <div className="flex items-center gap-2">
+                        <button type="button"
+                          onClick={() => {
+                            const next = currentStatus === "active" ? "draft" : "active";
+                            setStatuses((p) => ({ ...p, [f.id]: next }));
+                            toast.success(next === "active" ? `${f.name} is now Live` : `${f.name} paused`);
+                          }}
+                          title={live ? "Live — click to pause" : "Click to activate"}
+                          style={{
+                            position: "relative", width: 40, height: 22, borderRadius: 11, flexShrink: 0,
+                            background: live ? PRIMARY : "#E2E8F0", cursor: "pointer", border: "none",
+                            display: "flex", alignItems: "center", padding: 2, transition: "background 0.2s",
+                          }}>
+                          <span style={{
+                            width: 18, height: 18, borderRadius: "50%", background: "#fff",
+                            boxShadow: "0 1px 3px rgba(0,0,0,0.2)", transition: "transform 0.2s",
+                            transform: live ? "translateX(18px)" : "translateX(0)",
+                            flexShrink: 0,
+                          }} />
+                        </button>
+                        <div className="flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: sm.dot }} />
+                          <span className="text-[11px] font-medium" style={{ color: sm.fg }}>{sm.label}</span>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Actions — Edit | Analytics | More */}
+                    <td className="px-3 py-3">
+                      <div className="flex items-center justify-center gap-0.5">
+                        <button type="button" title="Edit"
+                          onClick={() => navigate(`/flows-v2/builder/${f.id}`)}
+                          className="p-1.5 hover:bg-slate-100 rounded-md text-text-secondary hover:text-primary transition-colors">
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" title="Analytics"
+                          onClick={() => navigate(`/flows-v2/builder/${f.id}/analytics`)}
+                          className="p-1.5 hover:bg-slate-100 rounded-md text-text-secondary hover:text-primary transition-colors">
+                          <BarChart2 className="w-3.5 h-3.5" />
+                        </button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button type="button" title="More" className="p-1.5 hover:bg-slate-100 rounded-md text-text-secondary">
+                              <MoreVertical className="w-3.5 h-3.5" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-44">
+                            <DropdownMenuItem onSelect={() => navigate(`/flows-v2/builder/${f.id}`)}>Edit</DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => navigate(`/flows-v2/builder/${f.id}/analytics`)}>View Analytics</DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => toast.info("Duplicating…")}>Duplicate</DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => toast.info("Rename…")}>Rename</DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => toast.info("Archived.")}>Archive</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="text-rose-600" onSelect={() => deleteMut?.mutate(f.id)}>Delete</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onSelect={() => toast.info("Opening test mode…")}>Test</DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => toast.info("Opening chat history…")}>View All Chat</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -749,9 +804,7 @@ function FlowsTable({ sampleFlows, apiFlows, deleteMut }) {
         <span>Showing {rows.length} of {(apiFlows?.length || 0) + sampleFlows.length} flows</span>
         <div className="flex items-center gap-1">
           {[10, 25, 50].map((n) => (
-            <button key={n} type="button" className="px-2 py-0.5 rounded border border-border hover:bg-slate-50">
-              {n}
-            </button>
+            <button key={n} type="button" className="px-2 py-0.5 rounded border border-border hover:bg-slate-50">{n}</button>
           ))}
         </div>
       </div>
@@ -806,11 +859,7 @@ export default function FlowsV2Page() {
         </div>
       </header>
 
-      <PerformanceContextStrip />
       <StatsRow />
-      <AIFlowAssist />
-      <AIAnalyticsZone />
-      <GrowthEngine />
       <FlowsTable sampleFlows={SAMPLE_FLOWS} apiFlows={apiFlows} deleteMut={deleteMut} />
     </div>
   );

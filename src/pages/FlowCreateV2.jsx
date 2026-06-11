@@ -222,7 +222,7 @@ function TemplateCard({ tpl, onUse }) {
       <button
         type="button"
         onClick={() => onUse(tpl)}
-        className="border-2 border-dashed border-border rounded-lg p-4 flex flex-col items-center justify-center min-h-[160px] hover:border-primary/50 hover:bg-primary-tint/30 transition-colors text-text-muted hover:text-primary"
+        className="w-full h-full border-2 border-dashed border-border rounded-lg p-4 flex flex-col items-center justify-center hover:border-primary/50 hover:bg-primary-tint/30 transition-colors text-text-muted hover:text-primary bg-white"
       >
         <Plus className="w-6 h-6 mb-2" />
         <span className="text-[13px] font-medium">Create a blank canvas</span>
@@ -230,7 +230,7 @@ function TemplateCard({ tpl, onUse }) {
     );
   }
   return (
-    <div className="bg-white border border-border rounded-lg p-4 flex flex-col hover:shadow-sm transition-shadow">
+    <div className="bg-white border border-border rounded-lg p-4 flex flex-col hover:shadow-sm transition-shadow h-full">
       <div className="flex items-start gap-2 mb-2">
         <span className="text-xl leading-none">{tpl.icon}</span>
         <div className="min-w-0">
@@ -313,22 +313,6 @@ export default function FlowCreateV2Page() {
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               type="button"
-              data-testid="flows-build-ai-btn"
-              onClick={() =>
-                openWith({
-                  seedMessage: "I want to build a new flow. Help me find the best opportunity and design it.",
-                  pinnedAgent: "aryan",
-                  source: "flows_header",
-                })
-              }
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-white text-sm font-medium hover:opacity-90"
-              style={{ backgroundColor: PRIMARY }}
-            >
-              <Sparkles className="w-4 h-4" />
-              Build with AI
-            </button>
-            <button
-              type="button"
               onClick={() => navigate("/flows-v2/builder/new")}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md border border-border bg-surface text-text-primary text-sm font-medium hover:bg-slate-50"
             >
@@ -338,92 +322,7 @@ export default function FlowCreateV2Page() {
         </div>
       </div>
 
-      {/* Section 1 — AI Recommendations */}
-      <div className="bg-white border border-border rounded-xl p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <span
-            className="w-8 h-8 rounded-full flex items-center justify-center"
-            style={{ backgroundColor: PRIMARY + "18" }}
-          >
-            <Sparkles className="w-4 h-4" style={{ color: PRIMARY }} />
-          </span>
-          <div>
-            <div className="text-[14px] font-semibold text-text-primary">AI Recommendation</div>
-            <div className="text-[11px] text-text-muted">Curated by AI Team. Based on your store performance</div>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {AI_RECO.map((tpl) => (
-            <AIRecoCard key={tpl.id} tpl={tpl} onUse={handleUseTemplate} />
-          ))}
-        </div>
-      </div>
-
-      {/* Section 2 — AI Flow Assist */}
-      <div
-        className="rounded-xl p-6 border border-border"
-        style={{
-          background: "linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 40%, #FAF5FF 100%)",
-        }}
-      >
-        <div className="mb-4">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[16px] font-medium text-text-secondary">Create using</span>
-            <span className="text-[16px] font-semibold text-text-primary flex items-center gap-1">
-              AI Flow Assist
-              <Sparkles className="w-4 h-4" style={{ color: PRIMARY }} />
-            </span>
-          </div>
-        </div>
-
-        <textarea
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleAssistSubmit();
-            }
-          }}
-          rows={3}
-          placeholder="Enter your prompt. Example: Send a policy renewal reminder flow for insurance customers whose policy expires in 15 days."
-          className="w-full px-4 py-3 rounded-lg border border-border bg-white text-[13px] text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/60 resize-none"
-        />
-
-        {prompt.trim() && (
-          <div className="mt-2 flex justify-end">
-            <button
-              type="button"
-              onClick={handleAssistSubmit}
-              className="px-4 py-1.5 rounded-md text-white text-[12px] font-medium hover:opacity-90"
-              style={{ backgroundColor: PRIMARY }}
-            >
-              Build with AI →
-            </button>
-          </div>
-        )}
-
-        {/* Scrollable chips */}
-        <div className="mt-3 relative">
-          <div
-            ref={chipsRef}
-            className="flex gap-2 overflow-x-auto no-scrollbar pb-1"
-          >
-            {ASSIST_CHIPS.map((chip) => (
-              <button
-                key={chip}
-                type="button"
-                onClick={() => setPrompt(chip)}
-                className="flex-shrink-0 px-3 py-1.5 rounded-full border border-border bg-white text-[11px] text-text-secondary hover:border-primary/50 hover:text-primary hover:bg-white transition-colors whitespace-nowrap"
-              >
-                {chip}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Section 3 — Template Library */}
+      {/* Template Library */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-[16px] font-semibold text-text-primary">
@@ -447,11 +346,11 @@ export default function FlowCreateV2Page() {
               <h3 className="text-[13px] font-semibold text-text-primary mb-3">
                 {group.label}
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
                 {group.templates.map((tpl) => (
                   <div
                     key={tpl.id}
-                    className="cursor-pointer"
+                    className="cursor-pointer flex flex-col"
                     onClick={() => handleUseTemplate(tpl)}
                   >
                     <TemplateCard tpl={tpl} onUse={handleUseTemplate} />
