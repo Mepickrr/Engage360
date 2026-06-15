@@ -46,7 +46,8 @@
       "items": [
         { "slug": "judge_me", "name": "Judge Me", "kind": "generic", "subtype": "judge_me", "icon": "Star", "color": "#3B82F6" },
         { "slug": "razorpay", "name": "Razor Pay", "kind": "generic", "subtype": "razorpay", "icon": "CreditCard", "color": "#3B82F6" },
-        { "slug": "freshdesk", "name": "Freshdesk", "kind": "generic", "subtype": "freshdesk", "icon": "Headphones", "color": "#3B82F6" }
+        { "slug": "freshdesk", "name": "Freshdesk", "kind": "generic", "subtype": "freshdesk", "icon": "Headphones", "color": "#3B82F6" },
+        { "slug": "webhook", "name": "Webhook", "kind": "generic", "subtype": "webhook", "icon": "Webhook", "color": "#3B82F6" }
       ]
     },
     {

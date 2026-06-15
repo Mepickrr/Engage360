@@ -143,8 +143,24 @@ export default function EventPickerModal({ open, onClose, onPick }) {
                           {card.name}
                         </div>
                         {card.description && (
-                          <div className="text-[12px] text-text-secondary mt-0.5">
+                          <div className="text-[12px] text-text-secondary mt-0.5 mb-2">
                             {card.description}
+                          </div>
+                        )}
+                        {(card.source || (card.device_tag && card.device_tag.length > 0)) && (
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {card.source &&
+                              card.source.split(", ").filter(Boolean).map((s) => (
+                                <span key={s} className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                  {s}
+                                </span>
+                              ))}
+                            {card.device_tag &&
+                              card.device_tag.map((d) => (
+                                <span key={d} className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
+                                  {d}
+                                </span>
+                              ))}
                           </div>
                         )}
                       </button>

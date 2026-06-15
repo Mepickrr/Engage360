@@ -66,9 +66,75 @@ const nodeTypes = {
   goal:             ExitNode,
 };
 
+// Extra vertical space each node type's analytics footer adds (px).
+// Used to push downstream nodes down so footers never overlap the next card.
+const FOOTER_H = {
+  "whatsapp":          130,
+  "sms":                95,
+  "email":             120,
+  "rcs":                95,
+  "push":               95,
+  "aicalling":         100,
+  "aichatbot":         100,
+  "onsite":            100,
+  "inapp":             100,
+  "nextbestaction":    100,
+  "smartflowoptimizer":100,
+  "trigger":            55,
+  "start-trigger":      55,
+  "wait":               55,
+  "conditionalsplit":   80,
+};
+
+// Shift every node down by the sum of its ancestors' footer heights so that
+// analytics footers never visually overlap the card below them.
+function spreadAnalyticsNodes(nodes, edges) {
+  if (!nodes.some((n) => n.data?.analyticsData)) return nodes;
+
+  const children = {};
+  edges.forEach((e) => {
+    if (!children[e.source]) children[e.source] = [];
+    children[e.source].push(e.target);
+  });
+
+  const hasParent = new Set(edges.map((e) => e.target));
+  const roots = nodes.filter((n) => !hasParent.has(n.id)).map((n) => n.id);
+  const nodeMap = Object.fromEntries(nodes.map((n) => [n.id, n]));
+
+  const extraY = {};
+  const queue = roots.map((id) => ({ id, offset: 0 }));
+  const visited = new Set();
+
+  while (queue.length) {
+    const { id, offset } = queue.shift();
+    if (visited.has(id)) continue;
+    visited.add(id);
+    extraY[id] = offset;
+
+    const node = nodeMap[id];
+    const footerH = node?.data?.analyticsData
+      ? (FOOTER_H[node.type] ?? 100)
+      : 0;
+
+    (children[id] ?? []).forEach((childId) => {
+      if (!visited.has(childId)) {
+        queue.push({ id: childId, offset: offset + footerH });
+      }
+    });
+  }
+
+  return nodes.map((n) => ({
+    ...n,
+    position: {
+      x: n.position.x,
+      y: n.position.y + (extraY[n.id] ?? 0),
+    },
+  }));
+}
+
 // Inject analytics data into each node's data prop
-function injectAnalytics(nodes, nodeAnalytics) {
-  return nodes.map((node) => ({
+function injectAnalytics(nodes, nodeAnalytics, edges = []) {
+  const injected = nodes.map((node) => ({
     ...node,
     draggable:   false,
     connectable: false,
@@ -78,6 +144,7 @@ function injectAnalytics(nodes, nodeAnalytics) {
       analyticsData: nodeAnalytics?.[node.id] ?? null,
     },
   }));
+  return spreadAnalyticsNodes(injected, edges);
 }
 
 // Preserve existing edge styling, just disable interaction
@@ -125,8 +192,8 @@ export default function FlowAnalyticsV2() {
 
   const injectedNodes = useMemo(() => {
     if (!flow?.nodes) return [];
-    return injectAnalytics(flow.nodes, analytics?.nodes);
-  }, [flow?.nodes, analytics?.nodes]);
+    return injectAnalytics(flow.nodes, analytics?.nodes, flow?.edges ?? []);
+  }, [flow?.nodes, flow?.edges, analytics?.nodes]);
 
   const preparedEdges = useMemo(
     () => prepareEdges(flow?.edges ?? []),

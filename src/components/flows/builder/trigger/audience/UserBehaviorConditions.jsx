@@ -46,6 +46,7 @@ function useEventGroups() {
     const out = {};
     const cat = catalogueData.catalogue || {};
     for (const header of Object.keys(cat)) {
+      if (header === "ALL" || header === "All") continue;
       for (const sec of Object.keys(cat[header])) {
         const list = (cat[header][sec] || []).filter(
           (e) => e.audience_qualification_allow !== false,

@@ -104,7 +104,7 @@ export const SEED_FLOWS = [
       {
         id: "n_sms",
         type: "sms",
-        position: { x: 300, y: 700 },
+        position: { x: 300, y: 1000 },
         data: {
           label: "SMS Fallback",
           template: {

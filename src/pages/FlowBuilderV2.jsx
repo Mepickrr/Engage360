@@ -39,6 +39,8 @@ const V2_ALLOWED_NODES = [
   "whatsapp", "email", "rcs", "sms", "webpush", "onsite", "inapp", "aicalling", "aichatbot",
   // Flow Control
   "condsplit", "delay", "startflow",
+  // Integrations
+  "webhook",
 ];
 
 export default function FlowBuilderV2() {

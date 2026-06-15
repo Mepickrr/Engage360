@@ -15,7 +15,7 @@ import {
   MessageCircle, Mail, MessageSquare, MessagesSquare,
   BellRing, Bell, PhoneCall, Bot, Sparkles, Award, BrainCog,
   ShoppingCart, Tag, Percent, ClipboardList, StickyNote,
-  Plug, Star, CreditCard, Headphones,
+  Plug, Star, CreditCard, Headphones, Webhook,
   GitBranch, GitFork, Clock, Brain, Route, LogIn,
   Table, CirclePlus, Pencil, ArrowUpFromLine,
   UserCircle, Tags, Ticket, CalendarCheck,
@@ -76,6 +76,7 @@ const CATEGORIES = [
       { id:"judgeme",   name:"Judge Me",  Icon:Star,       kind:"action", subtype:"judgeme"  },
       { id:"razorpay",  name:"Razor Pay", Icon:CreditCard, kind:"razorpay", subtype:null },
       { id:"freshdesk", name:"Freshdesk", Icon:Headphones, kind:"action", subtype:"freshdesk"},
+      { id:"webhook",   name:"Webhook",   Icon:Webhook,    kind:"action", subtype:"webhook"  },
     ],
   },
   {
