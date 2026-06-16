@@ -35,6 +35,7 @@ import OnsiteNode from "@/components/flows/builder/nodes/OnsiteNode";
 import InAppNode from "@/components/flows/builder/nodes/InAppNode";
 import NextBestActionNode from "@/components/flows/builder/nodes/NextBestActionNode";
 import SmartFlowOptimizerNode from "@/components/flows/builder/nodes/SmartFlowOptimizerNode";
+import WebhookNode from "@/components/flows/builder/nodes/WebhookNode";
 
 // Identical to Canvas.jsx — same registry, same visual output
 const nodeTypes = {
@@ -46,6 +47,7 @@ const nodeTypes = {
   inapp:              InAppNode,
   nextbestaction:     NextBestActionNode,
   smartflowoptimizer: SmartFlowOptimizerNode,
+  webhook:          WebhookNode,
   aicalling:        AiCallingNode,
   aichatbot:        AiChatbotNode,
   rcs:              RCSNode,

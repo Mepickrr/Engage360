@@ -55,6 +55,8 @@ function useEventGroups() {
         out[`${header} · ${sec}`] = list.map((e) => ({
           name: e.name,
           description: e.description || "",
+          source: e.source || "",
+          device_tag: e.device_tag || [],
         }));
       }
     }

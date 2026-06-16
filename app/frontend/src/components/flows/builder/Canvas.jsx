@@ -15,6 +15,7 @@ import ChannelNode from "./nodes/ChannelNode";
 import LogicNode from "./nodes/LogicNode";
 import ExitNode from "./nodes/ExitNode";
 import GenericNode from "./nodes/GenericNode";
+import WebhookNode from "./nodes/WebhookNode";
 
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import { defaultDataForPaletteItem } from "@/lib/flowMeta";
@@ -31,6 +32,7 @@ const nodeTypes = {
   end: ExitNode,
   goal: ExitNode,
   generic: GenericNode,
+  webhook: WebhookNode,
 };
 
 const defaultEdgeOptions = {

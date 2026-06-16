@@ -36,6 +36,7 @@ import { defaultOnsiteNodeData } from "@/components/flows/builder/nodes/OnsiteNo
 import { defaultInAppNodeData } from "@/components/flows/builder/nodes/InAppNode/data/mockData";
 import { defaultNBANodeData } from "@/components/flows/builder/nodes/NextBestActionNode/data/mockData";
 import { defaultSFONodeData } from "@/components/flows/builder/nodes/SmartFlowOptimizerNode/data/mockData";
+import { defaultWebhookNodeData } from "@/components/flows/builder/nodes/WebhookNode/data/mockData";
 
 export const CHANNEL_META = {
   whatsapp: { label: "WhatsApp", color: "#10B981", Icon: MessageCircle },
@@ -127,6 +128,8 @@ export function defaultDataForPaletteItem(item) {
       return { ...defaultStartFlowNodeData };
     case "razorpay":
       return { ...defaultRazorpayNodeData };
+    case "webhook":
+      return { ...defaultWebhookNodeData };
     case "sms":
       return { ...defaultSMSNodeData };
     case "push":

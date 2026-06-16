@@ -1,6 +1,7 @@
 import React from "react";
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import { CHANNEL_META } from "@/lib/flowMeta";
+import WebhookRightPanel from "@/components/flows/builder/nodes/WebhookNode/WebhookRightPanel";
 
 function NumberInput({ label, value, onChange, testId, suffix }) {
   return (
@@ -336,6 +337,18 @@ export default function ConfigTab() {
   const removeNode = useFlowBuilderStore((s) => s.removeNode);
 
   const node = nodes.find((n) => n.id === selectedNodeId) || null;
+
+  if (node?.type === "webhook") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col" data-testid="right-config-tab">
+        <WebhookRightPanel
+          node={node}
+          updateNodeData={updateNodeData}
+          removeNode={removeNode}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 overflow-y-auto h-full" data-testid="right-config-tab">

@@ -77,8 +77,12 @@ export const PALETTE_CATALOGUE = [
   },
 ];
 
+import { defaultWebhookNodeData } from "@/components/flows/builder/nodes/WebhookNode/data/mockData";
+
 export function defaultDataForPaletteItem(item) {
   switch (item.kind) {
+    case "webhook":
+      return { ...defaultWebhookNodeData };
     case "trigger":
       return {
         label:

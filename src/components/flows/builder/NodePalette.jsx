@@ -76,7 +76,7 @@ const CATEGORIES = [
       { id:"judgeme",   name:"Judge Me",  Icon:Star,       kind:"action", subtype:"judgeme"  },
       { id:"razorpay",  name:"Razor Pay", Icon:CreditCard, kind:"razorpay", subtype:null },
       { id:"freshdesk", name:"Freshdesk", Icon:Headphones, kind:"action", subtype:"freshdesk"},
-      { id:"webhook",   name:"Webhook",   Icon:Webhook,    kind:"action", subtype:"webhook"  },
+      { id:"webhook",   name:"Webhook",   Icon:Webhook,    kind:"webhook", subtype:null       },
     ],
   },
   {
