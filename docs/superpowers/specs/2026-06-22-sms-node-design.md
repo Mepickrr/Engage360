@@ -97,6 +97,21 @@ Each variable is mapped to an **OR-chain** — an ordered list of customer attri
 
 ---
 
+### 1.5 Fallback Behavior
+
+SMS is the lowest-level channel — there is no lower channel to fall back to. Fallback in the SMS node operates at two levels:
+
+**Variable fallback:**
+If a `#var#` placeholder cannot be resolved (all OR-chain sources are empty for that customer), the variable renders as blank and the message still sends. The message is never suppressed due to a missing variable. See §1.4 for OR-chain configuration.
+
+**Send failure fallback:**
+If the initial SMS send fails, Smart Retry (§2.1) re-attempts delivery within the configured window. If all retries are exhausted, the customer exits through the "Failed" delivery branch — where the marketer can route them to a different channel node (e.g. WhatsApp or email) as the next step in the journey. Cross-channel fallback is not automatic at the node level; it is the marketer's responsibility to wire it up via the Delivery Failed branch.
+
+**DND blocking:**
+Numbers blocked by the DND registry are not retried — DND is a permanent regulatory block, not a transient failure. DND-blocked customers do not enter the retry cycle and are counted separately in analytics.
+
+---
+
 ## 2. Delivery
 
 ### 2.1 Smart Retry
