@@ -1349,6 +1349,81 @@
           "time_attribute_allow": false,
           "header": "ALL",
           "section": "User date attributes"
+        },
+        {
+          "name": "date_of_birth_trigger",
+          "description": "Start this flow a set number of days before, on, or after a user's date of birth",
+          "source": "Engage",
+          "device_tag": [
+            "Web",
+            "Mobile"
+          ],
+          "header": "ALL",
+          "section": "User date attributes",
+          "attribute_allowed": false,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "date_relative": true
+        },
+        {
+          "name": "anniversary_date_trigger",
+          "description": "Start this flow a set number of days before, on, or after a user's anniversary date",
+          "source": "Engage",
+          "device_tag": [
+            "Web",
+            "Mobile"
+          ],
+          "header": "ALL",
+          "section": "User date attributes",
+          "attribute_allowed": false,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "date_relative": true
+        },
+        {
+          "name": "account_created_date_trigger",
+          "description": "Start this flow relative to the date a user created their account",
+          "source": "Engage",
+          "device_tag": [
+            "Web",
+            "Mobile"
+          ],
+          "header": "ALL",
+          "section": "User date attributes",
+          "attribute_allowed": false,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "date_relative": true
+        },
+        {
+          "name": "first_order_date_trigger",
+          "description": "Start this flow relative to the date of a user's first purchase",
+          "source": "Engage",
+          "device_tag": [
+            "Web",
+            "Mobile"
+          ],
+          "header": "ALL",
+          "section": "User date attributes",
+          "attribute_allowed": false,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "date_relative": true
+        },
+        {
+          "name": "subscription_start_date_trigger",
+          "description": "Start this flow relative to the date a user's subscription was activated",
+          "source": "Engage",
+          "device_tag": [
+            "Web",
+            "Mobile"
+          ],
+          "header": "ALL",
+          "section": "User date attributes",
+          "attribute_allowed": false,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "date_relative": true
         }
       ],
       "Product": [
@@ -2191,6 +2266,81 @@
           "time_attribute_allow": false,
           "header": "Date and time",
           "section": "User date attributes"
+        },
+        {
+          "name": "date_of_birth_trigger",
+          "description": "Start this flow a set number of days before, on, or after a user's date of birth",
+          "source": "Engage",
+          "device_tag": [
+            "Web",
+            "Mobile"
+          ],
+          "header": "Date and time",
+          "section": "User date attributes",
+          "attribute_allowed": false,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "date_relative": true
+        },
+        {
+          "name": "anniversary_date_trigger",
+          "description": "Start this flow a set number of days before, on, or after a user's anniversary date",
+          "source": "Engage",
+          "device_tag": [
+            "Web",
+            "Mobile"
+          ],
+          "header": "Date and time",
+          "section": "User date attributes",
+          "attribute_allowed": false,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "date_relative": true
+        },
+        {
+          "name": "account_created_date_trigger",
+          "description": "Start this flow relative to the date a user created their account",
+          "source": "Engage",
+          "device_tag": [
+            "Web",
+            "Mobile"
+          ],
+          "header": "Date and time",
+          "section": "User date attributes",
+          "attribute_allowed": false,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "date_relative": true
+        },
+        {
+          "name": "first_order_date_trigger",
+          "description": "Start this flow relative to the date of a user's first purchase",
+          "source": "Engage",
+          "device_tag": [
+            "Web",
+            "Mobile"
+          ],
+          "header": "Date and time",
+          "section": "User date attributes",
+          "attribute_allowed": false,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "date_relative": true
+        },
+        {
+          "name": "subscription_start_date_trigger",
+          "description": "Start this flow relative to the date a user's subscription was activated",
+          "source": "Engage",
+          "device_tag": [
+            "Web",
+            "Mobile"
+          ],
+          "header": "Date and time",
+          "section": "User date attributes",
+          "attribute_allowed": false,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "date_relative": true
         }
       ],
       "Product": [

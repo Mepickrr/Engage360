@@ -6,6 +6,7 @@ import EventPickerModal from "./EventPickerModal";
 import Step1WhenContent, { emptyGroup } from "./Step1WhenContent";
 import Step2WhoContent from "./Step2WhoContent";
 import BroadcastConfig from "./BroadcastConfig";
+import DateRelativeTriggerContent, { emptyDateConfig } from "./DateRelativeTriggerContent";
 import { mockedAudienceCount, emptyConditionBlock } from "./triggerHelpers";
 
 function emptyAudience() {
@@ -56,6 +57,8 @@ export default function StartTriggerWizard({
   const [exitTrigger, setExitTrigger] = useState(null);
   const [audience, setAudience] = useState(emptyAudience());
   const [broadcast, setBroadcast] = useState(emptyBroadcast());
+  const [isDateRelative, setIsDateRelative] = useState(false);
+  const [dateConfig, setDateConfig] = useState(emptyDateConfig());
 
   const [count, setCount] = useState(null);
   const [loadingCount, setLoadingCount] = useState(false);
@@ -70,14 +73,25 @@ export default function StartTriggerWizard({
       setExitTrigger(initialConfig.exitTrigger || null);
       setAudience(initialConfig.audience || emptyAudience());
       setBroadcast(initialConfig.broadcast || emptyBroadcast());
-      if (ev?.header === "Broadcast") setStage("broadcast");
-      else setStage("step1");
+      if (initialConfig?.kind === "date_relative") {
+        setIsDateRelative(true);
+        setDateConfig(initialConfig.dateConfig || emptyDateConfig());
+        setStage("step1");
+      } else if (ev?.header === "Broadcast") {
+        setIsDateRelative(false);
+        setStage("broadcast");
+      } else {
+        setIsDateRelative(false);
+        setStage("step1");
+      }
     } else {
       setTriggerGroups([]);
       setGroupsCombinator("AND");
       setExitTrigger(null);
       setAudience(emptyAudience());
       setBroadcast(emptyBroadcast());
+      setIsDateRelative(false);
+      setDateConfig(emptyDateConfig());
       setStage("picker");
       setPickingForGroupIdx(null);
     }
@@ -90,14 +104,23 @@ export default function StartTriggerWizard({
     [primaryEvent],
   );
   const isBroadcast = primaryCard?.header === "Broadcast";
-  const skipStep2 = primaryCard && !primaryCard.audience_qualification_allow;
+  const skipStep2 = !isDateRelative && primaryCard && !primaryCard.audience_qualification_allow;
 
   // Picker callbacks
   const onPickEvent = (card) => {
     if (pickingForGroupIdx == null) {
       setTriggerGroups([emptyGroup(card.name)]);
-      if (card.header === "Broadcast") setStage("broadcast");
-      else setStage("step1");
+      if (card.header === "Broadcast") {
+        setStage("broadcast");
+        setIsDateRelative(false);
+      } else if (card.date_relative) {
+        setIsDateRelative(true);
+        setDateConfig(emptyDateConfig());
+        setStage("step1");
+      } else {
+        setIsDateRelative(false);
+        setStage("step1");
+      }
     } else {
       const idx = pickingForGroupIdx;
       setTriggerGroups((prev) => {
@@ -123,15 +146,20 @@ export default function StartTriggerWizard({
   };
 
   const handleFinish = () => {
-    const config = isBroadcast
-      ? { kind: "broadcast", triggerGroups, broadcast }
-      : {
-          kind: "event",
-          triggerGroups,
-          groupsCombinator,
-          exitTrigger,
-          audience: skipStep2 ? null : audience,
-        };
+    let config;
+    if (isBroadcast) {
+      config = { kind: "broadcast", triggerGroups, broadcast };
+    } else if (isDateRelative) {
+      config = { kind: "date_relative", dateConfig, audience };
+    } else {
+      config = {
+        kind: "event",
+        triggerGroups,
+        groupsCombinator,
+        exitTrigger,
+        audience: skipStep2 ? null : audience,
+      };
+    }
     onComplete(config);
   };
 
@@ -149,6 +177,8 @@ export default function StartTriggerWizard({
   const stepperLabel =
     stage === "broadcast"
       ? "Configure broadcast"
+      : isDateRelative
+      ? "1. When will users enter the flow → 2. Who will enter the flow"
       : "1. When will users enter the flow → 2. Who will enter the flow";
 
   return (
@@ -195,7 +225,13 @@ export default function StartTriggerWizard({
           )}
 
           <div className="flex-1 overflow-y-auto px-5 py-5">
-            {stage === "step1" && (
+            {stage === "step1" && isDateRelative && (
+              <DateRelativeTriggerContent
+                dateConfig={dateConfig}
+                setDateConfig={setDateConfig}
+              />
+            )}
+            {stage === "step1" && !isDateRelative && (
               <Step1WhenContent
                 triggerGroups={triggerGroups}
                 setTriggerGroups={setTriggerGroups}
