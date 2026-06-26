@@ -6,6 +6,7 @@ import {
   Terminal,
   Layers,
   MonitorDot,
+  LayoutGrid,
   Megaphone,
   Bell,
   GitBranch,
@@ -15,6 +16,7 @@ import {
   Bot,
   BarChart3,
   Settings,
+  FileText,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMe } from "@/lib/api";
@@ -36,6 +38,7 @@ export const SIDEBAR_ITEMS = [
     route: "/",
     testId: "nav-home",
     matchPaths: ["/", "/agents"],
+    hidden: true,
   },
   {
     label: "Home V2",
@@ -43,6 +46,7 @@ export const SIDEBAR_ITEMS = [
     route: "/home-v2",
     testId: "nav-home-v2",
     matchPaths: ["/home-v2"],
+    hidden: true,
   },
   {
     label: "Home V3",
@@ -50,6 +54,7 @@ export const SIDEBAR_ITEMS = [
     route: "/home-v3",
     testId: "nav-home-v3",
     matchPaths: ["/home-v3"],
+    hidden: true,
   },
   {
     label: "Home V4",
@@ -57,6 +62,7 @@ export const SIDEBAR_ITEMS = [
     route: "/home-v4",
     testId: "nav-home-v4",
     matchPaths: ["/home-v4"],
+    hidden: true,
   },
   {
     label: "Home V5",
@@ -65,6 +71,14 @@ export const SIDEBAR_ITEMS = [
     testId: "nav-home-v5",
     matchPaths: ["/home-v5"],
   },
+  {
+    label: "Home V6",
+    icon: LayoutGrid,
+    route: "/home-v6",
+    testId: "nav-home-v6",
+    matchPaths: ["/home-v6", "/"],
+  },
+  { label: "Templates", icon: FileText, route: "/templates", testId: "nav-templates" },
   { label: "Campaigns", icon: Megaphone, route: "/campaigns", testId: "nav-campaigns" },
   { label: "Push", icon: Bell, route: "/push", testId: "nav-push" },
   { label: "Flows", icon: GitBranch, route: "/flows", testId: "nav-flows" },
@@ -113,7 +127,7 @@ export const Sidebar = () => {
     >
       <TooltipProvider delayDuration={120}>
         <nav className="flex flex-col items-center w-full" aria-label="Primary">
-          {SIDEBAR_ITEMS.map(({ label, icon: Icon, route, testId, matchPaths }) => {
+          {SIDEBAR_ITEMS.filter((item) => !item.hidden).map(({ label, icon: Icon, route, testId, matchPaths }) => {
             // Allow an item to declare additional active paths.
             const forcedActive =
               matchPaths?.includes(pathname) ||

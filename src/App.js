@@ -23,8 +23,10 @@ import HomeV2Page from "@/pages/HomeV2";
 import HomeV3Page from "@/pages/HomeV3";
 import HomeV4Page from "@/pages/HomeV4";
 import HomeV5Page from "@/pages/HomeV5";
+import HomeV6Page from "@/pages/HomeV6";
 import AnalyticsPage from "@/pages/Analytics";
 import FlowAnalytics from "@/pages/FlowAnalytics";
+import TemplatesPage from "@/pages/Templates";
 import SettingsPage from "@/pages/Settings";
 import NotFoundPage from "@/pages/NotFound";
 import ConversationPanel from "@/components/conversation/ConversationPanel";
@@ -45,9 +47,10 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route element={<AppShell />}>
-            {/* Home is the Agent surface — `/agents` kept as a back-compat alias. */}
-            <Route path="/" element={<AgentsPage />} />
+            {/* Home V6 is the default home page. /agents kept as the AI Agents surface. */}
+            <Route path="/" element={<HomeV6Page />} />
             <Route path="/agents" element={<AgentsPage />} />
+            <Route path="/home-v6" element={<HomeV6Page />} />
             <Route path="/home-v2" element={<HomeV2Page />} />
             <Route path="/home-v3" element={<HomeV3Page />} />
             <Route path="/home-v4" element={<HomeV4Page />} />
@@ -67,6 +70,7 @@ function App() {
             <Route path="/instagram" element={<InstagramPage />} />
             <Route path="/segments" element={<SegmentsPage />} />
             <Route path="/audience" element={<AudiencePage />} />
+            <Route path="/templates" element={<TemplatesPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<NotFoundPage />} />
