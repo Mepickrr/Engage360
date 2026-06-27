@@ -6,74 +6,11 @@ import {
   EXPRESSION_OPERATORS,
   PATH_LABELS,
   newFilterGroup,
-  newCondition,
   newExpression,
 } from "./data/mockData";
-import userAttrsData from "@/data/userAttributes.json";
-import TwoPanelDropdown from "@/components/flows/builder/trigger/TwoPanelDropdown";
+import AudienceFilterBuilder from "@/components/flows/builder/trigger/audience/AudienceFilterBuilder";
 import CombinatorPill from "@/components/flows/builder/trigger/audience/CombinatorPill";
-import { userPropertyOperators, operatorHidesValue } from "@/components/flows/builder/trigger/triggerHelpers";
-
-// ── Variable / attribute lookup helpers ──────────────────────────────────────
-
-function buildAttrIndex() {
-  const groups = userAttrsData.groups || {};
-  const byName = {};
-  for (const cat of Object.keys(groups)) {
-    for (const a of groups[cat] || []) byName[a.name] = { ...a, category: cat };
-  }
-  return byName;
-}
-
-function buildFlowVarIndex() {
-  const byKey = {};
-  for (const g of EXPRESSION_VARIABLE_GROUPS) {
-    for (const v of g.variables) byKey[v.key] = { ...v, groupLabel: g.label };
-  }
-  return byKey;
-}
-
-// Combined groups for TwoPanelDropdown (user attrs + flow vars)
-function buildCombinedGroups(userAttrsGroups, attrByName) {
-  const result = {};
-  for (const cat of Object.keys(userAttrsGroups)) {
-    result[cat] = (userAttrsGroups[cat] || []).map((a) => ({
-      name: a.name,
-      description: a.description || a.data_type || "",
-    }));
-  }
-  for (const group of EXPRESSION_VARIABLE_GROUPS) {
-    result[group.label] = group.variables.map((v) => ({
-      name: v.key,
-      description: `${v.label} (${v.type})`,
-    }));
-  }
-  return result;
-}
-
-function getOperatorsForProperty(propKey, attrByName, flowVarByKey) {
-  if (attrByName[propKey]) {
-    return userPropertyOperators(attrByName[propKey]);
-  }
-  if (flowVarByKey[propKey]) {
-    const t = (flowVarByKey[propKey].type || "String").toLowerCase();
-    if (t === "number") return [">", "<", ">=", "<=", "==", "!="];
-    if (t === "boolean") return ["==", "!="];
-    return ["==", "!=", "contains"];
-  }
-  return ["==", "!=", "contains", ">", "<", ">=", "<="];
-}
-
-function isNumericProp(propKey, attrByName, flowVarByKey) {
-  const attr = attrByName[propKey];
-  if (attr) {
-    const dt = (attr.data_type || "").toLowerCase();
-    return dt === "integer" || dt === "decimal" || dt === "numeric";
-  }
-  const fv = flowVarByKey[propKey];
-  if (fv) return (fv.type || "").toLowerCase() === "number";
-  return false;
-}
+import TwoPanelDropdown from "@/components/flows/builder/trigger/TwoPanelDropdown";
 
 // ── Reusable small atoms ──────────────────────────────────────────────────────
 
@@ -102,17 +39,17 @@ function IconBtn({ onClick, title, children, danger }) {
 
 // ── Filter Tab ────────────────────────────────────────────────────────────────
 
-const ATTR_GROUPS_RAW = userAttrsData.groups || {};
+const SPLIT_BLOCK_TYPES = [
+  { id: "property",       label: "User property" },
+  { id: "behavior",       label: "User behavior" },
+  { id: "affinity",       label: "User affinity" },
+  { id: "event_property", label: "Event property" },
+  { id: "segment",        label: "Custom segment" },
+];
 
 function FilterTab({ data, patch }) {
-  const attrByName = useMemo(buildAttrIndex, []);
-  const flowVarByKey = useMemo(buildFlowVarIndex, []);
-  const combinedGroups = useMemo(
-    () => buildCombinedGroups(ATTR_GROUPS_RAW, attrByName),
-    [attrByName],
-  );
-
   const groups = useMemo(() => data.filterGroups ?? [], [data.filterGroups]);
+  const groupsCombinator = data.filterGroupsCombinator ?? "AND";
 
   const updateGroup = useCallback(
     (id, next) =>
@@ -135,17 +72,24 @@ function FilterTab({ data, patch }) {
   return (
     <div className="space-y-3">
       {groups.map((group, gi) => (
-        <FilterGroupCard
-          key={group.id}
-          group={group}
-          index={gi}
-          combinedGroups={combinedGroups}
-          attrByName={attrByName}
-          flowVarByKey={flowVarByKey}
-          onChange={(next) => updateGroup(group.id, next)}
-          onRemove={() => removeGroup(group.id)}
-          canRemove={groups.length > 1}
-        />
+        <React.Fragment key={group.id}>
+          {gi > 0 && (
+            <div className="py-1">
+              <CombinatorPill
+                value={groupsCombinator}
+                onChange={(v) => patch({ filterGroupsCombinator: v })}
+                testId="filter-groups-combinator"
+              />
+            </div>
+          )}
+          <FilterGroupCard
+            group={group}
+            index={gi}
+            onChange={(next) => updateGroup(group.id, next)}
+            onRemove={() => removeGroup(group.id)}
+            canRemove={groups.length > 1}
+          />
+        </React.Fragment>
       ))}
 
       <button
@@ -167,26 +111,22 @@ function FilterTab({ data, patch }) {
   );
 }
 
-function FilterGroupCard({ group, index, combinedGroups, attrByName, flowVarByKey, onChange, onRemove, canRemove }) {
+function FilterGroupCard({ group, index, onChange, onRemove, canRemove }) {
   const [collapsed, setCollapsed] = useState(false);
-  const conditions = group.conditions ?? [];
-  const combinator = group.combinator ?? "AND";
-
-  const setCondition = (i, c) =>
-    onChange({ conditions: conditions.map((x, idx) => (idx === i ? c : x)) });
-  const addCondition = () =>
-    onChange({ conditions: [...conditions, newCondition()] });
-  const removeCondition = (i) => {
-    const next = conditions.filter((_, idx) => idx !== i);
-    onChange({ conditions: next.length ? next : [newCondition()] });
-  };
 
   return (
     <div className="border border-border rounded-lg overflow-hidden">
-      {/* Group header */}
       <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 border-b border-border">
-        <button type="button" onClick={() => setCollapsed((c) => !c)} className="text-text-muted">
-          {collapsed ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronUp className="w-3.5 h-3.5" />}
+        <button
+          type="button"
+          onClick={() => setCollapsed((c) => !c)}
+          className="text-text-muted"
+        >
+          {collapsed ? (
+            <ChevronDown className="w-3.5 h-3.5" />
+          ) : (
+            <ChevronUp className="w-3.5 h-3.5" />
+          )}
         </button>
         <input
           type="text"
@@ -195,94 +135,32 @@ function FilterGroupCard({ group, index, combinedGroups, attrByName, flowVarByKe
           className="flex-1 min-w-0 text-sm font-medium bg-transparent focus:outline-none"
         />
         {canRemove && (
-          <IconBtn danger onClick={onRemove} title="Remove branch">
+          <button
+            type="button"
+            onClick={onRemove}
+            className="p-1.5 rounded-md text-text-muted hover:text-rose-600 hover:bg-rose-50"
+          >
             <X className="w-3.5 h-3.5" />
-          </IconBtn>
+          </button>
         )}
       </div>
 
       {!collapsed && (
-        <div className="p-3 space-y-2">
-          {conditions.map((c, i) => (
-            <React.Fragment key={c.id || i}>
-              {i > 0 && (
-                <CombinatorPill
-                  value={combinator}
-                  onChange={(v) => onChange({ combinator: v })}
-                  testId={`fg-${group.id}-combinator`}
-                />
-              )}
-              <FilterConditionRow
-                c={c}
-                combinedGroups={combinedGroups}
-                attrByName={attrByName}
-                flowVarByKey={flowVarByKey}
-                onChange={(nc) => setCondition(i, nc)}
-                onRemove={() => removeCondition(i)}
-              />
-            </React.Fragment>
-          ))}
-          <button
-            type="button"
-            onClick={addCondition}
-            className="inline-flex items-center gap-1 text-xs text-teal-600 hover:text-teal-700 font-medium mt-1"
-          >
-            <Plus className="w-3 h-3" />
-            Add condition
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function FilterConditionRow({ c, combinedGroups, attrByName, flowVarByKey, onChange, onRemove }) {
-  const ops = useMemo(
-    () => getOperatorsForProperty(c.property, attrByName, flowVarByKey),
-    [c.property, attrByName, flowVarByKey],
-  );
-  const hides = operatorHidesValue(c.operator);
-  const isNumeric = isNumericProp(c.property, attrByName, flowVarByKey);
-
-  return (
-    <div className="space-y-1.5">
-      <div className="flex items-center gap-1">
-        <div className="flex-1 min-w-0">
-          <TwoPanelDropdown
-            value={c.property}
-            onChange={(v) => onChange({ ...c, property: v, operator: "", value: "" })}
-            groups={combinedGroups}
-            placeholder="Select property"
-            testId={`fc-prop-${c.id}`}
-            buttonClassName="w-full"
-            width={480}
+        <div className="p-3">
+          <AudienceFilterBuilder
+            blockSet={{
+              blocks: group.blocks || [],
+              blocksCombinator: group.blocksCombinator || "AND",
+            }}
+            onChange={(next) =>
+              onChange({
+                blocks: next.blocks,
+                blocksCombinator: next.blocksCombinator,
+              })
+            }
+            testIdPrefix={`fg-${group.id}`}
+            blockTypes={SPLIT_BLOCK_TYPES}
           />
-        </div>
-        <IconBtn danger onClick={onRemove} title="Remove condition">
-          <Trash2 className="w-3.5 h-3.5" />
-        </IconBtn>
-      </div>
-      {c.property && (
-        <div className="flex gap-1.5">
-          <select
-            value={c.operator}
-            onChange={(e) => onChange({ ...c, operator: e.target.value, value: "" })}
-            className="w-32 px-2 py-1.5 text-[12px] border border-border rounded-md bg-white focus:outline-none focus:border-teal-400"
-          >
-            <option value="">Operator</option>
-            {ops.map((op) => (
-              <option key={op} value={op}>{op}</option>
-            ))}
-          </select>
-          {!hides && c.operator && (
-            <input
-              type={isNumeric ? "number" : "text"}
-              value={c.value ?? ""}
-              onChange={(e) => onChange({ ...c, value: e.target.value })}
-              placeholder="Value"
-              className="flex-1 px-2 py-1.5 text-[12px] border border-border rounded-md focus:outline-none focus:border-teal-400"
-            />
-          )}
         </div>
       )}
     </div>
