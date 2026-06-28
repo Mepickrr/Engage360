@@ -7,9 +7,9 @@ import {
   newFilterGroup,
   newExpression,
 } from "./data/mockData";
-import AudienceFilterBuilder from "@/components/flows/builder/trigger/audience/AudienceFilterBuilder";
-import CombinatorPill from "@/components/flows/builder/trigger/audience/CombinatorPill";
-import TwoPanelDropdown from "@/components/flows/builder/trigger/TwoPanelDropdown";
+import AudienceFilterBuilder from "@/components/flows/trigger/audience/AudienceFilterBuilder";
+import CombinatorPill from "@/components/flows/trigger/audience/CombinatorPill";
+import TwoPanelDropdown from "@/components/flows/trigger/TwoPanelDropdown";
 
 // ── Reusable small atoms ──────────────────────────────────────────────────────
 
