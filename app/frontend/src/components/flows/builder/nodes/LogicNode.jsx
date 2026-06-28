@@ -1,10 +1,9 @@
 import React from "react";
 import { Handle, Position } from "reactflow";
-import { Clock, GitFork, SplitSquareVertical, TimerReset } from "lucide-react";
+import { Clock, SplitSquareVertical, TimerReset } from "lucide-react";
 
 const KIND_META = {
   wait: { Icon: Clock, label: "Wait", color: "#64748B" },
-  condition: { Icon: GitFork, label: "Condition", color: "#F59E0B" },
   split: { Icon: SplitSquareVertical, label: "A/B Split", color: "#8B5CF6" },
   wait_until: { Icon: TimerReset, label: "Wait until", color: "#64748B" },
 };

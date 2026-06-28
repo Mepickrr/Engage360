@@ -2,6 +2,7 @@ import React from "react";
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import { CHANNEL_META } from "@/lib/flowMeta";
 import WebhookRightPanel from "@/components/flows/builder/nodes/WebhookNode/WebhookRightPanel";
+import ConditionalSplitRightPanel from "../nodes/ConditionalSplitNode/ConditionalSplitRightPanel";
 
 function NumberInput({ label, value, onChange, testId, suffix }) {
   return (
@@ -342,6 +343,18 @@ export default function ConfigTab() {
     return (
       <div className="absolute inset-0 overflow-hidden flex flex-col" data-testid="right-config-tab">
         <WebhookRightPanel
+          node={node}
+          updateNodeData={updateNodeData}
+          removeNode={removeNode}
+        />
+      </div>
+    );
+  }
+
+  if (node?.type === "condition") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col" data-testid="right-config-tab">
+        <ConditionalSplitRightPanel
           node={node}
           updateNodeData={updateNodeData}
           removeNode={removeNode}

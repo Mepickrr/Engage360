@@ -16,6 +16,7 @@ import LogicNode from "./nodes/LogicNode";
 import ExitNode from "./nodes/ExitNode";
 import GenericNode from "./nodes/GenericNode";
 import WebhookNode from "./nodes/WebhookNode";
+import ConditionalSplitNode from "./nodes/ConditionalSplitNode";
 
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import { defaultDataForPaletteItem } from "@/lib/flowMeta";
@@ -26,7 +27,7 @@ const nodeTypes = {
   trigger: TriggerNode,
   channel: ChannelNode,
   wait: LogicNode,
-  condition: LogicNode,
+  condition: ConditionalSplitNode,
   split: LogicNode,
   wait_until: LogicNode,
   end: ExitNode,
