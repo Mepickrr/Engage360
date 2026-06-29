@@ -62,10 +62,22 @@ export default function EventPropertyConditions({
   onChange,
   testIdPrefix,
 }) {
-  const triggerEvent = useFlowBuilderStore(
-    (s) =>
-      s.nodes.find((n) => n.type === "trigger")?.data?.event_name ?? null,
-  );
+  const triggerEvent = useFlowBuilderStore((s) => {
+    const node = s.nodes.find(
+      (n) =>
+        n.type === "trigger" ||
+        n.type === "startTrigger" ||
+        n.type === "start-trigger" ||
+        n.id === "start",
+    );
+    if (!node) return null;
+    return (
+      node.data?.event_name ||
+      node.data?.groups?.[0]?.event ||
+      node.data?.config?.triggerGroups?.[0]?.event ||
+      null
+    );
+  });
 
   const prevTriggerEventRef = useRef(triggerEvent);
   const conditions = block.conditions || [];
