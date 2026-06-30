@@ -36,7 +36,7 @@ const V2_ALLOWED_TEMPLATE_STYLES = [
 // assigntkt, changestatus, stickynote, sr_shipment, sr_track, sr_cancel, sr_return, sr_awb
 const V2_ALLOWED_NODES = [
   // Communication
-  "whatsapp", "email", "rcs", "sms", "webpush", "onsite", "inapp", "aicalling", "aichatbot",
+  "whatsapp", "email", "rcs", "sms", "webpush", "onsite", "inapp", "aichatbot", "aicallingv2",
   // Flow Control
   "condsplit", "delay", "startflow",
   // Integrations

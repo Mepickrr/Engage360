@@ -23,6 +23,7 @@ import {
   PhoneCall,
 } from "lucide-react";
 import { defaultAiCallingNodeData } from "@/components/flows/builder/nodes/AiCallingNode/data/mockData";
+import { defaultAiCallingV2NodeData } from "@/components/flows/builder/nodes/AiCallingV2Node/data/mockData";
 import { defaultAiChatbotNodeData } from "@/components/flows/builder/nodes/AiChatbotNode/data/mockData";
 import { defaultRCSNodeData } from "@/components/flows/builder/nodes/RCSNode/data/mockData";
 import { defaultAiPredictNodeData } from "@/components/flows/builder/nodes/AiPredictNode/data/mockData";
@@ -136,6 +137,8 @@ export function defaultDataForPaletteItem(item) {
       return { ...defaultPushNodeData };
     case "conditionalsplit":
       return { ...defaultConditionalSplitData };
+    case "aicallingv2":
+      return { ...defaultAiCallingV2NodeData };
     case "whatsapp":
       return {
         label: "Send WhatsApp",
@@ -215,6 +218,7 @@ export function rendererTypeForKind(kind) {
   if (kind === "sms")        return "sms";
   if (kind === "push")             return "push";
   if (kind === "conditionalsplit") return "conditionalsplit";
+  if (kind === "aicallingv2") return "aicallingv2";
   return "logic"; // wait, condition, split, wait_until
 }
 

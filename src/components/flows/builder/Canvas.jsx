@@ -17,6 +17,7 @@ import ExitNode from "./nodes/ExitNode";
 import StartTriggerNode from "./nodes/StartTriggerNode";
 import WhatsAppNode from "./nodes/WhatsAppNode";
 import AiCallingNode from "./nodes/AiCallingNode";
+import AiCallingV2Node from "./nodes/AiCallingV2Node";
 import AiChatbotNode from "./nodes/AiChatbotNode";
 import RCSNode from "./nodes/RCSNode";
 import AiPredictNode from "./nodes/AiPredictNode";
@@ -48,6 +49,7 @@ const nodeTypes = {
   nextbestaction:     NextBestActionNode,
   smartflowoptimizer: SmartFlowOptimizerNode,
   aicalling:       AiCallingNode,
+  aicallingv2:     AiCallingV2Node,
   aichatbot:       AiChatbotNode,
   rcs:             RCSNode,
   aipredict:       AiPredictNode,

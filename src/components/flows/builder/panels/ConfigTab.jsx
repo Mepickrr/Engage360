@@ -4,6 +4,7 @@ import { CHANNEL_META } from "@/lib/flowMeta";
 import DelayConfig from "./DelayConfig";
 import WhatsAppRightPanel from "@/components/flows/builder/nodes/WhatsAppNode/WhatsAppRightPanel";
 import AiCallingRightPanel from "@/components/flows/builder/nodes/AiCallingNode/AiCallingRightPanel";
+import AiCallingV2RightPanel from "@/components/flows/builder/nodes/AiCallingV2Node/AiCallingV2RightPanel";
 import AiChatbotRightPanel from "@/components/flows/builder/nodes/AiChatbotNode/AiChatbotRightPanel";
 import RCSRightPanel from "@/components/flows/builder/nodes/RCSNode/RCSRightPanel";
 import AiPredictRightPanel from "@/components/flows/builder/nodes/AiPredictNode/AiPredictRightPanel";
@@ -358,6 +359,14 @@ export default function ConfigTab() {
     return (
       <div className="absolute inset-0 overflow-hidden flex flex-col">
         <AiCallingRightPanel />
+      </div>
+    );
+  }
+
+  if (node?.type === "aicallingv2") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col">
+        <AiCallingV2RightPanel />
       </div>
     );
   }

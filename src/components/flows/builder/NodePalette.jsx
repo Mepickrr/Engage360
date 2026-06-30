@@ -48,7 +48,8 @@ const CATEGORIES = [
       { id:"webpush",      name:"Push Notification", Icon:BellRing,     kind:"push",    subtype:null       },
       { id:"onsite",       name:"Onsite",          Icon:Bell,           kind:"onsite",  subtype:null       },
       { id:"inapp",        name:"InApp",           Icon:BellRing,       kind:"inapp",   subtype:null       },
-      { id:"aicalling",    name:"AI Calling",     Icon:PhoneCall,      kind:"aicalling", subtype:"aicalling" },
+      { id:"aicalling",    name:"AI Calling",     Icon:PhoneCall,      kind:"aicalling", subtype:"aicalling", hidden: true },
+      { id:"aicallingv2", name:"AI Calling",      Icon:PhoneCall,      kind:"aicallingv2", subtype:null },
       { id:"aichatbot",    name:"AI Chatbot",     Icon:Bot,            kind:"aichatbot", subtype:null },
     ],
   },
@@ -208,10 +209,10 @@ export default function NodePalette({ onNodeAdd, allowedNodeIds = null }) {
 
   const lq = search.trim().toLowerCase();
   const filteredCats = CATEGORIES.map((cat) => {
-    // Apply allowlist filter first (V2 mode)
+    // Apply allowlist filter first (V2 mode), always exclude hidden nodes
     const visibleNodes = allowedNodeIds
-      ? cat.nodes.filter((n) => allowedNodeIds.includes(n.id))
-      : cat.nodes;
+      ? cat.nodes.filter((n) => allowedNodeIds.includes(n.id) && !n.hidden)
+      : cat.nodes.filter((n) => !n.hidden);
     if (allowedNodeIds && visibleNodes.length === 0) return null;
 
     // Then apply search filter
