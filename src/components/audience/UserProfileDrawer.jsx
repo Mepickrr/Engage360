@@ -349,7 +349,7 @@ export default function UserProfileDrawer({ user, onClose }) {
 
   useEffect(() => {
     if (user) setActiveTab("properties");
-  }, [user?.id]);
+  }, [user]);
 
   useEffect(() => {
     const handleKey = (e) => e.key === "Escape" && onClose();

@@ -187,6 +187,7 @@ export default function SaveJourneyModal({
     setAiSuggested(!!TRIGGER_TO_GOAL[triggerEventName]);
     setAttributionWindow("1 day");
     setExitOnConversion(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]); // intentionally only re-seeds on open, not every triggerEventName change
 
   const canAddGoal = goals.length < 3;
