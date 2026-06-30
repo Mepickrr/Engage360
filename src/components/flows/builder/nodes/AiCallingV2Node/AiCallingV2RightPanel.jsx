@@ -371,5 +371,284 @@ function TemplateTab({ data, upd }) {
   );
 }
 
-// ── Task 4 will insert DeliveryTab here ──────────────────────────
-// ── Task 5 will insert OutputTab + export default here ──────────
+// ── TASK 4: ADD DeliveryTab HERE ──
+
+function DeliveryTab({ data, upd }) {
+  const utm = data.utm ?? {};
+
+  return (
+    <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: 0 }}>
+
+      {/* Retry */}
+      <div style={{ marginBottom: 16 }}>
+        <SectionLabel>Retry</SectionLabel>
+        <div style={{ display: "flex", gap: 10 }}>
+          {/* Attempts */}
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Attempts</div>
+            <input
+              type="number"
+              min={1}
+              max={10}
+              value={data.retryAttempt ?? 1}
+              onChange={(e) => {
+                const val = Math.max(1, Math.min(10, parseInt(e.target.value, 10) || 1));
+                upd({ retryAttempt: val });
+              }}
+              style={{
+                width: "100%", padding: "8px 10px", fontSize: 13,
+                border: `1px solid ${BORDER}`, borderRadius: 8,
+                outline: "none", boxSizing: "border-box",
+              }}
+            />
+          </div>
+          {/* Gap */}
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Gap between retries</div>
+            <div style={{ position: "relative" }}>
+              <select
+                value={data.retryGap ?? 5}
+                onChange={(e) => upd({ retryGap: Number(e.target.value) })}
+                style={{
+                  width: "100%", padding: "8px 28px 8px 10px", fontSize: 13,
+                  border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none",
+                  background: "#fff", appearance: "none", cursor: "pointer",
+                }}
+              >
+                {RETRY_GAPS.map((r) => (
+                  <option key={r.value} value={r.value}>{r.label}</option>
+                ))}
+              </select>
+              <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", fontSize: 10, color: MUTED }}>▼</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* UTM Parameters */}
+      <div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+          <SectionLabel>UTM Parameters</SectionLabel>
+          <Toggle
+            on={!!utm.enabled}
+            onChange={(v) => upd({ utm: { ...utm, enabled: v } })}
+          />
+        </div>
+        {utm.enabled && (
+          <div style={{ border: `1px solid ${BORDER}`, borderRadius: 8, overflow: "hidden" }}>
+            {[
+              ["utm_source",   "Source",   "aicalling"],
+              ["utm_medium",   "Medium",   "journey"],
+              ["utm_campaign", "Campaign", ""],
+              ["utm_content",  "Content",  ""],
+              ["utm_term",     "Term",     ""],
+            ].map(([key, label, placeholder], i, arr) => (
+              <div
+                key={key}
+                style={{
+                  display: "flex", alignItems: "center",
+                  borderBottom: i < arr.length - 1 ? `1px solid ${BORDER}` : "none",
+                }}
+              >
+                <span style={{
+                  fontSize: 11, color: "#64748B", padding: "8px 10px", width: 84,
+                  flexShrink: 0, background: "#F8FAFC", borderRight: `1px solid ${BORDER}`,
+                  fontFamily: "monospace",
+                }}>
+                  {label}
+                </span>
+                <input
+                  type="text"
+                  value={utm[key] || ""}
+                  placeholder={placeholder}
+                  onChange={(e) => upd({ utm: { ...utm, [key]: e.target.value } })}
+                  style={{ flex: 1, padding: "8px 10px", fontSize: 12, border: "none", outline: "none" }}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── OutputTab ─────────────────────────────────────────────────────
+
+function OutputTab({ data, upd }) {
+  const ports      = data.agentType ? (OUTPUT_PORTS_BY_TYPE[data.agentType] ?? []) : [];
+  const wiredPorts = data.wiredPorts ?? [];
+
+  const intentPorts     = ports.filter((p) => p.group === "intent");
+  const connectionPorts = ports.filter((p) => p.group === "connection");
+
+  return (
+    <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: 16 }}>
+
+      {/* Output mode selector */}
+      <div>
+        <SectionLabel>Output Mode</SectionLabel>
+        <div style={{ display: "flex", gap: 0, border: `1px solid ${BORDER}`, borderRadius: 8, overflow: "hidden" }}>
+          {[
+            { value: "next",   label: "Next Step" },
+            { value: "branch", label: "Branch Output" },
+          ].map((opt) => {
+            const isActive = (data.outputMode ?? "next") === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => upd({ outputMode: opt.value })}
+                style={{
+                  flex: 1, padding: "8px 12px", fontSize: 13, fontWeight: isActive ? 600 : 400,
+                  border: "none", cursor: "pointer",
+                  background: isActive ? INDIGO : "#fff",
+                  color: isActive ? "#fff" : "#475569",
+                  transition: "all 0.15s",
+                }}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Next step description */}
+      {(data.outputMode ?? "next") === "next" && (
+        <p style={{ fontSize: 12, color: "#64748B", margin: 0, lineHeight: 1.6 }}>
+          Flow continues to the next connected node after the call completes.
+        </p>
+      )}
+
+      {/* Branch output — port list */}
+      {data.outputMode === "branch" && (
+        <div>
+          {!data.agentType ? (
+            <p style={{ fontSize: 12, color: MUTED, fontStyle: "italic" }}>
+              Select a Type in the Template tab to see available output ports.
+            </p>
+          ) : (
+            <>
+              <SectionLabel>Output Ports</SectionLabel>
+              <div style={{ border: `1px solid ${BORDER}`, borderRadius: 8, overflow: "hidden" }}>
+                {intentPorts.map((port, i) => {
+                  const wired = wiredPorts.includes(port.id);
+                  return (
+                    <div
+                      key={port.id}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 10,
+                        padding: "9px 12px",
+                        borderBottom: i < intentPorts.length - 1 ? `1px solid ${BORDER}` : "none",
+                        opacity: wired ? 1 : 0.5,
+                      }}
+                    >
+                      <div style={{
+                        width: 10, height: 10, borderRadius: "50%", flexShrink: 0,
+                        border: `2px solid ${wired ? INDIGO : "#CBD5E1"}`,
+                        background: wired ? INDIGO : "transparent",
+                      }} />
+                      <span style={{ fontSize: 12, color: "#0F172A" }}>{port.label}</span>
+                      {wired && (
+                        <span style={{ marginLeft: "auto", fontSize: 10, color: "#16A34A", fontWeight: 500 }}>Connected</span>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {connectionPorts.length > 0 && (
+                  <>
+                    <div style={{ height: 1, background: BORDER }} />
+                    {connectionPorts.map((port) => {
+                      const wired = wiredPorts.includes(port.id);
+                      return (
+                        <div
+                          key={port.id}
+                          style={{
+                            display: "flex", alignItems: "center", gap: 10,
+                            padding: "9px 12px",
+                            borderBottom: `1px solid ${BORDER}`,
+                            opacity: wired ? 1 : 0.5,
+                          }}
+                        >
+                          <div style={{
+                            width: 10, height: 10, borderRadius: "50%", flexShrink: 0,
+                            border: `2px solid ${wired ? INDIGO : "#CBD5E1"}`,
+                            background: wired ? INDIGO : "transparent",
+                          }} />
+                          <span style={{ fontSize: 12, color: "#0F172A" }}>{port.label}</span>
+                          {wired && (
+                            <span style={{ marginLeft: "auto", fontSize: 10, color: "#16A34A", fontWeight: 500 }}>Connected</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
+              </div>
+              <p style={{ fontSize: 10, color: MUTED, marginTop: 8 }}>
+                Dimmed ports are not yet connected. Wire them on the canvas to activate.
+              </p>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Main export ──────────────────────────────────────────────────
+
+export default function AiCallingV2RightPanel() {
+  const nodes          = useFlowBuilderStore((s) => s.nodes);
+  const selectedNodeId = useFlowBuilderStore((s) => s.selectedNodeId);
+  const updateNodeData = useFlowBuilderStore((s) => s.updateNodeData);
+
+  const node = nodes.find((n) => n.id === selectedNodeId);
+  const data = node?.data ?? {};
+  const upd  = (patch) => updateNodeData(selectedNodeId, patch);
+
+  if (!node) return null;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
+      {/* Header */}
+      <div style={{
+        padding: "12px 16px", borderBottom: `1px solid ${BORDER}`,
+        display: "flex", alignItems: "center", gap: 10, flexShrink: 0,
+      }}>
+        <div style={{
+          width: 30, height: 30, borderRadius: 8,
+          background: "linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <PhoneCall size={15} color="#fff" />
+        </div>
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>AI Calling</div>
+          <div style={{ fontSize: 10, color: MUTED }}>Squadstack voice agent</div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <Tabs defaultValue="template" style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
+        <TabsList style={{ flexShrink: 0, borderRadius: 0, borderBottom: `1px solid ${BORDER}`, background: "#F8FAFC", padding: "4px 12px 0", justifyContent: "flex-start" }}>
+          <TabsTrigger value="template">Template</TabsTrigger>
+          <TabsTrigger value="delivery">Delivery</TabsTrigger>
+          <TabsTrigger value="output">Output</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="template" style={{ flex: 1, overflowY: "auto", margin: 0 }}>
+          <TemplateTab data={data} upd={upd} />
+        </TabsContent>
+        <TabsContent value="delivery" style={{ flex: 1, overflowY: "auto", margin: 0 }}>
+          <DeliveryTab data={data} upd={upd} />
+        </TabsContent>
+        <TabsContent value="output" style={{ flex: 1, overflowY: "auto", margin: 0 }}>
+          <OutputTab data={data} upd={upd} />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
