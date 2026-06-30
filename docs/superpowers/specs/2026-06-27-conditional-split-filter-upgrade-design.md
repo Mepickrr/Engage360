@@ -77,7 +77,7 @@ app/frontend/src/components/flows/trigger/audience/
 ├── UserBehaviorConditions.jsx        (existing, unchanged)
 └── UserAffinityConditions.jsx        (existing, unchanged)
 
-src/components/flows/builder/nodes/ConditionalSplitNode/
+src/components/flows/builder/nodes/ConditionalSplitNode/1
 ├── index.jsx                         (existing canvas node — unchanged)
 ├── ConditionalSplitRightPanel.jsx    (FilterTab updated; A/B and Expression unchanged)
 └── data/mockData.js                  (data shape updated)
