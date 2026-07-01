@@ -41,7 +41,7 @@ function emptyGroup(eventName) {
   return {
     event: eventName,
     conditions: [],
-    evaluate: [],
+    evaluate: null,
     evaluateTime: { value: 1, unit: "Hour" },
     combinator: "AND",
   };
@@ -217,44 +217,43 @@ export default function Step1WhenContent({
                   </div>
                   {/* Attribute evaluate rules */}
                   {evalPool.length > 0 && (
-                    <>
-                      <div className="space-y-2">
-                        {(group.evaluate || []).map((c, ci) => (
-                          <AttributeConditionRow
-                            key={ci}
-                            testId={`trigger-eval-${gi}-${ci}`}
-                            condition={c}
-                            attributesPool={evalPool}
-                            onChange={(nc) =>
-                              updateGroup(gi, {
-                                evaluate: (group.evaluate || []).map((x, i) =>
-                                  i === ci ? nc : x,
-                                ),
-                              })
-                            }
-                            onRemove={() =>
-                              updateGroup(gi, {
-                                evaluate: (group.evaluate || []).filter(
-                                  (_, i) => i !== ci,
-                                ),
-                              })
-                            }
-                          />
-                        ))}
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateGroup(gi, {
-                            evaluate: [...(group.evaluate || []), emptyCondition()],
-                          })
-                        }
-                        className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:text-primary-hover"
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm text-text-secondary">Evaluate by</span>
+                      <select
+                        value={group.evaluate?.parameter || ""}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          updateGroup(gi, { evaluate: v ? { parameter: v, value: "" } : null });
+                        }}
+                        className="h-9 text-sm rounded-md border border-border bg-surface px-2 focus:outline-none focus:border-primary/60"
                       >
-                        <Plus className="w-3.5 h-3.5" />
-                        Add evaluate rule
-                      </button>
-                    </>
+                        <option value="">Select parameter…</option>
+                        {evalPool.map((a) => (
+                          <option key={a.name} value={a.name}>{a.name}</option>
+                        ))}
+                      </select>
+                      {group.evaluate?.parameter && (
+                        <>
+                          <span className="text-text-muted">→</span>
+                          <select
+                            value={group.evaluate?.value || ""}
+                            onChange={(e) =>
+                              updateGroup(gi, {
+                                evaluate: { ...group.evaluate, value: e.target.value },
+                              })
+                            }
+                            className="h-9 text-sm rounded-md border border-border bg-surface px-2 focus:outline-none focus:border-primary/60"
+                          >
+                            <option value="">Select value…</option>
+                            {(evalPool.find((a) => a.name === group.evaluate.parameter)?.examples || []).map(
+                              (ex) => (
+                                <option key={ex} value={ex}>{ex}</option>
+                              )
+                            )}
+                          </select>
+                        </>
+                      )}
+                    </div>
                   )}
                 </div>
               )}
