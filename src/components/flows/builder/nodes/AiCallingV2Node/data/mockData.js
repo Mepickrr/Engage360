@@ -26,12 +26,10 @@ export const VOICES = [
   { value: "harish", label: "Harish (M)", gender: "M" },
 ];
 
-export const RETRY_GAPS = [
-  { value: 5,   label: "5 min" },
-  { value: 15,  label: "15 min" },
-  { value: 30,  label: "30 min" },
-  { value: 60,  label: "1 hr" },
-  { value: 120, label: "2 hrs" },
+export const RETRY_GAP_UNITS = [
+  { value: "Minute", label: "Minute" },
+  { value: "Hour",   label: "Hour" },
+  { value: "Day",    label: "Day" },
 ];
 
 export const COUPON_EXPIRY_OPTIONS = [
@@ -93,7 +91,8 @@ export const defaultAiCallingV2NodeData = {
   },
   placeCOD: false,
   retryAttempt: 1,
-  retryGap: 5,
+  retryGapValue: 5,
+  retryGapUnit: "Minute",
   utm: {
     enabled: false,
     utm_source: "aicalling",

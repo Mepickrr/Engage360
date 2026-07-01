@@ -11,7 +11,7 @@ import {
   VOICE_BUILDS_BY_TYPE,
   VOICES,
   COUPON_EXPIRY_OPTIONS,
-  RETRY_GAPS,
+  RETRY_GAP_UNITS,
   OUTPUT_PORTS_BY_TYPE,
 } from "./data/mockData";
 
@@ -403,23 +403,40 @@ function DeliveryTab({ data, upd }) {
             />
           </div>
           {/* Gap */}
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 2 }}>
             <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Gap between retries</div>
-            <div style={{ position: "relative" }}>
-              <select
-                value={data.retryGap ?? 5}
-                onChange={(e) => upd({ retryGap: Number(e.target.value) })}
-                style={{
-                  width: "100%", padding: "8px 28px 8px 10px", fontSize: 13,
-                  border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none",
-                  background: "#fff", appearance: "none", cursor: "pointer",
+            <div style={{ display: "flex", gap: 6 }}>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={data.retryGapValue ?? 5}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/\D/g, "");
+                  const val = raw === "" ? "" : Math.max(1, parseInt(raw, 10));
+                  upd({ retryGapValue: val });
                 }}
-              >
-                {RETRY_GAPS.map((r) => (
-                  <option key={r.value} value={r.value}>{r.label}</option>
-                ))}
-              </select>
-              <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", fontSize: 10, color: MUTED }}>▼</span>
+                style={{
+                  width: 56, padding: "8px 10px", fontSize: 13, textAlign: "center",
+                  border: `1px solid ${BORDER}`, borderRadius: 8,
+                  outline: "none", boxSizing: "border-box",
+                }}
+              />
+              <div style={{ position: "relative", flex: 1 }}>
+                <select
+                  value={data.retryGapUnit ?? "Minute"}
+                  onChange={(e) => upd({ retryGapUnit: e.target.value })}
+                  style={{
+                    width: "100%", padding: "8px 28px 8px 10px", fontSize: 13,
+                    border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none",
+                    background: "#fff", appearance: "none", cursor: "pointer",
+                  }}
+                >
+                  {RETRY_GAP_UNITS.map((u) => (
+                    <option key={u.value} value={u.value}>{u.label}</option>
+                  ))}
+                </select>
+                <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", fontSize: 10, color: MUTED }}>▼</span>
+              </div>
             </div>
           </div>
         </div>
