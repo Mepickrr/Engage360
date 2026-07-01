@@ -144,24 +144,28 @@ export default function Step2WhoContent({
             </select>
           </div>
         )}
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={!!audience.global_control}
-            onChange={(e) => setAudience({ ...audience, global_control: e.target.checked })}
-            className="accent-primary"
-          />
-          <span className="text-sm font-medium">Global control group</span>
-        </label>
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={!!audience.flow_control}
-            onChange={(e) => setAudience({ ...audience, flow_control: e.target.checked })}
-            className="accent-primary"
-          />
-          <span className="text-sm font-medium">Flow control group</span>
-        </label>
+        {false && (
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={!!audience.global_control}
+              onChange={(e) => setAudience({ ...audience, global_control: e.target.checked })}
+              className="accent-primary"
+            />
+            <span className="text-sm font-medium">Global control group</span>
+          </label>
+        )}
+        {false && (
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={!!audience.flow_control}
+              onChange={(e) => setAudience({ ...audience, flow_control: e.target.checked })}
+              className="accent-primary"
+            />
+            <span className="text-sm font-medium">Flow control group</span>
+          </label>
+        )}
       </div>
 
       {/* Show count */}
