@@ -126,7 +126,12 @@ export default function StartTriggerWizard({
       setTriggerGroups((prev) => {
         const next = [...prev];
         if (idx < next.length) {
-          next[idx] = { ...next[idx], event: card.name };
+          const patch = { ...next[idx], event: card.name };
+          if (!card.advance_evaluate) {
+            patch.evaluateTime = undefined;
+            patch.evaluate = [];
+          }
+          next[idx] = patch;
         } else {
           next.push(emptyGroup(card.name));
         }

@@ -12,8 +12,8 @@ function trunc(str, n = 20) {
 }
 
 // ── summary for the new wizard config format ──────────────────
-// Wizard produces: { kind, triggerGroups: [{ event, conditions, evaluate }],
-//   groupsCombinator, exitTrigger: { open, events }, audience, broadcast }
+// Wizard produces: { kind, triggerGroups: [{ event, conditions, evaluate, evaluateTime, combinator }],
+//   groupsCombinator, exitTrigger: { open, events: [{ qualifier, event, conditions }] }, audience, broadcast }
 
 function fmtConditionLine(c) {
   if (!c?.property) return null;
@@ -205,7 +205,7 @@ function summariseNewFormat(config) {
       allFilters,
       filterCombinator: group.combinator || "AND",
       hasEvaluate: (group.evaluate || []).length > 0,
-      evaluateLine: group.evaluateTime
+      evaluateLine: (group.evaluateTime?.value > 0)
         ? `Evaluate within ${group.evaluateTime.value} ${group.evaluateTime.unit}`
         : null,
     };

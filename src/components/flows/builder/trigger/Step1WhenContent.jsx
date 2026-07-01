@@ -196,7 +196,7 @@ export default function Step1WhenContent({
                       value={group.evaluateTime?.value ?? 1}
                       onChange={(e) =>
                         updateGroup(gi, {
-                          evaluateTime: { ...(group.evaluateTime || { unit: "Hour" }), value: Number(e.target.value) },
+                          evaluateTime: { ...(group.evaluateTime || { unit: "Hour" }), value: Math.max(1, Number(e.target.value) || 1) },
                         })
                       }
                       className="w-16 px-2 py-1.5 text-sm rounded-md border border-border bg-surface focus:outline-none focus:border-primary/60"
