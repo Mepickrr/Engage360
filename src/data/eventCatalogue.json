@@ -2530,54 +2530,54 @@
   "attributes_by_event": {
     "Abandoned Cart": [
       {
-        "name": "Product Viewed",
+        "name": "Cart Viewed",
         "data_type": "string",
         "selection_option": "Single select",
-        "examples": [
-          "First Product View",
-          "Last Product View"
-        ],
         "operators": [
           "is"
+        ],
+        "examples": [
+          "First Cart View",
+          "Last Cart View"
         ],
         "is_evaluate": true
       },
       {
-        "name": "Frequent Product View",
+        "name": "Cart Session",
         "data_type": "string",
         "selection_option": "Single select",
-        "examples": [
-          "Maximun Product Viewed",
-          "Lear Product Viewed"
-        ],
         "operators": [
           "is"
+        ],
+        "examples": [
+          "Maximum Cart Session",
+          "Least Cart Session"
         ],
         "is_evaluate": true
       },
       {
-        "name": "Product Viewed Price",
+        "name": "Cart Viewed Price",
         "data_type": "string",
         "selection_option": "Single select",
-        "examples": [
-          "Most Priced Product",
-          "Least Priced Product"
-        ],
         "operators": [
           "is"
+        ],
+        "examples": [
+          "Most Priced Cart",
+          "Least Priced Cart"
         ],
         "is_evaluate": true
       },
       {
-        "name": "Product Quantity",
+        "name": "Cart Quantity",
         "data_type": "string",
         "selection_option": "Single select",
+        "operators": [
+          "is"
+        ],
         "examples": [
           "Highest Quantity",
           "Least Quantity"
-        ],
-        "operators": [
-          "is"
         ],
         "is_evaluate": true
       },
@@ -2585,13 +2585,13 @@
         "name": "Discount",
         "data_type": "string",
         "selection_option": "Single select",
+        "operators": [
+          "is"
+        ],
         "examples": [
           "AttemptClicked",
           "Selected",
           "Removed"
-        ],
-        "operators": [
-          "is"
         ],
         "is_evaluate": true
       },
@@ -2599,12 +2599,12 @@
         "name": "Frequent Product Add to Cart",
         "data_type": "string",
         "selection_option": "Single select",
+        "operators": [
+          "is"
+        ],
         "examples": [
           "Most Product Add to Cart",
           "Least Product Add to Cart"
-        ],
-        "operators": [
-          "is"
         ],
         "is_evaluate": true
       },
@@ -2612,78 +2612,39 @@
         "name": "Frequent Product Remove from Cart",
         "data_type": "string",
         "selection_option": "Single select",
-        "examples": [
-          "Most Product Remove from Cart",
-          "Least Product Remove from Cart"
-        ],
         "operators": [
           "is"
         ],
-        "is_evaluate": true
-      },
-      {
-        "name": "UTM Source",
-        "data_type": "string",
-        "selection_option": "Value",
-        "examples": [],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
-        ],
-        "is_evaluate": true
-      },
-      {
-        "name": "UTM Medium",
-        "data_type": "string",
-        "selection_option": "Value",
-        "examples": [],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
-        ],
-        "is_evaluate": true
-      },
-      {
-        "name": "UTM Campaign",
-        "data_type": "string",
-        "selection_option": "Value",
-        "examples": [],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
+        "examples": [
+          "Most Product Remove from Cart",
+          "Least Product Remove from Cart"
         ],
         "is_evaluate": true
       }
     ],
     "Abandoned Checkout": [
       {
+        "name": "Payment Gateway",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "operators": [
+          "is"
+        ],
+        "examples": [
+          "Frequently selected mode"
+        ],
+        "is_evaluate": true
+      },
+      {
         "name": "Product Viewed",
         "data_type": "string",
         "selection_option": "Single select",
-        "examples": [
-          "First Product Viewd",
-          "Last Product View"
-        ],
         "operators": [
           "is"
+        ],
+        "examples": [
+          "First Product View",
+          "Last Product View"
         ],
         "is_evaluate": true
       },
@@ -2691,12 +2652,12 @@
         "name": "Frequent Product View",
         "data_type": "string",
         "selection_option": "Single select",
-        "examples": [
-          "Maximun Product Viewed",
-          "Lear Product Viewed"
-        ],
         "operators": [
           "is"
+        ],
+        "examples": [
+          "Maximum Product Viewed",
+          "Least Product Viewed"
         ],
         "is_evaluate": true
       },
@@ -2704,12 +2665,12 @@
         "name": "Product Viewed Price",
         "data_type": "string",
         "selection_option": "Single select",
+        "operators": [
+          "is"
+        ],
         "examples": [
           "Most Priced Product",
           "Least Priced Product"
-        ],
-        "operators": [
-          "is"
         ],
         "is_evaluate": true
       },
@@ -2717,12 +2678,12 @@
         "name": "Product Quantity",
         "data_type": "string",
         "selection_option": "Single select",
+        "operators": [
+          "is"
+        ],
         "examples": [
           "Highest Quantity",
           "Least Quantity"
-        ],
-        "operators": [
-          "is"
         ],
         "is_evaluate": true
       },
@@ -2730,13 +2691,13 @@
         "name": "Discount",
         "data_type": "string",
         "selection_option": "Single select",
+        "operators": [
+          "is"
+        ],
         "examples": [
           "AttemptClicked",
           "Selected",
           "Removed"
-        ],
-        "operators": [
-          "is"
         ],
         "is_evaluate": true
       },
@@ -2744,12 +2705,12 @@
         "name": "Frequent Product Add to Cart",
         "data_type": "string",
         "selection_option": "Single select",
+        "operators": [
+          "is"
+        ],
         "examples": [
           "Most Product Add to Cart",
           "Least Product Add to Cart"
-        ],
-        "operators": [
-          "is"
         ],
         "is_evaluate": true
       },
@@ -2757,63 +2718,12 @@
         "name": "Frequent Product Remove from Cart",
         "data_type": "string",
         "selection_option": "Single select",
-        "examples": [
-          "Most Product Remove from Cart",
-          "Least Product Remove from Cart"
-        ],
         "operators": [
           "is"
         ],
-        "is_evaluate": true
-      },
-      {
-        "name": "UTM Source",
-        "data_type": "string",
-        "selection_option": "Value",
-        "examples": [],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
-        ],
-        "is_evaluate": true
-      },
-      {
-        "name": "UTM Medium",
-        "data_type": "string",
-        "selection_option": "Value",
-        "examples": [],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
-        ],
-        "is_evaluate": true
-      },
-      {
-        "name": "UTM Campaign",
-        "data_type": "string",
-        "selection_option": "Value",
-        "examples": [],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
+        "examples": [
+          "Most Product Remove from Cart",
+          "Least Product Remove from Cart"
         ],
         "is_evaluate": true
       }
@@ -2823,12 +2733,12 @@
         "name": "Product Viewed",
         "data_type": "string",
         "selection_option": "Single select",
+        "operators": [
+          "is"
+        ],
         "examples": [
           "First Product View",
           "Last Product View"
-        ],
-        "operators": [
-          "is"
         ],
         "is_evaluate": true
       },
@@ -2836,12 +2746,12 @@
         "name": "Frequent Product View",
         "data_type": "string",
         "selection_option": "Single select",
+        "operators": [
+          "is"
+        ],
         "examples": [
           "Maximum Product Viewed",
           "Least Product Viewed"
-        ],
-        "operators": [
-          "is"
         ],
         "is_evaluate": true
       },
@@ -2849,12 +2759,12 @@
         "name": "Product Viewed Price",
         "data_type": "string",
         "selection_option": "Single select",
+        "operators": [
+          "is"
+        ],
         "examples": [
           "Most Priced Product",
           "Least Priced Product"
-        ],
-        "operators": [
-          "is"
         ],
         "is_evaluate": true
       },
@@ -2862,12 +2772,12 @@
         "name": "Product Quantity",
         "data_type": "string",
         "selection_option": "Single select",
+        "operators": [
+          "is"
+        ],
         "examples": [
           "Highest Quantity",
           "Least Quantity"
-        ],
-        "operators": [
-          "is"
         ],
         "is_evaluate": true
       },
@@ -2875,13 +2785,13 @@
         "name": "Discount",
         "data_type": "string",
         "selection_option": "Single select",
+        "operators": [
+          "is"
+        ],
         "examples": [
           "AttemptClicked",
           "Selected",
           "Removed"
-        ],
-        "operators": [
-          "is"
         ],
         "is_evaluate": true
       },
@@ -2889,12 +2799,12 @@
         "name": "Frequent Product Add to Cart",
         "data_type": "string",
         "selection_option": "Single select",
+        "operators": [
+          "is"
+        ],
         "examples": [
           "Most Product Add to Cart",
           "Least Product Add to Cart"
-        ],
-        "operators": [
-          "is"
         ],
         "is_evaluate": true
       },
@@ -2902,306 +2812,27 @@
         "name": "Frequent Product Remove from Cart",
         "data_type": "string",
         "selection_option": "Single select",
-        "examples": [
-          "Most Product Remove from Cart",
-          "Least Product Remove from Cart"
-        ],
         "operators": [
           "is"
         ],
-        "is_evaluate": true
-      },
-      {
-        "name": "UTM Source",
-        "data_type": "string",
-        "selection_option": "Value",
-        "examples": [],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
-        ],
-        "is_evaluate": true
-      },
-      {
-        "name": "UTM Medium",
-        "data_type": "string",
-        "selection_option": "Value",
-        "examples": [],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
-        ],
-        "is_evaluate": true
-      },
-      {
-        "name": "UTM Campaign",
-        "data_type": "string",
-        "selection_option": "Value",
-        "examples": [],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
+        "examples": [
+          "Most Product Remove from Cart",
+          "Least Product Remove from Cart"
         ],
         "is_evaluate": true
       }
     ],
     "Abandoned Product": [
       {
-        "name": "UTM Source",
-        "data_type": "string",
-        "selection_option": "Value",
-        "examples": [],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
-        ],
-        "is_evaluate": true
-      },
-      {
-        "name": "UTM Medium",
-        "data_type": "string",
-        "selection_option": "Value",
-        "examples": [],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
-        ],
-        "is_evaluate": true
-      },
-      {
-        "name": "UTM Campaign",
-        "data_type": "string",
-        "selection_option": "Value",
-        "examples": [],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
-        ],
-        "is_evaluate": true
-      },
-      {
-        "name": "Product Name",
-        "data_type": "string",
-        "selection_option": "Multiple Select",
-        "examples": [
-          "Classic Kurta Set",
-          "Running Sneakers",
-          "Hydrating Face Serum",
-          "Cotton Joggers",
-          "Silk Saree"
-        ],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
-        ],
-        "is_evaluate": true
-      },
-      {
-        "name": "Product ID",
-        "data_type": "id",
-        "selection_option": "Multiple Select",
-        "examples": [
-          "PROD5501",
-          "PROD5502",
-          "PROD5503",
-          "PROD5504",
-          "PROD5505"
-        ],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
-        ],
-        "is_evaluate": true
-      },
-      {
-        "name": "SKU ID",
-        "data_type": "id",
-        "selection_option": "Multiple Select",
-        "examples": [
-          "SKU-KRT-BLU-M",
-          "SKU-SNK-WHT-42",
-          "SKU-SRM-30ML",
-          "SKU-JOG-BLK-L",
-          "SKU-SAR-RED-FS"
-        ],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
-        ],
-        "is_evaluate": true
-      },
-      {
-        "name": "Product Price",
-        "data_type": "integer",
-        "selection_option": "Value",
-        "examples": [],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Greater Than",
-          "Less Than",
-          "Greater Than or Equal",
-          "Less Than or Equal",
-          "Between",
-          "Exists",
-          "Doesn't Exist"
-        ],
-        "is_evaluate": true
-      },
-      {
-        "name": "Discount Applied",
-        "data_type": "boolean",
-        "selection_option": "Multiple Select",
-        "examples": [
-          "TRUE",
-          "FALSE"
-        ],
-        "operators": [
-          "True",
-          "Is False"
-        ],
-        "is_evaluate": true
-      },
-      {
-        "name": "Collection Name",
-        "data_type": "string",
-        "selection_option": "Multiple Select",
-        "examples": [
-          "Ethnic Wear",
-          "Footwear",
-          "Skincare",
-          "Bottomwear",
-          "Sarees"
-        ],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
-        ],
-        "is_evaluate": true
-      },
-      {
-        "name": "Collection ID",
-        "data_type": "id",
-        "selection_option": "Multiple Select",
-        "examples": [
-          "COL101",
-          "COL102",
-          "COL103",
-          "COL104",
-          "COL105"
-        ],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
-        ],
-        "is_evaluate": true
-      },
-      {
-        "name": "TAG",
-        "data_type": "string",
-        "selection_option": "Multiple Select",
-        "examples": [
-          "loyal_customer",
-          "new_user",
-          "repeat_buyer",
-          "churned_user",
-          "high_ltv"
-        ],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
-        ],
-        "is_evaluate": true
-      },
-      {
         "name": "Product Viewed",
         "data_type": "string",
         "selection_option": "Single select",
-        "examples": [
-          "First Product Viewd",
-          "Last Product View"
-        ],
         "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
+          "is"
+        ],
+        "examples": [
+          "First Product View",
+          "Last Product View"
         ],
         "is_evaluate": true
       },
@@ -3209,19 +2840,12 @@
         "name": "Frequent Product View",
         "data_type": "string",
         "selection_option": "Single select",
-        "examples": [
-          "Maximun Product Viewed",
-          "Lear Product Viewed"
-        ],
         "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
+          "is"
+        ],
+        "examples": [
+          "Maximum Product Viewed",
+          "Least Product Viewed"
         ],
         "is_evaluate": true
       },
@@ -3229,19 +2853,12 @@
         "name": "Product Viewed Price",
         "data_type": "string",
         "selection_option": "Single select",
+        "operators": [
+          "is"
+        ],
         "examples": [
           "Most Priced Product",
           "Least Priced Product"
-        ],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
         ],
         "is_evaluate": true
       },
@@ -3249,19 +2866,12 @@
         "name": "Product Quantity",
         "data_type": "string",
         "selection_option": "Single select",
+        "operators": [
+          "is"
+        ],
         "examples": [
           "Highest Quantity",
           "Least Quantity"
-        ],
-        "operators": [
-          "Is",
-          "Is Not",
-          "Contains",
-          "Doesn't Contain",
-          "Starts With",
-          "Ends With",
-          "Exists",
-          "Doesn't Exist"
         ],
         "is_evaluate": true
       }
