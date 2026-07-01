@@ -178,6 +178,13 @@ function TriggerGroupRow({ group }) {
           accent={PRIMARY}
         />
       )}
+      {/* Evaluate time range */}
+      {group.evaluateLine && (
+        <div className="mt-1.5 flex items-center gap-1.5">
+          <Clock className="w-3 h-3 text-text-muted flex-shrink-0" />
+          <span className="text-[10px] text-text-muted">{group.evaluateLine}</span>
+        </div>
+      )}
     </div>
   );
 }

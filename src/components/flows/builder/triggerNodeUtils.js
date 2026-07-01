@@ -205,6 +205,9 @@ function summariseNewFormat(config) {
       allFilters,
       filterCombinator: group.combinator || "AND",
       hasEvaluate: (group.evaluate || []).length > 0,
+      evaluateLine: group.evaluateTime
+        ? `Evaluate within ${group.evaluateTime.value} ${group.evaluateTime.unit}`
+        : null,
     };
   });
 
