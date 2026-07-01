@@ -97,5 +97,5 @@ export default function EventActionRow({
 }
 
 export function emptyEventAction() {
-  return { qualifier: "has_done", event: "" };
+  return { qualifier: "has_done", event: "", conditions: [] };
 }

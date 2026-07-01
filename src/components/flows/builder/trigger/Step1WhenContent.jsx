@@ -337,27 +337,103 @@ function ExitTriggerSection({ exitTrigger, setExitTrigger }) {
               Clear Exit Trigger
             </button>
           </div>
-          <div className="space-y-2">
-            {events.map((row, i) => (
-              <EventActionRow
-                key={i}
-                value={row}
-                onChange={(v) =>
-                  update({
-                    events: events.map((x, idx) => (idx === i ? v : x)),
-                  })
-                }
-                onRemove={
-                  events.length > 1
-                    ? () =>
-                        update({
-                          events: events.filter((_, idx) => idx !== i),
-                        })
-                    : undefined
-                }
-                testId={`exit-row-${i}`}
-              />
-            ))}
+          <div className="space-y-3">
+            {events.map((row, i) => {
+              const exitAttrPool = row.event
+                ? getAttrPool(row.event).filter((a) => !a.is_evaluate)
+                : [];
+              return (
+                <div key={i}>
+                  <EventActionRow
+                    value={row}
+                    onChange={(v) =>
+                      update({
+                        events: events.map((x, idx) => (idx === i ? { ...v, conditions: x.conditions || [] } : x)),
+                      })
+                    }
+                    onRemove={
+                      events.length > 1
+                        ? () =>
+                            update({
+                              events: events.filter((_, idx) => idx !== i),
+                            })
+                        : undefined
+                    }
+                    testId={`exit-row-${i}`}
+                  />
+                  {row.event && (
+                    <div className="mt-2 ml-2 pl-3 border-l border-border">
+                      <div className="text-[11px] uppercase tracking-wide text-text-muted font-semibold mb-2">
+                        With attribute
+                      </div>
+                      <div className="space-y-2">
+                        {(row.conditions || []).map((c, ci) => (
+                          <React.Fragment key={ci}>
+                            {ci > 0 && (
+                              <CombinatorPill
+                                value="AND"
+                                onChange={() => {}}
+                                testId={`exit-attr-combinator-${i}-${ci}`}
+                              />
+                            )}
+                            <AttributeConditionRow
+                              testId={`exit-attr-${i}-${ci}`}
+                              condition={c}
+                              attributesPool={exitAttrPool}
+                              onChange={(nc) =>
+                                update({
+                                  events: events.map((x, idx) =>
+                                    idx === i
+                                      ? {
+                                          ...x,
+                                          conditions: (x.conditions || []).map((cc, cii) =>
+                                            cii === ci ? nc : cc,
+                                          ),
+                                        }
+                                      : x,
+                                  ),
+                                })
+                              }
+                              onRemove={() =>
+                                update({
+                                  events: events.map((x, idx) =>
+                                    idx === i
+                                      ? {
+                                          ...x,
+                                          conditions: (x.conditions || []).filter(
+                                            (_, cii) => cii !== ci,
+                                          ),
+                                        }
+                                      : x,
+                                  ),
+                                })
+                              }
+                            />
+                          </React.Fragment>
+                        ))}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          update({
+                            events: events.map((x, idx) =>
+                              idx === i
+                                ? { ...x, conditions: [...(x.conditions || []), emptyCondition()] }
+                                : x,
+                            ),
+                          })
+                        }
+                        className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:text-primary-hover"
+                        data-testid={`exit-add-attr-${i}`}
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        Add condition
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
           <button
             type="button"
