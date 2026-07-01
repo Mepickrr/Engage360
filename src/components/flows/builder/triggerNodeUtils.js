@@ -204,8 +204,10 @@ function summariseNewFormat(config) {
       extraFilterCount,
       allFilters,
       filterCombinator: group.combinator || "AND",
-      hasEvaluate: (group.evaluate || []).length > 0,
-      evaluateLine: (group.evaluateTime?.value > 0)
+      hasEvaluate: !!group.evaluate?.value,
+      evaluateLine: (group.evaluateTime?.value > 0 && group.evaluate?.value)
+        ? `Evaluate: ${group.evaluate.value}`
+        : (group.evaluateTime?.value > 0)
         ? `Evaluate within ${group.evaluateTime.value} ${group.evaluateTime.unit}`
         : null,
     };
