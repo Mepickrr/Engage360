@@ -245,6 +245,22 @@
           "section": "Shopping behaviour"
         },
         {
+          "name": "Abandoned Payment",
+          "description": "When a user abandons the payment step without completing purchase",
+          "source": "Shopify",
+          "device_tag": [
+            "iOS",
+            "Android",
+            "Website"
+          ],
+          "attribute_allowed": true,
+          "advance_evaluate": true,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Shopping behaviour"
+        },
+        {
           "name": "Address Filled",
           "description": "When address is filled in during checkout",
           "source": "Shiprocket Checkout",
@@ -734,6 +750,22 @@
           "name": "Abandoned Checkout",
           "description": "When a cart checkout is abanoned without purchase",
           "source": "Shiprocket Checkout",
+          "device_tag": [
+            "iOS",
+            "Android",
+            "Website"
+          ],
+          "attribute_allowed": true,
+          "advance_evaluate": true,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "Abandoned Payment",
+          "description": "When a user abandons the payment step without completing purchase",
+          "source": "Shopify",
           "device_tag": [
             "iOS",
             "Android",
@@ -2662,6 +2694,151 @@
         "examples": [
           "Maximun Product Viewed",
           "Lear Product Viewed"
+        ],
+        "operators": [
+          "is"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Product Viewed Price",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Most Priced Product",
+          "Least Priced Product"
+        ],
+        "operators": [
+          "is"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Product Quantity",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Highest Quantity",
+          "Least Quantity"
+        ],
+        "operators": [
+          "is"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Discount",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "AttemptClicked",
+          "Selected",
+          "Removed"
+        ],
+        "operators": [
+          "is"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Frequent Product Add to Cart",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Most Product Add to Cart",
+          "Least Product Add to Cart"
+        ],
+        "operators": [
+          "is"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Frequent Product Remove from Cart",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Most Product Remove from Cart",
+          "Least Product Remove from Cart"
+        ],
+        "operators": [
+          "is"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "UTM Source",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "UTM Medium",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "UTM Campaign",
+        "data_type": "string",
+        "selection_option": "Value",
+        "examples": [],
+        "operators": [
+          "Is",
+          "Is Not",
+          "Contains",
+          "Doesn't Contain",
+          "Starts With",
+          "Ends With",
+          "Exists",
+          "Doesn't Exist"
+        ],
+        "is_evaluate": true
+      }
+    ],
+    "Abandoned Payment": [
+      {
+        "name": "Product Viewed",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "First Product View",
+          "Last Product View"
+        ],
+        "operators": [
+          "is"
+        ],
+        "is_evaluate": true
+      },
+      {
+        "name": "Frequent Product View",
+        "data_type": "string",
+        "selection_option": "Single select",
+        "examples": [
+          "Maximum Product Viewed",
+          "Least Product Viewed"
         ],
         "operators": [
           "is"

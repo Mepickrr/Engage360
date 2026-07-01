@@ -469,6 +469,17 @@ const CATALOGUE = {
     a("Channel",          "channel",        "String",  P),
     a("Assignment Type",  "assignment_type","String",  P, "manual, auto_assign, ai_routed"),
   ],
+
+  "abandoned payment": [
+    a("Product Price",    "product_price",  "Numeric", N),
+    a("Currency",         "currency",       "String",  S),
+    a("UTM Source",       "utm_source",     "String",  S),
+    a("UTM Medium",       "utm_medium",     "String",  S),
+    a("UTM Campaign",     "utm_campaign",   "String",  S),
+    b("Product Name",     "product_name",   "product_picker"),
+    b("Product Id",       "product_id",     "product_picker"),
+    b("SKU ID",           "sku_id",         "sku_picker"),
+  ],
 };
 
 // ─── Evaluate computations ───────────────────────────────────
