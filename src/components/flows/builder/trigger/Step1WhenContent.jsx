@@ -42,6 +42,7 @@ function emptyGroup(eventName) {
     event: eventName,
     conditions: [],
     evaluate: [],
+    evaluateTime: { value: 1, unit: "Hour" },
     combinator: "AND",
   };
 }
@@ -181,47 +182,80 @@ export default function Step1WhenContent({
               )}
 
               {/* EVALUATE block (Abandoned* events) */}
-              {ev?.advance_evaluate && evalPool.length > 0 && (
+              {ev?.advance_evaluate && (
                 <div className="mt-4 border-t border-dashed border-border pt-3">
                   <div className="text-[11px] uppercase tracking-wide text-text-muted font-semibold mb-2">
                     Evaluate
                   </div>
-                  <div className="space-y-2">
-                    {(group.evaluate || []).map((c, ci) => (
-                      <AttributeConditionRow
-                        key={ci}
-                        testId={`trigger-eval-${gi}-${ci}`}
-                        condition={c}
-                        attributesPool={evalPool}
-                        onChange={(nc) =>
-                          updateGroup(gi, {
-                            evaluate: (group.evaluate || []).map((x, i) =>
-                              i === ci ? nc : x,
-                            ),
-                          })
-                        }
-                        onRemove={() =>
-                          updateGroup(gi, {
-                            evaluate: (group.evaluate || []).filter(
-                              (_, i) => i !== ci,
-                            ),
-                          })
-                        }
-                      />
-                    ))}
+                  {/* Mandatory time range */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-sm text-text-secondary">Evaluate events within</span>
+                    <input
+                      type="number"
+                      min={1}
+                      value={group.evaluateTime?.value ?? 1}
+                      onChange={(e) =>
+                        updateGroup(gi, {
+                          evaluateTime: { ...(group.evaluateTime || { unit: "Hour" }), value: Number(e.target.value) },
+                        })
+                      }
+                      className="w-16 px-2 py-1.5 text-sm rounded-md border border-border bg-surface focus:outline-none focus:border-primary/60"
+                    />
+                    <select
+                      value={group.evaluateTime?.unit || "Hour"}
+                      onChange={(e) =>
+                        updateGroup(gi, {
+                          evaluateTime: { ...(group.evaluateTime || { value: 1 }), unit: e.target.value },
+                        })
+                      }
+                      className="h-9 text-sm rounded-md border border-border bg-surface px-2 focus:outline-none focus:border-primary/60"
+                    >
+                      <option value="Minute">Minute</option>
+                      <option value="Hour">Hour</option>
+                      <option value="Day">Day</option>
+                    </select>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      updateGroup(gi, {
-                        evaluate: [...(group.evaluate || []), emptyCondition()],
-                      })
-                    }
-                    className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:text-primary-hover"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    Add evaluate rule
-                  </button>
+                  {/* Attribute evaluate rules */}
+                  {evalPool.length > 0 && (
+                    <>
+                      <div className="space-y-2">
+                        {(group.evaluate || []).map((c, ci) => (
+                          <AttributeConditionRow
+                            key={ci}
+                            testId={`trigger-eval-${gi}-${ci}`}
+                            condition={c}
+                            attributesPool={evalPool}
+                            onChange={(nc) =>
+                              updateGroup(gi, {
+                                evaluate: (group.evaluate || []).map((x, i) =>
+                                  i === ci ? nc : x,
+                                ),
+                              })
+                            }
+                            onRemove={() =>
+                              updateGroup(gi, {
+                                evaluate: (group.evaluate || []).filter(
+                                  (_, i) => i !== ci,
+                                ),
+                              })
+                            }
+                          />
+                        ))}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateGroup(gi, {
+                            evaluate: [...(group.evaluate || []), emptyCondition()],
+                          })
+                        }
+                        className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:text-primary-hover"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        Add evaluate rule
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
             </div>
