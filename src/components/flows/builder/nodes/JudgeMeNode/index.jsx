@@ -175,15 +175,15 @@ export default function JudgeMeNode({ id, data, selected }) {
               <span style={{ fontSize: 9, color: "#3B82F6", fontFamily: "monospace" }}>{`{{${productVar}}}`}</span>
             </div>
           )}
-
-          {/* Output handles */}
-          <div style={{ padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
-            <OutputHandle id="success"          label="Success"          color={GREEN} />
-            <OutputHandle id="skipped"          label="Skipped"          color={AMBER} />
-            <OutputHandle id="submission_failed" label="Submission Failed" color={RED}   />
-          </div>
         </>
       )}
+
+      {/* Output handles */}
+      <div style={{ padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
+        <OutputHandle id="success"          label="Success"          color={GREEN} />
+        <OutputHandle id="skipped"          label="Skipped"          color={AMBER} />
+        <OutputHandle id="submission_failed" label="Submission Failed" color={RED}   />
+      </div>
     </div>
   );
 }

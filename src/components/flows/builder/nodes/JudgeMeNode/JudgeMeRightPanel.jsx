@@ -299,7 +299,7 @@ export default function JudgeMeRightPanel({ node, updateNodeData }) {
         <FieldLabel text="Product Variable" />
         <select
           value={productVar}
-          onChange={(e) => patch({ productVar: e.target.value || null })}
+          onChange={(e) => patch({ productVar: e.target.value === "" ? null : e.target.value })}
           style={{
             width: "100%", border: `1px solid ${BORDER}`, borderRadius: 6,
             padding: "6px 8px", fontSize: 12, background: "#fff", color: "#374151",
@@ -352,37 +352,38 @@ export default function JudgeMeRightPanel({ node, updateNodeData }) {
       </div>
 
       {/* Step 2 — Review Text */}
-      <div style={{ padding: "12px 16px", borderBottom: `1px solid ${BORDER}` }}>
-        <SectionHeader label="Step 2 — Review Text" />
-        <FieldTextarea
-          label="Question message"
-          value={reviewQuestion}
-          onChange={(v) => patch({ reviewQuestion: v })}
-          placeholder={DEFAULT_MESSAGES.reviewText}
-        />
+      <div style={{ borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ padding: "12px 16px" }}>
+          <SectionHeader label="Step 2 — Review Text" />
+          <FieldTextarea
+            label="Question message"
+            value={reviewQuestion}
+            onChange={(v) => patch({ reviewQuestion: v })}
+            placeholder={DEFAULT_MESSAGES.reviewText}
+          />
+        </div>
+        <CollapsibleSection title="Error & Retries">
+          <FieldTextarea
+            label="Error message"
+            value={reviewError}
+            onChange={(v) => patch({ reviewError: v })}
+            placeholder={DEFAULT_MESSAGES.reviewError}
+          />
+          <FieldLabel text="Retry attempts (1–3)" />
+          <input
+            type="number"
+            min={1}
+            max={3}
+            value={retryCount}
+            onChange={(e) => patch({ retryCount: Math.min(3, Math.max(1, Number(e.target.value))) })}
+            style={{
+              width: "100%", border: `1px solid ${BORDER}`, borderRadius: 6,
+              padding: "6px 8px", fontSize: 12, outline: "none",
+              boxSizing: "border-box", fontFamily: "inherit", color: "#374151",
+            }}
+          />
+        </CollapsibleSection>
       </div>
-
-      <CollapsibleSection title="Error & Retries">
-        <FieldTextarea
-          label="Error message"
-          value={reviewError}
-          onChange={(v) => patch({ reviewError: v })}
-          placeholder={DEFAULT_MESSAGES.reviewError}
-        />
-        <FieldLabel text="Retry attempts (1–3)" />
-        <input
-          type="number"
-          min={1}
-          max={3}
-          value={retryCount}
-          onChange={(e) => patch({ retryCount: Math.min(3, Math.max(1, Number(e.target.value))) })}
-          style={{
-            width: "100%", border: `1px solid ${BORDER}`, borderRadius: 6,
-            padding: "6px 8px", fontSize: 12, outline: "none",
-            boxSizing: "border-box", fontFamily: "inherit", color: "#374151",
-          }}
-        />
-      </CollapsibleSection>
 
       {/* Step 3 — Image Upload */}
       <div style={{ borderTop: `1px solid ${BORDER}` }}>
