@@ -25,7 +25,7 @@ const AUTOSAVE_DEBOUNCE_MS = 1500;
 // To re-enable a hidden style, add its id here.
 // Blueprint ids (currently hidden): "address", "catalog", "audio", "location"
 const V2_ALLOWED_TEMPLATE_STYLES = [
-  "standard", "list", "carousel", "payment_link", "call_permission",
+  "standard", "list", "carousel", "payment_link", "call_permission", "collect_input",
 ];
 
 // V2 node allow-list — only these node IDs are visible in the left panel.

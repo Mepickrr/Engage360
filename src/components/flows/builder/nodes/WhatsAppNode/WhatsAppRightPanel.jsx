@@ -50,6 +50,7 @@ function SelectField({ value, onChange, options, style = {} }) {
 // ── Template Styles ─────────────────────────────────────────────
 const TEMPLATE_STYLES = [
   { id: "standard",        label: "Standard",        emoji: "💬", desc: "Text body with image, video or document header and reply buttons" },
+  { id: "collect_input",   label: "Collect Input",   emoji: "📝", desc: "Ask a question and collect structured input from users during a conversation" },
   { id: "list",            label: "List",             emoji: "📋", desc: "Scrollable list of up to 10 sections with items" },
   { id: "carousel",        label: "Carousel",         emoji: "🎠", desc: "Horizontal cards with images, text and buttons" },
   { id: "address",         label: "Address",          emoji: "📍", desc: "Share a delivery or pickup address with map preview" },
