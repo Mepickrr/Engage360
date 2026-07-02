@@ -31,6 +31,9 @@ describe("CollectInputForm", () => {
   it("calls onApply with draft when Apply is clicked", () => {
     const onApply = jest.fn();
     render(<CollectInputForm initial={null} onApply={onApply} onCancel={noop} />);
+    // Fill in the required question message before applying
+    const textarea = screen.getByPlaceholderText(/what.*email/i);
+    fireEvent.change(textarea, { target: { value: "What is your email?" } });
     fireEvent.click(screen.getByRole("button", { name: /apply/i }));
     expect(onApply).toHaveBeenCalledWith(expect.objectContaining({ isCollectInput: true, inputType: "email" }));
   });

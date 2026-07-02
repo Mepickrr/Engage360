@@ -849,8 +849,8 @@ function TemplateTab({ data, patch }) {
         )}
         */}
 
-        {/* Fallback template */}
-        {template && (
+        {/* Fallback template — hidden for collect_input nodes */}
+        {template && !isCollectInput && (
           <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
               <Label>Fallback Template</Label>
@@ -1171,7 +1171,18 @@ export default function WhatsAppRightPanel({ node, updateNodeData, removeNode })
       <div style={{ flex: 1, overflowY: "auto", padding: 16 }}>
         {tab === "template" && <TemplateTab data={data} patch={patch} />}
         {tab === "delivery" && <DeliveryTab data={data} patch={patch} />}
-        {tab === "output"   && <OutputTab   data={data} patch={patch} />}
+        {tab === "output"   && (
+          data.templateStyle === "collect_input" ? (
+            <div style={{ padding: "16px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#0F172A" }}>Output Ports</div>
+              <div style={{ fontSize: 11, color: MUTED, lineHeight: 1.6 }}>
+                Collect Input nodes have 4 fixed output ports: <strong>Success</strong>, <strong>No Response</strong>, <strong>Limit Reached</strong>, and <strong>Send Failed</strong>. Wire each port to the appropriate next step on the canvas.
+              </div>
+            </div>
+          ) : (
+            <OutputTab data={data} patch={patch} />
+          )
+        )}
       </div>
 
       {/* Save footer */}

@@ -235,6 +235,7 @@ function ListEditor({ sections, onChange }) {
 
 export default function CollectInputForm({ initial, onApply, onCancel }) {
   const [draft, setDraft] = useState(initial?.isCollectInput ? initial : defaultDraft("email"));
+  const [questionError, setQuestionError] = useState(false);
 
   const patch = (p) => setDraft((d) => ({ ...d, ...p }));
   const patchNested = (key, p) => setDraft((d) => ({ ...d, [key]: { ...d[key], ...p } }));
@@ -248,7 +249,7 @@ export default function CollectInputForm({ initial, onApply, onCancel }) {
       ...d,
       inputType: newType,
       errorMessage: DEFAULT_ERROR_MSG[newType],
-      confirmation: { ...d.confirmation, enabled: supportsConf },
+      confirmation: { ...d.confirmation, enabled: d.confirmation.enabled && supportsConf },
       saveToVariable: { ...d.saveToVariable, variableName: DEFAULT_VAR_NAME[newType] },
     }));
   };
@@ -296,7 +297,7 @@ export default function CollectInputForm({ initial, onApply, onCancel }) {
         </div>
         <textarea
           value={draft.questionMessage}
-          onChange={(e) => patch({ questionMessage: e.target.value.slice(0, 1000) })}
+          onChange={(e) => { setQuestionError(false); patch({ questionMessage: e.target.value.slice(0, 1000) }); }}
           placeholder={
             draft.inputType === "email"       ? "What's your email address?" :
             draft.inputType === "phone"       ? "What's your phone number?" :
@@ -306,9 +307,12 @@ export default function CollectInputForm({ initial, onApply, onCancel }) {
             "Enter your question…"
           }
           rows={3}
-          style={{ width: "100%", padding: "8px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", resize: "none", lineHeight: 1.55, fontFamily: "inherit" }}
+          style={{ width: "100%", padding: "8px 10px", fontSize: 13, border: `1px solid ${questionError ? "#EF4444" : BORDER}`, borderRadius: 8, outline: "none", resize: "none", lineHeight: 1.55, fontFamily: "inherit" }}
         />
         <div style={{ textAlign: "right", fontSize: 10, color: MUTED, marginTop: 3 }}>{(draft.questionMessage || "").length}/1000</div>
+        {questionError && (
+          <div style={{ fontSize: 10, color: "#EF4444", marginTop: 2 }}>Question message is required.</div>
+        )}
       </div>
 
       {/* Choice-type editors — shown inline (not collapsible) */}
@@ -513,7 +517,14 @@ export default function CollectInputForm({ initial, onApply, onCancel }) {
           style={{ flex: 1, padding: "9px", border: `1px solid ${BORDER}`, borderRadius: 8, background: "#fff", fontSize: 13, cursor: "pointer" }}>
           Cancel
         </button>
-        <button type="button" onClick={() => onApply(draft)}
+        <button type="button" onClick={() => {
+          if (!draft.questionMessage.trim()) {
+            setQuestionError(true);
+            return;
+          }
+          setQuestionError(false);
+          onApply(draft);
+        }}
           style={{ flex: 1, padding: "9px", border: "none", borderRadius: 8, background: WA_GREEN, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
           Apply
         </button>

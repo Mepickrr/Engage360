@@ -283,7 +283,7 @@ export default function WhatsAppNode({ id, data, selected }) {
                 {data?.label || "WhatsApp"}
               </div>
               <div style={{ fontSize: 9, color: "#94A3B8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {template.name}
+                {template.name || (data?.templateStyle === "collect_input" ? "Collect Input" : "")}
               </div>
             </div>
             {phoneDisplay && (
@@ -291,7 +291,7 @@ export default function WhatsAppNode({ id, data, selected }) {
                 {phoneDisplay}
               </span>
             )}
-            <StatusPill status={template.status} />
+            {template.status && <StatusPill status={template.status} />}
           </div>
 
           {/* ── Message bubble / carousel preview / collect input preview ── */}
@@ -371,7 +371,7 @@ export default function WhatsAppNode({ id, data, selected }) {
             <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 2, paddingBottom: 4 }}>
               {[
                 { id: "ci_success",       label: "Success",       color: "#22C55E" },
-                { id: "ci_no_response",   label: `No Response after ${template?.noResponse?.timeoutValue ?? 1} ${template?.noResponse?.timeoutUnit ?? "hours"}` },
+                { id: "ci_no_response",   label: (() => { const val = template?.noResponse?.timeoutValue ?? 1; const unit = template?.noResponse?.timeoutUnit ?? "hours"; const singular = unit === "hours" ? "hour" : "minute"; return `No Response after ${val} ${Number(val) === 1 ? singular : unit}`; })() },
                 { id: "ci_limit_reached", label: "Limit Reached" },
                 { id: "ci_send_failed",   label: "Send Failed",   color: "#EF4444" },
               ].map((port) => (
