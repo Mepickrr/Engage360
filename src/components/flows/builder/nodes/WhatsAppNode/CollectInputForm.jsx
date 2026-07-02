@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { SYSTEM_VARIABLES } from "./data/mockTemplates";
 
 const WA_GREEN = "#25D366";
 const PRIMARY  = "#6C3AE8";
@@ -241,7 +240,6 @@ export default function CollectInputForm({ initial, onApply, onCancel }) {
   const patchNested = (key, p) => setDraft((d) => ({ ...d, [key]: { ...d[key], ...p } }));
 
   const supportsConfirmation = CONFIRMATION_TYPES.has(draft.inputType);
-  const isChoice = draft.inputType === "quick_reply" || draft.inputType === "list";
 
   const handleTypeChange = (newType) => {
     // When changing type, reset type-specific fields and update defaults
@@ -465,7 +463,7 @@ export default function CollectInputForm({ initial, onApply, onCancel }) {
           <div style={{ display: "flex", gap: 8 }}>
             <input
               type="number" min={1} value={draft.noResponse.timeoutValue}
-              onChange={(e) => patchNested("noResponse", { timeoutValue: e.target.value })}
+              onChange={(e) => patchNested("noResponse", { timeoutValue: Number(e.target.value) })}
               style={{ flex: 2, padding: "7px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none" }}
             />
             <select value={draft.noResponse.timeoutUnit} onChange={(e) => patchNested("noResponse", { timeoutUnit: e.target.value })}
