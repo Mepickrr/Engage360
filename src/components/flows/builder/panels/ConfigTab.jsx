@@ -19,6 +19,7 @@ import InAppRightPanel from "@/components/flows/builder/nodes/InAppNode/InAppRig
 import NextBestActionRightPanel from "@/components/flows/builder/nodes/NextBestActionNode/NextBestActionRightPanel";
 import SmartFlowOptimizerRightPanel from "@/components/flows/builder/nodes/SmartFlowOptimizerNode/SmartFlowOptimizerRightPanel";
 import WebhookRightPanel from "@/components/flows/builder/nodes/WebhookNode/WebhookRightPanel";
+import JudgeMeRightPanel from "@/components/flows/builder/nodes/JudgeMeNode/JudgeMeRightPanel";
 
 function NumberInput({ label, value, onChange, testId, suffix }) {
   return (
@@ -411,6 +412,18 @@ export default function ConfigTab() {
     return (
       <div className="absolute inset-0 overflow-hidden flex flex-col">
         <RazorpayRightPanel />
+      </div>
+    );
+  }
+
+  if (node?.type === "judgeme") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col" data-testid="right-config-tab">
+        <JudgeMeRightPanel
+          node={node}
+          updateNodeData={updateNodeData}
+          removeNode={removeNode}
+        />
       </div>
     );
   }
