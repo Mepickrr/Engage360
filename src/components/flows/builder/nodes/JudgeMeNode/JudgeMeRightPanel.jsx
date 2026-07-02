@@ -362,7 +362,7 @@ export default function JudgeMeRightPanel({ node, updateNodeData }) {
         />
       </div>
 
-      <CollapsibleSection title="Error &amp; Retries">
+      <CollapsibleSection title="Error & Retries">
         <FieldTextarea
           label="Error message"
           value={reviewError}
