@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { AlertTriangle, Plus, Trash2, Upload } from "lucide-react";
 import TemplatePicker from "./TemplatePicker";
 import TemplateEditor from "./TemplateEditor";
+import CollectInputForm from "./CollectInputForm";
 import {
   WABA_NUMBERS, SYSTEM_VARIABLES, isConnectable,
   DELIVERY_OUTPUT_OPTIONS,
@@ -60,6 +61,11 @@ const TEMPLATE_STYLES = [
   { id: "audio",           label: "Audio",            emoji: "🎙️", desc: "Share a voice note or audio clip" },
   { id: "location",        label: "Location",         emoji: "🗺️", desc: "Share a live or static location pin" },
 ];
+
+const INPUT_TYPE_EMOJIS = {
+  text: "💬", number: "🔢", phone: "📞", email: "📧", date: "📅",
+  quick_reply: "🔘", list: "📋", image: "🖼", video: "🎥", audio: "🎙", document: "📄", location: "📍",
+};
 
 // ── Template Style Picker ────────────────────────────────────────
 function TemplateStylePicker({ onSelect }) {
@@ -552,11 +558,13 @@ function TemplateTab({ data, patch }) {
   const [editingFallback,    setEditingFallback]    = useState(false);
   const [creatingNew,        setCreatingNew]        = useState(false);
   const [editingCarousel,    setEditingCarousel]    = useState(false);
+  const [editingCollectInput, setEditingCollectInput] = useState(false);
   const [newDraft,           setNewDraft]           = useState({ name: "", category: "Marketing", language: "en", status: "Draft", header: { type: "none" }, body: "", footer: "", buttons: [], variableMap: {} });
 
   const templateStyle = data.templateStyle ?? null;
   const isStandard    = templateStyle === "standard";
   const isCarousel    = templateStyle === "carousel";
+  const isCollectInput = templateStyle === "collect_input";
   const styleInfo     = TEMPLATE_STYLES.find((s) => s.id === templateStyle);
 
   const { template, wabaNumberId, fallback = {}, templateType } = data;
@@ -597,6 +605,23 @@ function TemplateTab({ data, patch }) {
         onApply={(carouselDraft) => {
           patch({ template: { isCarousel: true, id: `carousel_${Date.now()}`, ...carouselDraft } });
           setEditingCarousel(false);
+        }}
+      />
+    );
+  }
+
+  // ── Collect Input path — show full collect input form ──────────
+  if (isCollectInput && (!template || editingCollectInput)) {
+    return (
+      <CollectInputForm
+        initial={template?.isCollectInput ? template : null}
+        onCancel={() => {
+          if (template) setEditingCollectInput(false);
+          else patch({ templateStyle: null });
+        }}
+        onApply={(ciDraft) => {
+          patch({ template: { ...ciDraft, id: `ci_${Date.now()}` } });
+          setEditingCollectInput(false);
         }}
       />
     );
@@ -647,6 +672,43 @@ function TemplateTab({ data, patch }) {
           </div>
         )}
 
+        {/* Collect Input configured summary */}
+        {isCollectInput && template && (
+          <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
+            {/* Summary header */}
+            <div style={{ padding: "10px 12px", background: "#F0FDF4", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 18 }}>
+                  {INPUT_TYPE_EMOJIS[template.inputType] || "📝"}
+                </span>
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#0F172A", textTransform: "capitalize" }}>
+                    {template.inputType?.replace("_", " ")} Input
+                  </div>
+                  <div style={{ fontSize: 10, color: MUTED }}>{template.retryAttempts ?? 3} retries · {template.noResponse?.timeoutValue ?? 1} {template.noResponse?.timeoutUnit ?? "hours"} timeout</div>
+                </div>
+              </div>
+              <button type="button" onClick={() => setEditingCollectInput(true)}
+                style={{ fontSize: 11, color: PRIMARY, fontWeight: 600, background: "none", border: `1px solid ${PRIMARY}`, borderRadius: 6, padding: "4px 10px", cursor: "pointer" }}>
+                Edit
+              </button>
+            </div>
+            {/* Question preview */}
+            <div style={{ padding: "10px 12px" }}>
+              <div style={{ fontSize: 10, color: MUTED, marginBottom: 4 }}>Question</div>
+              <div style={{ fontSize: 12, color: "#374151", lineHeight: 1.5 }}>
+                {template.questionMessage || <span style={{ color: MUTED, fontStyle: "italic" }}>No question set</span>}
+              </div>
+              {template.saveToVariable?.variableName && (
+                <div style={{ marginTop: 8, fontSize: 10, color: MUTED }}>
+                  Saves to <span style={{ fontFamily: "monospace", color: PRIMARY }}>{template.saveToVariable.variableName}</span>
+                  {" "}({template.saveToVariable.scope === "global" ? "Global" : "Flow"} Variable)
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Sender Number */}
         <div>
           <Label>Sender Number</Label>
@@ -667,7 +729,7 @@ function TemplateTab({ data, patch }) {
             )}
           </div>
 
-          {!template ? (
+          {isCollectInput ? null : !template ? (
             /* No template selected — show CTAs based on style */
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {!isStandard && (
