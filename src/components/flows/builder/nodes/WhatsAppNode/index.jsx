@@ -166,6 +166,35 @@ function CarouselNodePreview({ template }) {
   );
 }
 
+// ── Collect Input canvas preview ────────────────────────────────
+const CI_INPUT_EMOJIS = {
+  text: "💬", number: "🔢", phone: "📞", email: "📧", date: "📅",
+  quick_reply: "🔘", list: "📋", image: "🖼", video: "🎥", audio: "🎙", document: "📄", location: "📍",
+};
+
+function CollectInputNodePreview({ template }) {
+  const emoji = CI_INPUT_EMOJIS[template?.inputType] || "📝";
+  const typeLabel = (template?.inputType || "input").replace("_", " ");
+  const question = template?.questionMessage || "";
+
+  return (
+    <div style={{ margin: "0 8px 8px", background: "#E5DDD5", borderRadius: 8, padding: 6 }}>
+      {/* Input type badge */}
+      <div style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 8px", background: "#F0FDF4", borderRadius: 10, border: "1px solid #BBF7D0", marginBottom: 5 }}>
+        <span style={{ fontSize: 11 }}>{emoji}</span>
+        <span style={{ fontSize: 10, fontWeight: 600, color: "#065F46", textTransform: "capitalize" }}>{typeLabel}</span>
+      </div>
+      {/* Question bubble */}
+      <div style={{ background: "#fff", borderRadius: "8px 8px 8px 3px", padding: "6px 10px", boxShadow: "0 1px 2px rgba(0,0,0,0.1)" }}>
+        <div style={{ fontSize: 11, color: "#111", lineHeight: 1.5 }}>
+          {question ? (question.length > 80 ? question.slice(0, 80) + "…" : question) : <span style={{ color: "#94A3B8", fontStyle: "italic" }}>No question set</span>}
+        </div>
+        <div style={{ textAlign: "right", fontSize: 9, color: "#aaa", marginTop: 2 }}>16:48 ✓✓</div>
+      </div>
+    </div>
+  );
+}
+
 // ── Main node ───────────────────────────────────────────────────
 export default function WhatsAppNode({ id, data, selected }) {
   const template    = data?.template ?? null;
@@ -176,8 +205,9 @@ export default function WhatsAppNode({ id, data, selected }) {
   const outputCfg   = data?.outputConfig ?? { deliveryOutputs: ["next_step"], noResponseValue: 5, noResponseUnit: "hours", wiredPorts: [] };
   const wiredPorts  = outputCfg.wiredPorts ?? [];
 
-  const isEmpty    = !template;
-  const isCarousel = data?.templateStyle === "carousel" && template?.isCarousel && (template?.cards?.length > 0);
+  const isEmpty       = !template;
+  const isCarousel    = data?.templateStyle === "carousel" && template?.isCarousel && (template?.cards?.length > 0);
+  const isCollectInput = data?.templateStyle === "collect_input";
 
   // Delivery ports — based on routingMode
   const routingMode = outputCfg.routingMode ?? "next_step";
@@ -264,8 +294,10 @@ export default function WhatsAppNode({ id, data, selected }) {
             <StatusPill status={template.status} />
           </div>
 
-          {/* ── Message bubble / carousel preview ── */}
-          {isCarousel ? (
+          {/* ── Message bubble / carousel preview / collect input preview ── */}
+          {isCollectInput ? (
+            <CollectInputNodePreview template={template} />
+          ) : isCarousel ? (
             <CarouselNodePreview template={template} />
           ) : (
           <div style={{ margin: "0 8px 8px", background: "#E5DDD5", borderRadius: 8, padding: 6 }}>
@@ -334,18 +366,32 @@ export default function WhatsAppNode({ id, data, selected }) {
             />
           ))}
 
-          {/* ── Delivery output ports ── */}
-          {activeDeliveryPorts.length > 0 && (
+          {/* ── Collect Input fixed output ports / standard delivery output ports ── */}
+          {isCollectInput ? (
             <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 2, paddingBottom: 4 }}>
-              {activeDeliveryPorts.map((opt) => (
-                <PortRow
-                  key={opt.id}
-                  portId={opt.id}
-                  label={deliveryLabel(opt)}
-                  wired={wiredPorts.includes(opt.id)}
-                />
+              {[
+                { id: "ci_success",       label: "Success",       color: "#22C55E" },
+                { id: "ci_no_response",   label: `No Response after ${template?.noResponse?.timeoutValue ?? 1} ${template?.noResponse?.timeoutUnit ?? "hours"}` },
+                { id: "ci_limit_reached", label: "Limit Reached" },
+                { id: "ci_send_failed",   label: "Send Failed",   color: "#EF4444" },
+              ].map((port) => (
+                <PortRow key={port.id} portId={port.id} label={port.label} wired={wiredPorts.includes(port.id)} />
               ))}
             </div>
+          ) : (
+            /* ── Standard delivery output ports ── */
+            activeDeliveryPorts.length > 0 && (
+              <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 2, paddingBottom: 4 }}>
+                {activeDeliveryPorts.map((opt) => (
+                  <PortRow
+                    key={opt.id}
+                    portId={opt.id}
+                    label={deliveryLabel(opt)}
+                    wired={wiredPorts.includes(opt.id)}
+                  />
+                ))}
+              </div>
+            )
           )}
 
           {/* ── Feature chips ── */}
