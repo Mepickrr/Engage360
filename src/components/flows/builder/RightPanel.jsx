@@ -6,7 +6,6 @@ import {
   TabsContent,
 } from "@/components/ui/tabs";
 import ConfigTab from "./panels/ConfigTab";
-import AiTab from "./panels/AiTab";
 import AnalyticsTab from "./panels/AnalyticsTab";
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 
@@ -32,13 +31,6 @@ export default function RightPanel() {
             Config
           </TabsTrigger>
           <TabsTrigger
-            value="ai"
-            data-testid="right-tab-ai"
-            className="flex-1 text-[12px] data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
-          >
-            AI (Dev)
-          </TabsTrigger>
-          <TabsTrigger
             value="analytics"
             data-testid="right-tab-analytics"
             className="flex-1 text-[12px] data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
@@ -48,9 +40,6 @@ export default function RightPanel() {
         </TabsList>
         <TabsContent value="config" className="flex-1 min-h-0 m-0 relative">
           <ConfigTab />
-        </TabsContent>
-        <TabsContent value="ai" className="flex-1 min-h-0 m-0 relative">
-          <AiTab />
         </TabsContent>
         <TabsContent value="analytics" className="flex-1 min-h-0 m-0 relative">
           <AnalyticsTab />

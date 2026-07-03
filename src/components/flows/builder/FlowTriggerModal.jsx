@@ -62,6 +62,7 @@ Ecommerce,Shopping behaviour,Purchased a Product,When a product is purchased on 
 Ecommerce,Shopping behaviour,Checkout started,User enters checkout flow on app or website,active,yes,yes,no
 Ecommerce,Shopping behaviour,Added to Wishlist,Product added to wishlist on app or website,active,yes,yes,no
 Ecommerce,Shopping behaviour,Review Created,Event from Judge Me whenever a user adds a review,active,yes,yes,no
+Ecommerce,Shopping behaviour,WhatsApp Commerce Cart Created,When the user creates a WhatsApp cart for processing.,active,yes,yes,no
 Ecommerce,Order,Order placed,Payment confirmed by Shopify,active,yes,yes,no
 Ecommerce,Order,Draft order placed,Merchant creates draft order,active,yes,yes,no
 Ecommerce,Order,Custom SDK event,Any wigzo.track() call from your store,active,yes,yes,no

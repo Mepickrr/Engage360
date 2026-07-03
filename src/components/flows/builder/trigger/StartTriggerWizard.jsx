@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, ArrowRight, X } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import catalogueData from "@/data/eventCatalogue.json";
 import EventPickerModal from "./EventPickerModal";
 import Step1WhenContent, { emptyGroup } from "./Step1WhenContent";
@@ -205,14 +205,6 @@ export default function StartTriggerWizard({
                 {stepperLabel}
               </div>
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="p-1 rounded-md hover:bg-slate-100 text-text-muted"
-              aria-label="Close"
-            >
-              <X className="w-4 h-4" />
-            </button>
           </header>
 
           {stage !== "broadcast" && (

@@ -181,6 +181,22 @@
           "section": "Shopping behaviour"
         },
         {
+          "name": "WhatsApp Commerce Cart Created",
+          "description": "When the user creates a WhatsApp cart for processing.",
+          "source": "WhatsApp",
+          "device_tag": [
+            "iOS",
+            "Android",
+            "Website"
+          ],
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Ecommerce",
+          "section": "Shopping behaviour"
+        },
+        {
           "name": "Remove from Cart",
           "description": "When a product is removed from cart",
           "source": "Shopify",
@@ -622,6 +638,22 @@
           "name": "Review Created",
           "description": "This is an event from Judge Me whenever a user adds a review  on app or website",
           "source": "Shopify",
+          "device_tag": [
+            "iOS",
+            "Android",
+            "Website"
+          ],
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Shopping behaviour"
+        },
+        {
+          "name": "WhatsApp Commerce Cart Created",
+          "description": "When the user creates a WhatsApp cart for processing.",
+          "source": "WhatsApp",
           "device_tag": [
             "iOS",
             "Android",
@@ -1550,56 +1582,6 @@
           "time_attribute_allow": true,
           "header": "ALL",
           "section": "Audience source"
-        }
-      ],
-      "Agent": [
-        {
-          "name": "Task",
-          "description": "This event gets triggered whenever a task is created either by agent or ai agent",
-          "source": "",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": false,
-          "audience_qualification_allow": false,
-          "time_attribute_allow": false,
-          "header": "ALL",
-          "section": "Agent"
-        },
-        {
-          "name": "Task Stage Change",
-          "description": "This event gets triggered whenever a task is closed either by agent or via auto close setup by brands",
-          "source": "",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": false,
-          "audience_qualification_allow": false,
-          "time_attribute_allow": false,
-          "header": "ALL",
-          "section": "Agent"
-        },
-        {
-          "name": "Reassigned Agent",
-          "description": "This event gets triggered when every time the ticket stage changes",
-          "source": "",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": false,
-          "audience_qualification_allow": false,
-          "time_attribute_allow": false,
-          "header": "ALL",
-          "section": "Agent"
         }
       ],
       "For You": [
@@ -2167,90 +2149,6 @@
           "header": "Inbound message",
           "section": "WhatsApp"
         }
-      ],
-      "Instagram": [
-        {
-          "name": "DM Recieved",
-          "description": "When a seller recived dm in Instagram Inbox",
-          "source": "Instagram",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": false,
-          "audience_qualification_allow": true,
-          "time_attribute_allow": false,
-          "header": "Inbound message",
-          "section": "Instagram"
-        },
-        {
-          "name": "Comment Recieved",
-          "description": "When a seller recieve comment in Instagram Inbox",
-          "source": "Instagram",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": false,
-          "audience_qualification_allow": true,
-          "time_attribute_allow": false,
-          "header": "Inbound message",
-          "section": "Instagram"
-        },
-        {
-          "name": "Story Tag",
-          "description": "When a seller story is tagged",
-          "source": "Instagram",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": false,
-          "audience_qualification_allow": true,
-          "time_attribute_allow": false,
-          "header": "Inbound message",
-          "section": "Instagram"
-        }
-      ],
-      "Email": [
-        {
-          "name": "Email Recieved",
-          "description": "This event gets triggered whenever email received from customer",
-          "source": "Email",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": false,
-          "audience_qualification_allow": true,
-          "time_attribute_allow": false,
-          "header": "Inbound message",
-          "section": "Email"
-        },
-        {
-          "name": "Email Unsubscribed",
-          "description": "When email gets unsubscribed",
-          "source": "Email",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": false,
-          "audience_qualification_allow": true,
-          "time_attribute_allow": false,
-          "header": "Inbound message",
-          "section": "Email"
-        }
       ]
     },
     "Date and time": {
@@ -2471,58 +2369,6 @@
           "time_attribute_allow": true,
           "header": "Broadcast",
           "section": "Audience source"
-        }
-      ]
-    },
-    "Agent": {
-      "Agent": [
-        {
-          "name": "Task",
-          "description": "This event gets triggered whenever a task is created either by agent or ai agent",
-          "source": "",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": false,
-          "audience_qualification_allow": false,
-          "time_attribute_allow": false,
-          "header": "Agent",
-          "section": "Agent"
-        },
-        {
-          "name": "Task Stage Change",
-          "description": "This event gets triggered whenever a task is closed either by agent or via auto close setup by brands",
-          "source": "",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": false,
-          "audience_qualification_allow": false,
-          "time_attribute_allow": false,
-          "header": "Agent",
-          "section": "Agent"
-        },
-        {
-          "name": "Reassigned Agent",
-          "description": "This event gets triggered when every time the ticket stage changes",
-          "source": "",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": false,
-          "audience_qualification_allow": false,
-          "time_attribute_allow": false,
-          "header": "Agent",
-          "section": "Agent"
         }
       ]
     }
