@@ -328,84 +328,9 @@ export default function TemplateEditorModal({ open, template, data, onSave, onCl
 
         {/* ── Body ── */}
         <div style={{ display: "flex", flex: 1, minHeight: 0, overflow: "hidden" }}>
-          {/* ─ Email canvas (main area) ─ */}
-          <div
-            style={{
-              flex: 1, display: "flex", flexDirection: "column",
-              alignItems: "center", overflow: "auto",
-              background: "#E2E8F0", padding: "32px 16px",
-            }}
-          >
-            {/* Canvas header */}
-            <div style={{ width: previewWidth, marginBottom: 8, transition: "width 0.25s" }}>
-              <div style={{ fontSize: 11, color: "#64748B", fontWeight: 600, marginBottom: 6 }}>
-                {viewMode === "mobile" ? "📱 Mobile Preview" : "🖥 Desktop Preview"} — {previewWidth}px
-              </div>
-            </div>
-
-            {/* Email wrapper */}
-            <div
-              style={{
-                width: previewWidth, background: bgColor,
-                borderRadius: 8, overflow: "hidden",
-                boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
-                transition: "width 0.25s",
-              }}
-            >
-              {/* Email header bar */}
-              <div style={{ background: "#fff", padding: "16px 24px", borderBottom: "1px solid #E5E7EB" }}>
-                <div style={{ fontSize: 11, color: "#94A3B8", marginBottom: 4 }}>Subject</div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: "#0F172A" }}>
-                  {data?.subject || "Your Email Subject"}
-                </div>
-                {data?.previewText && (
-                  <div style={{ fontSize: 12, color: "#64748B", marginTop: 4 }}>{data.previewText}</div>
-                )}
-              </div>
-
-              {/* Email body */}
-              <div style={{ padding: "8px 0" }}>
-                {blocks.map((block, i) => (
-                  <EmailCanvasBlock
-                    key={i}
-                    block={block}
-                    index={i}
-                    total={blocks.length}
-                    onDelete={deleteBlock}
-                  />
-                ))}
-
-                {/* Add block button */}
-                <div style={{ padding: "12px 24px" }}>
-                  <button
-                    onClick={() => addBlock("text")}
-                    style={{
-                      width: "100%", padding: "10px", border: "2px dashed #BFDBFE",
-                      borderRadius: 8, background: "#EFF6FF", cursor: "pointer",
-                      fontSize: 12, color: "#3B82F6", fontWeight: 600,
-                      display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                    }}
-                  >
-                    <Plus size={14} /> Add Block
-                  </button>
-                </div>
-              </div>
-
-              {/* Email footer */}
-              <div style={{ background: "#F8FAFC", borderTop: "1px solid #E5E7EB", padding: "16px 24px", textAlign: "center" }}>
-                <div style={{ fontSize: 11, color: "#94A3B8" }}>
-                  You're receiving this because you opted in at <strong>store.com</strong>.
-                </div>
-                <div style={{ fontSize: 11, color: "#3B82F6", marginTop: 6, cursor: "pointer" }}>
-                  Unsubscribe · View in browser · Privacy Policy
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ─ Right sidebar ─ */}
+          {/* ─ Left sidebar ─ */}
           <div style={{
-            width: 280, background: "#fff", borderLeft: "1px solid #E5E7EB",
+            width: 280, background: "#fff", borderRight: "1px solid #E5E7EB",
             display: "flex", flexDirection: "column", flexShrink: 0,
           }}>
             {/* Sidebar tabs */}
@@ -554,6 +479,81 @@ export default function TemplateEditorModal({ open, template, data, onSave, onCl
                   </SettingsSection>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* ─ Email canvas (main area) ─ */}
+          <div
+            style={{
+              flex: 1, display: "flex", flexDirection: "column",
+              alignItems: "center", overflow: "auto",
+              background: "#E2E8F0", padding: "32px 16px",
+            }}
+          >
+            {/* Canvas header */}
+            <div style={{ width: previewWidth, marginBottom: 8, transition: "width 0.25s" }}>
+              <div style={{ fontSize: 11, color: "#64748B", fontWeight: 600, marginBottom: 6 }}>
+                {viewMode === "mobile" ? "📱 Mobile Preview" : "🖥 Desktop Preview"} — {previewWidth}px
+              </div>
+            </div>
+
+            {/* Email wrapper */}
+            <div
+              style={{
+                width: previewWidth, background: bgColor,
+                borderRadius: 8, overflow: "hidden",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+                transition: "width 0.25s",
+              }}
+            >
+              {/* Email header bar */}
+              <div style={{ background: "#fff", padding: "16px 24px", borderBottom: "1px solid #E5E7EB" }}>
+                <div style={{ fontSize: 11, color: "#94A3B8", marginBottom: 4 }}>Subject</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: "#0F172A" }}>
+                  {data?.subject || "Your Email Subject"}
+                </div>
+                {data?.previewText && (
+                  <div style={{ fontSize: 12, color: "#64748B", marginTop: 4 }}>{data.previewText}</div>
+                )}
+              </div>
+
+              {/* Email body */}
+              <div style={{ padding: "8px 0" }}>
+                {blocks.map((block, i) => (
+                  <EmailCanvasBlock
+                    key={i}
+                    block={block}
+                    index={i}
+                    total={blocks.length}
+                    onDelete={deleteBlock}
+                  />
+                ))}
+
+                {/* Add block button */}
+                <div style={{ padding: "12px 24px" }}>
+                  <button
+                    onClick={() => addBlock("text")}
+                    style={{
+                      width: "100%", padding: "10px", border: "2px dashed #BFDBFE",
+                      borderRadius: 8, background: "#EFF6FF", cursor: "pointer",
+                      fontSize: 12, color: "#3B82F6", fontWeight: 600,
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                    }}
+                  >
+                    <Plus size={14} /> Add Block
+                  </button>
+                </div>
+              </div>
+
+              {/* Email footer */}
+              <div style={{ background: "#F8FAFC", borderTop: "1px solid #E5E7EB", padding: "16px 24px", textAlign: "center" }}>
+                <div style={{ fontSize: 11, color: "#94A3B8" }}>
+                  You're receiving this because you opted in at <strong>store.com</strong>.
+                </div>
+                <div style={{ fontSize: 11, color: "#3B82F6", marginTop: 6, cursor: "pointer" }}>
+                  Unsubscribe · View in browser · Privacy Policy
+                </div>
+              </div>
             </div>
           </div>
         </div>
