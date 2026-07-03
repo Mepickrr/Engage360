@@ -211,12 +211,15 @@ function FontSelect({ label, value, onChange, options }) {
 }
 
 export default function TemplateEditorModal({ open, template, data, onSave, onClose }) {
-  const [viewMode,   setViewMode]   = useState("desktop");
-  const [sideTab,    setSideTab]    = useState("content");
-  const [blocks,     setBlocks]     = useState(template?.blocks ?? DEFAULT_BLOCKS);
-  const [bgColor,    setBgColor]    = useState("#F8FAFC");
-  const [emailWidth, setEmailWidth] = useState("600");
-  const [varSearch,  setVarSearch]  = useState("");
+  const [viewMode,      setViewMode]      = useState("desktop");
+  const [sideTab,       setSideTab]       = useState("content");
+  const [blocks,        setBlocks]        = useState(template?.blocks ?? DEFAULT_BLOCKS);
+  const [bgColor,       setBgColor]       = useState("#F8FAFC");
+  const [emailWidth,    setEmailWidth]    = useState("600");
+  const [varSearch,     setVarSearch]     = useState("");
+  const [templateName,  setTemplateName]  = useState(template?.name || "");
+  const [subject,       setSubject]       = useState(data?.subject || "");
+  const [previewText,   setPreviewText]   = useState(data?.previewText || "");
 
   const deleteBlock = (idx) => setBlocks((b) => b.filter((_, i) => i !== idx));
 
@@ -229,7 +232,7 @@ export default function TemplateEditorModal({ open, template, data, onSave, onCl
   };
 
   const handleSave = () => {
-    onSave({ blocks, bgColor });
+    onSave({ blocks, bgColor, subject, previewText });
     onClose();
   };
 
@@ -261,17 +264,38 @@ export default function TemplateEditorModal({ open, template, data, onSave, onCl
           background: "#fff", borderBottom: "1px solid #E5E7EB",
           flexShrink: 0,
         }}>
-          {/* Left: title */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 28, height: 28, borderRadius: 8, background: EMAIL_BLUE, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <AlignLeft size={14} color="#fff" />
-            </div>
-            <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>
-                {template?.name || "Email Template"}
-              </div>
-              <div style={{ fontSize: 10, color: "#94A3B8" }}>Visual Editor</div>
-            </div>
+          {/* Left: template meta inputs */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <input
+              value={templateName}
+              onChange={(e) => setTemplateName(e.target.value)}
+              placeholder="Template Name"
+              style={{
+                padding: "5px 10px", fontSize: 12, fontWeight: 600,
+                border: "1px solid #E5E7EB", borderRadius: 8,
+                outline: "none", width: 160, color: "#0F172A", background: "#F8FAFC",
+              }}
+            />
+            <input
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Subject line"
+              style={{
+                padding: "5px 10px", fontSize: 12,
+                border: "1px solid #E5E7EB", borderRadius: 8,
+                outline: "none", width: 200, color: "#0F172A", background: "#F8FAFC",
+              }}
+            />
+            <input
+              value={previewText}
+              onChange={(e) => setPreviewText(e.target.value)}
+              placeholder="Pre-header text"
+              style={{
+                padding: "5px 10px", fontSize: 12,
+                border: "1px solid #E5E7EB", borderRadius: 8,
+                outline: "none", width: 200, color: "#0F172A", background: "#F8FAFC",
+              }}
+            />
           </div>
 
           {/* Center: device toggle */}
