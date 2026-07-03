@@ -112,6 +112,22 @@ function WebhookEntryBlock({ summary }) {
   );
 }
 
+function DateOffsetEntryBlock({ summary }) {
+  return (
+    <div>
+      <div className="flex items-center gap-1.5">
+        <Clock className="w-3 h-3 flex-shrink-0" style={{ color: PRIMARY }} />
+        <span className="text-[11px] font-semibold text-text-primary">{summary.offsetLine}</span>
+      </div>
+      {summary.recurrenceLine && (
+        <div className="mt-1.5 inline-flex items-center px-1.5 py-0.5 rounded-full bg-slate-100 text-[9px] font-medium text-text-muted border border-border">
+          {summary.recurrenceLine}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Inter-group combinator (between trigger groups) ───────────
 function GroupCombinator({ label }) {
   return (
@@ -309,7 +325,11 @@ export default function StartTriggerNode({ data, selected }) {
 
         {summary.isWebhook && <WebhookEntryBlock summary={summary} />}
 
-        {!summary.isBroadcast && !summary.isWebhook && (
+        {(summary.isDateRelative || summary.isEventOffset) && summary.offsetLine && (
+          <DateOffsetEntryBlock summary={summary} />
+        )}
+
+        {!summary.isBroadcast && !summary.isWebhook && !summary.isDateRelative && !summary.isEventOffset && (
           <div>
             {summary.triggerGroups.map((group, idx) => (
               <React.Fragment key={idx}>

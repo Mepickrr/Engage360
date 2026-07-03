@@ -240,6 +240,87 @@ function summariseNewFormat(config) {
   };
 }
 
+// Local copy of the attribute labels shown in DateRelativeTriggerContent's
+// dropdown — duplicated (not imported) to keep this file free of React deps.
+const DATE_ATTRIBUTE_LABELS = {
+  date_of_birth: "Date of Birth",
+  anniversary_date: "Anniversary Date",
+  account_created: "Account Created",
+  first_order_date: "Date of First Order",
+  subscription_start_date: "Date of Subscription Start",
+};
+
+function summariseDateRelative(config) {
+  const {
+    whoLine, whoExtraCount, frequencyLine,
+    audienceTypePill, audienceTab, audienceConditions, audienceCombinator,
+  } = summariseAudienceNew(config.audience);
+
+  const dc = config.dateConfig || {};
+  const attrLabel = dc.attribute === "custom_date_attribute"
+    ? (dc.customFieldKey || "custom date field")
+    : (DATE_ATTRIBUTE_LABELS[dc.attribute] || dc.attribute || "date attribute");
+  const offsetLine = !dc.direction
+    ? null
+    : dc.direction === "on"
+    ? `On ${attrLabel}`
+    : `${dc.value} ${dc.unit} ${dc.direction} ${attrLabel}`;
+
+  return {
+    headerLabel: "Start Trigger",
+    isBroadcast: false,
+    isWebhook: false,
+    isDateRelative: true,
+    isEventOffset: false,
+    offsetLine,
+    recurrenceLine: dc.repeat_annually ? "Repeats yearly" : null,
+    whoLine,
+    whoExtraCount,
+    frequencyLine,
+    audienceTypePill,
+    audienceTab,
+    audienceConditions,
+    audienceCombinator,
+    noExitCondition: true,
+    exitLine: null,
+    exitExtraCount: 0,
+    exitEvents: [],
+    exitCombinator: "OR",
+  };
+}
+
+function summariseEventOffset(config) {
+  const {
+    whoLine, whoExtraCount, frequencyLine,
+    audienceTypePill, audienceTab, audienceConditions, audienceCombinator,
+  } = summariseAudienceNew(config.audience);
+
+  const ec = config.eventOffsetConfig || {};
+  const offsetLine = ec.event ? `${ec.value} ${ec.unit} after ${ec.event}` : null;
+
+  return {
+    headerLabel: "Start Trigger",
+    isBroadcast: false,
+    isWebhook: false,
+    isDateRelative: false,
+    isEventOffset: true,
+    offsetLine,
+    recurrenceLine: null,
+    whoLine,
+    whoExtraCount,
+    frequencyLine,
+    audienceTypePill,
+    audienceTab,
+    audienceConditions,
+    audienceCombinator,
+    noExitCondition: true,
+    exitLine: null,
+    exitExtraCount: 0,
+    exitEvents: [],
+    exitCombinator: "OR",
+  };
+}
+
 function summariseWebhook(config) {
   const {
     whoLine, whoExtraCount, frequencyLine,
@@ -416,6 +497,8 @@ function summariseOldFormat(config) {
 export function summariseTriggerConfig(config) {
   if (!config) return null;
   if (config.kind === "webhook") return summariseWebhook(config);
+  if (config.kind === "date_relative") return summariseDateRelative(config);
+  if (config.kind === "event_offset") return summariseEventOffset(config);
   // Detect new wizard format: triggerGroups have a string `.event` field
   const isNewFormat = config.kind != null ||
     (config.triggerGroups?.[0] != null && typeof config.triggerGroups[0].event === "string");

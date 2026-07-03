@@ -9,6 +9,7 @@ import BroadcastConfig from "./BroadcastConfig";
 import BroadcastSourceStep1 from "./BroadcastSourceStep1";
 import BroadcastSourceStep2 from "./BroadcastSourceStep2";
 import DateRelativeTriggerContent, { emptyDateConfig } from "./DateRelativeTriggerContent";
+import EventOffsetTriggerContent, { emptyEventOffsetConfig } from "./EventOffsetTriggerContent";
 import { mockedAudienceCount, emptyConditionBlock } from "./triggerHelpers";
 import WebhookTriggerStep1, { isWebhookStep1Valid } from "./WebhookTriggerStep1";
 import { emptyWebhookConfig, flattenPayload } from "./webhookHelpers";
@@ -81,6 +82,8 @@ export default function StartTriggerWizard({
   const [broadcastSourceSchedule, setBroadcastSourceSchedule] = useState(emptyBroadcastSourceSchedule());
   const [isDateRelative, setIsDateRelative] = useState(false);
   const [dateConfig, setDateConfig] = useState(emptyDateConfig());
+  const [isEventOffset, setIsEventOffset] = useState(false);
+  const [eventOffsetConfig, setEventOffsetConfig] = useState(emptyEventOffsetConfig());
   const [isWebhook, setIsWebhook] = useState(false);
   const [webhookConfig, setWebhookConfig] = useState(emptyWebhookConfig());
 
@@ -100,6 +103,7 @@ export default function StartTriggerWizard({
       if (initialConfig?.kind === "webhook") {
         setIsWebhook(true);
         setIsDateRelative(false);
+        setIsEventOffset(false);
         setWebhookConfig({
           webhookUrl: initialConfig.webhookUrl,
           authProtected: initialConfig.authProtected || false,
@@ -112,8 +116,15 @@ export default function StartTriggerWizard({
         setStage("step1");
       } else if (initialConfig?.kind === "date_relative") {
         setIsWebhook(false);
+        setIsEventOffset(false);
         setIsDateRelative(true);
         setDateConfig(initialConfig.dateConfig || emptyDateConfig());
+        setStage("step1");
+      } else if (initialConfig?.kind === "event_offset") {
+        setIsWebhook(false);
+        setIsDateRelative(false);
+        setIsEventOffset(true);
+        setEventOffsetConfig(initialConfig.eventOffsetConfig || emptyEventOffsetConfig());
         setStage("step1");
       } else if (ev?.header === "Broadcast") {
         setIsWebhook(false);
@@ -126,9 +137,11 @@ export default function StartTriggerWizard({
         } else {
           setStage("broadcast");
         }
+        setIsEventOffset(false);
       } else {
         setIsWebhook(false);
         setIsDateRelative(false);
+        setIsEventOffset(false);
         setStage("step1");
       }
     } else {
@@ -141,9 +154,11 @@ export default function StartTriggerWizard({
       setBroadcastSourceConfig(emptyBroadcastSourceConfig());
       setBroadcastSourceSchedule(emptyBroadcastSourceSchedule());
       setIsDateRelative(false);
+      setIsEventOffset(false);
       setIsWebhook(false);
       setWebhookConfig(emptyWebhookConfig());
       setDateConfig(emptyDateConfig());
+      setEventOffsetConfig(emptyEventOffsetConfig());
       setStage("picker");
       setPickingForGroupIdx(null);
     }
@@ -168,10 +183,13 @@ export default function StartTriggerWizard({
       if (card.name === "Webhook trigger") {
         setIsWebhook(true);
         setIsDateRelative(false);
+        setIsEventOffset(false);
         setWebhookConfig(emptyWebhookConfig());
         setStage("step1");
       } else if (card.header === "Broadcast") {
         setIsWebhook(false);
+        setIsDateRelative(false);
+        setIsEventOffset(false);
         if (card.name === "Saved segment" || card.name === "CSV upload") {
           setBroadcastSourceType(card.name === "CSV upload" ? "csv" : "segment");
           setBroadcastSourceConfig(emptyBroadcastSourceConfig());
@@ -180,15 +198,22 @@ export default function StartTriggerWizard({
         } else {
           setStage("broadcast");
         }
-        setIsDateRelative(false);
       } else if (card.date_relative) {
         setIsWebhook(false);
+        setIsEventOffset(false);
         setIsDateRelative(true);
-        setDateConfig(emptyDateConfig());
+        setDateConfig(emptyDateConfig(card.attribute_key));
+        setStage("step1");
+      } else if (card.system_event_relative) {
+        setIsWebhook(false);
+        setIsDateRelative(false);
+        setIsEventOffset(true);
+        setEventOffsetConfig(emptyEventOffsetConfig(card.name));
         setStage("step1");
       } else {
         setIsWebhook(false);
         setIsDateRelative(false);
+        setIsEventOffset(false);
         setStage("step1");
       }
     } else {
@@ -242,6 +267,8 @@ export default function StartTriggerWizard({
       config = { kind: "broadcast", triggerGroups, broadcast };
     } else if (isDateRelative) {
       config = { kind: "date_relative", dateConfig, audience };
+    } else if (isEventOffset) {
+      config = { kind: "event_offset", eventOffsetConfig, audience };
     } else {
       config = {
         kind: "event",
@@ -339,7 +366,13 @@ export default function StartTriggerWizard({
                 setDateConfig={setDateConfig}
               />
             )}
-            {stage === "step1" && !isDateRelative && !isWebhook && (
+            {stage === "step1" && isEventOffset && !isWebhook && (
+              <EventOffsetTriggerContent
+                config={eventOffsetConfig}
+                setConfig={setEventOffsetConfig}
+              />
+            )}
+            {stage === "step1" && !isDateRelative && !isEventOffset && !isWebhook && (
               <Step1WhenContent
                 triggerGroups={triggerGroups}
                 setTriggerGroups={setTriggerGroups}

@@ -7,9 +7,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export function emptyDateConfig() {
+export function emptyDateConfig(attribute = "") {
   return {
-    attribute: "",
+    attribute,
+    customFieldKey: "",
     direction: "before",
     value: 7,
     unit: "days",
@@ -17,12 +18,18 @@ export function emptyDateConfig() {
   };
 }
 
-const DATE_ATTRIBUTE_GROUPS = [
+export const DATE_ATTRIBUTE_GROUPS = [
   {
     label: "Profile Attributes",
     options: [
       { value: "date_of_birth", label: "Date of Birth" },
       { value: "anniversary_date", label: "Anniversary Date" },
+    ],
+  },
+  {
+    label: "Custom",
+    options: [
+      { value: "custom_date_attribute", label: "Custom date attribute" },
     ],
   },
   {
@@ -47,7 +54,7 @@ const UNIT_OPTIONS = [
   { value: "months", label: "Months" },
 ];
 
-function getAttributeLabel(value) {
+export function getAttributeLabel(value) {
   for (const group of DATE_ATTRIBUTE_GROUPS) {
     const opt = group.options.find((o) => o.value === value);
     if (opt) return opt.label;
@@ -151,6 +158,23 @@ export default function DateRelativeTriggerContent({ dateConfig, setDateConfig }
           </SelectContent>
         </Select>
       </div>
+
+      {/* Custom date field key — only when Custom date attribute is selected */}
+      {dateConfig.attribute === "custom_date_attribute" && (
+        <div className="mt-3">
+          <label className="text-xs text-text-muted block mb-1">
+            Which date field?
+          </label>
+          <input
+            type="text"
+            value={dateConfig.customFieldKey ?? ""}
+            onChange={(e) => update({ customFieldKey: e.target.value })}
+            placeholder="e.g. subscription_renewal_date"
+            data-testid="date-relative-custom-field-key"
+            className="h-8 w-full max-w-xs rounded-md border border-border bg-background px-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+        </div>
+      )}
 
       {/* Separator */}
       <div className="border-t border-dashed border-border pt-3 mt-4">
