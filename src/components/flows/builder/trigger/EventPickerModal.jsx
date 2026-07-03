@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Search, X } from "lucide-react";
+import { Search } from "lucide-react";
 import catalogueData from "@/data/eventCatalogue.json";
 
 // Two-column "Select Start Trigger" picker (Part 1).
@@ -69,14 +69,6 @@ export default function EventPickerModal({ open, onClose, onPick }) {
               Choose the event that will start this flow.
             </div>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1 rounded-md hover:bg-slate-100 text-text-muted"
-            aria-label="Close"
-          >
-            <X className="w-4 h-4" />
-          </button>
         </header>
 
         <div className="flex flex-1 min-h-0">
