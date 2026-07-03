@@ -1,6 +1,7 @@
 import React from "react";
 import { Handle, Position } from "reactflow";
 import { Star } from "lucide-react";
+import { PRODUCT_SELECTOR_OPTIONS } from "./data/mockData";
 
 const ORANGE = "#F97316";
 const BORDER = "#E5E7EB";
@@ -168,11 +169,13 @@ export default function JudgeMeNode({ id, data, selected }) {
             {imageEnabled && imageQ && <Bubble text={imageQ.length > 70 ? imageQ.slice(0, 70) + "…" : imageQ} />}
           </div>
 
-          {/* Product variable */}
+          {/* Product selector */}
           {productVar && (
             <div style={{ padding: "4px 10px 6px", borderBottom: `1px solid ${BORDER}` }}>
-              <span style={{ fontSize: 9, color: MUTED }}>product_id → </span>
-              <span style={{ fontSize: 9, color: "#3B82F6", fontFamily: "monospace" }}>{`{{${productVar}}}`}</span>
+              <span style={{ fontSize: 9, color: MUTED }}>product → </span>
+              <span style={{ fontSize: 9, color: ORANGE, fontWeight: 600 }}>
+                {PRODUCT_SELECTOR_OPTIONS.find((o) => o.value === productVar)?.label ?? productVar}
+              </span>
             </div>
           )}
         </>

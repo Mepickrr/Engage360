@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { RATING_OPTIONS, DEFAULT_MESSAGES, VARIABLE_GROUPS } from "./data/mockData";
+import { RATING_OPTIONS, DEFAULT_MESSAGES, PRODUCT_SELECTOR_OPTIONS } from "./data/mockData";
 
 const ORANGE = "#F97316";
 const BORDER = "#E5E7EB";
@@ -22,10 +22,23 @@ function FieldLabel({ text }) {
   );
 }
 
-function FieldTextarea({ label, value, onChange, maxLength = 1000, placeholder, testId }) {
+function FieldTextarea({ label, value, onChange, maxLength = 1000, placeholder, testId, onAddVariable }) {
   return (
     <div style={{ marginBottom: 12 }}>
-      {label && <FieldLabel text={label} />}
+      {label && (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <FieldLabel text={label} />
+          {onAddVariable && (
+            <button
+              type="button"
+              onClick={onAddVariable}
+              style={{ fontSize: 10, color: ORANGE, fontWeight: 600, background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1 }}
+            >
+              + Add Variable
+            </button>
+          )}
+        </div>
+      )}
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -294,28 +307,27 @@ export default function JudgeMeRightPanel({ node, updateNodeData }) {
         </div>
       </div>
 
-      {/* Product variable */}
+      {/* Product selector */}
       <div style={{ padding: "12px 16px", borderBottom: `1px solid ${BORDER}` }}>
-        <FieldLabel text="Product Variable" />
-        <select
-          value={productVar}
-          onChange={(e) => patch({ productVar: e.target.value === "" ? null : e.target.value })}
-          style={{
-            width: "100%", border: `1px solid ${BORDER}`, borderRadius: 6,
-            padding: "6px 8px", fontSize: 12, background: "#fff", color: "#374151",
-          }}
-        >
-          <option value="">— Select variable —</option>
-          {VARIABLE_GROUPS.map((group) => (
-            <optgroup key={group.id} label={group.label}>
-              {group.variables.map((v) => (
-                <option key={v.key} value={v.key}>
-                  {v.label}{v.recommended ? " ★" : ""}
-                </option>
-              ))}
-            </optgroup>
+        <FieldLabel text="Product to Review" />
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          {PRODUCT_SELECTOR_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => patch({ productVar: opt.value })}
+              style={{
+                textAlign: "left", padding: "7px 10px", borderRadius: 6, fontSize: 12,
+                border: `1.5px solid ${productVar === opt.value ? ORANGE : BORDER}`,
+                background: productVar === opt.value ? "#FFF7ED" : "#fff",
+                color: productVar === opt.value ? ORANGE : "#374151",
+                cursor: "pointer", fontWeight: productVar === opt.value ? 600 : 400,
+              }}
+            >
+              {opt.label}
+            </button>
           ))}
-        </select>
+        </div>
       </div>
 
       {/* Step 1 — Rating */}
@@ -326,6 +338,7 @@ export default function JudgeMeRightPanel({ node, updateNodeData }) {
           value={ratingQuestion}
           onChange={(v) => patch({ ratingQuestion: v })}
           placeholder={DEFAULT_MESSAGES.rating}
+          onAddVariable={() => patch({ ratingQuestion: ratingQuestion + " {{" })}
         />
         {channel === "whatsapp" && (
           <FieldInput
@@ -352,37 +365,15 @@ export default function JudgeMeRightPanel({ node, updateNodeData }) {
       </div>
 
       {/* Step 2 — Review Text */}
-      <div style={{ borderBottom: `1px solid ${BORDER}` }}>
-        <div style={{ padding: "12px 16px" }}>
-          <SectionHeader label="Step 2 — Review Text" />
-          <FieldTextarea
-            label="Question message"
-            value={reviewQuestion}
-            onChange={(v) => patch({ reviewQuestion: v })}
-            placeholder={DEFAULT_MESSAGES.reviewText}
-          />
-        </div>
-        <CollapsibleSection title="Error & Retries">
-          <FieldTextarea
-            label="Error message"
-            value={reviewError}
-            onChange={(v) => patch({ reviewError: v })}
-            placeholder={DEFAULT_MESSAGES.reviewError}
-          />
-          <FieldLabel text="Retry attempts (1–3)" />
-          <input
-            type="number"
-            min={1}
-            max={3}
-            value={retryCount}
-            onChange={(e) => patch({ retryCount: Math.min(3, Math.max(1, Number(e.target.value))) })}
-            style={{
-              width: "100%", border: `1px solid ${BORDER}`, borderRadius: 6,
-              padding: "6px 8px", fontSize: 12, outline: "none",
-              boxSizing: "border-box", fontFamily: "inherit", color: "#374151",
-            }}
-          />
-        </CollapsibleSection>
+      <div style={{ padding: "12px 16px", borderBottom: `1px solid ${BORDER}` }}>
+        <SectionHeader label="Step 2 — Review Text" />
+        <FieldTextarea
+          label="Question message"
+          value={reviewQuestion}
+          onChange={(v) => patch({ reviewQuestion: v })}
+          placeholder={DEFAULT_MESSAGES.reviewText}
+          onAddVariable={() => patch({ reviewQuestion: reviewQuestion + " {{" })}
+        />
       </div>
 
       {/* Step 3 — Image Upload */}
@@ -407,6 +398,7 @@ export default function JudgeMeRightPanel({ node, updateNodeData }) {
               value={imageQuestion}
               onChange={(v) => patch({ imageQuestion: v })}
               placeholder={DEFAULT_MESSAGES.image}
+              onAddVariable={() => patch({ imageQuestion: imageQuestion + " {{" })}
             />
           </div>
         )}
@@ -432,6 +424,29 @@ export default function JudgeMeRightPanel({ node, updateNodeData }) {
           )}
         </CollapsibleSection>
       )}
+
+      {/* Error & Retries */}
+      <CollapsibleSection title="Error & Retries">
+        <FieldTextarea
+          label="Error message"
+          value={reviewError}
+          onChange={(v) => patch({ reviewError: v })}
+          placeholder={DEFAULT_MESSAGES.reviewError}
+        />
+        <FieldLabel text="Retry attempts (1–3)" />
+        <input
+          type="number"
+          min={1}
+          max={3}
+          value={retryCount}
+          onChange={(e) => patch({ retryCount: Math.min(3, Math.max(1, Number(e.target.value))) })}
+          style={{
+            width: "100%", border: `1px solid ${BORDER}`, borderRadius: 6,
+            padding: "6px 8px", fontSize: 12, outline: "none",
+            boxSizing: "border-box", fontFamily: "inherit", color: "#374151",
+          }}
+        />
+      </CollapsibleSection>
 
       {/* No Response */}
       <CollapsibleSection title="No Response">

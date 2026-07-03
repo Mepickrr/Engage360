@@ -22,43 +22,17 @@ export const DEFAULT_MESSAGES = {
   imageSkip:   "Skip",
 };
 
-export const VARIABLE_GROUPS = [
-  {
-    id: "customer",
-    label: "Customer variables",
-    variables: [
-      { key: "customer.id",         label: "Customer ID",    type: "Number", recommended: true  },
-      { key: "customer.phone",      label: "Phone Number",   type: "String", recommended: true  },
-      { key: "customer.email",      label: "Email",          type: "String", recommended: true  },
-      { key: "customer.name",       label: "Full Name",      type: "String", recommended: true  },
-      { key: "customer.first_name", label: "First Name",     type: "String"                     },
-      { key: "customer.last_name",  label: "Last Name",      type: "String"                     },
-    ],
-  },
-  {
-    id: "product",
-    label: "Product variables",
-    variables: [
-      { key: "product.id",    label: "Product ID",    type: "String", recommended: true  },
-      { key: "product.name",  label: "Product Name",  type: "String"                     },
-      { key: "product.sku",   label: "Product SKU",   type: "String"                     },
-      { key: "order.id",      label: "Order ID",      type: "String", recommended: true  },
-    ],
-  },
-  {
-    id: "store",
-    label: "Store variables",
-    variables: [
-      { key: "store.name",   label: "Store Name",  type: "String", recommended: true  },
-      { key: "store.domain", label: "Domain",      type: "String"                     },
-    ],
-  },
+export const PRODUCT_SELECTOR_OPTIONS = [
+  { value: "all",            label: "All product one after another" },
+  { value: "highest_value",  label: "Highest Product Value"         },
+  { value: "least_reviewed", label: "Least Review Product"          },
+  { value: "least_rated",    label: "Least Rating Product"          },
 ];
 
 export const defaultJudgeMeNodeData = {
   label:       "Collect Review",
   channel:     "whatsapp",
-  productVar:  null,
+  productVar:  "all",
   ratingQuestion:  DEFAULT_MESSAGES.rating,
   ratingButton:    DEFAULT_MESSAGES.ratingButton,
   reviewQuestion:  DEFAULT_MESSAGES.reviewText,
