@@ -703,7 +703,11 @@ export default function EmailRightPanel({ node, updateNodeData, removeNode }) {
             blocks: [],
           };
           patch({
-            template: { ...tpl, blocks: editorData.blocks },
+            template: {
+              ...tpl,
+              blocks: editorData.blocks,
+              ...(editorData.templateName !== undefined && editorData.templateName !== "" && { name: editorData.templateName }),
+            },
             ...(editorData.subject !== undefined && { subject: editorData.subject }),
             ...(editorData.previewText !== undefined && { previewText: editorData.previewText }),
           });

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
-  X, Monitor, Smartphone, Undo2, Redo2, Eye, Save,
+  Monitor, Smartphone, Undo2, Redo2, Eye, Save,
   ChevronDown, ChevronRight, GripVertical, Trash2, Plus,
   Type, Image, Square, Minus, AlignLeft, Code2, Share2,
   ShoppingBag, MailMinus, AlignCenter, Bold, Italic,
@@ -221,6 +221,18 @@ export default function TemplateEditorModal({ open, template, data, onSave, onCl
   const [subject,       setSubject]       = useState(data?.subject || "");
   const [previewText,   setPreviewText]   = useState(data?.previewText || "");
 
+  useEffect(() => {
+    if (open) {
+      setBlocks(template?.blocks ?? DEFAULT_BLOCKS);
+      setBgColor("#F8FAFC");
+      setEmailWidth("600");
+      setVarSearch("");
+      setTemplateName(template?.name || "");
+      setSubject(data?.subject || "");
+      setPreviewText(data?.previewText || "");
+    }
+  }, [open]);
+
   const deleteBlock = (idx) => setBlocks((b) => b.filter((_, i) => i !== idx));
 
   const addBlock = (type) => {
@@ -232,7 +244,7 @@ export default function TemplateEditorModal({ open, template, data, onSave, onCl
   };
 
   const handleSave = () => {
-    onSave({ blocks, bgColor, subject, previewText });
+    onSave({ blocks, bgColor, subject, previewText, templateName });
     onClose();
   };
 
@@ -340,12 +352,6 @@ export default function TemplateEditorModal({ open, template, data, onSave, onCl
               style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 18px", border: "none", borderRadius: 8, background: EMAIL_BLUE, color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}
             >
               <Save size={13} /> Save Template
-            </button>
-            <button
-              onClick={onClose}
-              style={{ width: 32, height: 32, border: "1px solid #E5E7EB", borderRadius: 8, background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
-            >
-              <X size={16} color="#64748B" />
             </button>
           </div>
         </div>
@@ -534,10 +540,10 @@ export default function TemplateEditorModal({ open, template, data, onSave, onCl
               <div style={{ background: "#fff", padding: "16px 24px", borderBottom: "1px solid #E5E7EB" }}>
                 <div style={{ fontSize: 11, color: "#94A3B8", marginBottom: 4 }}>Subject</div>
                 <div style={{ fontSize: 16, fontWeight: 700, color: "#0F172A" }}>
-                  {data?.subject || "Your Email Subject"}
+                  {subject || "Your Email Subject"}
                 </div>
-                {data?.previewText && (
-                  <div style={{ fontSize: 12, color: "#64748B", marginTop: 4 }}>{data.previewText}</div>
+                {previewText && (
+                  <div style={{ fontSize: 12, color: "#64748B", marginTop: 4 }}>{previewText}</div>
                 )}
               </div>
 
