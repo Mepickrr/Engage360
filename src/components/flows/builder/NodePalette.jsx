@@ -19,7 +19,7 @@ import {
   GitBranch, GitFork, Clock, Brain, Route, LogIn,
   Table, CirclePlus, Pencil, ArrowUpFromLine,
   UserCircle, Tags, Ticket, CalendarCheck,
-  FilePlus, UserCheck, RefreshCw, FileText,
+  FilePlus, UserCheck, RefreshCw,
   Pin, Lock, Search, ChevronDown,
   Package, Truck, XCircle, RotateCcw, Barcode,
 } from "lucide-react";
@@ -103,12 +103,6 @@ const CATEGORIES = [
       { id:"tktcreate",    name:"Ticket Creation", Icon:FilePlus,      kind:"action", subtype:"tktcreate"    },
       { id:"assigntkt",    name:"Assign Ticket",   Icon:UserCheck,     kind:"action", subtype:"assigntkt"    },
       { id:"changestatus", name:"Change Status",   Icon:RefreshCw,     kind:"action", subtype:"changestatus" },
-    ],
-  },
-  {
-    id: "notes", label: "Notes", Icon: FileText, color: "amber",
-    nodes: [
-      { id:"stickynote", name:"Sticky Notes", Icon:FileText, kind:"note", subtype:null },
     ],
   },
   {
