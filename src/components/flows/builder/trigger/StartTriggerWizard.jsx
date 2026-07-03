@@ -45,9 +45,11 @@ function emptyBroadcastSourceSchedule() {
   return { type: "immediate", date: "", time: "", timezone: "Asia/Kolkata" };
 }
 
-// Find an event card by name across the whole catalogue.
+// Find an event card by name. Skips the "ALL" aggregate bucket so we always
+// get the canonical copy (with the correct header field) from the real category.
 function findEvent(name) {
   for (const h of Object.keys(catalogueData.catalogue)) {
+    if (h === "ALL" || h === "All") continue;
     for (const sec of Object.keys(catalogueData.catalogue[h])) {
       for (const c of catalogueData.catalogue[h][sec]) {
         if (c.name === name) return c;
