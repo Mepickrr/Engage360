@@ -197,6 +197,7 @@ function CollectInputNodePreview({ template }) {
 
 // ── List Message canvas preview ─────────────────────────────────
 function ListMessageNodePreview({ template }) {
+  if (!template) return null;
   const totalRows = (template?.sections ?? []).reduce((sum, s) => sum + (s.rows?.length ?? 0), 0);
   return (
     <div style={{ margin: "0 8px 8px", background: "#E5DDD5", borderRadius: 8, padding: 6 }}>
