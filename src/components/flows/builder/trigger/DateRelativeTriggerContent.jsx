@@ -167,7 +167,7 @@ export default function DateRelativeTriggerContent({ dateConfig, setDateConfig }
           </label>
           <input
             type="text"
-            value={dateConfig.customFieldKey}
+            value={dateConfig.customFieldKey ?? ""}
             onChange={(e) => update({ customFieldKey: e.target.value })}
             placeholder="e.g. subscription_renewal_date"
             data-testid="date-relative-custom-field-key"
