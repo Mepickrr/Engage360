@@ -2,9 +2,11 @@ import React, { useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Search } from "lucide-react";
 import catalogueData from "@/data/eventCatalogue.json";
+import { useFlowVariant } from "@/components/flows/FlowVariantContext";
 
 // Two-column "Select Start Trigger" picker (Part 1).
 export default function EventPickerModal({ open, onClose, onPick }) {
+  const { hiddenCatalogueSections = [] } = useFlowVariant();
   const [activeHeader, setActiveHeader] = useState("All");
   const [search, setSearch] = useState("");
 
@@ -23,6 +25,7 @@ export default function EventPickerModal({ open, onClose, onPick }) {
 
   const visibleSections = useMemo(() => {
     const cat = catalogueData.catalogue;
+    const isHidden = (sec) => hiddenCatalogueSections.includes(sec);
     const filterCard = (c) =>
       !search.trim()
         ? true
@@ -36,6 +39,7 @@ export default function EventPickerModal({ open, onClose, onPick }) {
     if (activeHeader === "All") {
       const all = cat.ALL || cat.All || {};
       return Object.keys(all)
+        .filter((sec) => !isHidden(sec))
         .map((sec) => ({
           header: "All",
           section: sec,
@@ -45,13 +49,14 @@ export default function EventPickerModal({ open, onClose, onPick }) {
     }
     const h = cat[activeHeader] || {};
     return Object.keys(h)
+      .filter((sec) => !isHidden(sec))
       .map((sec) => ({
         header: activeHeader,
         section: sec,
         cards: h[sec].filter(filterCard),
       }))
       .filter((g) => g.cards.length > 0);
-  }, [activeHeader, search]);
+  }, [activeHeader, search, hiddenCatalogueSections]);
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
