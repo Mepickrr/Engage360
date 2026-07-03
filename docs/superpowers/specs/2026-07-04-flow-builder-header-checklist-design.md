@@ -25,10 +25,15 @@ stubbed "Download report" item.
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
 │ ←  │ Diwali Sale Flow ✎  │ 🏷 Promotional ▾ │ ⏺ Live │ ⚠ 2     Saved 2m ago · Meenal K.   │
 │                                                                                             │
-│                              ↺ ↻ │ 🕐 Version History ▾ │ 📊 Analytics │ 💬 Chats │  ⋯     │
-│                                                              🧪 Test Mode │ ▶ Preview │ ⏻ Live │
+│                        ↺ ↻ │ 🕐 ▾ │ 📊 │ 💬 │  ⋯      🧪 │ ▶ │ ⏻ Live                     │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
 ```
+
+Icon-only buttons (Undo, Redo, Version History, Analytics, Chats, Test Mode, Preview) carry no
+visible label — the label appears as a hover tooltip instead, to keep the bar compact. Text
+stays visible only where it's identity/state info the user needs at a glance without hovering:
+Flow Name, Flow Tag, Status Badge, Save indicator, and the Live/Inactive toggle (since its
+label doubles as the current state, not just an action name).
 
 ### Left group — identity & state
 - **Back** — existing, unchanged.
@@ -50,22 +55,27 @@ stubbed "Download report" item.
   `Saved …`), just with the author appended.
 
 ### Right group — history/insight cluster
-- **Undo / Redo** — new icon buttons. Scope is **canvas edits only** (node/edge changes on the
-  builder canvas) — not header-level edits like rename or tag changes.
-- **Version History** — new icon + dropdown (clock icon), for flows that have been live at
-  least once. Static representation: dropdown showing a list of past live versions with last
-  live date, edited-by, and a way to select one (selection behavior out of scope this pass).
-- **View Analytics** — existing, unchanged. Remains inline (not moved to overflow) since it's
-  already a primary action for flows that have been live.
-- **View all Customer Chat** — new icon button, visible only for flows that have been/are live
-  at least once. Opens (future work) the chat log for all users who entered the flow.
+- **Undo / Redo** — new icon buttons, tooltip "Undo" / "Redo" on hover. Scope is **canvas edits
+  only** (node/edge changes on the builder canvas) — not header-level edits like rename or tag
+  changes.
+- **Version History** — new icon + dropdown (clock icon), tooltip "Version History" on hover,
+  for flows that have been live at least once. Static representation: dropdown showing a list
+  of past live versions with last live date, edited-by, and a way to select one (selection
+  behavior out of scope this pass).
+- **View Analytics** — existing button, converted to icon-only with a "View Analytics" hover
+  tooltip. Remains inline (not moved to overflow) since it's already a primary action for flows
+  that have been live.
+- **View all Customer Chat** — new icon button, tooltip "View all Customer Chat" on hover,
+  visible only for flows that have been/are live at least once. Opens (future work) the chat
+  log for all users who entered the flow.
 
 ### Right group — flow-state actions
-- **Test Mode** — existing `Test` button, relabeled/kept as-is visually; confirmation popup on
-  enable/disable is future work.
-- **Preview Flow** — existing Preview icon; interactive preview popup is future work.
-- **Live/Inactive toggle** — existing `ActiveToggle`; confirmation popup on switch is future
-  work.
+- **Test Mode** — existing `Test` button, converted to icon-only with a "Test Mode" hover
+  tooltip; confirmation popup on enable/disable is future work.
+- **Preview Flow** — existing Preview icon, tooltip "Preview Flow" on hover; interactive
+  preview popup is future work.
+- **Live/Inactive toggle** — existing `ActiveToggle`, keeps its visible text label (state name
+  doubles as the label); confirmation popup on switch is future work.
 
 ### Overflow (`⋯`) menu
 Per direction to keep the bar from getting cluttered, these lower-frequency actions move into
