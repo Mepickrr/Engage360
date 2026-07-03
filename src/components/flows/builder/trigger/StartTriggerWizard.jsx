@@ -10,6 +10,8 @@ import BroadcastSourceStep1 from "./BroadcastSourceStep1";
 import BroadcastSourceStep2 from "./BroadcastSourceStep2";
 import DateRelativeTriggerContent, { emptyDateConfig } from "./DateRelativeTriggerContent";
 import { mockedAudienceCount, emptyConditionBlock } from "./triggerHelpers";
+import WebhookTriggerStep1, { isWebhookStep1Valid } from "./WebhookTriggerStep1";
+import { emptyWebhookConfig, flattenPayload } from "./webhookHelpers";
 
 function emptyAudience() {
   return {
@@ -79,6 +81,8 @@ export default function StartTriggerWizard({
   const [broadcastSourceSchedule, setBroadcastSourceSchedule] = useState(emptyBroadcastSourceSchedule());
   const [isDateRelative, setIsDateRelative] = useState(false);
   const [dateConfig, setDateConfig] = useState(emptyDateConfig());
+  const [isWebhook, setIsWebhook] = useState(false);
+  const [webhookConfig, setWebhookConfig] = useState(emptyWebhookConfig());
 
   const [count, setCount] = useState(null);
   const [loadingCount, setLoadingCount] = useState(false);
@@ -93,11 +97,26 @@ export default function StartTriggerWizard({
       setExitTrigger(initialConfig.exitTrigger || null);
       setAudience(initialConfig.audience || emptyAudience());
       setBroadcast(initialConfig.broadcast || emptyBroadcast());
-      if (initialConfig?.kind === "date_relative") {
+      if (initialConfig?.kind === "webhook") {
+        setIsWebhook(true);
+        setIsDateRelative(false);
+        setWebhookConfig({
+          webhookUrl: initialConfig.webhookUrl,
+          authProtected: initialConfig.authProtected || false,
+          authConfig: initialConfig.authConfig || null,
+          samplePayload: initialConfig.samplePayload || "",
+          uniqueId: initialConfig.uniqueId || null,
+          secondaryId: initialConfig.secondaryId || null,
+          variableMappings: initialConfig.variableMappings || [],
+        });
+        setStage("step1");
+      } else if (initialConfig?.kind === "date_relative") {
+        setIsWebhook(false);
         setIsDateRelative(true);
         setDateConfig(initialConfig.dateConfig || emptyDateConfig());
         setStage("step1");
       } else if (ev?.header === "Broadcast") {
+        setIsWebhook(false);
         setIsDateRelative(false);
         if (ev?.name === "Saved segment" || ev?.name === "CSV upload") {
           setBroadcastSourceType(ev.name === "CSV upload" ? "csv" : "segment");
@@ -108,6 +127,7 @@ export default function StartTriggerWizard({
           setStage("broadcast");
         }
       } else {
+        setIsWebhook(false);
         setIsDateRelative(false);
         setStage("step1");
       }
@@ -121,6 +141,8 @@ export default function StartTriggerWizard({
       setBroadcastSourceConfig(emptyBroadcastSourceConfig());
       setBroadcastSourceSchedule(emptyBroadcastSourceSchedule());
       setIsDateRelative(false);
+      setIsWebhook(false);
+      setWebhookConfig(emptyWebhookConfig());
       setDateConfig(emptyDateConfig());
       setStage("picker");
       setPickingForGroupIdx(null);
@@ -143,7 +165,13 @@ export default function StartTriggerWizard({
   const onPickEvent = (card) => {
     if (pickingForGroupIdx == null) {
       setTriggerGroups([emptyGroup(card.name)]);
-      if (card.header === "Broadcast") {
+      if (card.name === "Webhook trigger") {
+        setIsWebhook(true);
+        setIsDateRelative(false);
+        setWebhookConfig(emptyWebhookConfig());
+        setStage("step1");
+      } else if (card.header === "Broadcast") {
+        setIsWebhook(false);
         if (card.name === "Saved segment" || card.name === "CSV upload") {
           setBroadcastSourceType(card.name === "CSV upload" ? "csv" : "segment");
           setBroadcastSourceConfig(emptyBroadcastSourceConfig());
@@ -154,10 +182,12 @@ export default function StartTriggerWizard({
         }
         setIsDateRelative(false);
       } else if (card.date_relative) {
+        setIsWebhook(false);
         setIsDateRelative(true);
         setDateConfig(emptyDateConfig());
         setStage("step1");
       } else {
+        setIsWebhook(false);
         setIsDateRelative(false);
         setStage("step1");
       }
@@ -192,7 +222,14 @@ export default function StartTriggerWizard({
 
   const handleFinish = () => {
     let config;
-    if (isBroadcastSource) {
+    if (isWebhook) {
+      config = {
+        kind: "webhook",
+        ...webhookConfig,
+        payloadVariables: flattenPayload(webhookConfig.samplePayload).variables,
+        audience,
+      };
+    } else if (isBroadcastSource) {
       config = {
         kind: "broadcast_source",
         sourceType: broadcastSourceType,
@@ -235,6 +272,8 @@ export default function StartTriggerWizard({
       ? "Configure broadcast"
       : stage === "broadcast-source-1" || stage === "broadcast-source-2"
       ? `1. ${sourceStepLabel} → 2. Schedule & audience`
+      : isWebhook
+      ? "1. Configure Webhook → 2. Who will enter the flow"
       : "1. When will users enter the flow → 2. Who will enter the flow";
 
   return (
@@ -260,7 +299,7 @@ export default function StartTriggerWizard({
 
           {stage !== "broadcast" && !stage.startsWith("broadcast-source") && (
             <div className="px-5 pt-4 flex items-center gap-3">
-              <StepDot n={1} active={stage === "step1"} done={stage === "step2"} label="When" />
+              <StepDot n={1} active={stage === "step1"} done={stage === "step2"} label={isWebhook ? "Configure Webhook" : "When"} />
               <span className="flex-1 h-px bg-border" />
               <StepDot
                 n={2}
@@ -291,13 +330,16 @@ export default function StartTriggerWizard({
           )}
 
           <div className="flex-1 overflow-y-auto px-5 py-5">
-            {stage === "step1" && isDateRelative && (
+            {stage === "step1" && isWebhook && (
+              <WebhookTriggerStep1 config={webhookConfig} setConfig={setWebhookConfig} />
+            )}
+            {stage === "step1" && isDateRelative && !isWebhook && (
               <DateRelativeTriggerContent
                 dateConfig={dateConfig}
                 setDateConfig={setDateConfig}
               />
             )}
-            {stage === "step1" && !isDateRelative && (
+            {stage === "step1" && !isDateRelative && !isWebhook && (
               <Step1WhenContent
                 triggerGroups={triggerGroups}
                 setTriggerGroups={setTriggerGroups}
@@ -359,8 +401,9 @@ export default function StartTriggerWizard({
                 <button
                   type="button"
                   onClick={() => setStage("step2")}
+                  disabled={isWebhook && !isWebhookStep1Valid(webhookConfig)}
                   data-testid="trigger-wizard-next"
-                  className="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium text-white rounded-md"
+                  className="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium text-white rounded-md disabled:opacity-40 disabled:cursor-not-allowed"
                   style={{ backgroundImage: "linear-gradient(135deg, #6C3AE8 0%, #8B5CF6 100%)" }}
                 >
                   Next
