@@ -206,6 +206,8 @@ const DISCOUNT_TYPES = [
 ];
 
 function DiscountCodeConfig({ discount, patchDiscount }) {
+  const buyX = discount.buyX ?? { quantity: 1, type: "specific_products", items: [] };
+  const getY = discount.getY ?? { quantity: 1, type: "specific_products", items: [], discountType: "free", discountValue: null };
   return (
     <div style={{ padding: "0 16px 16px" }}>
       {/* Coupon Detail */}
@@ -312,8 +314,8 @@ function DiscountCodeConfig({ discount, patchDiscount }) {
             </div>
             <input
               type="number"
-              value={discount.buyX.quantity}
-              onChange={(e) => patchDiscount({ buyX: { ...discount.buyX, quantity: Number(e.target.value) || 1 } })}
+              value={buyX.quantity}
+              onChange={(e) => patchDiscount({ buyX: { ...buyX, quantity: Number(e.target.value) || 1 } })}
               min={1}
               data-testid="buyx-quantity"
               style={{ width: "100%", border: `1px solid ${BORDER}`, borderRadius: 6, padding: "6px 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }}
@@ -321,8 +323,8 @@ function DiscountCodeConfig({ discount, patchDiscount }) {
           </div>
           <ItemTypePicker
             label="Any items from"
-            value={discount.buyX.type}
-            onChange={(v) => patchDiscount({ buyX: { ...discount.buyX, type: v, items: [] } })}
+            value={buyX.type}
+            onChange={(v) => patchDiscount({ buyX: { ...buyX, type: v, items: [] } })}
           />
 
           <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 12, marginTop: 4, marginBottom: 8, fontSize: 11, fontWeight: 700, color: "#374151" }}>
@@ -334,8 +336,8 @@ function DiscountCodeConfig({ discount, patchDiscount }) {
             </div>
             <input
               type="number"
-              value={discount.getY.quantity}
-              onChange={(e) => patchDiscount({ getY: { ...discount.getY, quantity: Number(e.target.value) || 1 } })}
+              value={getY.quantity}
+              onChange={(e) => patchDiscount({ getY: { ...getY, quantity: Number(e.target.value) || 1 } })}
               min={1}
               data-testid="gety-quantity"
               style={{ width: "100%", border: `1px solid ${BORDER}`, borderRadius: 6, padding: "6px 8px", fontSize: 12, outline: "none", boxSizing: "border-box" }}
@@ -343,8 +345,8 @@ function DiscountCodeConfig({ discount, patchDiscount }) {
           </div>
           <ItemTypePicker
             label="Any items from"
-            value={discount.getY.type}
-            onChange={(v) => patchDiscount({ getY: { ...discount.getY, type: v, items: [] } })}
+            value={getY.type}
+            onChange={(v) => patchDiscount({ getY: { ...getY, type: v, items: [] } })}
           />
 
           <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
@@ -359,18 +361,18 @@ function DiscountCodeConfig({ discount, patchDiscount }) {
                 type="radio"
                 name="getYDiscount"
                 value={id}
-                checked={discount.getY.discountType === id}
-                onChange={() => patchDiscount({ getY: { ...discount.getY, discountType: id, discountValue: null } })}
+                checked={getY.discountType === id}
+                onChange={() => patchDiscount({ getY: { ...getY, discountType: id, discountValue: null } })}
                 style={{ accentColor: SHOPIFY_GREEN }}
               />
               {label}
             </label>
           ))}
-          {discount.getY.discountType === "percentage" && (
+          {getY.discountType === "percentage" && (
             <input
               type="number"
-              value={discount.getY.discountValue ?? ""}
-              onChange={(e) => patchDiscount({ getY: { ...discount.getY, discountValue: e.target.value ? Number(e.target.value) : null } })}
+              value={getY.discountValue ?? ""}
+              onChange={(e) => patchDiscount({ getY: { ...getY, discountValue: e.target.value ? Number(e.target.value) : null } })}
               placeholder="10"
               min={0}
               max={100}
@@ -446,7 +448,7 @@ function DiscountCodeConfig({ discount, patchDiscount }) {
 }
 
 // ── Main right panel ──────────────────────────────────────────────────────────
-export default function ShopifyRightPanel({ node, updateNodeData }) {
+export default function ShopifyRightPanel({ node, updateNodeData, removeNode }) {
   const data = node?.data ?? {};
   const patch = (changes) => updateNodeData(node.id, { ...data, ...changes });
   const patchDiscount = (changes) => patch({ discount: { ...(data.discount ?? defaultShopifyNodeData.discount), ...changes } });

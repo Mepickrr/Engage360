@@ -37,6 +37,11 @@ describe("ShopifyRightPanel", () => {
     expect(screen.getByTestId("order-tags-input")).toBeInTheDocument();
   });
 
+  it("renders tag input for customer_tag action", () => {
+    render(<ShopifyRightPanel node={makeNode({ action: "customer_tag", customerTags: [] })} updateNodeData={noop} removeNode={noop} />);
+    expect(screen.getByTestId("customer-tags-input")).toBeInTheDocument();
+  });
+
   it("renders notes textarea for order_notes action", () => {
     render(<ShopifyRightPanel node={makeNode({ action: "order_notes", orderNote: "" })} updateNodeData={noop} removeNode={noop} />);
     expect(screen.getByTestId("order-notes-input")).toBeInTheDocument();
