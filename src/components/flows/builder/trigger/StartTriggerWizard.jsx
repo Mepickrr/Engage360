@@ -103,6 +103,7 @@ export default function StartTriggerWizard({
       if (initialConfig?.kind === "webhook") {
         setIsWebhook(true);
         setIsDateRelative(false);
+        setIsEventOffset(false);
         setWebhookConfig({
           webhookUrl: initialConfig.webhookUrl,
           authProtected: initialConfig.authProtected || false,
