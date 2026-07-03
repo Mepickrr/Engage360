@@ -58,7 +58,7 @@ function OutputHandle({ id, label, color, style = {} }) {
 
 export default function JudgeMeNode({ id, data, selected }) {
   const channel     = data?.channel ?? null;
-  const isConfigured = !!channel;
+  const isConfigured = !!(channel && data?.productVar);
 
   const ratingQ  = data?.ratingQuestion  ?? "";
   const reviewQ  = data?.reviewQuestion  ?? "";

@@ -31,7 +31,6 @@ export const PRODUCT_SELECTOR_OPTIONS = [
 
 export const defaultJudgeMeNodeData = {
   label:       "Collect Review",
-  channel:     "whatsapp",
   productVar:  "all",
   ratingQuestion:  DEFAULT_MESSAGES.rating,
   ratingButton:    DEFAULT_MESSAGES.ratingButton,
