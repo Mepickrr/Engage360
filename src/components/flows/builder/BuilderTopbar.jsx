@@ -24,15 +24,21 @@ import { toast } from "sonner";
 import SaveJourneyModal from "./SaveJourneyModal";
 
 // ── Status config ────────────────────────────────────────────────────────────
-const STATUS_CONFIG = {
-  active:   { label: "Active",   bg: "bg-emerald-50",  text: "text-emerald-700",  dot: "bg-emerald-500" },
-  paused:   { label: "Paused",   bg: "bg-amber-50",    text: "text-amber-700",    dot: "bg-amber-400"   },
-  draft:    { label: "Draft",    bg: "bg-slate-100",   text: "text-slate-600",    dot: "bg-slate-400"   },
-  test:     { label: "Test",     bg: "bg-violet-50",   text: "text-violet-700",   dot: "bg-violet-500"  },
-  inactive: { label: "Inactive", bg: "bg-slate-100",   text: "text-slate-500",    dot: "bg-slate-300"   },
+export const STATUS_CONFIG = {
+  draft:            { label: "Draft",           bg: "bg-slate-100", text: "text-slate-600",  dot: "bg-slate-400"  },
+  active:           { label: "Live",             bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500" },
+  paused:           { label: "Paused",           bg: "bg-amber-50",  text: "text-amber-700",  dot: "bg-amber-400"  },
+  archived:         { label: "Archive",          bg: "bg-slate-100", text: "text-slate-500",  dot: "bg-slate-300"  },
+  test:             { label: "Test",             bg: "bg-violet-50", text: "text-violet-700", dot: "bg-violet-500" },
+  completed:        { label: "Completed",        bg: "bg-sky-50",    text: "text-sky-700",    dot: "bg-sky-500"    },
+  scheduled:        { label: "Scheduled",        bg: "bg-indigo-50", text: "text-indigo-700", dot: "bg-indigo-500" },
+  rerun_completed:  { label: "Rerun Completed",  bg: "bg-teal-50",   text: "text-teal-700",   dot: "bg-teal-500"   },
+  dnd:               { label: "DND",              bg: "bg-rose-50",   text: "text-rose-700",   dot: "bg-rose-500"   },
+  error:            { label: "Error",            bg: "bg-red-50",    text: "text-red-700",    dot: "bg-red-500"    },
+  inprogress:       { label: "In Progress",      bg: "bg-blue-50",   text: "text-blue-700",   dot: "bg-blue-500"   },
 };
 
-function StatusBadge({ status }) {
+export function StatusBadge({ status }) {
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.draft;
   return (
     <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold ${cfg.bg} ${cfg.text}`}>
