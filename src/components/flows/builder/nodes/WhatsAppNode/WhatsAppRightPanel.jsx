@@ -3,6 +3,7 @@ import { AlertTriangle, Plus, Trash2, Upload } from "lucide-react";
 import TemplatePicker from "./TemplatePicker";
 import TemplateEditor from "./TemplateEditor";
 import CollectInputForm from "./CollectInputForm";
+import ListMessageForm from "./ListMessageForm";
 import {
   WABA_NUMBERS, SYSTEM_VARIABLES, isConnectable,
   DELIVERY_OUTPUT_OPTIONS,
@@ -559,12 +560,14 @@ function TemplateTab({ data, patch }) {
   const [creatingNew,        setCreatingNew]        = useState(false);
   const [editingCarousel,    setEditingCarousel]    = useState(false);
   const [editingCollectInput, setEditingCollectInput] = useState(false);
+  const [editingListMessage, setEditingListMessage] = useState(false);
   const [newDraft,           setNewDraft]           = useState({ name: "", category: "Marketing", language: "en", status: "Draft", header: { type: "none" }, body: "", footer: "", buttons: [], variableMap: {} });
 
   const templateStyle = data.templateStyle ?? null;
   const isStandard    = templateStyle === "standard";
   const isCarousel    = templateStyle === "carousel";
   const isCollectInput = templateStyle === "collect_input";
+  const isListMessage = templateStyle === "list";
   const styleInfo     = TEMPLATE_STYLES.find((s) => s.id === templateStyle);
 
   const { template, wabaNumberId, fallback = {}, templateType } = data;
@@ -592,6 +595,23 @@ function TemplateTab({ data, patch }) {
     patch({ template: tpl, variableMap: newDraft.variableMap || {}, templateType: newDraft.category });
     setCreatingNew(false);
   };
+
+  // ── List Message path ────────────────────────────────────────────
+  if (isListMessage && (!template || editingListMessage)) {
+    return (
+      <ListMessageForm
+        initial={template?.isListMessage ? template : null}
+        onCancel={() => {
+          if (template) setEditingListMessage(false);
+          else patch({ templateStyle: null });
+        }}
+        onApply={(listDraft) => {
+          patch({ template: { ...listDraft, id: `list_${Date.now()}` } });
+          setEditingListMessage(false);
+        }}
+      />
+    );
+  }
 
   // ── Carousel path — show full carousel form ──────────────────
   if (isCarousel && (!template || editingCarousel)) {
@@ -709,6 +729,39 @@ function TemplateTab({ data, patch }) {
           </div>
         )}
 
+        {/* List Message configured summary */}
+        {isListMessage && template && (
+          <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
+            <div style={{ padding: "10px 12px", background: "#F0FDF4", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 18 }}>📋</span>
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#0F172A" }}>List Message</div>
+                  <div style={{ fontSize: 10, color: MUTED }}>
+                    {template.sections?.reduce((sum, s) => sum + (s.rows?.length ?? 0), 0) ?? 0} rows
+                    {template.buttonText ? ` · "${template.buttonText}"` : ""}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingListMessage(true)}
+                style={{ fontSize: 11, color: PRIMARY, fontWeight: 600, background: "none", border: `1px solid ${PRIMARY}`, borderRadius: 6, padding: "4px 10px", cursor: "pointer" }}
+              >
+                Edit
+              </button>
+            </div>
+            <div style={{ padding: "10px 12px" }}>
+              <div style={{ fontSize: 10, color: MUTED, marginBottom: 4 }}>Body</div>
+              <div style={{ fontSize: 12, color: "#374151", lineHeight: 1.5 }}>
+                {template.body
+                  ? (template.body.length > 80 ? template.body.slice(0, 80) + "…" : template.body)
+                  : <span style={{ color: MUTED, fontStyle: "italic" }}>No body set</span>}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Sender Number */}
         <div>
           <Label>Sender Number</Label>
@@ -718,118 +771,120 @@ function TemplateTab({ data, patch }) {
           </select>
         </div>
 
-        {/* Template — two paths */}
-        <div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-            <Label>Template</Label>
-            {isStandard && (
-              <button type="button" onClick={() => setCreatingNew(true)} style={{ fontSize: 11, color: PRIMARY, fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}>
-                + Create New
-              </button>
-            )}
-          </div>
-
-          {isCollectInput ? null : !template ? (
-            /* No template selected — show CTAs based on style */
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {!isStandard && (
-                /* Non-Standard: amber notice instead of Create New */
-                <div style={{ background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 8, padding: 12 }}>
-                  <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 8 }}>
-                    <AlertTriangle size={13} style={{ color: "#F59E0B", flexShrink: 0, marginTop: 1 }} />
-                    <span style={{ fontSize: 11, color: "#92400E", lineHeight: 1.5 }}>
-                      <strong>{styleInfo?.label}</strong> templates must be created in WhatsApp Business Manager. Once approved, select them below.
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => window.open("https://business.facebook.com/wa/manage/message-templates/", "_blank")}
-                    style={{ fontSize: 11, color: PRIMARY, fontWeight: 600, background: "none", border: "none", cursor: "pointer", padding: 0 }}
-                  >Open WhatsApp Manager →</button>
-                </div>
+        {/* Template section — hidden for list (list uses its own summary card above) */}
+        {!isListMessage && (
+          <div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+              <Label>Template</Label>
+              {isStandard && (
+                <button type="button" onClick={() => setCreatingNew(true)} style={{ fontSize: 11, color: PRIMARY, fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}>
+                  + Create New
+                </button>
               )}
-              <div style={{ display: "flex", gap: 8 }}>
-                {isStandard && (
-                  <button type="button" onClick={() => setCreatingNew(true)} style={{
+            </div>
+
+            {isCollectInput ? null : !template ? (
+              /* No template selected — show CTAs based on style */
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {!isStandard && (
+                  /* Non-Standard: amber notice instead of Create New */
+                  <div style={{ background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 8, padding: 12 }}>
+                    <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 8 }}>
+                      <AlertTriangle size={13} style={{ color: "#F59E0B", flexShrink: 0, marginTop: 1 }} />
+                      <span style={{ fontSize: 11, color: "#92400E", lineHeight: 1.5 }}>
+                        <strong>{styleInfo?.label}</strong> templates must be created in WhatsApp Business Manager. Once approved, select them below.
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => window.open("https://business.facebook.com/wa/manage/message-templates/", "_blank")}
+                      style={{ fontSize: 11, color: PRIMARY, fontWeight: 600, background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                    >Open WhatsApp Manager →</button>
+                  </div>
+                )}
+                <div style={{ display: "flex", gap: 8 }}>
+                  {isStandard && (
+                    <button type="button" onClick={() => setCreatingNew(true)} style={{
+                      flex: 1, padding: "14px 10px", border: `1.5px dashed ${BORDER}`, borderRadius: 10,
+                      background: "transparent", cursor: "pointer", fontSize: 12, color: "#475569", textAlign: "center",
+                      transition: "all 0.15s",
+                    }}
+                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = PRIMARY; e.currentTarget.style.color = PRIMARY; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.color = "#475569"; }}>
+                      <div style={{ fontSize: 18, marginBottom: 4 }}>+</div>
+                      Create New
+                    </button>
+                  )}
+                  <button type="button" onClick={() => setShowPicker(true)} style={{
                     flex: 1, padding: "14px 10px", border: `1.5px dashed ${BORDER}`, borderRadius: 10,
                     background: "transparent", cursor: "pointer", fontSize: 12, color: "#475569", textAlign: "center",
                     transition: "all 0.15s",
                   }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = PRIMARY; e.currentTarget.style.color = PRIMARY; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = WA_GREEN; e.currentTarget.style.color = WA_GREEN; }}
                     onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.color = "#475569"; }}>
-                    <div style={{ fontSize: 18, marginBottom: 4 }}>+</div>
-                    Create New
+                    <div style={{ fontSize: 18, marginBottom: 4 }}>☰</div>
+                    Select Existing
                   </button>
-                )}
-                <button type="button" onClick={() => setShowPicker(true)} style={{
-                  flex: 1, padding: "14px 10px", border: `1.5px dashed ${BORDER}`, borderRadius: 10,
-                  background: "transparent", cursor: "pointer", fontSize: 12, color: "#475569", textAlign: "center",
-                  transition: "all 0.15s",
-                }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = WA_GREEN; e.currentTarget.style.color = WA_GREEN; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.color = "#475569"; }}>
-                  <div style={{ fontSize: 18, marginBottom: 4 }}>☰</div>
-                  Select Existing
-                </button>
-              </div>
-            </div>
-          ) : isCarousel ? (
-            /* Carousel configured — summary with mini card strip */
-            <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
-              <div style={{ padding: "8px 12px", background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A" }}>{template.category || "Marketing"} · {(template.cards || []).length} cards</span>
-                  <div style={{ fontSize: 10, color: MUTED, marginTop: 1 }}>{template.language === "hi" ? "Hindi" : "English"}</div>
-                </div>
-                <div style={{ display: "flex", gap: 10 }}>
-                  <button onClick={() => setEditingCarousel(true)} style={{ fontSize: 11, color: "#64748B", background: "none", border: "none", cursor: "pointer" }}>Edit</button>
-                  <button onClick={() => patch({ template: null })} style={{ fontSize: 11, color: PRIMARY, fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}>Change</button>
                 </div>
               </div>
-              <div style={{ padding: "10px 12px", display: "flex", gap: 6, overflowX: "auto" }}>
-                {(template.cards || []).map((card, i) => (
-                  <div key={i} style={{ width: 60, flexShrink: 0, borderRadius: 6, border: `1px solid ${BORDER}`, overflow: "hidden" }}>
-                    <div style={{ background: CAROUSEL_BLUE, padding: "2px 5px" }}>
-                      <span style={{ fontSize: 8, fontWeight: 700, color: "#fff" }}>Card {i + 1}</span>
-                    </div>
-                    <div style={{ height: 32, background: card.mediaUrl ? "#D1FAE5" : "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      {card.mediaUrl ? <span style={{ fontSize: 12 }}>🖼</span> : <span style={{ fontSize: 8, color: MUTED }}>No img</span>}
-                    </div>
+            ) : isCarousel ? (
+              /* Carousel configured — summary with mini card strip */
+              <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
+                <div style={{ padding: "8px 12px", background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A" }}>{template.category || "Marketing"} · {(template.cards || []).length} cards</span>
+                    <div style={{ fontSize: 10, color: MUTED, marginTop: 1 }}>{template.language === "hi" ? "Hindi" : "English"}</div>
                   </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            /* Standard/non-carousel template selected — inline edit form */
-            <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
-              {/* Action bar */}
-              <div style={{ padding: "8px 12px", background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{template.name}</span>
-                <div style={{ display: "flex", gap: 10, flexShrink: 0 }}>
-                  <button onClick={() => { setEditingFallback(false); setShowEditor(true); }} style={{ fontSize: 11, color: "#64748B", background: "none", border: "none", cursor: "pointer" }}>Edit</button>
-                  <button onClick={() => setShowPicker(true)} style={{ fontSize: 11, color: PRIMARY, fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}>Change</button>
-                  <button onClick={() => alert("Test send — coming soon")} style={{ fontSize: 11, color: "#64748B", background: "none", border: "none", cursor: "pointer" }}>Test</button>
+                  <div style={{ display: "flex", gap: 10 }}>
+                    <button onClick={() => setEditingCarousel(true)} style={{ fontSize: 11, color: "#64748B", background: "none", border: "none", cursor: "pointer" }}>Edit</button>
+                    <button onClick={() => patch({ template: null })} style={{ fontSize: 11, color: PRIMARY, fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}>Change</button>
+                  </div>
+                </div>
+                <div style={{ padding: "10px 12px", display: "flex", gap: 6, overflowX: "auto" }}>
+                  {(template.cards || []).map((card, i) => (
+                    <div key={i} style={{ width: 60, flexShrink: 0, borderRadius: 6, border: `1px solid ${BORDER}`, overflow: "hidden" }}>
+                      <div style={{ background: CAROUSEL_BLUE, padding: "2px 5px" }}>
+                        <span style={{ fontSize: 8, fontWeight: 700, color: "#fff" }}>Card {i + 1}</span>
+                      </div>
+                      <div style={{ height: 32, background: card.mediaUrl ? "#D1FAE5" : "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        {card.mediaUrl ? <span style={{ fontSize: 12 }}>🖼</span> : <span style={{ fontSize: 8, color: MUTED }}>No img</span>}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
+            ) : (
+              /* Standard/non-carousel template selected — inline edit form */
+              <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
+                {/* Action bar */}
+                <div style={{ padding: "8px 12px", background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{template.name}</span>
+                  <div style={{ display: "flex", gap: 10, flexShrink: 0 }}>
+                    <button onClick={() => { setEditingFallback(false); setShowEditor(true); }} style={{ fontSize: 11, color: "#64748B", background: "none", border: "none", cursor: "pointer" }}>Edit</button>
+                    <button onClick={() => setShowPicker(true)} style={{ fontSize: 11, color: PRIMARY, fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}>Change</button>
+                    <button onClick={() => alert("Test send — coming soon")} style={{ fontSize: 11, color: "#64748B", background: "none", border: "none", cursor: "pointer" }}>Test</button>
+                  </div>
+                </div>
 
-              {/* Inline editable fields */}
-              <div style={{ padding: "12px", borderTop: `1px solid ${BORDER}` }}>
-                <InlineTemplateForm
-                  draft={{
-                    name: template.name, category: template.category || template.type,
-                    language: template.language, status: template.status,
-                    header: template.header, body: template.body, footer: template.footer,
-                    buttons: template.buttons, variableMap: data.variableMap || {},
-                  }}
-                  onChange={(updated) => patch({
-                    template: { ...template, ...updated },
-                    variableMap: updated.variableMap,
-                  })}
-                />
+                {/* Inline editable fields */}
+                <div style={{ padding: "12px", borderTop: `1px solid ${BORDER}` }}>
+                  <InlineTemplateForm
+                    draft={{
+                      name: template.name, category: template.category || template.type,
+                      language: template.language, status: template.status,
+                      header: template.header, body: template.body, footer: template.footer,
+                      buttons: template.buttons, variableMap: data.variableMap || {},
+                    }}
+                    onChange={(updated) => patch({
+                      template: { ...template, ...updated },
+                      variableMap: updated.variableMap,
+                    })}
+                  />
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         {/* Template Type — hidden for now
         {template && (
