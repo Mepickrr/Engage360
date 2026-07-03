@@ -195,6 +195,40 @@ function CollectInputNodePreview({ template }) {
   );
 }
 
+// ── List Message canvas preview ─────────────────────────────────
+function ListMessageNodePreview({ template }) {
+  const totalRows = (template?.sections ?? []).reduce((sum, s) => sum + (s.rows?.length ?? 0), 0);
+  return (
+    <div style={{ margin: "0 8px 8px", background: "#E5DDD5", borderRadius: 8, padding: 6 }}>
+      {template.header && (
+        <div style={{ fontSize: 10, fontWeight: 700, color: "#111", marginBottom: 4, padding: "0 4px" }}>
+          {template.header}
+        </div>
+      )}
+      <div style={{ background: "#fff", borderRadius: "8px 8px 8px 3px", padding: "6px 10px", boxShadow: "0 1px 2px rgba(0,0,0,0.1)" }}>
+        <div style={{ fontSize: 11, color: "#111", lineHeight: 1.5 }}>
+          {template.body
+            ? (template.body.length > 80 ? template.body.slice(0, 80) + "…" : template.body)
+            : <span style={{ color: "#94A3B8", fontStyle: "italic" }}>No body set</span>}
+        </div>
+        {template.footer && (
+          <div style={{ fontSize: 10, color: "#aaa", marginTop: 2 }}>{template.footer}</div>
+        )}
+        <div style={{ textAlign: "right", fontSize: 9, color: "#aaa", marginTop: 2 }}>16:48 ✓✓</div>
+      </div>
+      <div style={{ marginTop: 6, padding: "5px 8px", background: "#fff", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
+        <span style={{ fontSize: 10 }}>📋</span>
+        <span style={{ fontSize: 10, color: "#25D366", fontWeight: 600 }}>
+          {template.buttonText || "View list"}
+        </span>
+        <span style={{ fontSize: 10, color: "#94A3B8" }}>
+          · {totalRows} option{totalRows !== 1 ? "s" : ""}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 // ── Main node ───────────────────────────────────────────────────
 export default function WhatsAppNode({ id, data, selected }) {
   const template    = data?.template ?? null;
@@ -208,6 +242,7 @@ export default function WhatsAppNode({ id, data, selected }) {
   const isEmpty       = !template;
   const isCarousel    = data?.templateStyle === "carousel" && template?.isCarousel && (template?.cards?.length > 0);
   const isCollectInput = data?.templateStyle === "collect_input";
+  const isListMessageNode = data?.templateStyle === "list" && template?.isListMessage;
 
   // Delivery ports — based on routingMode
   const routingMode = outputCfg.routingMode ?? "next_step";
@@ -216,7 +251,11 @@ export default function WhatsAppNode({ id, data, selected }) {
     : DELIVERY_OUTPUT_OPTIONS.filter((o) => (outputCfg.deliveryOutputs ?? []).includes(o.id));
 
   // Connectable buttons from template
-  const connectableButtons = (template?.buttons ?? []).filter(isConnectable);
+  const connectableButtons = isListMessageNode
+    ? (template?.sections ?? []).flatMap((sec) =>
+        (sec.rows ?? []).map((row) => ({ label: row.title || row.id, type: "QUICK_REPLY" }))
+      )
+    : (template?.buttons ?? []).filter(isConnectable);
 
   // Phone number display
   const wabaNumber = WABA_NUMBERS.find((w) => w.id === (data?.wabaNumberId ?? "waba_1"));
@@ -283,7 +322,7 @@ export default function WhatsAppNode({ id, data, selected }) {
                 {data?.label || "WhatsApp"}
               </div>
               <div style={{ fontSize: 9, color: "#94A3B8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {template.name || (data?.templateStyle === "collect_input" ? "Collect Input" : "")}
+                {template.name || (data?.templateStyle === "collect_input" ? "Collect Input" : data?.templateStyle === "list" ? "List Message" : "")}
               </div>
             </div>
             {phoneDisplay && (
@@ -294,11 +333,13 @@ export default function WhatsAppNode({ id, data, selected }) {
             {template.status && <StatusPill status={template.status} />}
           </div>
 
-          {/* ── Message bubble / carousel preview / collect input preview ── */}
+          {/* ── Message bubble / carousel preview / collect input preview / list message preview ── */}
           {isCollectInput ? (
             <CollectInputNodePreview template={template} />
           ) : isCarousel ? (
             <CarouselNodePreview template={template} />
+          ) : isListMessageNode ? (
+            <ListMessageNodePreview template={template} />
           ) : (
           <div style={{ margin: "0 8px 8px", background: "#E5DDD5", borderRadius: 8, padding: 6 }}>
             <div style={{ background: "#fff", borderRadius: "8px 8px 8px 3px", overflow: "hidden", boxShadow: "0 1px 2px rgba(0,0,0,0.1)" }}>
