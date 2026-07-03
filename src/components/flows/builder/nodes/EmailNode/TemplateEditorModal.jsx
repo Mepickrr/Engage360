@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   X, Monitor, Smartphone, Undo2, Redo2, Eye, Save,
   ChevronDown, ChevronRight, GripVertical, Trash2, Plus,
@@ -239,19 +240,18 @@ export default function TemplateEditorModal({ open, template, data, onSave, onCl
   ).filter((v) => !varSearch || v.label.toLowerCase().includes(varSearch.toLowerCase()) || v.key.toLowerCase().includes(varSearch.toLowerCase()));
 
   return (
-    <div
-      style={{
-        position: "fixed", inset: 0, zIndex: 9999,
-        background: "rgba(0,0,0,0.55)",
-        display: "flex", alignItems: "stretch",
-        fontFamily: "Inter, system-ui, sans-serif",
-      }}
-    >
-      <div
+    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
+      <DialogContent
         style={{
-          display: "flex", flexDirection: "column",
-          width: "100%", height: "100%",
+          width: "95vw",
+          maxWidth: 1400,
+          maxHeight: "95vh",
+          padding: 0,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
           background: "#F8FAFC",
+          fontFamily: "Inter, system-ui, sans-serif",
         }}
       >
         {/* ── Top bar ── */}
@@ -557,7 +557,7 @@ export default function TemplateEditorModal({ open, template, data, onSave, onCl
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
