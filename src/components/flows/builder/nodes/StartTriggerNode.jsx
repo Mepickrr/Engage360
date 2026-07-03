@@ -7,7 +7,7 @@ import {
   Search, UserPlus, Heart, Star, AlertCircle, Users, UserMinus,
   CheckCircle, LogOut, MessageCircle, Hash, MessageSquare, Mail,
   Cake, Gift, RefreshCw, TrendingDown, Headphones, CheckSquare,
-  Pencil, Clock,
+  Pencil, Clock, Link2,
 } from "lucide-react";
 import { summariseTriggerConfig } from "../triggerNodeUtils";
 
@@ -66,6 +66,48 @@ function SectionLabel({ children, right }) {
         {children}
       </span>
       {right}
+    </div>
+  );
+}
+
+function truncMid(str, keep = 18) {
+  if (!str) return "";
+  if (str.length <= keep * 2 + 3) return str;
+  return `${str.slice(0, keep)}…${str.slice(-keep)}`;
+}
+
+function WebhookEntryBlock({ summary }) {
+  const handleCopy = (e) => {
+    e.stopPropagation();
+    navigator.clipboard?.writeText(summary.webhookUrl || "");
+  };
+  return (
+    <div>
+      <div className="flex items-center gap-1.5">
+        <Link2 className="w-3 h-3 flex-shrink-0" style={{ color: PRIMARY }} />
+        <span
+          className="text-[10px] font-mono text-text-secondary truncate flex-1"
+          title={summary.webhookUrl}
+        >
+          {truncMid(summary.webhookUrl)}
+        </span>
+        <button
+          onClick={handleCopy}
+          className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-text-muted hover:text-primary flex-shrink-0"
+        >
+          Copy
+        </button>
+      </div>
+      {summary.uniqueIdType && (
+        <div className="mt-1.5 inline-flex items-center px-1.5 py-0.5 rounded-full bg-slate-100 text-[9px] font-medium text-text-muted border border-border">
+          {`Unique ID: ${summary.uniqueIdType} ({{${summary.uniqueIdVar}}})`}
+        </div>
+      )}
+      {summary.mappedVarCount > 0 && (
+        <div className="mt-1 text-[10px] text-text-muted">
+          {`${summary.mappedVarCount} variable${summary.mappedVarCount > 1 ? "s" : ""} mapped`}
+        </div>
+      )}
     </div>
   );
 }
@@ -265,7 +307,9 @@ export default function StartTriggerNode({ data, selected }) {
       <div className="px-3 pt-2.5 pb-2">
         <SectionLabel>Entry</SectionLabel>
 
-        {!summary.isBroadcast && (
+        {summary.isWebhook && <WebhookEntryBlock summary={summary} />}
+
+        {!summary.isBroadcast && !summary.isWebhook && (
           <div>
             {summary.triggerGroups.map((group, idx) => (
               <React.Fragment key={idx}>
