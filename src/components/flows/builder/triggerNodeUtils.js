@@ -240,6 +240,35 @@ function summariseNewFormat(config) {
   };
 }
 
+function summariseWebhook(config) {
+  const {
+    whoLine, whoExtraCount, frequencyLine,
+    audienceTypePill, audienceTab, audienceConditions, audienceCombinator,
+  } = summariseAudienceNew(config.audience);
+
+  return {
+    headerLabel: "Start Trigger",
+    isWebhook: true,
+    isBroadcast: false,
+    webhookUrl: config.webhookUrl,
+    uniqueIdType: config.uniqueId?.type || null,
+    uniqueIdVar: config.uniqueId?.payloadVariable || null,
+    mappedVarCount: (config.variableMappings || []).filter((m) => m.existingVariable).length,
+    whoLine,
+    whoExtraCount,
+    frequencyLine,
+    audienceTypePill,
+    audienceTab,
+    audienceConditions,
+    audienceCombinator,
+    noExitCondition: true,
+    exitLine: null,
+    exitExtraCount: 0,
+    exitEvents: [],
+    exitCombinator: "OR",
+  };
+}
+
 // ── legacy format support (saved flows from old FlowTriggerModal) ─
 function fmtOp(op) {
   const M = { "is": "is", "equals": "=", "not equals": "≠", "greater than": ">", "less than": "<",
@@ -386,6 +415,7 @@ function summariseOldFormat(config) {
 // ── main export ───────────────────────────────────────────────
 export function summariseTriggerConfig(config) {
   if (!config) return null;
+  if (config.kind === "webhook") return summariseWebhook(config);
   // Detect new wizard format: triggerGroups have a string `.event` field
   const isNewFormat = config.kind != null ||
     (config.triggerGroups?.[0] != null && typeof config.triggerGroups[0].event === "string");
