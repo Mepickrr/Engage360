@@ -40,6 +40,7 @@ import { defaultSFONodeData } from "@/components/flows/builder/nodes/SmartFlowOp
 import { defaultWebhookNodeData } from "@/components/flows/builder/nodes/WebhookNode/data/mockData";
 import { defaultJudgeMeNodeData } from "@/components/flows/builder/nodes/JudgeMeNode/data/mockData";
 import { defaultShopifyNodeData } from "@/components/flows/builder/nodes/ShopifyNode/data/mockData";
+import { defaultStickyNoteNodeData } from "@/components/flows/builder/nodes/StickyNoteNode/data/mockData";
 
 export const CHANNEL_META = {
   whatsapp: { label: "WhatsApp", color: "#10B981", Icon: MessageCircle },
@@ -198,7 +199,7 @@ export function defaultDataForPaletteItem(item) {
         body: "Click to configure →",
       };
     case "note":
-      return { label: "Note", body: "" };
+      return { ...defaultStickyNoteNodeData };
     default:
       return { label: item.label };
   }
