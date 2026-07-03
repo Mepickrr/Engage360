@@ -4,6 +4,15 @@
  * TODO: replace all mock data with real API calls as noted below.
  */
 
+// TODO: replace with real GET /api/csv-uploads
+export const MOCK_HISTORICAL_CSVS = [
+  { id: "hist_001", name: "Summer_Sale_Contacts.csv",   rowCount: 4821,  uploadedAt: "2026-06-28", size: 124500, columns: ["phone_number", "name", "city", "email"] },
+  { id: "hist_002", name: "VIP_Members_June.csv",       rowCount: 1203,  uploadedAt: "2026-06-15", size: 38200,  columns: ["mobile", "customer_name", "tier"] },
+  { id: "hist_003", name: "Abandoned_Cart_Users.csv",   rowCount: 8942,  uploadedAt: "2026-05-30", size: 275000, columns: ["phone", "name", "cart_value"] },
+  { id: "hist_004", name: "Newsletter_Subscribers.csv", rowCount: 15420, uploadedAt: "2026-05-10", size: 445000, columns: ["phone_number", "first_name", "last_name"] },
+  { id: "hist_005", name: "WhatsApp_Optin_July.csv",    rowCount: 3241,  uploadedAt: "2026-07-01", size: 98700,  columns: ["wa_number", "name"] },
+];
+
 // TODO: replace with real GET /api/segments?type=broadcast
 export const BROADCAST_MOCK_SEGMENTS = [
   { id: "bseg_001", name: "VIP Customers",                  userCount: 5430,  type: "dynamic", updatedAt: "2 hours ago"  },

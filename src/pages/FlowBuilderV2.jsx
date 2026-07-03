@@ -304,6 +304,9 @@ export default function FlowBuilderV2() {
 
   const v2Variant = {
     allowedTemplateStyleIds: V2_ALLOWED_TEMPLATE_STYLES,
+    // Sections hidden from the event picker in V2 (by catalogue section name).
+    // V1 never wraps with FlowVariantContext so this has no effect there.
+    hiddenCatalogueSections: ["Instagram", "Email"],
   };
 
   return (
