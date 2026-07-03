@@ -209,7 +209,7 @@ function FontSelect({ label, value, onChange, options }) {
   );
 }
 
-export default function TemplateEditorModal({ template, data, onSave, onClose }) {
+export default function TemplateEditorModal({ open, template, data, onSave, onClose }) {
   const [viewMode,   setViewMode]   = useState("desktop");
   const [sideTab,    setSideTab]    = useState("content");
   const [blocks,     setBlocks]     = useState(template?.blocks ?? DEFAULT_BLOCKS);

@@ -685,28 +685,31 @@ export default function EmailRightPanel({ node, updateNodeData, removeNode }) {
         )}
       </div>
 
-      {/* Full-screen Template Editor Modal */}
-      {showEditor && (
-        <TemplateEditorModal
-          template={data.template}
-          data={data}
-          onSave={(editorData) => {
-            const tpl = data.template ?? {
-              id: `email_custom_${Date.now()}`,
-              name: "Custom Template",
-              subject: data.subject || "",
-              previewText: data.previewText || "",
-              category: "Custom",
-              thumbnailColor: "#EFF6FF",
-              status: "Active",
-              lastUpdated: new Date().toISOString().split("T")[0],
-              blocks: [],
-            };
-            patch({ template: { ...tpl, blocks: editorData.blocks } });
-          }}
-          onClose={() => setShowEditor(false)}
-        />
-      )}
+      {/* Template Editor Modal */}
+      <TemplateEditorModal
+        open={showEditor}
+        template={data.template}
+        data={data}
+        onSave={(editorData) => {
+          const tpl = data.template ?? {
+            id: `email_custom_${Date.now()}`,
+            name: "Custom Template",
+            subject: data.subject || "",
+            previewText: data.previewText || "",
+            category: "Custom",
+            thumbnailColor: "#EFF6FF",
+            status: "Active",
+            lastUpdated: new Date().toISOString().split("T")[0],
+            blocks: [],
+          };
+          patch({
+            template: { ...tpl, blocks: editorData.blocks },
+            ...(editorData.subject !== undefined && { subject: editorData.subject }),
+            ...(editorData.previewText !== undefined && { previewText: editorData.previewText }),
+          });
+        }}
+        onClose={() => setShowEditor(false)}
+      />
     </>
   );
 }
