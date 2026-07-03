@@ -64,7 +64,7 @@ const nodeTypes = {
   push:            PushNode,
   conditionalsplit: ConditionalSplitNode,
   channel:         ChannelNode,
-  action:          ChannelNode,   // Shopify, Integrations, AI actions etc.
+  action:          ChannelNode,   // Integrations, AI actions, legacy action nodes
   note:            ChannelNode,   // Sticky notes
   wait:            LogicNode,
   condition:       LogicNode,

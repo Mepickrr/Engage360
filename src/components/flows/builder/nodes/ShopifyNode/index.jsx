@@ -48,7 +48,7 @@ function getPreviewLine(data) {
     const d = data?.discount ?? {};
     const title   = d.title || "—";
     const type    = d.type  || "amount";
-    const expires = d.expirationEnabled ? (d.expirationValue ?? "set") : "never";
+    const expires = d.expirationEnabled ? (d.expirationValue ?? "(pending)") : "never";
     return `Discount: ${title} · ${type} · expires ${expires}`;
   }
   return null;

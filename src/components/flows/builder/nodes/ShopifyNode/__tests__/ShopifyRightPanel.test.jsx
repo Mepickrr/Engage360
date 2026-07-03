@@ -4,7 +4,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import ShopifyRightPanel from "../ShopifyRightPanel";
 
 const makeNode = (data = {}) => ({ id: "n1", data });
-const noop = jest.fn();
+const noop = () => {};
 
 describe("ShopifyRightPanel", () => {
   it("shows action picker when no action set", () => {

@@ -13,8 +13,8 @@ export const MOCK_TAGS = ["Nitro", "nitro", "fastrr_login"];
 
 export const defaultShopifyNodeData = {
   action: null,
-  orderTags: [...MOCK_TAGS],
-  customerTags: [...MOCK_TAGS],
+  orderTags: [],
+  customerTags: [],
   orderNote: "",
   discount: {
     title: "",

@@ -68,7 +68,7 @@ function TagsEditor({ tags, onChange, testId }) {
         }}
       />
       <div style={{ fontSize: 10, color: MUTED, marginTop: 4, marginBottom: 8 }}>
-        Please ENTER to add
+        Press Enter to add
       </div>
       {tags.length > 0 && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
