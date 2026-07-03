@@ -20,6 +20,7 @@ import NextBestActionRightPanel from "@/components/flows/builder/nodes/NextBestA
 import SmartFlowOptimizerRightPanel from "@/components/flows/builder/nodes/SmartFlowOptimizerNode/SmartFlowOptimizerRightPanel";
 import WebhookRightPanel from "@/components/flows/builder/nodes/WebhookNode/WebhookRightPanel";
 import JudgeMeRightPanel from "@/components/flows/builder/nodes/JudgeMeNode/JudgeMeRightPanel";
+import ShopifyRightPanel from "@/components/flows/builder/nodes/ShopifyNode/ShopifyRightPanel";
 
 function NumberInput({ label, value, onChange, testId, suffix }) {
   return (
@@ -424,6 +425,14 @@ export default function ConfigTab() {
           updateNodeData={updateNodeData}
           removeNode={removeNode}
         />
+      </div>
+    );
+  }
+
+  if (node?.type === "shopify") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col" data-testid="right-config-tab">
+        <ShopifyRightPanel node={node} updateNodeData={updateNodeData} removeNode={removeNode} />
       </div>
     );
   }

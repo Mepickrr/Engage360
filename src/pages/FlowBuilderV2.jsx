@@ -31,16 +31,15 @@ const V2_ALLOWED_TEMPLATE_STYLES = [
 // V2 node allow-list — only these node IDs are visible in the left panel.
 // To re-enable a hidden node, add its ID here (IDs match NodePalette CATEGORIES).
 // Blueprint nodes (currently hidden): nextbestaction, smartflowoptimizer, aicontent,
-// aisocial, custtag, discount, ordertag, ordernotes, judgeme, razorpay, freshdesk,
-// aipredict, aibestch, addrow, updaterow, getrow, updatetag, addevent, tktcreate,
-// assigntkt, changestatus, stickynote, sr_shipment, sr_track, sr_cancel, sr_return, sr_awb
+// aisocial, freshdesk, aipredict, aibestch, addrow, updaterow, getrow, updatetag, addevent,
+// tktcreate, assigntkt, changestatus, stickynote, sr_shipment, sr_track, sr_cancel, sr_return, sr_awb
 const V2_ALLOWED_NODES = [
   // Communication
   "whatsapp", "email", "rcs", "sms", "webpush", "onsite", "inapp", "aichatbot", "aicallingv2",
   // Flow Control
   "condsplit", "delay", "startflow",
-  // Integrations
-  "webhook",
+  // Integrations (shopify added, old separate nodes removed)
+  "webhook", "judgeme", "razorpay", "shopify",
 ];
 
 export default function FlowBuilderV2() {

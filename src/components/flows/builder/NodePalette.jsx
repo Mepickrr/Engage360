@@ -63,21 +63,13 @@ const CATEGORIES = [
     ],
   },
   {
-    id: "shopify", label: "Shopify", Icon: ShoppingCart, color: "green",
-    nodes: [
-      { id:"custtag",    name:"Customer Tag",  Icon:Tag,          kind:"action", subtype:"custtag"    },
-      { id:"discount",   name:"Discount Code", Icon:Percent,      kind:"action", subtype:"discount"   },
-      { id:"ordertag",   name:"Add Order Tag", Icon:ClipboardList,kind:"action", subtype:"ordertag"   },
-      { id:"ordernotes", name:"Order Notes",   Icon:StickyNote,   kind:"action", subtype:"ordernotes" },
-    ],
-  },
-  {
     id: "integrations", label: "Integrations", Icon: Plug, color: "blue",
     nodes: [
-      { id:"judgeme",   name:"Judge Me",  Icon:Star,       kind:"judgeme", subtype:null  },
-      { id:"razorpay",  name:"Razor Pay", Icon:CreditCard, kind:"razorpay", subtype:null },
-      { id:"freshdesk", name:"Freshdesk", Icon:Headphones, kind:"action", subtype:"freshdesk"},
-      { id:"webhook",   name:"Webhook",   Icon:Webhook,    kind:"webhook", subtype:null       },
+      { id:"judgeme",   name:"Judge Me",  Icon:Star,         kind:"judgeme",  subtype:null  },
+      { id:"shopify",   name:"Shopify",   Icon:ShoppingCart, kind:"shopify",  subtype:null  },
+      { id:"razorpay",  name:"Razor Pay", Icon:CreditCard,   kind:"razorpay", subtype:null  },
+      { id:"freshdesk", name:"Freshdesk", Icon:Headphones,   kind:"action",   subtype:"freshdesk" },
+      { id:"webhook",   name:"Webhook",   Icon:Webhook,      kind:"webhook",  subtype:null  },
     ],
   },
   {

@@ -33,6 +33,7 @@ import NextBestActionNode from "./nodes/NextBestActionNode";
 import SmartFlowOptimizerNode from "./nodes/SmartFlowOptimizerNode";
 import WebhookNode from "./nodes/WebhookNode";
 import JudgeMeNode from "./nodes/JudgeMeNode";
+import ShopifyNode from "./nodes/ShopifyNode";
 
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import { defaultDataForPaletteItem } from "@/lib/flowMeta";
@@ -58,6 +59,7 @@ const nodeTypes = {
   razorpay:        RazorpayNode,
   webhook:         WebhookNode,
   judgeme:         JudgeMeNode,
+  shopify:         ShopifyNode,
   sms:             SMSNode,
   push:            PushNode,
   conditionalsplit: ConditionalSplitNode,

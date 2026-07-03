@@ -39,6 +39,7 @@ import { defaultNBANodeData } from "@/components/flows/builder/nodes/NextBestAct
 import { defaultSFONodeData } from "@/components/flows/builder/nodes/SmartFlowOptimizerNode/data/mockData";
 import { defaultWebhookNodeData } from "@/components/flows/builder/nodes/WebhookNode/data/mockData";
 import { defaultJudgeMeNodeData } from "@/components/flows/builder/nodes/JudgeMeNode/data/mockData";
+import { defaultShopifyNodeData } from "@/components/flows/builder/nodes/ShopifyNode/data/mockData";
 
 export const CHANNEL_META = {
   whatsapp: { label: "WhatsApp", color: "#10B981", Icon: MessageCircle },
@@ -132,6 +133,8 @@ export function defaultDataForPaletteItem(item) {
       return { ...defaultRazorpayNodeData };
     case "judgeme":
       return { ...defaultJudgeMeNodeData };
+    case "shopify":
+      return { ...defaultShopifyNodeData };
     case "webhook":
       return { ...defaultWebhookNodeData };
     case "sms":
@@ -219,6 +222,7 @@ export function rendererTypeForKind(kind) {
   if (kind === "startflow")  return "startflow";
   if (kind === "razorpay")   return "razorpay";
   if (kind === "judgeme")    return "judgeme";
+  if (kind === "shopify")    return "shopify";
   if (kind === "sms")        return "sms";
   if (kind === "push")             return "push";
   if (kind === "conditionalsplit") return "conditionalsplit";
