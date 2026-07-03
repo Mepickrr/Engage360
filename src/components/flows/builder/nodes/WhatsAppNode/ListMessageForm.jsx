@@ -63,13 +63,22 @@ function defaultDraft() {
     footer: "",
     buttonText: "",
     sections: [defaultSection(0)],
+    _nextRowIdx: 1,
   };
 }
 
 export default function ListMessageForm({ initial, onApply, onCancel }) {
-  const [draft, setDraft] = useState(
-    initial?.isListMessage ? initial : defaultDraft()
-  );
+  const [draft, setDraft] = useState(() => {
+    if (initial?.isListMessage) {
+      const allRows = (initial.sections ?? []).flatMap((s) => s.rows ?? []);
+      const maxIdx = allRows.reduce((m, r) => {
+        const n = parseInt(r.id?.replace("row_", "") ?? "0", 10);
+        return isNaN(n) ? m : Math.max(m, n);
+      }, 0);
+      return { ...initial, _nextRowIdx: maxIdx + 1 };
+    }
+    return defaultDraft();
+  });
 
   const patch = (p) => setDraft((d) => ({ ...d, ...p }));
 
@@ -92,16 +101,22 @@ export default function ListMessageForm({ initial, onApply, onCancel }) {
 
   const addSection = () => {
     if (draft.sections.length >= MAX_SECTIONS) return;
-    patch({ sections: [...draft.sections, defaultSection(totalRows)] });
+    setDraft((d) => ({
+      ...d,
+      _nextRowIdx: d._nextRowIdx + 1,
+      sections: [...d.sections, defaultSection(d._nextRowIdx)],
+    }));
   };
 
   const addRow = (si) => {
     if (totalRows >= MAX_ROWS_TOTAL) return;
-    patch({
-      sections: draft.sections.map((s, i) =>
-        i === si ? { ...s, rows: [...s.rows, defaultRow(totalRows)] } : s
+    setDraft((d) => ({
+      ...d,
+      _nextRowIdx: d._nextRowIdx + 1,
+      sections: d.sections.map((s, i) =>
+        i === si ? { ...s, rows: [...s.rows, defaultRow(d._nextRowIdx)] } : s
       ),
-    });
+    }));
   };
 
   const deleteRow = (si, ri) => {
@@ -274,7 +289,10 @@ export default function ListMessageForm({ initial, onApply, onCancel }) {
         </button>
         <button
           type="button"
-          onClick={() => onApply(draft)}
+          onClick={() => {
+            const { _nextRowIdx, ...applyDraft } = draft;
+            onApply(applyDraft);
+          }}
           disabled={!canApply}
           title={!canApply ? "Fill in body, button label, and at least one row title" : undefined}
           style={{
