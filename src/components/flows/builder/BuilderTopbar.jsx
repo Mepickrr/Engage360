@@ -22,6 +22,7 @@ import {
   Tag,
   ChevronDown,
   TriangleAlert,
+  History,
 } from "lucide-react";
 import { toast } from "sonner";
 import SaveJourneyModal from "./SaveJourneyModal";
@@ -183,6 +184,49 @@ function MoreMenu({ onDownload }) {
             <Download className="w-3.5 h-3.5 text-text-muted" />
             Download report
           </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Version history menu ─────────────────────────────────────────────────────
+export function VersionHistoryMenu({ versions }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return;
+    function onDoc(e) { if (!ref.current?.contains(e.target)) setOpen(false); }
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [open]);
+
+  const list = versions || [];
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        data-testid="builder-version-history"
+        onClick={() => setOpen((o) => !o)}
+        className="w-8 h-8 rounded-md flex items-center justify-center border border-border text-text-secondary hover:bg-slate-50 hover:text-text-primary transition-colors"
+      >
+        <History className="w-3.5 h-3.5" />
+      </button>
+      {open && (
+        <div
+          data-testid="builder-version-history-list"
+          className="absolute right-0 top-full mt-1 w-56 bg-white border border-border rounded-lg shadow-lg z-50 py-1 overflow-hidden"
+        >
+          {list.length === 0 ? (
+            <div className="px-3 py-2 text-[12px] text-text-muted">No live versions yet</div>
+          ) : (
+            list.map((v) => (
+              <div key={v.id} className="px-3 py-2 text-[12px] text-text-primary">
+                {v.liveAt} · {v.editedBy}
+              </div>
+            ))
+          )}
         </div>
       )}
     </div>
