@@ -2,13 +2,16 @@ import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import ReactFlow, {
   Background,
   Controls,
+  ControlButton,
   MiniMap,
   addEdge,
   applyNodeChanges,
   applyEdgeChanges,
   MarkerType,
+  useReactFlow,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import { StickyNote as StickyNoteIcon } from "lucide-react";
 
 import TriggerNode from "./nodes/TriggerNode";
 import ChannelNode from "./nodes/ChannelNode";
@@ -34,6 +37,7 @@ import SmartFlowOptimizerNode from "./nodes/SmartFlowOptimizerNode";
 import WebhookNode from "./nodes/WebhookNode";
 import JudgeMeNode from "./nodes/JudgeMeNode";
 import ShopifyNode from "./nodes/ShopifyNode";
+import StickyNoteNode from "./nodes/StickyNoteNode";
 
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import { defaultDataForPaletteItem } from "@/lib/flowMeta";
@@ -65,7 +69,7 @@ const nodeTypes = {
   conditionalsplit: ConditionalSplitNode,
   channel:         ChannelNode,
   action:          ChannelNode,   // Integrations, AI actions, legacy action nodes
-  note:            ChannelNode,   // Sticky notes
+  note:            StickyNoteNode,
   wait:            LogicNode,
   condition:       LogicNode,
   split:           LogicNode,
@@ -101,6 +105,23 @@ export default function Canvas({ onCanvasDrop }) {
 
   // wrapperRef points to the div that wraps ReactFlow — used for coordinate math.
   const wrapperRef = useRef(null);
+
+  const { screenToFlowPosition } = useReactFlow();
+
+  const handleAddStickyNote = useCallback(() => {
+    const noteCount = nodes.filter((n) => n.type === "note").length;
+    const offset = (noteCount % 5) * 24;
+    const center = screenToFlowPosition({
+      x: window.innerWidth / 2 + offset,
+      y: window.innerHeight / 2 + offset,
+    });
+    onCanvasDrop?.({
+      id: nextId(nodes, "note"),
+      type: "note",
+      position: center,
+      data: defaultDataForPaletteItem({ kind: "note" }),
+    });
+  }, [nodes, onCanvasDrop, screenToFlowPosition]);
 
   const onNodesChange = useCallback(
     (changes) => setNodes(applyNodeChanges(changes, nodes)),
@@ -210,7 +231,11 @@ export default function Canvas({ onCanvasDrop }) {
         proOptions={PRO_OPTIONS}
       >
         <Background gap={20} size={1} color="#CBD5E1" />
-        <Controls position="bottom-left" showInteractive={false} />
+        <Controls position="bottom-left" showInteractive={false}>
+          <ControlButton onClick={handleAddStickyNote} title="Sticky Note">
+            <StickyNoteIcon size={16} />
+          </ControlButton>
+        </Controls>
         <MiniMap pannable zoomable nodeColor="#CBD5E1" maskColor="rgba(241,245,249,0.7)" />
       </ReactFlow>
 
