@@ -51,15 +51,6 @@
       ]
     },
     {
-      "id": "notes",
-      "name": "Notes",
-      "color": "#F59E0B",
-      "bg": "#FEF3C7",
-      "items": [
-        { "slug": "sticky_notes", "name": "Sticky Notes", "kind": "generic", "subtype": "sticky_notes", "icon": "StickyNote", "color": "#F59E0B" }
-      ]
-    },
-    {
       "id": "flow_control",
       "name": "Flow Control",
       "color": "#64748B",
