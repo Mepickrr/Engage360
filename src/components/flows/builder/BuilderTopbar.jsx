@@ -21,6 +21,7 @@ import {
   BookMarked,
   Tag,
   ChevronDown,
+  TriangleAlert,
 } from "lucide-react";
 import { toast } from "sonner";
 import SaveJourneyModal from "./SaveJourneyModal";
@@ -64,6 +65,22 @@ export function FlowTagPill({ tag, onClick }) {
       <Tag className="w-3 h-3" />
       {tag || "Promotional"}
       <ChevronDown className="w-3 h-3" />
+    </button>
+  );
+}
+
+// ── Flow warning badge ───────────────────────────────────────────────────────
+export function WarningBadge({ count, onClick }) {
+  if (!count || count <= 0) return null;
+  return (
+    <button
+      type="button"
+      data-testid="builder-warning-badge"
+      onClick={onClick}
+      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
+    >
+      <TriangleAlert className="w-3 h-3" />
+      {count}
     </button>
   );
 }
