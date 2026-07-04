@@ -105,7 +105,7 @@ function ActiveToggle({ active, disabled, onToggle }) {
 }
 
 // ── Autosave / last-saved indicator ─────────────────────────────────────────
-function SaveIndicator({ status, lastSavedAt }) {
+export function SaveIndicator({ status, lastSavedAt, lastSavedBy }) {
   const [label, setLabel] = useState("");
 
   useEffect(() => {
@@ -142,7 +142,7 @@ function SaveIndicator({ status, lastSavedAt }) {
   if (label)
     return (
       <span className="inline-flex items-center gap-1 text-[11px] text-text-muted">
-        <Clock className="w-3 h-3" /> {label}
+        <Clock className="w-3 h-3" /> {label}{lastSavedBy ? ` · ${lastSavedBy}` : ""}
       </span>
     );
   return null;
