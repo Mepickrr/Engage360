@@ -32,7 +32,7 @@ const V2_ALLOWED_TEMPLATE_STYLES = [
 // To re-enable a hidden node, add its ID here (IDs match NodePalette CATEGORIES).
 // Blueprint nodes (currently hidden): nextbestaction, smartflowoptimizer, aicontent,
 // aisocial, freshdesk, aipredict, aibestch, addrow, updaterow, getrow, updatetag, addevent,
-// tktcreate, assigntkt, changestatus, stickynote, sr_shipment, sr_track, sr_cancel, sr_return, sr_awb
+// tktcreate, assigntkt, changestatus, sr_shipment, sr_track, sr_cancel, sr_return, sr_awb
 const V2_ALLOWED_NODES = [
   // Communication
   "whatsapp", "email", "rcs", "sms", "webpush", "onsite", "inapp", "aichatbot", "aicallingv2",
@@ -306,7 +306,7 @@ export default function FlowBuilderV2() {
     allowedTemplateStyleIds: V2_ALLOWED_TEMPLATE_STYLES,
     // Sections hidden from the event picker in V2 (by catalogue section name).
     // V1 never wraps with FlowVariantContext so this has no effect there.
-    hiddenCatalogueSections: ["Instagram", "Email"],
+    hiddenCatalogueSections: ["Instagram", "Email", "Agent"],
   };
 
   return (

@@ -1,5 +1,5 @@
 // Generic fallback node renderer for palette nodes that don't have a
-// dedicated renderer yet (AI Calling, AI Content, Judge Me, Sticky Notes,
+// dedicated renderer yet (AI Calling, AI Content, Judge Me,
 // etc.). Keeps drag-drop & selection working without any feature logic.
 import React from "react";
 import { Handle, Position } from "reactflow";

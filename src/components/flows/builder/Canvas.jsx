@@ -44,7 +44,7 @@ import { defaultDataForPaletteItem } from "@/lib/flowMeta";
 
 // Register every kind so reactflow can render them. Logic kinds all share the
 // same renderer (LogicNode reads `type` to pick the icon/colour).
-// "action" and "note" map to ChannelNode which handles generic labelled cards.
+// "action" maps to ChannelNode which handles generic labelled cards; "note" renders StickyNoteNode.
 const nodeTypes = {
   trigger:         TriggerNode,
   "start-trigger": StartTriggerNode,
@@ -115,13 +115,15 @@ export default function Canvas({ onCanvasDrop }) {
       x: window.innerWidth / 2 + offset,
       y: window.innerHeight / 2 + offset,
     });
+    setNodes(nodes.map((n) => (n.selected ? { ...n, selected: false } : n)));
     onCanvasDrop?.({
       id: nextId(nodes, "note"),
       type: "note",
       position: center,
       data: defaultDataForPaletteItem({ kind: "note" }),
+      selected: true,
     });
-  }, [nodes, onCanvasDrop, screenToFlowPosition]);
+  }, [nodes, onCanvasDrop, screenToFlowPosition, setNodes]);
 
   const onNodesChange = useCallback(
     (changes) => setNodes(applyNodeChanges(changes, nodes)),
