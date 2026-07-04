@@ -155,7 +155,7 @@ export function SaveIndicator({ status, lastSavedAt, lastSavedBy }) {
 }
 
 // ── More menu ────────────────────────────────────────────────────────────────
-function MoreMenu({ onDownload }) {
+export function MoreMenu({ onDownload, onDownloadError }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   useEffect(() => {
@@ -175,7 +175,7 @@ function MoreMenu({ onDownload }) {
         <MoreHorizontal className="w-4 h-4" />
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-border rounded-lg shadow-lg z-50 py-1 overflow-hidden">
+        <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-border rounded-lg shadow-lg z-50 py-1 overflow-hidden">
           <button
             type="button"
             onClick={() => { onDownload(); setOpen(false); }}
@@ -183,6 +183,14 @@ function MoreMenu({ onDownload }) {
           >
             <Download className="w-3.5 h-3.5 text-text-muted" />
             Download report
+          </button>
+          <button
+            type="button"
+            onClick={() => { onDownloadError(); setOpen(false); }}
+            className="w-full text-left flex items-center gap-2.5 px-3 py-2 text-[13px] text-text-primary hover:bg-slate-50"
+          >
+            <Download className="w-3.5 h-3.5 text-text-muted" />
+            Download error report
           </button>
         </div>
       )}
@@ -401,6 +409,10 @@ export default function BuilderTopbar({ basePath = "/flows" }) {
     toast.info("Generating report…");
   };
 
+  const handleDownloadErrorReport = () => {
+    toast.info("Generating error report…");
+  };
+
   const saving = saveMut.isPending || renameMut.isPending;
 
   return (
@@ -547,7 +559,7 @@ export default function BuilderTopbar({ basePath = "/flows" }) {
         </button>
 
         {/* More */}
-        <MoreMenu onDownload={handleDownloadReport} />
+        <MoreMenu onDownload={handleDownloadReport} onDownloadError={handleDownloadErrorReport} />
       </div>
 
       {/* Save Journey Modal */}
