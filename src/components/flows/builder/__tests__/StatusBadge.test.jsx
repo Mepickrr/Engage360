@@ -10,6 +10,9 @@ jest.mock("@/store/flowBuilderStore", () => ({
   useFlowBuilderStore: () => ({}),
 }));
 jest.mock("../SaveJourneyModal", () => () => null);
+jest.mock("react-router-dom", () => ({
+  useNavigate: () => jest.fn(),
+}), { virtual: true });
 
 import { StatusBadge, STATUS_CONFIG } from "../BuilderTopbar";
 
