@@ -23,6 +23,9 @@ import {
   ChevronDown,
   TriangleAlert,
   History,
+  Undo2,
+  Redo2,
+  MessageCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import SaveJourneyModal from "./SaveJourneyModal";
@@ -30,6 +33,7 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
+  TooltipProvider,
 } from "@/components/ui/tooltip";
 
 // ── Status config ────────────────────────────────────────────────────────────
@@ -413,164 +417,174 @@ export default function BuilderTopbar({ basePath = "/flows" }) {
     toast.info("Generating error report…");
   };
 
+  const handleUndo = () => {
+    toast.info("Undo coming soon");
+  };
+
+  const handleRedo = () => {
+    toast.info("Redo coming soon");
+  };
+
+  const handleViewChats = () => {
+    toast.info("Customer chat view coming soon");
+  };
+
+  const handleTagClick = () => {
+    toast.info("Flow tag editing coming soon");
+  };
+
+  const handleWarningClick = () => {
+    toast.info("Flow issue list coming soon");
+  };
+
+  const hasBeenLive = status !== "draft";
+
   const saving = saveMut.isPending || renameMut.isPending;
 
   return (
-    <header
-      data-testid="builder-topbar"
-      className="h-[52px] bg-surface border-b border-border flex items-center justify-between px-3 gap-3 flex-shrink-0"
-    >
-      {/* ── Left group ── */}
-      <div className="flex items-center gap-2.5 min-w-0">
-        {/* Back */}
-        <button
-          type="button"
-          data-testid="builder-back"
-          onClick={() => navigate(basePath)}
-          className="p-1.5 rounded-md hover:bg-slate-100 text-text-muted hover:text-text-primary transition-colors flex-shrink-0"
-        >
-          <ArrowLeft className="w-4 h-4" />
-        </button>
-
-        <Divider />
-
-        {/* Flow name */}
-        {editing ? (
-          <input
-            ref={inputRef}
-            type="text"
-            value={draftName}
-            onChange={(e) => setDraftName(e.target.value)}
-            onBlur={commitName}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") commitName();
-              if (e.key === "Escape") { setEditing(false); setDraftName(meta?.name || "Untitled flow"); }
-            }}
-            data-testid="builder-name-input"
-            className="text-[14px] font-semibold text-text-primary bg-transparent border-b-2 border-primary outline-none max-w-[260px]"
-          />
-        ) : (
+    <TooltipProvider delayDuration={150}>
+      <header
+        data-testid="builder-topbar"
+        className="h-[52px] bg-surface border-b border-border flex items-center justify-between px-3 gap-3 flex-shrink-0"
+      >
+        {/* ── Left group ── */}
+        <div className="flex items-center gap-2.5 min-w-0">
           <button
             type="button"
-            data-testid="builder-name"
-            onClick={() => flowId && setEditing(true)}
-            title="Click to rename"
-            className="text-[14px] font-semibold text-text-primary hover:text-primary truncate max-w-[240px] transition-colors"
-            disabled={!flowId}
+            data-testid="builder-back"
+            onClick={() => navigate(basePath)}
+            className="p-1.5 rounded-md hover:bg-slate-100 text-text-muted hover:text-text-primary transition-colors flex-shrink-0"
           >
-            {meta?.name || "Untitled flow"}
+            <ArrowLeft className="w-4 h-4" />
           </button>
-        )}
 
-        {/* Active toggle */}
-        <ActiveToggle
-          active={isActive}
-          disabled={!flowId || pauseMut.isPending || resumeMut.isPending || publishMut.isPending}
-          onToggle={handleToggle}
-        />
+          <Divider />
 
-        {/* Status badge */}
-        <StatusBadge status={status} />
-      </div>
-
-      {/* ── Center: last saved ── */}
-      <div className="flex-shrink-0">
-        <SaveIndicator status={autosaveStatus} lastSavedAt={lastSavedAt} />
-      </div>
-
-      {/* ── Right group ── */}
-      <div className="flex items-center gap-2 flex-shrink-0">
-        {/* View Analytics */}
-        <button
-          type="button"
-          data-testid="builder-analytics"
-          onClick={() => navigate(`/flows/builder/${flowId}/analytics`)}
-          disabled={!flowId}
-          className="inline-flex items-center gap-1.5 px-3 h-8 rounded-md text-[12px] font-medium text-primary hover:bg-primary/5 disabled:opacity-40 transition-colors"
-        >
-          <BarChart2 className="w-3.5 h-3.5" />
-          View Analytics
-        </button>
-
-        <Divider />
-
-        {/* Pause / Resume for active/paused flows */}
-        {status === "active" && (
-          <button
-            type="button"
-            data-testid="builder-pause"
-            onClick={() => pauseMut.mutate()}
-            disabled={pauseMut.isPending}
-            className="inline-flex items-center gap-1.5 px-3 h-8 rounded-md border border-border text-[12px] text-text-secondary hover:bg-slate-50 disabled:opacity-50 transition-colors"
-          >
-            Pause
-          </button>
-        )}
-        {status === "paused" && (
-          <button
-            type="button"
-            data-testid="builder-resume"
-            onClick={() => resumeMut.mutate()}
-            disabled={resumeMut.isPending}
-            className="inline-flex items-center gap-1.5 px-3 h-8 rounded-md border border-border text-[12px] text-text-secondary hover:bg-slate-50 disabled:opacity-50 transition-colors"
-          >
-            Resume
-          </button>
-        )}
-
-        {/* Play preview */}
-        <button
-          type="button"
-          data-testid="builder-play"
-          onClick={handlePreview}
-          disabled={!flowId}
-          title="Preview journey"
-          className="w-8 h-8 rounded-md flex items-center justify-center border border-border text-text-secondary hover:bg-slate-50 hover:text-primary disabled:opacity-40 transition-colors"
-        >
-          <Play className="w-3.5 h-3.5" />
-        </button>
-
-        {/* Test */}
-        <button
-          type="button"
-          data-testid="builder-test"
-          onClick={() => setSaveJourneyOpen(true)}
-          disabled={!flowId}
-          className="inline-flex items-center gap-1.5 px-3 h-8 rounded-md border border-blue-200 bg-blue-50 text-blue-700 text-[12px] font-semibold hover:bg-blue-100 disabled:opacity-40 transition-colors"
-        >
-          <FlaskConical className="w-3.5 h-3.5" />
-          Test
-        </button>
-
-        {/* Save Journey */}
-        <button
-          type="button"
-          data-testid="builder-save-journey"
-          onClick={() => setSaveJourneyOpen(true)}
-          disabled={!flowId}
-          className="inline-flex items-center gap-1.5 px-4 h-8 rounded-md bg-primary text-white text-[12px] font-semibold hover:bg-primary-hover disabled:opacity-50 transition-colors"
-        >
-          {saving ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          {editing ? (
+            <input
+              ref={inputRef}
+              type="text"
+              value={draftName}
+              onChange={(e) => setDraftName(e.target.value)}
+              onBlur={commitName}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") commitName();
+                if (e.key === "Escape") { setEditing(false); setDraftName(meta?.name || "Untitled flow"); }
+              }}
+              data-testid="builder-name-input"
+              className="text-[14px] font-semibold text-text-primary bg-transparent border-b-2 border-primary outline-none max-w-[260px]"
+            />
           ) : (
-            <BookMarked className="w-3.5 h-3.5" />
+            <button
+              type="button"
+              data-testid="builder-name"
+              onClick={() => flowId && setEditing(true)}
+              title="Click to rename"
+              className="text-[14px] font-semibold text-text-primary hover:text-primary truncate max-w-[240px] transition-colors"
+              disabled={!flowId}
+            >
+              {meta?.name || "Untitled flow"}
+            </button>
           )}
-          Save Journey
-        </button>
 
-        {/* More */}
-        <MoreMenu onDownload={handleDownloadReport} onDownloadError={handleDownloadErrorReport} />
-      </div>
+          <FlowTagPill tag={meta?.tag} onClick={handleTagClick} />
 
-      {/* Save Journey Modal */}
-      <SaveJourneyModal
-        open={saveJourneyOpen}
-        onClose={() => setSaveJourneyOpen(false)}
-        triggerEventName={triggerEventName}
-        onGoLive={handleGoLive}
-        onTestMode={handleTestMode}
-        onPreview={handlePreview}
-      />
-    </header>
+          <ActiveToggle
+            active={isActive}
+            disabled={!flowId || pauseMut.isPending || resumeMut.isPending || publishMut.isPending}
+            onToggle={handleToggle}
+          />
+
+          <StatusBadge status={status} />
+
+          <WarningBadge count={meta?.warningCount} onClick={handleWarningClick} />
+        </div>
+
+        {/* ── Center: last saved ── */}
+        <div className="flex-shrink-0">
+          <SaveIndicator status={autosaveStatus} lastSavedAt={lastSavedAt} lastSavedBy={meta?.updated_by_name || "You"} />
+        </div>
+
+        {/* ── Right group ── */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <TopbarIconButton icon={Undo2} label="Undo" testId="builder-undo" onClick={handleUndo} />
+          <TopbarIconButton icon={Redo2} label="Redo" testId="builder-redo" onClick={handleRedo} />
+
+          {hasBeenLive && (
+            <>
+              <Divider />
+              <VersionHistoryMenu versions={[]} />
+              <TopbarIconButton
+                icon={BarChart2}
+                label="View Analytics"
+                testId="builder-analytics"
+                disabled={!flowId}
+                onClick={() => navigate(`/flows/builder/${flowId}/analytics`)}
+              />
+              <TopbarIconButton
+                icon={MessageCircle}
+                label="View all Customer Chat"
+                testId="builder-chats"
+                onClick={handleViewChats}
+              />
+            </>
+          )}
+
+          <Divider />
+
+          {status === "active" && (
+            <button
+              type="button"
+              data-testid="builder-pause"
+              onClick={() => pauseMut.mutate()}
+              disabled={pauseMut.isPending}
+              className="inline-flex items-center gap-1.5 px-3 h-8 rounded-md border border-border text-[12px] text-text-secondary hover:bg-slate-50 disabled:opacity-50 transition-colors"
+            >
+              Pause
+            </button>
+          )}
+          {status === "paused" && (
+            <button
+              type="button"
+              data-testid="builder-resume"
+              onClick={() => resumeMut.mutate()}
+              disabled={resumeMut.isPending}
+              className="inline-flex items-center gap-1.5 px-3 h-8 rounded-md border border-border text-[12px] text-text-secondary hover:bg-slate-50 disabled:opacity-50 transition-colors"
+            >
+              Resume
+            </button>
+          )}
+
+          <TopbarIconButton icon={Play} label="Preview Flow" testId="builder-play" disabled={!flowId} onClick={handlePreview} />
+          <TopbarIconButton icon={FlaskConical} label="Test Mode" testId="builder-test" disabled={!flowId} onClick={() => setSaveJourneyOpen(true)} />
+
+          <button
+            type="button"
+            data-testid="builder-save-journey"
+            onClick={() => setSaveJourneyOpen(true)}
+            disabled={!flowId}
+            className="inline-flex items-center gap-1.5 px-4 h-8 rounded-md bg-primary text-white text-[12px] font-semibold hover:bg-primary-hover disabled:opacity-50 transition-colors"
+          >
+            {saving ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <BookMarked className="w-3.5 h-3.5" />
+            )}
+            Save Journey
+          </button>
+
+          <MoreMenu onDownload={handleDownloadReport} onDownloadError={handleDownloadErrorReport} />
+        </div>
+
+        <SaveJourneyModal
+          open={saveJourneyOpen}
+          onClose={() => setSaveJourneyOpen(false)}
+          triggerEventName={triggerEventName}
+          onGoLive={handleGoLive}
+          onTestMode={handleTestMode}
+          onPreview={handlePreview}
+        />
+      </header>
+    </TooltipProvider>
   );
 }
