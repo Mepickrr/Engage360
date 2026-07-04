@@ -19,6 +19,8 @@ import {
   Clock,
   FlaskConical,
   BookMarked,
+  Tag,
+  ChevronDown,
 } from "lucide-react";
 import { toast } from "sonner";
 import SaveJourneyModal from "./SaveJourneyModal";
@@ -45,6 +47,24 @@ export function StatusBadge({ status }) {
       <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
       {cfg.label}
     </span>
+  );
+}
+
+// ── Flow tag pill ────────────────────────────────────────────────────────────
+export const FLOW_TAG_OPTIONS = ["Transactional", "Promotional", "Broadcast", "Retention"];
+
+export function FlowTagPill({ tag, onClick }) {
+  return (
+    <button
+      type="button"
+      data-testid="builder-tag-pill"
+      onClick={onClick}
+      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-text-secondary hover:bg-slate-200 transition-colors"
+    >
+      <Tag className="w-3 h-3" />
+      {tag || "Promotional"}
+      <ChevronDown className="w-3 h-3" />
+    </button>
   );
 }
 
