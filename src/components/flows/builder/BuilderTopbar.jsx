@@ -25,6 +25,11 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import SaveJourneyModal from "./SaveJourneyModal";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 // ── Status config ────────────────────────────────────────────────────────────
 export const STATUS_CONFIG = {
@@ -187,6 +192,26 @@ function MoreMenu({ onDownload }) {
 // ── Divider ──────────────────────────────────────────────────────────────────
 function Divider() {
   return <div className="w-px h-5 bg-border flex-shrink-0" />;
+}
+
+// ── Icon button with hover tooltip ──────────────────────────────────────────
+export function TopbarIconButton({ icon: Icon, label, onClick, disabled, testId }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          data-testid={testId}
+          onClick={onClick}
+          disabled={disabled}
+          className="w-8 h-8 rounded-md flex items-center justify-center border border-border text-text-secondary hover:bg-slate-50 hover:text-text-primary disabled:opacity-40 transition-colors"
+        >
+          <Icon className="w-3.5 h-3.5" />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">{label}</TooltipContent>
+    </Tooltip>
+  );
 }
 
 // ── Main topbar ──────────────────────────────────────────────────────────────
