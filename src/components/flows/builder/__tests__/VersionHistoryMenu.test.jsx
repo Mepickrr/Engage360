@@ -15,25 +15,32 @@ jest.mock("@/store/flowBuilderStore", () => ({
 jest.mock("../SaveJourneyModal", () => () => null);
 
 import { VersionHistoryMenu } from "../BuilderTopbar";
+import { TooltipProvider } from "@/components/ui/tooltip";
+
+function renderMenu(props) {
+  return render(
+    <TooltipProvider>
+      <VersionHistoryMenu {...props} />
+    </TooltipProvider>
+  );
+}
 
 describe("VersionHistoryMenu", () => {
   it("is closed by default", () => {
-    render(<VersionHistoryMenu versions={[]} />);
+    renderMenu({ versions: [] });
     expect(screen.queryByTestId("builder-version-history-list")).not.toBeInTheDocument();
   });
 
   it("shows an empty state when there are no versions", () => {
-    render(<VersionHistoryMenu versions={[]} />);
+    renderMenu({ versions: [] });
     fireEvent.click(screen.getByTestId("builder-version-history"));
     expect(screen.getByText("No live versions yet")).toBeInTheDocument();
   });
 
   it("lists each version with its live date and editor", () => {
-    render(
-      <VersionHistoryMenu
-        versions={[{ id: "v1", liveAt: "2026-06-01", editedBy: "Meenal K." }]}
-      />
-    );
+    renderMenu({
+      versions: [{ id: "v1", liveAt: "2026-06-01", editedBy: "Meenal K." }],
+    });
     fireEvent.click(screen.getByTestId("builder-version-history"));
     const list = screen.getByTestId("builder-version-history-list");
     expect(within(list).getByText("2026-06-01")).toBeInTheDocument();
@@ -41,7 +48,7 @@ describe("VersionHistoryMenu", () => {
   });
 
   it("toggles closed when the trigger is clicked again", () => {
-    render(<VersionHistoryMenu versions={[]} />);
+    renderMenu({ versions: [] });
     const trigger = screen.getByTestId("builder-version-history");
     fireEvent.click(trigger);
     expect(screen.getByTestId("builder-version-history-list")).toBeInTheDocument();

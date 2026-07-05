@@ -217,14 +217,19 @@ export function VersionHistoryMenu({ versions }) {
 
   return (
     <div className="relative" ref={ref}>
-      <button
-        type="button"
-        data-testid="builder-version-history"
-        onClick={() => setOpen((o) => !o)}
-        className="w-8 h-8 rounded-md flex items-center justify-center border border-border text-text-secondary hover:bg-slate-50 hover:text-text-primary transition-colors"
-      >
-        <History className="w-3.5 h-3.5" />
-      </button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            data-testid="builder-version-history"
+            onClick={() => setOpen((o) => !o)}
+            className="w-8 h-8 rounded-md flex items-center justify-center border border-border text-text-secondary hover:bg-slate-50 hover:text-text-primary transition-colors"
+          >
+            <History className="w-3.5 h-3.5" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">Version History</TooltipContent>
+      </Tooltip>
       {open && (
         <div
           data-testid="builder-version-history-list"
@@ -519,7 +524,7 @@ export default function BuilderTopbar({ basePath = "/flows" }) {
                 label="View Analytics"
                 testId="builder-analytics"
                 disabled={!flowId}
-                onClick={() => navigate(`/flows/builder/${flowId}/analytics`)}
+                onClick={() => navigate(`${basePath}/builder/${flowId}/analytics`)}
               />
               <TopbarIconButton
                 icon={MessageCircle}
