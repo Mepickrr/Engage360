@@ -231,6 +231,7 @@ export default function TemplateEditorModal({ open, template, data, onSave, onCl
       setSubject(data?.subject || "");
       setPreviewText(data?.previewText || "");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only reset state when the modal opens, not on every prop change
   }, [open]);
 
   const deleteBlock = (idx) => setBlocks((b) => b.filter((_, i) => i !== idx));
