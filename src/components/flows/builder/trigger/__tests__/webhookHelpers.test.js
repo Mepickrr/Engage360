@@ -9,7 +9,7 @@ import {
 describe("generateWebhookUrl", () => {
   it("builds a URL containing the seed and flow slug", () => {
     const url = generateWebhookUrl("abc123", "my-flow");
-    expect(url).toBe("https://bikapi.bikayi.app/chatbot/webhook/abc123?flow=my-flow");
+    expect(url).toBe("https://engage360/chatbot/webhook/abc123?flow=my-flow");
   });
 
   it("defaults the flow slug when omitted", () => {
@@ -21,7 +21,7 @@ describe("generateWebhookUrl", () => {
 describe("emptyWebhookConfig", () => {
   it("returns the zero-state shape with a generated URL", () => {
     const cfg = emptyWebhookConfig();
-    expect(cfg.webhookUrl).toMatch(/^https:\/\/bikapi\.bikayi\.app\/chatbot\/webhook\//);
+    expect(cfg.webhookUrl).toMatch(/^https:\/\/engage360\/chatbot\/webhook\//);
     expect(cfg.authProtected).toBe(false);
     expect(cfg.authConfig).toBeNull();
     expect(cfg.samplePayload).toBe("");

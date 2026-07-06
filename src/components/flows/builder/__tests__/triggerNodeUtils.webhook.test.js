@@ -3,7 +3,7 @@ import { summariseTriggerConfig } from "../triggerNodeUtils";
 describe("summariseTriggerConfig — webhook", () => {
   const baseConfig = {
     kind: "webhook",
-    webhookUrl: "https://bikapi.bikayi.app/chatbot/webhook/abc123?flow=test",
+    webhookUrl: "https://engage360/chatbot/webhook/abc123?flow=test",
     authProtected: false,
     authConfig: null,
     samplePayload: '{"vas_id": "+919999999999"}',

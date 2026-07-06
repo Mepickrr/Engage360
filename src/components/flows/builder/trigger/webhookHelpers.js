@@ -3,7 +3,7 @@
 // dependencies — independently testable.
 
 export function generateWebhookUrl(seed, flowSlug = "flow") {
-  return `https://bikapi.bikayi.app/chatbot/webhook/${seed}?flow=${flowSlug}`;
+  return `https://engage360/chatbot/webhook/${seed}?flow=${flowSlug}`;
 }
 
 function randomSeed() {

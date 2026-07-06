@@ -10,7 +10,7 @@ jest.mock("@/components/flows/analytics/NodeAnalyticsFooter", () => () => null);
 
 const webhookConfig = {
   kind: "webhook",
-  webhookUrl: "https://bikapi.bikayi.app/chatbot/webhook/abcdefghijklmnop?flow=test",
+  webhookUrl: "https://engage360/chatbot/webhook/abcdefghijklmnop?flow=test",
   authProtected: false,
   authConfig: null,
   samplePayload: '{"vas_id": "+919999999999"}',
