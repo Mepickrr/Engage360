@@ -96,7 +96,6 @@ Date and time,Inactivity and win-back,N days after event,Relative to a past even
 Date and time,Product,Back in Stock,Flow starts when a product is back in stock,active,yes,yes,no
 Date and time,Product,Price Drop,Flow starts when a product has a price drop,active,yes,yes,no
 Webhook and API,External signals,Webhook trigger,Third-party system sends data to your URL,active,yes,yes,no
-Webhook and API,External signals,API trigger,Developer calls E360 REST endpoint,coming soon,yes,yes,no
 Broadcast,Audience source,Saved segment,Pick a pre-built segment as audience,active,yes,no,yes
 Broadcast,Audience source,CSV upload,Upload phone list with variable columns,active,yes,no,yes
 Broadcast,Audience source,Dynamic filter,Build audience inline without saving a segment,active,yes,no,yes

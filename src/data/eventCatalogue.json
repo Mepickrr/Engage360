@@ -1493,22 +1493,6 @@
           "time_attribute_allow": false,
           "header": "ALL",
           "section": "External signals"
-        },
-        {
-          "name": "API trigger",
-          "description": "Developer calls E360 REST endpoint",
-          "source": "",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": false,
-          "audience_qualification_allow": true,
-          "time_attribute_allow": false,
-          "header": "ALL",
-          "section": "External signals"
         }
       ],
       "Audience source": [
@@ -1673,6 +1657,56 @@
           "time_attribute_allow": false,
           "header": "ALL",
           "section": "Custom Event"
+        }
+      ],
+      "Agent": [
+        {
+          "name": "Task",
+          "description": "This event gets triggered whenever a task is created either by agent or ai agent",
+          "source": "",
+          "device_tag": [
+            "iOS",
+            "Android",
+            "Website"
+          ],
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Agent"
+        },
+        {
+          "name": "Task Stage Change",
+          "description": "This event gets triggered whenever a task is closed either by agent or via auto close setup by brands",
+          "source": "",
+          "device_tag": [
+            "iOS",
+            "Android",
+            "Website"
+          ],
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Agent"
+        },
+        {
+          "name": "Reassigned Agent",
+          "description": "This event gets triggered when every time the ticket stage changes",
+          "source": "",
+          "device_tag": [
+            "iOS",
+            "Android",
+            "Website"
+          ],
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "Agent"
         }
       ]
     },
@@ -2315,22 +2349,6 @@
           "time_attribute_allow": false,
           "header": "Webhook and API",
           "section": "External signals"
-        },
-        {
-          "name": "API trigger",
-          "description": "Developer calls E360 REST endpoint",
-          "source": "",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": false,
-          "audience_qualification_allow": true,
-          "time_attribute_allow": false,
-          "header": "Webhook and API",
-          "section": "External signals"
         }
       ]
     },
@@ -2359,6 +2377,58 @@
           "time_attribute_allow": true,
           "header": "Broadcast",
           "section": "Audience source"
+        }
+      ]
+    },
+    "Agent": {
+      "Agent": [
+        {
+          "name": "Task",
+          "description": "This event gets triggered whenever a task is created either by agent or ai agent",
+          "source": "",
+          "device_tag": [
+            "iOS",
+            "Android",
+            "Website"
+          ],
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
+          "time_attribute_allow": false,
+          "header": "Agent",
+          "section": "Agent"
+        },
+        {
+          "name": "Task Stage Change",
+          "description": "This event gets triggered whenever a task is closed either by agent or via auto close setup by brands",
+          "source": "",
+          "device_tag": [
+            "iOS",
+            "Android",
+            "Website"
+          ],
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
+          "time_attribute_allow": false,
+          "header": "Agent",
+          "section": "Agent"
+        },
+        {
+          "name": "Reassigned Agent",
+          "description": "This event gets triggered when every time the ticket stage changes",
+          "source": "",
+          "device_tag": [
+            "iOS",
+            "Android",
+            "Website"
+          ],
+          "attribute_allowed": true,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
+          "time_attribute_allow": false,
+          "header": "Agent",
+          "section": "Agent"
         }
       ]
     }

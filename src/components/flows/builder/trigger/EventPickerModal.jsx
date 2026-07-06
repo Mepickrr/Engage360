@@ -17,10 +17,11 @@ export default function EventPickerModal({ open, onClose, onPick }) {
     () => [
       "All",
       ...Object.keys(catalogueData.catalogue).filter(
-        (h) => h !== "All" && h !== "ALL",
+        (h) =>
+          h !== "All" && h !== "ALL" && !hiddenCatalogueSections.includes(h),
       ),
     ],
-    [],
+    [hiddenCatalogueSections],
   );
 
   const visibleSections = useMemo(() => {
