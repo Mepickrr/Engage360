@@ -24,6 +24,30 @@ import {
   Package, Truck, XCircle, RotateCcw, Barcode,
 } from "lucide-react";
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
+import { useFlowVariant } from "@/components/flows/FlowVariantContext";
+import whatsappIcon from "@/assets/icons/whatsapp.png";
+import emailIcon from "@/assets/icons/email.png";
+
+const BRAND_ICONS = { whatsapp: whatsappIcon, email: emailIcon };
+
+// Renders a node's icon, swapping in the real brand glyph when the active
+// flow variant asks for it (currently: WhatsApp and Email in V2).
+function NodeIcon({ node, size, brandIcons, style }) {
+  const src = brandIcons?.[node.id] && BRAND_ICONS[node.id];
+  if (src) {
+    return (
+      <img
+        src={src}
+        alt=""
+        width={size}
+        height={size}
+        style={{ objectFit: "contain", ...style }}
+      />
+    );
+  }
+  const Icon = node.Icon;
+  return <Icon size={size} style={style} />;
+}
 
 // ── color ramps (matches HTML reference exactly) ──────────────
 const COLORS = {
@@ -117,6 +141,7 @@ CATEGORIES.forEach((cat) => {
 });
 
 export default function NodePalette({ onNodeAdd, allowedNodeIds = null }) {
+  const { brandIcons } = useFlowVariant();
   const [pinned,    setPinned]    = useState(true);
   const [hovered,   setHovered]   = useState(false);
   // In pinned mode every category is open by default; null = all open.
@@ -273,7 +298,7 @@ export default function NodePalette({ onNodeAdd, allowedNodeIds = null }) {
             <span style={{ fontSize:10, color:"#94A3B8", fontStyle:"italic" }}>Drop a node to track it here</span>
           ) : recent.map((id) => {
             const n = NODE_MAP[id]; if (!n) return null;
-            const col = COLORS[n.color]; const Icon = n.Icon;
+            const col = COLORS[n.color];
             return (
               <div key={id} draggable
                 onDragStart={(e) => onDragStart(e, n, n.color, n.catLabel)}
@@ -281,7 +306,7 @@ export default function NodePalette({ onNodeAdd, allowedNodeIds = null }) {
                 onMouseEnter={(e)=>e.currentTarget.style.transform="scale(1.04)"}
                 onMouseLeave={(e)=>e.currentTarget.style.transform="scale(1)"}
               >
-                <Icon size={12} style={{ color:col.color }}/>
+                <NodeIcon node={n} size={12} brandIcons={brandIcons} style={{ color:col.color }}/>
                 <span style={{ fontSize:10, color:"#475569", whiteSpace:"nowrap" }}>{n.name}</span>
               </div>
             );
@@ -345,7 +370,6 @@ export default function NodePalette({ onNodeAdd, allowedNodeIds = null }) {
               <div style={{ maxHeight: isOpen && isExpanded ? 700 : 0, overflow:"hidden", transition:"max-height 0.25s cubic-bezier(0.4,0,0.2,1)" }}>
                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6, padding:"4px 10px 10px" }}>
                   {cat.nodes.map((node) => {
-                    const NIcon = node.Icon;
                     return (
                       <div
                         key={node.id}
@@ -368,7 +392,7 @@ export default function NodePalette({ onNodeAdd, allowedNodeIds = null }) {
                         onMouseUp={(e) => { e.currentTarget.style.transform="scale(1)"; }}
                       >
                         <div style={{ width:26, height:26, borderRadius:6, background:col.bg, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                          <NIcon size={13} style={{ color:col.color }}/>
+                          <NodeIcon node={node} size={13} brandIcons={brandIcons} style={{ color:col.color }}/>
                         </div>
                         <span style={{ fontSize:10, color:"#0F172A", textAlign:"center", lineHeight:1.3 }}>
                           {node.name}

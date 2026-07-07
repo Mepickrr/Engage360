@@ -5,6 +5,8 @@ import Sidebar from "./Sidebar";
 import AiWidgetPill from "./AiWidgetPill";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
 
+const isFlowBuilderV2 = (pathname) => pathname.startsWith("/flows-v2");
+
 export const AppShell = () => {
   const { pathname } = useLocation();
 
@@ -28,7 +30,7 @@ export const AppShell = () => {
           </div>
         </ErrorBoundary>
       </main>
-      <AiWidgetPill />
+      {!isFlowBuilderV2(pathname) && <AiWidgetPill />}
     </div>
   );
 };

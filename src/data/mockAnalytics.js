@@ -30,6 +30,25 @@ export const MOCK_ANALYTICS = {
           { label: "Complete Purchase →", clicks: 2847 },
           { label: "Remind me in 1 hour",  clicks: 412  },
         ],
+        meta_insight: {
+          date_range: "8 Jun – 7 Jul 2026",
+          read_rate:  { this_template: 67, similar_templates: 77 },
+          click_rate: { this_template: 4,  similar_templates: 17 },
+          recommendations: [
+            {
+              title: "Personalised greetings boost attention and trust",
+              body: "Templates with the recipient's name in the first sentence typically perform better.",
+            },
+            {
+              title: "Shorter messages read faster",
+              body: "Templates under 300 characters see a 12% lift in read rate for this category.",
+            },
+            {
+              title: "A single, clear CTA converts better",
+              body: "Templates with one primary button outperform those with multiple competing actions.",
+            },
+          ],
+        },
       },
       n_sms: {
         sent:          1149,

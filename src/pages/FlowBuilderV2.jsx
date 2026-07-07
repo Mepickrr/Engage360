@@ -307,6 +307,8 @@ export default function FlowBuilderV2() {
     // Sections hidden from the event picker in V2 (by catalogue section name).
     // V1 never wraps with FlowVariantContext so this has no effect there.
     hiddenCatalogueSections: ["Instagram", "Email", "Agent"],
+    // Use the real brand glyphs in the node palette and canvas card.
+    brandIcons: { whatsapp: true, email: true },
   };
 
   return (

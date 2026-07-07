@@ -2,6 +2,8 @@ import React from "react";
 import { Handle, Position } from "reactflow";
 import { DELIVERY_OUTPUT_OPTIONS, isConnectable, WABA_NUMBERS } from "./data/mockTemplates";
 import NodeAnalyticsFooter from "@/components/flows/analytics/NodeAnalyticsFooter";
+import { useFlowVariant } from "@/components/flows/FlowVariantContext";
+import whatsappIcon from "@/assets/icons/whatsapp.png";
 
 const WA_GREEN = "#25D366";
 const BORDER   = "#E5E7EB";
@@ -232,6 +234,8 @@ function ListMessageNodePreview({ template }) {
 
 // ── Main node ───────────────────────────────────────────────────
 export default function WhatsAppNode({ id, data, selected }) {
+  const { brandIcons } = useFlowVariant();
+  const useBrandIcon = !!brandIcons?.whatsapp;
   const template    = data?.template ?? null;
   const smartRetry  = data?.smartRetry  ?? {};
   const utm         = data?.utm         ?? {};
@@ -305,9 +309,13 @@ export default function WhatsAppNode({ id, data, selected }) {
       {isEmpty ? (
         /* ── Empty state ── */
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px 16px", gap: 8 }}>
-          <div style={{ width: 38, height: 38, borderRadius: "50%", background: WA_GREEN, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ color: "#fff", fontSize: 18 }}>✓</span>
-          </div>
+          {useBrandIcon ? (
+            <img src={whatsappIcon} alt="" width={38} height={38} style={{ objectFit: "contain" }} />
+          ) : (
+            <div style={{ width: 38, height: 38, borderRadius: "50%", background: WA_GREEN, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <span style={{ color: "#fff", fontSize: 18 }}>✓</span>
+            </div>
+          )}
           <span style={{ fontSize: 13, color: "#94A3B8", fontWeight: 500 }}>Send WhatsApp</span>
           <span style={{ fontSize: 10, color: "#CBD5E1" }}>Click to configure</span>
         </div>
@@ -315,9 +323,13 @@ export default function WhatsAppNode({ id, data, selected }) {
         <>
           {/* ── Header ── */}
           <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 12px" }}>
-            <div style={{ width: 22, height: 22, borderRadius: "50%", background: WA_GREEN, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <span style={{ color: "#fff", fontSize: 10 }}>✓</span>
-            </div>
+            {useBrandIcon ? (
+              <img src={whatsappIcon} alt="" width={22} height={22} style={{ objectFit: "contain", flexShrink: 0 }} />
+            ) : (
+              <div style={{ width: 22, height: 22, borderRadius: "50%", background: WA_GREEN, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <span style={{ color: "#fff", fontSize: 10 }}>✓</span>
+              </div>
+            )}
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "#0F172A", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {data?.label || "WhatsApp"}

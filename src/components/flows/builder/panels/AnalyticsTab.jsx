@@ -1,5 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
+import { getNodeAnalytics } from "@/data/mockAnalytics";
 import {
   LineChart,
   Line,
@@ -9,6 +10,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+import { Info, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown, Pencil } from "lucide-react";
 
 function formatINR(value) {
   if (!value) return "₹0";
@@ -40,6 +42,167 @@ function Kpi({ label, value, testId }) {
   );
 }
 
+function RateComparison({ label, thisTemplate, similarTemplates }) {
+  return (
+    <div className="mb-3 last:mb-0">
+      <div className="flex items-center gap-1 text-[11px] text-text-primary mb-2">
+        <span>{label}</span>
+        <Info size={11} className="text-text-muted" />
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <div className="text-[10px] text-text-muted mb-0.5">This template</div>
+          <div className="text-xl font-semibold text-orange-500 tabular-nums">
+            {thisTemplate}%
+          </div>
+        </div>
+        <div className="border-l border-border pl-2">
+          <div className="text-[10px] text-text-muted mb-0.5">Similar templates</div>
+          <div className="text-xl font-semibold text-text-primary tabular-nums">
+            {similarTemplates}%
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MetaInsightCard({ insight }) {
+  const [recIndex, setRecIndex] = useState(0);
+  const [feedback, setFeedback] = useState(null); // "up" | "down" | null
+  const recommendations = insight?.recommendations || [];
+  const current = recommendations[recIndex];
+
+  return (
+    <div
+      className="bg-surface border border-border rounded-md p-3"
+      data-testid="analytics-meta-insight"
+    >
+      <div className="flex items-center gap-1 text-[13px] font-semibold text-text-primary">
+        Template benchmarks
+        <Info size={12} className="text-text-muted" />
+      </div>
+      {insight?.date_range && (
+        <div className="text-[10px] text-text-muted mt-0.5 mb-3">
+          {insight.date_range}
+        </div>
+      )}
+
+      {insight?.read_rate && (
+        <RateComparison
+          label="Your read rate is lower than others"
+          thisTemplate={insight.read_rate.this_template}
+          similarTemplates={insight.read_rate.similar_templates}
+        />
+      )}
+      {insight?.click_rate && (
+        <RateComparison
+          label="Your click rate is lower than others"
+          thisTemplate={insight.click_rate.this_template}
+          similarTemplates={insight.click_rate.similar_templates}
+        />
+      )}
+
+      {current && (
+        <>
+          <div className="border-t border-border my-3" />
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <div className="text-[12px] font-semibold text-text-primary">Recommendations</div>
+              <div className="text-[10px] text-text-muted">Actions you can take</div>
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                aria-label="Previous recommendation"
+                disabled={recIndex === 0}
+                onClick={() => setRecIndex((i) => Math.max(0, i - 1))}
+                className="h-6 w-6 flex items-center justify-center rounded border border-border disabled:opacity-40 hover:bg-app-bg"
+              >
+                <ChevronLeft size={12} />
+              </button>
+              <button
+                type="button"
+                aria-label="Next recommendation"
+                disabled={recIndex === recommendations.length - 1}
+                onClick={() => setRecIndex((i) => Math.min(recommendations.length - 1, i + 1))}
+                className="h-6 w-6 flex items-center justify-center rounded border border-border disabled:opacity-40 hover:bg-app-bg"
+              >
+                <ChevronRight size={12} />
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-app-bg border border-border rounded-md p-3">
+            <div className="text-[12px] font-medium text-text-primary mb-1">
+              {current.title}
+            </div>
+            <div className="text-[11px] text-text-muted leading-snug mb-3">
+              {current.body}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                className="text-[11px] px-2.5 py-1 rounded border border-border text-text-primary hover:bg-surface"
+              >
+                See details
+              </button>
+              <button
+                type="button"
+                className="text-[11px] px-2.5 py-1 rounded border border-border text-text-primary hover:bg-surface inline-flex items-center gap-1"
+              >
+                <Pencil size={10} /> Edit template
+              </button>
+            </div>
+          </div>
+
+          {recommendations.length > 1 && (
+            <div className="flex items-center justify-center gap-1 mt-2">
+              {recommendations.map((_, i) => (
+                <span
+                  key={i}
+                  className={`h-1.5 w-1.5 rounded-full ${
+                    i === recIndex ? "bg-primary" : "bg-slate-200"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      <div className="border-t border-border my-3" />
+      <div className="flex items-center justify-between">
+        <div className="text-[11px] text-text-primary">
+          Are these benchmarks and recommendations useful?
+        </div>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            aria-label="Useful"
+            onClick={() => setFeedback("up")}
+            className={`h-6 w-6 flex items-center justify-center rounded border ${
+              feedback === "up" ? "border-primary text-primary" : "border-border text-text-muted"
+            }`}
+          >
+            <ThumbsUp size={12} />
+          </button>
+          <button
+            type="button"
+            aria-label="Not useful"
+            onClick={() => setFeedback("down")}
+            className={`h-6 w-6 flex items-center justify-center rounded border ${
+              feedback === "down" ? "border-primary text-primary" : "border-border text-text-muted"
+            }`}
+          >
+            <ThumbsDown size={12} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function generateSparklineData(entered) {
   // 7 days of plausible conversion daily values that average to total entered.
   const base = entered / 7;
@@ -53,10 +216,19 @@ function generateSparklineData(entered) {
 }
 
 export default function AnalyticsTab() {
+  const flowId = useFlowBuilderStore((s) => s.flowId);
   const meta = useFlowBuilderStore((s) => s.meta);
   const nodes = useFlowBuilderStore((s) => s.nodes);
   const status = meta?.status;
   const perf = meta?.performance || {};
+
+  const whatsappNode = useMemo(
+    () => nodes.find((n) => n.type === "whatsapp"),
+    [nodes],
+  );
+  const metaInsight = whatsappNode
+    ? getNodeAnalytics(flowId, whatsappNode.id)?.meta_insight
+    : null;
 
   const sparkData = useMemo(
     () => generateSparklineData(perf.entered || 0),
@@ -180,6 +352,22 @@ export default function AnalyticsTab() {
             </div>
           )}
         </div>
+
+        {/* Meta Insight */}
+        {whatsappNode && (
+          <div>
+            <div className="text-[11px] uppercase tracking-wide text-text-muted font-medium mb-2">
+              Meta Insight
+            </div>
+            {metaInsight ? (
+              <MetaInsightCard insight={metaInsight} />
+            ) : (
+              <div className="bg-surface border border-border rounded-md px-3 py-2 text-[11px] text-text-muted">
+                No Meta insight available yet for this flow.
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

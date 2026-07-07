@@ -3,6 +3,8 @@ import { Handle, Position } from "reactflow";
 import { Mail, Paperclip } from "lucide-react";
 import NodeAnalyticsFooter from "@/components/flows/analytics/NodeAnalyticsFooter";
 import { EMAIL_FROM_ADDRESSES, EMAIL_DELIVERY_OPTIONS } from "./data/mockData";
+import { useFlowVariant } from "@/components/flows/FlowVariantContext";
+import emailIcon from "@/assets/icons/email.png";
 
 const EMAIL_BLUE = "#3B82F6";
 const BORDER     = "#E5E7EB";
@@ -51,6 +53,8 @@ function PortRow({ portId, label, wired }) {
 }
 
 export default function EmailNode({ id, data, selected }) {
+  const { brandIcons } = useFlowVariant();
+  const useBrandIcon  = !!brandIcons?.email;
   const template      = data?.template ?? null;
   const label         = data?.label ?? "Send Email";
   const outputCfg     = data?.outputConfig ?? { routingMode: "next_step", deliveryOutputs: [], wiredPorts: [] };
@@ -96,9 +100,13 @@ export default function EmailNode({ id, data, selected }) {
 
       {isEmpty ? (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px 16px", gap: 8 }}>
-          <div style={{ width: 38, height: 38, borderRadius: "50%", background: EMAIL_BLUE, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Mail size={18} color="#fff" />
-          </div>
+          {useBrandIcon ? (
+            <img src={emailIcon} alt="" width={38} height={38} style={{ objectFit: "contain" }} />
+          ) : (
+            <div style={{ width: 38, height: 38, borderRadius: "50%", background: EMAIL_BLUE, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Mail size={18} color="#fff" />
+            </div>
+          )}
           <span style={{ fontSize: 13, color: "#94A3B8", fontWeight: 500 }}>Send Email</span>
           <span style={{ fontSize: 10, color: "#CBD5E1" }}>Click to configure</span>
         </div>
@@ -106,9 +114,13 @@ export default function EmailNode({ id, data, selected }) {
         <>
           {/* Header */}
           <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 12px" }}>
-            <div style={{ width: 22, height: 22, borderRadius: "50%", background: EMAIL_BLUE, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <Mail size={11} color="#fff" />
-            </div>
+            {useBrandIcon ? (
+              <img src={emailIcon} alt="" width={22} height={22} style={{ objectFit: "contain", flexShrink: 0 }} />
+            ) : (
+              <div style={{ width: 22, height: 22, borderRadius: "50%", background: EMAIL_BLUE, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Mail size={11} color="#fff" />
+              </div>
+            )}
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "#0F172A", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {label}
