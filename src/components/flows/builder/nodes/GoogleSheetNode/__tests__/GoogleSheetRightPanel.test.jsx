@@ -62,4 +62,37 @@ describe("GoogleSheetRightPanel", () => {
     render(<GoogleSheetRightPanel node={makeNode({ action: "add_row" })} updateNodeData={noop} removeNode={noop} />);
     expect(screen.getByTestId("gsheet-addrow-rownumbervar")).toHaveValue("googleSheetAddRow1.rowNumber");
   });
+
+  describe("update_row action", () => {
+    it("defaults to Search for Row mode with lookup fields", () => {
+      render(<GoogleSheetRightPanel node={makeNode({ action: "update_row" })} updateNodeData={noop} removeNode={noop} />);
+      expect(screen.getByTestId("gsheet-updaterow-lookupcolumn")).toBeInTheDocument();
+      expect(screen.getByTestId("gsheet-updaterow-lookupfield")).toBeInTheDocument();
+    });
+
+    it("switching to Specify Row Number shows a row-number input", () => {
+      const update = jest.fn();
+      render(<GoogleSheetRightPanel node={makeNode({ action: "update_row" })} updateNodeData={update} removeNode={noop} />);
+      fireEvent.click(screen.getByTestId("gsheet-updaterow-targetmode-row_number"));
+      expect(update).toHaveBeenCalledWith("n1", expect.objectContaining({
+        updateRow: expect.objectContaining({ targetMode: "row_number" }),
+      }));
+    });
+
+    it("renders row-number input when targetMode is row_number", () => {
+      render(<GoogleSheetRightPanel node={makeNode({ action: "update_row", updateRow: { ...defaultGoogleSheetNodeData.updateRow, targetMode: "row_number" } })} updateNodeData={noop} removeNode={noop} />);
+      expect(screen.getByTestId("gsheet-updaterow-rownumber")).toBeInTheDocument();
+    });
+
+    it("clicking + Add Field appends a second field row to update", () => {
+      const update = jest.fn();
+      render(<GoogleSheetRightPanel node={makeNode({ action: "update_row" })} updateNodeData={update} removeNode={noop} />);
+      fireEvent.click(screen.getByTestId("gsheet-updaterow-add-field"));
+      expect(update).toHaveBeenCalledWith("n1", expect.objectContaining({
+        updateRow: expect.objectContaining({
+          fields: [{ column: "A", field: "" }, { column: "A", field: "" }],
+        }),
+      }));
+    });
+  });
 });

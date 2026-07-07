@@ -189,6 +189,7 @@ export default function GoogleSheetRightPanel({ node, updateNodeData, removeNode
   const data  = node?.data ?? {};
   const patch = (changes) => updateNodeData(node.id, { ...data, ...changes });
   const patchAddRow = (changes) => patch({ addRow: { ...(data.addRow ?? defaultGoogleSheetNodeData.addRow), ...changes } });
+  const patchUpdateRow = (changes) => patch({ updateRow: { ...(data.updateRow ?? defaultGoogleSheetNodeData.updateRow), ...changes } });
 
   const action     = data.action ?? null;
   const actionMeta = GOOGLE_SHEET_ACTIONS.find((a) => a.id === action);
@@ -279,6 +280,101 @@ export default function GoogleSheetRightPanel({ node, updateNodeData, removeNode
                     `Please give edit access to "${GOOGLE_SHEET_SERVICE_ACCOUNT_EMAIL}" for this action to work.`,
                     "Don't use special characters for value inputs.",
                     "Value input example – {{customer.name}}, {{Order.ID}}, ...",
+                  ]} />
+                </>
+              )}
+
+              {action === "update_row" && (
+                <>
+                  <div style={{ marginBottom: 10 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", marginBottom: 4 }}>
+                      Target Row
+                    </div>
+                    <SegmentedToggle
+                      options={[{ id: "row_number", label: "Specify Row Number" }, { id: "search", label: "Search for Row" }]}
+                      value={data.updateRow?.targetMode ?? "search"}
+                      onChange={(v) => patchUpdateRow({ targetMode: v })}
+                      testIdPrefix="gsheet-updaterow-targetmode"
+                    />
+                  </div>
+                  {(data.updateRow?.targetMode ?? "search") === "row_number" ? (
+                    <div style={{ marginBottom: 14 }}>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", marginBottom: 4 }}>
+                        Row Number
+                      </div>
+                      <input
+                        type="number"
+                        value={data.updateRow?.rowNumber ?? ""}
+                        onChange={(e) => patchUpdateRow({ rowNumber: e.target.value ? Number(e.target.value) : null })}
+                        placeholder="Eg. 5"
+                        data-testid="gsheet-updaterow-rownumber"
+                        style={{ width: "100%", padding: "7px 10px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 8, boxSizing: "border-box" }}
+                      />
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", marginBottom: 4 }}>
+                          Lookup Column
+                        </div>
+                        {(data.updateRow?.columnIdMode ?? "id") === "id" ? (
+                          <select
+                            value={data.updateRow?.lookupColumn ?? "A"}
+                            onChange={(e) => patchUpdateRow({ lookupColumn: e.target.value })}
+                            data-testid="gsheet-updaterow-lookupcolumn"
+                            style={{ width: "100%", padding: "6px 8px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, background: "#fff" }}
+                          >
+                            {COLUMN_LETTERS.map((l) => <option key={l} value={l}>{l}</option>)}
+                          </select>
+                        ) : (
+                          <input
+                            type="text"
+                            value={data.updateRow?.lookupColumn ?? ""}
+                            onChange={(e) => patchUpdateRow({ lookupColumn: e.target.value })}
+                            placeholder="Eg. Order ID"
+                            data-testid="gsheet-updaterow-lookupcolumn"
+                            style={{ width: "100%", padding: "6px 8px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, boxSizing: "border-box" }}
+                          />
+                        )}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", marginBottom: 4 }}>
+                          Lookup Field
+                        </div>
+                        <input
+                          type="text"
+                          value={data.updateRow?.lookupField ?? ""}
+                          onChange={(e) => patchUpdateRow({ lookupField: e.target.value })}
+                          placeholder="Eg. {{Order ID}}"
+                          data-testid="gsheet-updaterow-lookupfield"
+                          style={{ width: "100%", padding: "6px 8px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, boxSizing: "border-box" }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  <div style={{ marginBottom: 10 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", marginBottom: 4 }}>
+                      Column Identifier
+                    </div>
+                    <SegmentedToggle
+                      options={[{ id: "header", label: "Header" }, { id: "id", label: "Id" }]}
+                      value={data.updateRow?.columnIdMode ?? "id"}
+                      onChange={(v) => patchUpdateRow({ columnIdMode: v })}
+                      testIdPrefix="gsheet-updaterow-colmode"
+                    />
+                  </div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#374151", marginBottom: 8 }}>Field(s) to update</div>
+                  <FieldRowList
+                    fields={data.updateRow?.fields ?? defaultGoogleSheetNodeData.updateRow.fields}
+                    columnIdMode={data.updateRow?.columnIdMode ?? "id"}
+                    onChange={(fields) => patchUpdateRow({ fields })}
+                    addTestId="gsheet-updaterow-add-field"
+                    testIdPrefix="gsheet-updaterow-field"
+                    columnLabel="Target Column"
+                    fieldLabel="Updated Field"
+                  />
+                  <TipsBox tips={[
+                    `Please give edit access to "${GOOGLE_SHEET_SERVICE_ACCOUNT_EMAIL}" for this action to work.`,
                   ]} />
                 </>
               )}
