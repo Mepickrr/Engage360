@@ -95,4 +95,26 @@ describe("GoogleSheetRightPanel", () => {
       }));
     });
   });
+
+  describe("get_row action", () => {
+    it("renders lookup fields by default (search mode)", () => {
+      render(<GoogleSheetRightPanel node={makeNode({ action: "get_row" })} updateNodeData={noop} removeNode={noop} />);
+      expect(screen.getByTestId("gsheet-getrow-lookupcolumn")).toBeInTheDocument();
+      expect(screen.getByTestId("gsheet-getrow-lookupfield")).toBeInTheDocument();
+    });
+
+    it("adding a column via the Id-mode picker appends it as a chip", () => {
+      const update = jest.fn();
+      render(<GoogleSheetRightPanel node={makeNode({ action: "get_row" })} updateNodeData={update} removeNode={noop} />);
+      fireEvent.click(screen.getByTestId("gsheet-getrow-column-add"));
+      expect(update).toHaveBeenCalledWith("n1", expect.objectContaining({
+        getRow: expect.objectContaining({ columns: ["A"] }),
+      }));
+    });
+
+    it("renders the output variable prefix input with its default value", () => {
+      render(<GoogleSheetRightPanel node={makeNode({ action: "get_row" })} updateNodeData={noop} removeNode={noop} />);
+      expect(screen.getByTestId("gsheet-getrow-outputvar")).toHaveValue("googleSheetGetRowData1");
+    });
+  });
 });

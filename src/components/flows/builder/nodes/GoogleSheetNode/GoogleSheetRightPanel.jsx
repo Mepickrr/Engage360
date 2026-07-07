@@ -173,6 +173,66 @@ function FieldRowList({ fields, columnIdMode, onChange, addTestId, testIdPrefix,
   );
 }
 
+// ── Multi-select of columns (Get Row Data) ────────────────────────────────────
+function ColumnMultiSelect({ columnIdMode, columns, onChange }) {
+  const [pendingLetter, setPendingLetter] = useState("A");
+  const [textInput, setTextInput] = useState("");
+
+  const addColumn = (col) => {
+    const c = col.trim();
+    if (!c || columns.includes(c)) return;
+    onChange([...columns, c]);
+  };
+  const removeColumn = (col) => onChange(columns.filter((c) => c !== col));
+
+  return (
+    <div>
+      {columnIdMode === "id" ? (
+        <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+          <select
+            value={pendingLetter}
+            onChange={(e) => setPendingLetter(e.target.value)}
+            data-testid="gsheet-getrow-column-select"
+            style={{ flex: 1, padding: "6px 8px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, background: "#fff" }}
+          >
+            {COLUMN_LETTERS.map((l) => <option key={l} value={l}>{l}</option>)}
+          </select>
+          <button
+            type="button"
+            onClick={() => addColumn(pendingLetter)}
+            data-testid="gsheet-getrow-column-add"
+            style={{ padding: "6px 12px", fontSize: 12, fontWeight: 600, border: "none", borderRadius: 6, background: GOOGLE_SHEET_BLUE, color: "#fff", cursor: "pointer" }}
+          >
+            Add
+          </button>
+        </div>
+      ) : (
+        <div style={{ marginBottom: 8 }}>
+          <input
+            type="text"
+            value={textInput}
+            onChange={(e) => setTextInput(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addColumn(textInput); setTextInput(""); } }}
+            placeholder="Eg. Customer Name"
+            data-testid="gsheet-getrow-column-text"
+            style={{ width: "100%", padding: "6px 8px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, boxSizing: "border-box" }}
+          />
+        </div>
+      )}
+      {columns.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+          {columns.map((c) => (
+            <span key={c} style={{ display: "flex", alignItems: "center", gap: 4, background: "#F1F5F9", border: `1px solid ${BORDER}`, borderRadius: 20, padding: "2px 8px", fontSize: 11, color: "#374151" }}>
+              {c}
+              <button type="button" onClick={() => removeColumn(c)} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Static tips box ────────────────────────────────────────────────────────────
 function TipsBox({ tips }) {
   return (
@@ -190,6 +250,7 @@ export default function GoogleSheetRightPanel({ node, updateNodeData, removeNode
   const patch = (changes) => updateNodeData(node.id, { ...data, ...changes });
   const patchAddRow = (changes) => patch({ addRow: { ...(data.addRow ?? defaultGoogleSheetNodeData.addRow), ...changes } });
   const patchUpdateRow = (changes) => patch({ updateRow: { ...(data.updateRow ?? defaultGoogleSheetNodeData.updateRow), ...changes } });
+  const patchGetRow = (changes) => patch({ getRow: { ...(data.getRow ?? defaultGoogleSheetNodeData.getRow), ...changes } });
 
   const action     = data.action ?? null;
   const actionMeta = GOOGLE_SHEET_ACTIONS.find((a) => a.id === action);
@@ -375,6 +436,110 @@ export default function GoogleSheetRightPanel({ node, updateNodeData, removeNode
                   />
                   <TipsBox tips={[
                     `Please give edit access to "${GOOGLE_SHEET_SERVICE_ACCOUNT_EMAIL}" for this action to work.`,
+                  ]} />
+                </>
+              )}
+
+              {action === "get_row" && (
+                <>
+                  <div style={{ marginBottom: 10 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", marginBottom: 4 }}>
+                      Target Row
+                    </div>
+                    <SegmentedToggle
+                      options={[{ id: "row_number", label: "Specify Row Number" }, { id: "search", label: "Search for Row" }]}
+                      value={data.getRow?.targetMode ?? "search"}
+                      onChange={(v) => patchGetRow({ targetMode: v })}
+                      testIdPrefix="gsheet-getrow-targetmode"
+                    />
+                  </div>
+                  {(data.getRow?.targetMode ?? "search") === "row_number" ? (
+                    <div style={{ marginBottom: 14 }}>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", marginBottom: 4 }}>
+                        Row Number
+                      </div>
+                      <input
+                        type="number"
+                        value={data.getRow?.rowNumber ?? ""}
+                        onChange={(e) => patchGetRow({ rowNumber: e.target.value ? Number(e.target.value) : null })}
+                        placeholder="Eg. 5"
+                        data-testid="gsheet-getrow-rownumber"
+                        style={{ width: "100%", padding: "7px 10px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 8, boxSizing: "border-box" }}
+                      />
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", marginBottom: 4 }}>
+                          Lookup Column
+                        </div>
+                        {(data.getRow?.columnIdMode ?? "id") === "id" ? (
+                          <select
+                            value={data.getRow?.lookupColumn ?? "A"}
+                            onChange={(e) => patchGetRow({ lookupColumn: e.target.value })}
+                            data-testid="gsheet-getrow-lookupcolumn"
+                            style={{ width: "100%", padding: "6px 8px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, background: "#fff" }}
+                          >
+                            {COLUMN_LETTERS.map((l) => <option key={l} value={l}>{l}</option>)}
+                          </select>
+                        ) : (
+                          <input
+                            type="text"
+                            value={data.getRow?.lookupColumn ?? ""}
+                            onChange={(e) => patchGetRow({ lookupColumn: e.target.value })}
+                            placeholder="Eg. Order ID"
+                            data-testid="gsheet-getrow-lookupcolumn"
+                            style={{ width: "100%", padding: "6px 8px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, boxSizing: "border-box" }}
+                          />
+                        )}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", marginBottom: 4 }}>
+                          Lookup Field
+                        </div>
+                        <input
+                          type="text"
+                          value={data.getRow?.lookupField ?? ""}
+                          onChange={(e) => patchGetRow({ lookupField: e.target.value })}
+                          placeholder="Eg. {{Order ID}}"
+                          data-testid="gsheet-getrow-lookupfield"
+                          style={{ width: "100%", padding: "6px 8px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, boxSizing: "border-box" }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  <div style={{ marginBottom: 10 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", marginBottom: 4 }}>
+                      Column Identifier
+                    </div>
+                    <SegmentedToggle
+                      options={[{ id: "header", label: "Header" }, { id: "id", label: "Id" }]}
+                      value={data.getRow?.columnIdMode ?? "id"}
+                      onChange={(v) => patchGetRow({ columnIdMode: v })}
+                      testIdPrefix="gsheet-getrow-colmode"
+                    />
+                  </div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#374151", marginBottom: 8 }}>Column(s) to save data from</div>
+                  <ColumnMultiSelect
+                    columnIdMode={data.getRow?.columnIdMode ?? "id"}
+                    columns={data.getRow?.columns ?? []}
+                    onChange={(columns) => patchGetRow({ columns })}
+                  />
+                  <div style={{ marginTop: 14 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", marginBottom: 4 }}>
+                      Data from Column(s) will be saved in
+                    </div>
+                    <input
+                      type="text"
+                      value={data.getRow?.outputVarPrefix ?? defaultGoogleSheetNodeData.getRow.outputVarPrefix}
+                      onChange={(e) => patchGetRow({ outputVarPrefix: e.target.value })}
+                      data-testid="gsheet-getrow-outputvar"
+                      style={{ width: "100%", padding: "7px 10px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 8, boxSizing: "border-box" }}
+                    />
+                  </div>
+                  <TipsBox tips={[
+                    `Please give edit access to "${GOOGLE_SHEET_SERVICE_ACCOUNT_EMAIL}" for this action to work.`,
+                    "The data will be saved as variables under this name, with sub-names corresponding to each selected column.",
                   ]} />
                 </>
               )}
