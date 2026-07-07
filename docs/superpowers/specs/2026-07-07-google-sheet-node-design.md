@@ -9,9 +9,11 @@
 
 ## 1. Overview
 
-Replace the three separate "Google Sheets" palette entries (Add Row, Update Row, Get Row Data — currently unbuilt stubs under a standalone `gsheets` category) with a single unified **Google Sheet** node under the **Integrations** section, alongside Razorpay, Judge Me, Shopify, Freshdesk, and Webhook. The node uses a card-grid action picker — same visual pattern as the Shopify unified node (`docs/superpowers/specs/2026-07-03-shopify-unified-node-design.md`) — to let sellers choose one of three actions: **Add Row**, **Update Row**, **Get Row Data**. Each action drives distinct right-panel config and a canvas preview line. The node exposes two output handles: **Success** and **Failed**.
+Replace the three separate "Google Sheets" palette entries (Add Row, Update Row, Get Row Data — currently unbuilt stubs under a standalone `gsheets` category) with a single unified **Google Sheet** node under the **Integrations** section, alongside Razorpay, Judge Me, Shopify, Freshdesk, and Webhook. The node uses a card-grid action picker — same visual pattern as the Shopify unified node (`docs/superpowers/specs/2026-07-03-shopify-unified-node-design.md`) — to let sellers choose one of four actions: **Add Row**, **Update Row**, **Get Row Data**, **Upsert Row**. Each action drives distinct right-panel config and a canvas preview line. The node exposes two output handles: **Success** and **Failed**.
 
-This design intentionally improves on the reference behavior (Bik's Google Sheet block — see §2) in one respect: **Update Row supports multiple target-column mappings per action** (Bik's UI appears to support only one), via the same repeatable "+ Add Field" pattern already used for Add Row.
+This design intentionally improves on the reference behavior (Bik's Google Sheet block — see §2) in two respects, beyond the service-account email swap:
+1. **Update Row supports multiple target-column mappings per action** (Bik's UI appears to support only one), via the same repeatable "+ Add Field" pattern already used for Add Row.
+2. **Upsert Row** — a fourth action not offered by Bik at all: search for a row, update it if found, append a new row if not. Common CRM-style sync pattern (e.g. syncing a customer record without needing two separate nodes + a conditional branch to check existence first).
 
 ---
 
@@ -63,6 +65,7 @@ This app's flow builder is a frontend prototype — node configuration is local 
 | Update Row (row-number mode) | `Row #<n> updated` |
 | Get Row Data (search mode) | `Row fetched where <lookupColumn> = <lookupField>` |
 | Get Row Data (row-number mode) | `Row #<n> fetched` |
+| Upsert Row | `Row added or updated where <lookupColumn> = <lookupField>` |
 
 ### 4.3 Output Handles
 
@@ -77,13 +80,14 @@ This app's flow builder is a frontend prototype — node configuration is local 
 
 ### 5.1 Action Picker (top of panel, shown until an action is selected)
 
-3-column card grid — same visual pattern as `ActionPicker` in `ShopifyRightPanel.jsx`:
+3-column card grid (wraps to a second row of 1) — same visual pattern as `ActionPicker` in `ShopifyRightPanel.jsx`:
 
 | id | Label | Description |
 |---|---|---|
 | `add_row` | Add Row | Insert a new row into the sheet |
 | `update_row` | Update Row | Modify an existing row's data |
 | `get_row` | Get Row Data | Retrieve data from a row |
+| `upsert_row` | Upsert Row | Update a row if found, else add a new one |
 
 Once selected, the picker is replaced by the action's config. A **"← Change action"** text link resets `action` to `null` and clears action-specific fields (no confirmation dialog) — identical convention to Shopify.
 
@@ -114,6 +118,15 @@ Once selected, the picker is replaced by the action's config. A **"← Change ac
 - **Data from Column(s) will be saved in** — editable variable-name prefix, default `googleSheetGetRowData{N}`
 - Tips box (static): grant editor access to `engagetechsupport@shiprocket.com`; data will be saved as variables under this name, with sub-names corresponding to each selected column
 
+### 5.6 Upsert Row
+
+- **Lookup Column** dropdown + **Lookup Field** text input — always in "search" mode (there's no row-number variant here, since the whole point is deciding add-vs-update from a search match; if you already know the row number, use Update Row instead)
+- **Column Identifier** toggle: `Header` / `Id` (governs lookup column and the shared field list below)
+- **Field(s) to write** — one shared repeatable list of `{ column, field }` pairs + **"+ Add Field"** button, written on either path (update or append) — same data whether the row already existed or not, per CRM-sync intent
+- **Row number for this will be saved in** — read-only, auto-generated variable name `googleSheetUpsertRow{N}.rowNumber` (the matched row's number if updated, or the newly appended row's number if added)
+- **Whether a new row was added** — read-only, auto-generated boolean variable `googleSheetUpsertRow{N}.wasAdded` (`true` if appended, `false` if an existing row was updated) — lets downstream flow steps branch on which path was taken
+- Tips box (static): grant editor access to `engagetechsupport@shiprocket.com`; if no row matches the lookup value, a new row is appended with the field(s) above; don't use special characters for value inputs
+
 ---
 
 ## 6. Data Structure
@@ -121,7 +134,7 @@ Once selected, the picker is replaced by the action's config. A **"← Change ac
 ```js
 // Default / initial node data
 {
-  action: null,  // "add_row" | "update_row" | "get_row"
+  action: null,  // "add_row" | "update_row" | "get_row" | "upsert_row"
 
   sheetUrl: "",
   sheetId: "",
@@ -153,6 +166,16 @@ Once selected, the picker is replaced by the action's config. A **"← Change ac
     columns: [],              // selected column ids/headers to fetch
     outputVarPrefix: "googleSheetGetRowData1",
   },
+
+  // upsert_row
+  upsertRow: {
+    lookupColumn: "",
+    lookupField: "",
+    columnIdMode: "id",
+    fields: [],               // [{ column: "A", field: "" }] — shared write list (update or append)
+    rowNumberVar: "googleSheetUpsertRow1.rowNumber",
+    wasAddedVar: "googleSheetUpsertRow1.wasAdded",
+  },
 }
 ```
 
@@ -163,7 +186,7 @@ Once selected, the picker is replaced by the action's config. A **"← Change ac
 ```
 src/components/flows/builder/nodes/GoogleSheetNode/
   index.jsx                     ← canvas node (unconfigured + configured states, 2 output handles)
-  GoogleSheetRightPanel.jsx      ← right panel with action picker + 3 action-specific sections
+  GoogleSheetRightPanel.jsx      ← right panel with action picker + 4 action-specific sections
   data/
     mockData.js                  ← default data, action definitions, service-account email constant
 ```
@@ -196,7 +219,6 @@ Registration / modification points:
 Beyond Bik's three actions, other Google-Sheets-flavored actions we could offer later:
 
 - **Delete Row** — remove a row by row-number or lookup match.
-- **Upsert Row** ("Add or Update") — search for a row; if found, update it; if not, append a new row. Common pattern for CRM-style sync use cases.
 - **Clear Row / Clear Range** — blank out values without deleting the row.
 - **Bulk read** — return all rows (or all rows matching a filter) rather than a single row, for building digest/report-style flows.
 - **New Sheet/Tab creation** — programmatically add a new tab to the spreadsheet.
