@@ -283,19 +283,6 @@ export default function GoogleSheetNode({ id, data, selected }) {
             </div>
           </div>
 
-          <div style={{
-            padding: "6px 10px", borderBottom: `1px solid ${BORDER}`,
-            display: "flex", alignItems: "center", gap: 6,
-          }}>
-            <span style={{
-              fontSize: 9, fontWeight: 600, color: GOOGLE_SHEET_BLUE,
-              background: "#EEF2FF", border: "1px solid #C7D8F5",
-              borderRadius: 20, padding: "1px 7px",
-            }}>
-              {actionMeta?.label}
-            </span>
-          </div>
-
           {previewLine && (
             <div style={{
               padding: "6px 10px", borderBottom: `1px solid ${BORDER}`,
