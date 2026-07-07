@@ -251,6 +251,7 @@ export default function GoogleSheetRightPanel({ node, updateNodeData, removeNode
   const patchAddRow = (changes) => patch({ addRow: { ...(data.addRow ?? defaultGoogleSheetNodeData.addRow), ...changes } });
   const patchUpdateRow = (changes) => patch({ updateRow: { ...(data.updateRow ?? defaultGoogleSheetNodeData.updateRow), ...changes } });
   const patchGetRow = (changes) => patch({ getRow: { ...(data.getRow ?? defaultGoogleSheetNodeData.getRow), ...changes } });
+  const patchUpsertRow = (changes) => patch({ upsertRow: { ...(data.upsertRow ?? defaultGoogleSheetNodeData.upsertRow), ...changes } });
 
   const action     = data.action ?? null;
   const actionMeta = GOOGLE_SHEET_ACTIONS.find((a) => a.id === action);
@@ -540,6 +541,100 @@ export default function GoogleSheetRightPanel({ node, updateNodeData, removeNode
                   <TipsBox tips={[
                     `Please give edit access to "${GOOGLE_SHEET_SERVICE_ACCOUNT_EMAIL}" for this action to work.`,
                     "The data will be saved as variables under this name, with sub-names corresponding to each selected column.",
+                  ]} />
+                </>
+              )}
+
+              {action === "upsert_row" && (
+                <>
+                  <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", marginBottom: 4 }}>
+                        Lookup Column
+                      </div>
+                      {(data.upsertRow?.columnIdMode ?? "id") === "id" ? (
+                        <select
+                          value={data.upsertRow?.lookupColumn ?? "A"}
+                          onChange={(e) => patchUpsertRow({ lookupColumn: e.target.value })}
+                          data-testid="gsheet-upsertrow-lookupcolumn"
+                          style={{ width: "100%", padding: "6px 8px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, background: "#fff" }}
+                        >
+                          {COLUMN_LETTERS.map((l) => <option key={l} value={l}>{l}</option>)}
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          value={data.upsertRow?.lookupColumn ?? ""}
+                          onChange={(e) => patchUpsertRow({ lookupColumn: e.target.value })}
+                          placeholder="Eg. Order ID"
+                          data-testid="gsheet-upsertrow-lookupcolumn"
+                          style={{ width: "100%", padding: "6px 8px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, boxSizing: "border-box" }}
+                        />
+                      )}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", marginBottom: 4 }}>
+                        Lookup Field
+                      </div>
+                      <input
+                        type="text"
+                        value={data.upsertRow?.lookupField ?? ""}
+                        onChange={(e) => patchUpsertRow({ lookupField: e.target.value })}
+                        placeholder="Eg. {{Order ID}}"
+                        data-testid="gsheet-upsertrow-lookupfield"
+                        style={{ width: "100%", padding: "6px 8px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, boxSizing: "border-box" }}
+                      />
+                    </div>
+                  </div>
+                  <div style={{ marginBottom: 10 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", marginBottom: 4 }}>
+                      Column Identifier
+                    </div>
+                    <SegmentedToggle
+                      options={[{ id: "header", label: "Header" }, { id: "id", label: "Id" }]}
+                      value={data.upsertRow?.columnIdMode ?? "id"}
+                      onChange={(v) => patchUpsertRow({ columnIdMode: v })}
+                      testIdPrefix="gsheet-upsertrow-colmode"
+                    />
+                  </div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#374151", marginBottom: 8 }}>Field(s) to write</div>
+                  <FieldRowList
+                    fields={data.upsertRow?.fields ?? defaultGoogleSheetNodeData.upsertRow.fields}
+                    columnIdMode={data.upsertRow?.columnIdMode ?? "id"}
+                    onChange={(fields) => patchUpsertRow({ fields })}
+                    addTestId="gsheet-upsertrow-add-field"
+                    testIdPrefix="gsheet-upsertrow-field"
+                  />
+                  <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+                    <div>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", marginBottom: 4 }}>
+                        Row number for this will be saved in
+                      </div>
+                      <input
+                        type="text"
+                        value={data.upsertRow?.rowNumberVar ?? defaultGoogleSheetNodeData.upsertRow.rowNumberVar}
+                        readOnly
+                        data-testid="gsheet-upsertrow-rownumbervar"
+                        style={{ width: "100%", padding: "7px 10px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 8, background: "#F8FAFC", color: "#64748B", boxSizing: "border-box" }}
+                      />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", marginBottom: 4 }}>
+                        Whether a new row was added
+                      </div>
+                      <input
+                        type="text"
+                        value={data.upsertRow?.wasAddedVar ?? defaultGoogleSheetNodeData.upsertRow.wasAddedVar}
+                        readOnly
+                        data-testid="gsheet-upsertrow-wasaddedvar"
+                        style={{ width: "100%", padding: "7px 10px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 8, background: "#F8FAFC", color: "#64748B", boxSizing: "border-box" }}
+                      />
+                    </div>
+                  </div>
+                  <TipsBox tips={[
+                    `Please give edit access to "${GOOGLE_SHEET_SERVICE_ACCOUNT_EMAIL}" for this action to work.`,
+                    "If no row matches the lookup value, a new row is appended with the field(s) above.",
+                    "Don't use special characters for value inputs.",
                   ]} />
                 </>
               )}

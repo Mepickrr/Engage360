@@ -117,4 +117,30 @@ describe("GoogleSheetRightPanel", () => {
       expect(screen.getByTestId("gsheet-getrow-outputvar")).toHaveValue("googleSheetGetRowData1");
     });
   });
+
+  describe("upsert_row action", () => {
+    it("renders lookup fields and the shared field list", () => {
+      render(<GoogleSheetRightPanel node={makeNode({ action: "upsert_row" })} updateNodeData={noop} removeNode={noop} />);
+      expect(screen.getByTestId("gsheet-upsertrow-lookupcolumn")).toBeInTheDocument();
+      expect(screen.getByTestId("gsheet-upsertrow-lookupfield")).toBeInTheDocument();
+      expect(screen.getByTestId("gsheet-upsertrow-add-field")).toBeInTheDocument();
+    });
+
+    it("clicking + Add Field appends a second shared field row", () => {
+      const update = jest.fn();
+      render(<GoogleSheetRightPanel node={makeNode({ action: "upsert_row" })} updateNodeData={update} removeNode={noop} />);
+      fireEvent.click(screen.getByTestId("gsheet-upsertrow-add-field"));
+      expect(update).toHaveBeenCalledWith("n1", expect.objectContaining({
+        upsertRow: expect.objectContaining({
+          fields: [{ column: "A", field: "" }, { column: "A", field: "" }],
+        }),
+      }));
+    });
+
+    it("renders both read-only output variables", () => {
+      render(<GoogleSheetRightPanel node={makeNode({ action: "upsert_row" })} updateNodeData={noop} removeNode={noop} />);
+      expect(screen.getByTestId("gsheet-upsertrow-rownumbervar")).toHaveValue("googleSheetUpsertRow1.rowNumber");
+      expect(screen.getByTestId("gsheet-upsertrow-wasaddedvar")).toHaveValue("googleSheetUpsertRow1.wasAdded");
+    });
+  });
 });
