@@ -31,7 +31,7 @@ const V2_ALLOWED_TEMPLATE_STYLES = [
 // V2 node allow-list — only these node IDs are visible in the left panel.
 // To re-enable a hidden node, add its ID here (IDs match NodePalette CATEGORIES).
 // Blueprint nodes (currently hidden): nextbestaction, smartflowoptimizer, aicontent,
-// aisocial, freshdesk, aipredict, aibestch, addrow, updaterow, getrow, updatetag, addevent,
+// aisocial, freshdesk, aipredict, aibestch, updatetag, addevent,
 // tktcreate, assigntkt, changestatus, sr_shipment, sr_track, sr_cancel, sr_return, sr_awb
 const V2_ALLOWED_NODES = [
   // Communication

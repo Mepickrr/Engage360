@@ -199,7 +199,7 @@ function ColumnMultiSelect({ columnIdMode, columns, onChange }) {
           </select>
           <button
             type="button"
-            onClick={() => addColumn(pendingLetter)}
+            onClick={() => { addColumn(pendingLetter); setPendingLetter("A"); }}
             data-testid="gsheet-getrow-column-add"
             style={{ padding: "6px 12px", fontSize: 12, fontWeight: 600, border: "none", borderRadius: 6, background: GOOGLE_SHEET_BLUE, color: "#fff", cursor: "pointer" }}
           >
