@@ -37,6 +37,7 @@ import SmartFlowOptimizerNode from "./nodes/SmartFlowOptimizerNode";
 import WebhookNode from "./nodes/WebhookNode";
 import JudgeMeNode from "./nodes/JudgeMeNode";
 import ShopifyNode from "./nodes/ShopifyNode";
+import GoogleSheetNode from "./nodes/GoogleSheetNode";
 import StickyNoteNode from "./nodes/StickyNoteNode";
 
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
@@ -64,6 +65,7 @@ const nodeTypes = {
   webhook:         WebhookNode,
   judgeme:         JudgeMeNode,
   shopify:         ShopifyNode,
+  googlesheet:     GoogleSheetNode,
   sms:             SMSNode,
   push:            PushNode,
   conditionalsplit: ConditionalSplitNode,

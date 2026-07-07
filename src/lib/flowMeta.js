@@ -40,6 +40,7 @@ import { defaultSFONodeData } from "@/components/flows/builder/nodes/SmartFlowOp
 import { defaultWebhookNodeData } from "@/components/flows/builder/nodes/WebhookNode/data/mockData";
 import { defaultJudgeMeNodeData } from "@/components/flows/builder/nodes/JudgeMeNode/data/mockData";
 import { defaultShopifyNodeData } from "@/components/flows/builder/nodes/ShopifyNode/data/mockData";
+import { defaultGoogleSheetNodeData } from "@/components/flows/builder/nodes/GoogleSheetNode/data/mockData";
 import { defaultStickyNoteNodeData } from "@/components/flows/builder/nodes/StickyNoteNode/data/mockData";
 
 export const CHANNEL_META = {
@@ -136,6 +137,8 @@ export function defaultDataForPaletteItem(item) {
       return { ...defaultJudgeMeNodeData };
     case "shopify":
       return { ...defaultShopifyNodeData };
+    case "googlesheet":
+      return { ...defaultGoogleSheetNodeData };
     case "webhook":
       return { ...defaultWebhookNodeData };
     case "sms":
@@ -224,6 +227,7 @@ export function rendererTypeForKind(kind) {
   if (kind === "razorpay")   return "razorpay";
   if (kind === "judgeme")    return "judgeme";
   if (kind === "shopify")    return "shopify";
+  if (kind === "googlesheet") return "googlesheet";
   if (kind === "sms")        return "sms";
   if (kind === "push")             return "push";
   if (kind === "conditionalsplit") return "conditionalsplit";

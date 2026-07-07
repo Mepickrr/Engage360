@@ -38,8 +38,8 @@ const V2_ALLOWED_NODES = [
   "whatsapp", "email", "rcs", "sms", "webpush", "onsite", "inapp", "aichatbot", "aicallingv2",
   // Flow Control
   "condsplit", "delay", "startflow",
-  // Integrations (shopify added, old separate nodes removed)
-  "webhook", "judgeme", "razorpay", "shopify",
+  // Integrations (shopify + googlesheet added, old separate nodes removed)
+  "webhook", "judgeme", "razorpay", "shopify", "googlesheet",
 ];
 
 export default function FlowBuilderV2() {

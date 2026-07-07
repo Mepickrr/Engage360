@@ -13,4 +13,17 @@ describe("NodePalette — sticky note removal", () => {
     render(<NodePalette onNodeAdd={() => {}} />);
     expect(screen.getByText("Communication")).toBeInTheDocument();
   });
+
+  it("does not render the old Google Sheets category or its Add Row/Update Row/Get Row Data items", () => {
+    render(<NodePalette onNodeAdd={() => {}} />);
+    expect(screen.queryByText("Google Sheets")).not.toBeInTheDocument();
+    expect(screen.queryByText("Add Row")).not.toBeInTheDocument();
+    expect(screen.queryByText("Update Row")).not.toBeInTheDocument();
+    expect(screen.queryByText("Get Row Data")).not.toBeInTheDocument();
+  });
+
+  it("renders a single Google Sheet entry under Integrations", () => {
+    render(<NodePalette onNodeAdd={() => {}} />);
+    expect(screen.getByText("Google Sheet")).toBeInTheDocument();
+  });
 });

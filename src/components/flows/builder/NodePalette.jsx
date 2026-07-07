@@ -17,7 +17,7 @@ import {
   ShoppingCart, Tag, Percent, ClipboardList, StickyNote,
   Plug, Star, CreditCard, Headphones, Webhook,
   GitBranch, GitFork, Clock, Brain, Route, LogIn,
-  Table, CirclePlus, Pencil, ArrowUpFromLine,
+  Table,
   UserCircle, Tags, Ticket, CalendarCheck,
   FilePlus, UserCheck, RefreshCw,
   Pin, Lock, Search, ChevronDown,
@@ -70,6 +70,7 @@ const CATEGORIES = [
       { id:"razorpay",  name:"Razor Pay", Icon:CreditCard,   kind:"razorpay", subtype:null  },
       { id:"freshdesk", name:"Freshdesk", Icon:Headphones,   kind:"action",   subtype:"freshdesk" },
       { id:"webhook",   name:"Webhook",   Icon:Webhook,      kind:"webhook",  subtype:null  },
+      { id:"googlesheet", name:"Google Sheet", Icon:Table,        kind:"googlesheet", subtype:null  },
     ],
   },
   {
@@ -80,14 +81,6 @@ const CATEGORIES = [
       { id:"aipredict",  name:"AI Predict",        Icon:Brain,   kind:"aipredict", subtype:null },
       { id:"aibestch",   name:"AI Best Channel",   Icon:Route,   kind:"action",    subtype:"aibestch"  },
       { id:"startflow",  name:"Start Flow",        Icon:LogIn,   kind:"startflow", subtype:null },
-    ],
-  },
-  {
-    id: "gsheets", label: "Google Sheets", Icon: Table, color: "green",
-    nodes: [
-      { id:"addrow",    name:"Add Row",      Icon:CirclePlus,      kind:"action", subtype:"addrow"    },
-      { id:"updaterow", name:"Update Row",   Icon:Pencil,          kind:"action", subtype:"updaterow" },
-      { id:"getrow",    name:"Get Row Data", Icon:ArrowUpFromLine, kind:"action", subtype:"getrow"    },
     ],
   },
   {

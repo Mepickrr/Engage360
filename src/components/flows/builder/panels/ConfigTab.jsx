@@ -21,6 +21,7 @@ import SmartFlowOptimizerRightPanel from "@/components/flows/builder/nodes/Smart
 import WebhookRightPanel from "@/components/flows/builder/nodes/WebhookNode/WebhookRightPanel";
 import JudgeMeRightPanel from "@/components/flows/builder/nodes/JudgeMeNode/JudgeMeRightPanel";
 import ShopifyRightPanel from "@/components/flows/builder/nodes/ShopifyNode/ShopifyRightPanel";
+import GoogleSheetRightPanel from "@/components/flows/builder/nodes/GoogleSheetNode/GoogleSheetRightPanel";
 
 function NumberInput({ label, value, onChange, testId, suffix }) {
   return (
@@ -433,6 +434,14 @@ export default function ConfigTab() {
     return (
       <div className="absolute inset-0 overflow-hidden flex flex-col" data-testid="right-config-tab">
         <ShopifyRightPanel node={node} updateNodeData={updateNodeData} removeNode={removeNode} />
+      </div>
+    );
+  }
+
+  if (node?.type === "googlesheet") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col" data-testid="right-config-tab">
+        <GoogleSheetRightPanel node={node} updateNodeData={updateNodeData} removeNode={removeNode} />
       </div>
     );
   }
