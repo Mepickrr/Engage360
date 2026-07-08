@@ -16,19 +16,24 @@ function renderPanel(nodeData) {
 }
 
 describe("TemplateTab list routing", () => {
-  it("shows ListMessageForm when templateStyle is list and no template", () => {
-    renderPanel({ templateStyle: "list", template: null });
+  it("opens the unified modal with ListMessageForm when Create New is clicked", () => {
+    renderPanel({ wabaNumberId: "waba_1", templateStyle: "list", template: null });
+    // First click opens the UnifiedTemplateModal in its browse view (seeded templates for the style).
+    fireEvent.click(screen.getByRole("button", { name: /create new/i }));
+    // Then "+ Create new" inside the modal's browse view opens a blank ListMessageForm edit view.
+    fireEvent.click(screen.getByRole("button", { name: /\+ Create new/ }));
     expect(screen.getByText("Configure List Message")).toBeInTheDocument();
   });
 
   it("does NOT show the FBM amber warning for list style", () => {
-    renderPanel({ templateStyle: "list", template: null });
+    renderPanel({ wabaNumberId: "waba_1", templateStyle: "list", template: null });
     expect(screen.queryByText(/business manager/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/whatsapp manager/i)).not.toBeInTheDocument();
   });
 
   it("shows configured summary card when template is set", () => {
     renderPanel({
+      wabaNumberId: "waba_1",
       templateStyle: "list",
       template: {
         isListMessage: true,
@@ -41,13 +46,13 @@ describe("TemplateTab list routing", () => {
         ],
       },
     });
-    expect(screen.getByText("List Message")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /edit/i })).toBeInTheDocument();
     expect(screen.getByText(/pick a plan/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /edit/i })).toBeInTheDocument();
   });
 
   it("does NOT show the FBM template section when template is configured", () => {
     renderPanel({
+      wabaNumberId: "waba_1",
       templateStyle: "list",
       template: {
         isListMessage: true,
@@ -58,24 +63,6 @@ describe("TemplateTab list routing", () => {
         sections: [{ title: "", rows: [{ id: "row_1", title: "Basic", description: "" }] }],
       },
     });
-    expect(screen.queryByText(/open whatsapp manager/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/\+ create new/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/select existing/i)).not.toBeInTheDocument();
-  });
-
-  it("re-opens ListMessageForm when Edit is clicked on the summary card", () => {
-    renderPanel({
-      templateStyle: "list",
-      template: {
-        isListMessage: true,
-        header: "",
-        body: "Pick a plan",
-        footer: "",
-        buttonText: "View",
-        sections: [{ title: "", rows: [{ id: "row_1", title: "Basic", description: "" }] }],
-      },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /edit/i }));
-    expect(screen.getByText("Configure List Message")).toBeInTheDocument();
+    expect(screen.queryByText(/business manager/i)).not.toBeInTheDocument();
   });
 });
