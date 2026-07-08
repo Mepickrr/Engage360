@@ -1,19 +1,21 @@
-# Google Sheet "New Row" Start Trigger — Design Spec
+# Google Sheet Data Entry Start Trigger — Design Spec
 
 **Date:** 2026-07-08
-**Status:** Draft — pending review
+**Status:** Approved for implementation (frontend-only)
 **Audience:** Internal product team, engineers
-**Scope:** New start-trigger kind for Flow Builder that starts a flow when a new row is added to a connected Google Sheet, plus the backend polling infrastructure it requires.
+**Scope:** New start-trigger kind for Flow Builder (v1 and v2 — they share the same wizard) that represents a flow starting when a new row is added to a connected Google Sheet. **Frontend UX only** — no backend, no live Google Sheets API calls, no scheduler/poller. See §4 for what real backend work this defers.
 
 ---
 
 ## 1. Overview
 
-Sellers can already read from and write to a Google Sheet mid-flow via the Google Sheet node (`docs/superpowers/specs/2026-07-07-google-sheet-node-design.md`). That spec explicitly deferred "trigger flow on new row" as a non-goal, noting it "would require real backend polling/webhook infrastructure... a significant scope jump beyond a frontend-only prototype" (§9).
+Sellers can already read from and write to a Google Sheet mid-flow via the Google Sheet **node** (`docs/superpowers/specs/2026-07-07-google-sheet-node-design.md`) — that's what the flow *does* once it's running. This spec is a different, independent concept: a start **trigger** — what *starts* the flow in the first place. That node spec explicitly deferred "trigger flow on new row" as a non-goal, noting it "would require real backend polling/webhook infrastructure... a significant scope jump beyond a frontend-only prototype" (§9).
 
-This spec covers that scope jump: a new start-trigger kind, `google_sheet_new_row`, alongside the existing kinds (`event`, `webhook`, `broadcast`, `date_relative`, `event_offset`, `broadcast_source`) surfaced in `StartTriggerWizard.jsx`. When a seller adds a row to a connected sheet, the flow starts for the contact identified by that row.
+This spec adds that trigger as a new kind, `google_sheet_new_row`, seller-facing label **"Google Sheet Data Entry"**, alongside the existing kinds (`event`, `webhook`, `broadcast`, `date_relative`, `event_offset`, `broadcast_source`) surfaced in `StartTriggerWizard.jsx`. It is placed under the existing **"Webhook and API"** catalogue header, in the **"External signals"** section, next to "Webhook trigger" — both represent an external system/data source starting the flow.
 
-**Why not the existing "Webhook" trigger kind:** Google Sheets does not push webhooks natively. Making this work as a true webhook would require the seller to install and authorize an Apps Script snippet inside their own sheet — extra setup burden, and it silently breaks if the seller edits or deletes that script. It also turns out the existing "Webhook" trigger kind has no working backend receiver behind it today (`webhookHelpers.js::generateWebhookUrl()` only builds a display string) — so there is no working webhook infrastructure to reuse in the first place. Polling via the same service-account credentials already used by the Google Sheet node needs zero extra seller setup and reuses an access grant sellers already understand, at the cost of near-real-time latency. This spec adopts polling.
+**Why not the existing "Webhook" trigger kind:** Google Sheets does not push webhooks natively. Making this work as a true webhook would require the seller to install and authorize an Apps Script snippet inside their own sheet — extra setup burden, and it silently breaks if the seller edits or deletes that script. It also turns out the existing "Webhook" trigger kind has no working backend receiver behind it today (`webhookHelpers.js::generateWebhookUrl()` only builds a display string) — so there is no working webhook infrastructure to reuse in the first place. A polling model (seller shares the sheet with a service account, we periodically check for new rows) needs zero extra seller setup and reuses an access grant sellers already understand. This spec adopts polling as the target model, but **only builds the UX for it now** — see §4.
+
+**Why frontend-only:** This entire codebase is a frontend prototype today — no node/step execution engine, event bus, queue, or scheduled-job infrastructure exists (confirmed: no cron/queue libraries in `package.json`/`requirements.txt`; `backend/routes/flows.py` is pure CRUD). Building a real, working trigger would mean building that infrastructure from scratch, which is out of scope for this pass. This spec follows the same convention already established for the Google Sheet node itself (no live API calls, no "Verify access" button, per that spec's §8) — the trigger is configurable and saved like any other trigger kind, but nothing actually polls anything yet.
 
 ---
 
@@ -21,9 +23,9 @@ This spec covers that scope jump: a new start-trigger kind, `google_sheet_new_ro
 
 ### 2.1 Trigger Picker
 
-`google_sheet_new_row` is added as a new entry in the trigger catalogue surfaced by `EventPickerModal` (backed by `eventCatalogue.json`), under an "Integrations"-style grouping alongside other data-source triggers.
+`google_sheet_new_row` is added as a new card, **"Google Sheet Data Entry"**, in the trigger catalogue (`eventCatalogue.json`) under the existing **"Webhook and API"** header → **"External signals"** section, alongside "Webhook trigger".
 
-### 2.2 Step 1 — "Configure Google Sheet Trigger"
+### 2.2 Step 1 — "Configure Google Sheet Data Entry"
 
 New component `GoogleSheetTriggerStep1.jsx`, following the structural pattern of `WebhookTriggerStep1.jsx`:
 
@@ -31,73 +33,79 @@ New component `GoogleSheetTriggerStep1.jsx`, following the structural pattern of
 |---|---|
 | **Sheet URL*** | Text input, same placeholder/helper as the Google Sheet node's `CommonSheetFields`. |
 | **Sheet ID (Optional)** | Text input — targets a specific tab in a multi-tab file, same convention as the node. |
-| **Poll interval** | Dropdown: 1 / 5 / 15 / 30 / 60 minutes. Default 5. Helper text: "We'll check this sheet for new rows every N minutes." Floor of 1 minute enforced (no free-text entry) to protect Sheets API quota (300 read requests/100s/project) and polling cost as usage scales across sellers. |
-| **Verify access** button | Live call to the Sheets API (via the same service-account credentials as the node) confirming read access, and fetching the real header row. Unlike the node (which has no live-check by explicit decision, §8 of the node spec), a live check here is required: a bad connection on an action node fails loud and immediately; a bad connection on a trigger fails silent and forever, since nothing else would ever surface it. Must succeed before the seller can complete Step 1. |
-| **Header/column preview** | Populated from the live Verify Access call (not manually typed, unlike the node's column fields) — shown as a read-only list, e.g. "Customer Name, Phone, Order ID...". Re-fetchable via a "Refresh" link if the seller edits their sheet's headers after connecting. |
-| **Contact identifier column** | Dropdown of the fetched headers. Tells us which column value identifies the contact the flow should run for (e.g. `Phone` or `Email`). Required — mirrors the "unique-ID mapping" concept already present in `WebhookTriggerStep1.jsx`. |
-| Tips box (static) | Same service-account sharing copy as the node: "Please give edit access to `engagetechsupport@shiprocket.com` for this trigger to work." Editor access is requested (not Viewer) for consistency with the node, even though the trigger itself only reads. |
-| Baseline notice (static copy, non-interactive) | "Only rows added after you save this trigger will start the flow. Existing rows in the sheet won't trigger it." |
+| **Column Identifier** | `Header` / `Id` toggle, same convention as the node. Switching modes clears captured columns and the contact-identifier selection (their meaning depends on the mode). |
+| **Columns to capture as variables** | Chip-based multi-select: in `Id` mode, pick a column letter (A–Z) and click Add; in `Header` mode, type a header name and press Enter. Mirrors the node's `ColumnMultiSelect` (Get Row Data) pattern. Manual entry, no live fetch — consistent with the node's non-goal of no live header fetch. |
+| **Contact identifier column** | Dropdown populated from the columns captured above. Tells us which column value identifies the contact the flow should run for (e.g. `Phone` or `Email`). Required. |
+| **Check for new rows (poll interval)** | Dropdown: 1 / 5 / 15 / 30 / 60 minutes, default 5. This is configuration the seller sets now; it has no runtime effect yet since no poller exists (§4). |
+| **Simulate a new row** (optional) | Since there's no live connection to pull a real row from, the seller can type one sample value per captured column and click "Simulate New Row" to see a local preview of variable count and which value resolves as the contact identifier — mirrors the Webhook trigger's "Paste Sample Payload" + "Send Test Event" pattern, adapted to manual column entry instead of pasted JSON. |
+| Tips box (static) | Same service-account sharing copy as the node: "Please give edit access to `engagetechsupport@shiprocket.com` for this trigger to work," plus a note that new rows should be appended at the bottom, not inserted mid-sheet. |
+| Baseline notice (static copy) | "Only rows added after you save this trigger will start the flow. Existing rows in the sheet won't trigger it." — sets correct expectations for when this becomes real. |
 
-Step 1 "Next" is disabled until: Sheet URL is present, Verify Access has succeeded at least once for the current Sheet URL/ID, and a contact identifier column is selected.
+Finish is disabled until: Sheet URL is present, at least one column has been captured, and a contact identifier column is selected.
+
+**Explicitly not included (deferred with the backend, §4):** a live "Verify access" button, live-fetched real header names, and any actual polling. These require a live Sheets API connection this pass does not build.
 
 ### 2.3 Step 2 — "Who"
 
-Skipped, same as broadcast-type triggers (`skipStep2`). The contact identifier column in Step 1 already resolves who the flow runs for; there is no separate audience-qualification concept for a per-row trigger.
+Skipped (`skipStep2`), same mechanism as broadcast-type triggers — achieved by setting `audience_qualification_allow: false` on the catalogue entry, no special-casing needed. The contact identifier column in Step 1 already resolves who the flow runs for; there is no separate audience-qualification concept for a per-row trigger.
 
 ### 2.4 Canvas / Trigger Node Summary
 
-`StartTriggerNode.jsx` / `triggerNodeUtils.js` summary line for this kind: `New row in <Sheet name or URL host> · every <N> min`.
+`StartTriggerNode.jsx` shows the sheet URL, "Checked every N minute(s)", and (once set) "Contact: `<column>` · N column(s) captured" — driven by a new `summariseGoogleSheet()` case in `triggerNodeUtils.js`.
 
 ---
 
-## 3. Seller-Side Setup Checklist
+## 3. Seller-Side Setup Checklist (as designed — not yet functionally wired to anything)
 
-1. Have a Google Sheet with a header row; new entries appended at the bottom (see §5 limitation on mid-sheet inserts).
+1. Have a Google Sheet with a header row; new entries appended at the bottom.
 2. Share the sheet with `engagetechsupport@shiprocket.com`, Editor access — same grant sellers already make for the Google Sheet node.
-3. In the Start Trigger Wizard, paste the Sheet URL (+ Sheet ID if targeting a specific tab).
-4. Choose a poll interval.
-5. Click **Verify Access** — confirms the share succeeded and loads real column headers.
-6. Select the contact-identifier column.
-7. Publish the flow.
+3. In the Start Trigger Wizard, pick "Google Sheet Data Entry" under "Webhook and API".
+4. Paste the Sheet URL (+ Sheet ID if targeting a specific tab).
+5. Capture the columns this flow needs as variables, and choose the contact-identifier column.
+6. Choose a poll interval.
+7. (Optional) Simulate a sample row to sanity-check the setup.
+8. Finish and publish the flow.
 
-Pausing/resuming/un-publishing the flow starts and stops polling in lockstep, reusing the existing flow status state machine (`backend/routes/flows.py`).
-
----
-
-## 4. Backend Infrastructure (net-new)
-
-No node/step execution engine, event bus, queue, or scheduled-job infrastructure exists in this codebase today (confirmed: no cron/queue libraries in `package.json`/`requirements.txt`, `backend/routes/flows.py` is pure CRUD). This trigger is the first thing that actually needs to fire a flow, so it introduces the minimum backend needed to do that:
-
-- **Poller/scheduler**: one scheduled job per active `google_sheet_new_row` trigger, run at its configured interval. Given no scheduling infra exists yet, this is the first consumer of one (e.g. a lightweight interval-based job runner) — sizing/choice of scheduler technology is an implementation-time decision, not a product-design one, and is out of scope for this spec.
-- **Row-diff logic (MVP, append-only assumption)**: each poll reads the sheet via the Sheets API, compares current row count against the last-seen row count recorded at the previous poll (or at trigger-save time, for the first poll), and treats any newly-present rows as new-row events. Rows are assumed to only ever be appended at the bottom.
-- **Flow start**: each detected new-row event resolves the contact via the configured identifier column and starts one flow run for that contact, using the row's column values as available flow variables (keyed by header name, matching the preview shown in Step 1).
-- **Lifecycle**: poller starts when the flow is published, stops when paused/unpublished — driven by the same flow status transitions already implemented for publish/pause/resume.
+Step 8 onward — actually starting flows from real sheet activity — requires the backend work in §4, which is not built in this pass.
 
 ---
 
-## 5. Non-Goals / Known Limitations (v1)
+## 4. Backend Infrastructure (net-new, explicitly NOT built in this pass)
 
-- **Not real-time.** Latency is bounded by the configured poll interval (min 1 minute), not instant.
-- **Append-only assumption.** Rows inserted in the middle of the sheet, or reordering of existing rows, are not distinguished from genuinely new rows and may be missed or misdetected by the row-count-diff approach. Flagged as a known MVP limitation, not solved in this pass. A future iteration could track a unique-key column per row (hash/compare) instead of row count, at the cost of requiring the seller to designate a unique-key column.
-- **No Drive API push-notification / Apps Script push option.** Considered and rejected for v1: push notifications are file-level (require a diff step anyway), expire every ~7 days requiring channel renewal, and need a public verified HTTPS receiver; Apps Script push requires the seller to install and authorize a script in their own sheet. Both are strictly more infrastructure than polling for a first version. May be revisited later if sellers need sub-minute latency.
-- **One trigger per sheet+tab is assumed**, not explicitly deduplicated or prevented in this spec — if the same Sheet URL/ID is wired into two separate triggers (or two flows), both poll independently. Not addressed here.
+Deferred to a future spec once/if backend investment is greenlit. Recorded here so the frontend config shape anticipates it correctly:
+
+- **Poller/scheduler**: one scheduled job per active `google_sheet_new_row` trigger, run at its configured interval.
+- **Row-diff logic (append-only assumption)**: each poll reads the sheet via the Sheets API, compares current row count against the last-seen row count, and treats any newly-present rows as new-row events.
+- **Flow start**: each detected new-row event resolves the contact via the configured identifier column and starts one flow run for that contact, using the row's column values as flow variables.
+- **Lifecycle**: poller starts when the flow is published, stops when paused/unpublished, reusing the existing flow status transitions (`backend/routes/flows.py`).
+- **Live "Verify access" + header fetch**: a real Sheets API call to replace the manual column entry and enable the "Verify Access" button described as a want, not a build, in the original draft of this spec.
+
+None of the above exists after this pass — the frontend config (`sheetUrl`, `sheetId`, `columnIdMode`, `columns`, `contactIdentifierColumn`, `pollIntervalMinutes`, `sampleValues`) is shaped so it can be consumed by this backend later without a config migration.
+
+---
+
+## 5. Non-Goals / Known Limitations (this pass)
+
+- **No backend of any kind** — no live Sheets API calls, no scheduler, no execution engine. The trigger can be fully configured and saved, but nothing will actually start a flow from sheet activity.
+- **No live "Verify access" or header auto-fetch** — columns are captured manually (letter or typed header text), consistent with the Google Sheet node's existing manual-entry convention.
+- **Not real-time even once built.** Latency will be bounded by the configured poll interval (min 1 minute), not instant — this is a product decision independent of the frontend/backend split.
+- **Append-only assumption** (once backend exists): rows inserted mid-sheet or reordering of existing rows are not distinguished from genuinely new rows. Flagged as a known future limitation, not solved here.
+- **No Drive API push-notification / Apps Script push option** — considered and rejected in favor of polling; see prior draft rationale (push notifications are file-level, expire and need renewal; Apps Script push needs the seller to install/authorize a script). May be revisited later if sub-minute latency is required.
 - **No retro-fire for existing rows** at connect time (see baseline notice, §2.2) — by design, not a gap.
 
 ---
 
-## 6. File Structure (additive)
+## 6. File Structure (additive, frontend only)
 
 ```
 src/components/flows/builder/trigger/
   GoogleSheetTriggerStep1.jsx     ← new, mirrors WebhookTriggerStep1.jsx structure
-  googleSheetTriggerHelpers.js    ← new, live Sheets API call for Verify Access + header fetch
+  googleSheetTriggerHelpers.js    ← new, pure helpers (empty config, simulate-sample-row, poll interval options); reuses COLUMN_LETTERS / GOOGLE_SHEET_SERVICE_ACCOUNT_EMAIL from the node's mockData.js
 
-eventCatalogue.json               ← add google_sheet_new_row entry (audience_qualification_allow: false)
-StartTriggerWizard.jsx            ← route "step1" content to GoogleSheetTriggerStep1 for this kind
-triggerNodeUtils.js               ← add summary-line case for google_sheet_new_row
+src/data/eventCatalogue.json      ← add "Google Sheet Data Entry" card under "Webhook and API" → "External signals" (and the mirrored "ALL" bucket copy), audience_qualification_allow: false
+StartTriggerWizard.jsx            ← route "step1" content to GoogleSheetTriggerStep1 for this kind, add Finish-button validity gate
+triggerNodeUtils.js               ← add summariseGoogleSheet() case for google_sheet_new_row
+StartTriggerNode.jsx              ← add GoogleSheetEntryBlock canvas rendering
 ```
 
-Backend additions (naming/shape to be finalized at implementation-plan time, not fixed here):
-- Poller/scheduler service
-- Row-diff state per trigger (last-seen row count, last poll timestamp)
-- Flow-start invocation path (new — first real trigger-to-execution wiring in the codebase)
+Both Flow Builder v1 and v2 render `StartTriggerWizard` directly with no trigger-kind allow-list, so this is automatically available in both with no v2-specific code.
