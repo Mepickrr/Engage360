@@ -187,7 +187,7 @@ export const TEMPLATE_STYLE_CONFIGS = {
   collect_input: {
     previewKind: "collectInput",
     fields: null,
-    defaultDraft: { isCollectInput: true, inputType: "text", questionMessage: "", retryAttempts: 3, noResponse: { timeoutValue: 1, timeoutUnit: "hours", retryOnce: false }, saveToVariable: { scope: "flow", variableName: "collected_text" } },
+    defaultDraft: { isCollectInput: true, inputType: "text", questionMessage: "", retryAttempts: 3, noResponse: { timeoutValue: 1, timeoutUnit: "hours", retryOnce: false }, saveToVariable: { scope: "flow", variableName: "collected_text" }, confirmation: { enabled: false, message: "You entered {{collected_value}} — is this correct?", confirmLabel: "Confirm", editLabel: "Edit" }, errorMessage: "Please send a text message." },
     mockTemplates: [
       { id: "collect_input_1", isCollectInput: true, inputType: "text", questionMessage: "Tell us what you're looking for today", retryAttempts: 3, noResponse: { timeoutValue: 1, timeoutUnit: "hours", retryOnce: false }, saveToVariable: { scope: "flow", variableName: "collected_text" }, confirmation: { enabled: false, message: "You entered {{collected_value}} — is this correct?", confirmLabel: "Confirm", editLabel: "Edit" }, errorMessage: "Please send a text message." },
       { id: "collect_input_2", isCollectInput: true, inputType: "email", questionMessage: "What's your email address?", retryAttempts: 3, noResponse: { timeoutValue: 1, timeoutUnit: "hours", retryOnce: false }, saveToVariable: { scope: "flow", variableName: "collected_email" }, confirmation: { enabled: true, message: "You entered {{collected_value}} — is this correct?", confirmLabel: "Confirm", editLabel: "Edit" }, errorMessage: "That doesn't look like a valid email. Please try again." },

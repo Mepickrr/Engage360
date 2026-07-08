@@ -85,9 +85,9 @@ function GenericEditForm({ fields, draft, onPatch }) {
 export default function UnifiedTemplateModal({ open, styleId, styleLabel, presetInputType, initialTemplate, customTemplates = [], onSave, onClose }) {
   const config = TEMPLATE_STYLE_CONFIGS[styleId];
   const [mode, setMode] = useState(initialTemplate ? "edit" : "browse");
-  const [draft, setDraft] = useState(() => initialTemplate || config.defaultDraft);
+  const [draft, setDraft] = useState(() => initialTemplate || config?.defaultDraft || {});
 
-  const allTemplates = useMemo(() => [...config.mockTemplates, ...customTemplates], [config, customTemplates]);
+  const allTemplates = useMemo(() => [...(config?.mockTemplates || []), ...customTemplates], [config, customTemplates]);
 
   if (!open || !config) return null;
 
@@ -95,16 +95,8 @@ export default function UnifiedTemplateModal({ open, styleId, styleLabel, preset
 
   const openBlankDraft = () => {
     let blank = config.defaultDraft;
-    if (styleId === "collect_input") {
-      // config.defaultDraft only carries the fields common to every collect-input
-      // variant; CollectInputForm expects a fully-shaped draft (e.g. `confirmation`)
-      // whenever it's handed an object with isCollectInput: true, so backfill it here.
-      if (!blank.confirmation) {
-        blank = { ...blank, confirmation: { enabled: false, message: "You entered {{collected_value}} — is this correct?", confirmLabel: "Confirm", editLabel: "Edit" } };
-      }
-      if (presetInputType && COLLECT_INPUT_PRESETS[presetInputType]) {
-        blank = { ...blank, ...COLLECT_INPUT_PRESETS[presetInputType] };
-      }
+    if (styleId === "collect_input" && presetInputType && COLLECT_INPUT_PRESETS[presetInputType]) {
+      blank = { ...blank, ...COLLECT_INPUT_PRESETS[presetInputType] };
     }
     setDraft(blank);
     setMode("edit");
