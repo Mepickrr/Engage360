@@ -105,4 +105,11 @@ describe("ListMessageForm", () => {
     expect(screen.getByDisplayValue("Click")).toBeInTheDocument();
     expect(screen.getByDisplayValue("Row A")).toBeInTheDocument();
   });
+
+  it("calls onChange with the live draft on every edit", () => {
+    const onChange = jest.fn();
+    render(<ListMessageForm initial={null} onApply={noop} onCancel={noop} onChange={onChange} />);
+    fireEvent.change(screen.getByPlaceholderText(/message body/i), { target: { value: "Pick a plan" } });
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ isListMessage: true, body: "Pick a plan" }));
+  });
 });

@@ -44,4 +44,12 @@ describe("CollectInputForm", () => {
     fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
     expect(onCancel).toHaveBeenCalled();
   });
+
+  it("calls onChange with the live draft on every edit", () => {
+    const onChange = jest.fn();
+    render(<CollectInputForm initial={null} onApply={noop} onCancel={noop} onChange={onChange} />);
+    const textarea = screen.getByPlaceholderText(/what.*email/i);
+    fireEvent.change(textarea, { target: { value: "you@example.com" } });
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ isCollectInput: true, questionMessage: "you@example.com" }));
+  });
 });

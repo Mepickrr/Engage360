@@ -67,7 +67,7 @@ function defaultDraft() {
   };
 }
 
-export default function ListMessageForm({ initial, onApply, onCancel }) {
+export default function ListMessageForm({ initial, onApply, onCancel, onChange = () => {} }) {
   const [draft, setDraft] = useState(() => {
     if (initial?.isListMessage) {
       const allRows = (initial.sections ?? []).flatMap((s) => s.rows ?? []);
@@ -80,7 +80,11 @@ export default function ListMessageForm({ initial, onApply, onCancel }) {
     return defaultDraft();
   });
 
-  const patch = (p) => setDraft((d) => ({ ...d, ...p }));
+  const patch = (p) => setDraft((d) => {
+    const next = { ...d, ...p };
+    onChange(next);
+    return next;
+  });
 
   const totalRows = draft.sections.reduce(
     (sum, s) => sum + (s.rows?.length ?? 0), 0

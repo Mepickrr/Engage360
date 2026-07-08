@@ -233,12 +233,20 @@ function ListEditor({ sections, onChange }) {
   );
 }
 
-export default function CollectInputForm({ initial, onApply, onCancel }) {
-  const [draft, setDraft] = useState(initial?.isCollectInput ? initial : defaultDraft("email"));
+export default function CollectInputForm({ initial, onApply, onCancel, defaultInputType, onChange = () => {} }) {
+  const [draft, setDraft] = useState(initial?.isCollectInput ? initial : defaultDraft(defaultInputType || "email"));
   const [questionError, setQuestionError] = useState(false);
 
-  const patch = (p) => setDraft((d) => ({ ...d, ...p }));
-  const patchNested = (key, p) => setDraft((d) => ({ ...d, [key]: { ...d[key], ...p } }));
+  const patch = (p) => setDraft((d) => {
+    const next = { ...d, ...p };
+    onChange(next);
+    return next;
+  });
+  const patchNested = (key, p) => setDraft((d) => {
+    const next = { ...d, [key]: { ...d[key], ...p } };
+    onChange(next);
+    return next;
+  });
 
   const supportsConfirmation = CONFIRMATION_TYPES.has(draft.inputType);
 
