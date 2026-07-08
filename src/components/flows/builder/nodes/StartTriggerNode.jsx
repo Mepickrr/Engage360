@@ -7,7 +7,7 @@ import {
   Search, UserPlus, Heart, Star, AlertCircle, Users, UserMinus,
   CheckCircle, LogOut, MessageCircle, Hash, MessageSquare, Mail,
   Cake, Gift, RefreshCw, TrendingDown, Headphones, CheckSquare,
-  Pencil, Clock, Link2,
+  Pencil, Clock, Link2, Table,
 } from "lucide-react";
 import { summariseTriggerConfig } from "../triggerNodeUtils";
 
@@ -122,6 +122,32 @@ function DateOffsetEntryBlock({ summary }) {
       {summary.recurrenceLine && (
         <div className="mt-1.5 inline-flex items-center px-1.5 py-0.5 rounded-full bg-slate-100 text-[9px] font-medium text-text-muted border border-border">
           {summary.recurrenceLine}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function GoogleSheetEntryBlock({ summary }) {
+  const columnCount = summary.columns?.length || 0;
+  const intervalLabel = summary.pollIntervalMinutes === 1 ? "1 minute" : `${summary.pollIntervalMinutes} minutes`;
+  return (
+    <div>
+      <div className="flex items-center gap-1.5">
+        <Table className="w-3 h-3 flex-shrink-0" style={{ color: PRIMARY }} />
+        <span
+          className="text-[10px] font-mono text-text-secondary truncate flex-1"
+          title={summary.sheetUrl}
+        >
+          {truncMid(summary.sheetUrl)}
+        </span>
+      </div>
+      <div className="mt-1.5 inline-flex items-center px-1.5 py-0.5 rounded-full bg-slate-100 text-[9px] font-medium text-text-muted border border-border">
+        {`Checked every ${intervalLabel}`}
+      </div>
+      {summary.contactIdentifierColumn && (
+        <div className="mt-1 text-[10px] text-text-muted">
+          {`Contact: ${summary.contactIdentifierColumn} · ${columnCount} column${columnCount === 1 ? "" : "s"} captured`}
         </div>
       )}
     </div>
@@ -325,11 +351,13 @@ export default function StartTriggerNode({ data, selected }) {
 
         {summary.isWebhook && <WebhookEntryBlock summary={summary} />}
 
+        {summary.isGoogleSheet && <GoogleSheetEntryBlock summary={summary} />}
+
         {(summary.isDateRelative || summary.isEventOffset) && summary.offsetLine && (
           <DateOffsetEntryBlock summary={summary} />
         )}
 
-        {!summary.isBroadcast && !summary.isWebhook && !summary.isDateRelative && !summary.isEventOffset && (
+        {!summary.isBroadcast && !summary.isWebhook && !summary.isDateRelative && !summary.isEventOffset && !summary.isGoogleSheet && (
           <div>
             {summary.triggerGroups.map((group, idx) => (
               <React.Fragment key={idx}>
