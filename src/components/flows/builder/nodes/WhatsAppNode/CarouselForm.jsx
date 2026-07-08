@@ -27,7 +27,7 @@ export function defaultCarouselCard() {
   return { mediaUrl: "", cardBody: "", buttons: [{ type: "QUICK_REPLY", label: "" }] };
 }
 export function defaultCarouselDraft() {
-  return { name: "", category: "Marketing", language: "en", body: "", cards: [defaultCarouselCard(), defaultCarouselCard()] };
+  return { isCarousel: true, name: "", category: "Marketing", language: "en", body: "", cards: [defaultCarouselCard(), defaultCarouselCard()] };
 }
 
 function CarouselCardThumb({ card, index, isSelected, onSelect, onDelete, canDelete }) {

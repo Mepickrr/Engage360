@@ -36,13 +36,6 @@ function Toggle({ on, onChange }) {
     </div>
   );
 }
-function SelectField({ value, onChange, options, style = {} }) {
-  return (
-    <select value={value || ""} onChange={(e) => onChange(e.target.value)} style={{ width: "100%", padding: "7px 28px 7px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", background: "#fff", appearance: "none", cursor: "pointer", ...style }}>
-      {options.map((o) => <option key={typeof o === "string" ? o : o.value} value={typeof o === "string" ? o : o.value}>{typeof o === "string" ? o : o.label}</option>)}
-    </select>
-  );
-}
 
 // ── Template Styles ─────────────────────────────────────────────
 // Grouped catalogue: each item's `id` is what gets written to data.templateStyle,
@@ -320,6 +313,7 @@ function TemplateTab({ data, patch }) {
   const [modalMode, setModalMode] = useState("browse"); // browse | edit-existing
   const [pendingPresetInputType, setPendingPresetInputType] = useState(null);
   const [customTemplatesByStyle, setCustomTemplatesByStyle] = useState({});
+  const [fallbackModalOpen, setFallbackModalOpen] = useState(false);
 
   const templateStyle = data.templateStyle ?? null;
   const styleInfo = resolveStyleInfo(templateStyle);
@@ -373,6 +367,17 @@ function TemplateTab({ data, patch }) {
     setModalOpen(false);
   };
 
+  const handleFallbackModalSave = (tpl) => {
+    const withId = tpl.id ? tpl : { ...tpl, id: `tpl_standard_${Date.now()}` };
+    setCustomTemplatesByStyle((prev) => {
+      const existing = prev.standard || [];
+      const already = existing.find((t) => t.id === withId.id);
+      return { ...prev, standard: already ? existing.map((t) => (t.id === withId.id ? withId : t)) : [...existing, withId] };
+    });
+    patch({ fallback: { ...fallback, template: withId } });
+    setFallbackModalOpen(false);
+  };
+
   return (
     <>
       {modalOpen && (
@@ -385,6 +390,18 @@ function TemplateTab({ data, patch }) {
           customTemplates={customTemplatesByStyle[resolvedStyleId] || []}
           onSave={handleModalSave}
           onClose={() => setModalOpen(false)}
+        />
+      )}
+
+      {fallbackModalOpen && (
+        <UnifiedTemplateModal
+          open
+          styleId="standard"
+          styleLabel="Template"
+          initialTemplate={null}
+          customTemplates={customTemplatesByStyle.standard || []}
+          onSave={handleFallbackModalSave}
+          onClose={() => setFallbackModalOpen(false)}
         />
       )}
 
@@ -455,7 +472,7 @@ function TemplateTab({ data, patch }) {
             </div>
             {fallback?.enabled && (
               !fallback.template ? (
-                <button onClick={() => setModalOpen(true)} style={{ width: "100%", padding: "12px", border: `2px dashed ${BORDER}`, borderRadius: 8, background: "transparent", cursor: "pointer", color: MUTED, fontSize: 12, textAlign: "center" }}>
+                <button onClick={() => setFallbackModalOpen(true)} style={{ width: "100%", padding: "12px", border: `2px dashed ${BORDER}`, borderRadius: 8, background: "transparent", cursor: "pointer", color: MUTED, fontSize: 12, textAlign: "center" }}>
                   Click to select approved fallback template
                 </button>
               ) : (
