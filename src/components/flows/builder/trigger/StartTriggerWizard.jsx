@@ -200,7 +200,8 @@ export default function StartTriggerWizard({
   const isBroadcastSource =
     isBroadcast &&
     (primaryCard?.name === "Saved segment" || primaryCard?.name === "CSV upload");
-  const skipStep2 = !isDateRelative && primaryCard && !primaryCard.audience_qualification_allow;
+  const skipStep2 =
+    isGoogleSheet || (!isDateRelative && primaryCard && !primaryCard.audience_qualification_allow);
 
   // Picker callbacks
   const onPickEvent = (card) => {
@@ -405,13 +406,13 @@ export default function StartTriggerWizard({
             {stage === "step1" && isGoogleSheet && (
               <GoogleSheetTriggerStep1 config={googleSheetConfig} setConfig={setGoogleSheetConfig} />
             )}
-            {stage === "step1" && isDateRelative && !isWebhook && (
+            {stage === "step1" && isDateRelative && !isWebhook && !isGoogleSheet && (
               <DateRelativeTriggerContent
                 dateConfig={dateConfig}
                 setDateConfig={setDateConfig}
               />
             )}
-            {stage === "step1" && isEventOffset && !isWebhook && (
+            {stage === "step1" && isEventOffset && !isWebhook && !isGoogleSheet && (
               <EventOffsetTriggerContent
                 config={eventOffsetConfig}
                 setConfig={setEventOffsetConfig}

@@ -505,7 +505,7 @@ function summariseGoogleSheet(config) {
     sheetId: config.sheetId,
     columns: config.columns || [],
     contactIdentifierColumn: config.contactIdentifierColumn,
-    pollIntervalMinutes: config.pollIntervalMinutes,
+    pollIntervalMinutes: config.pollIntervalMinutes || 5,
     whoLine: null,
     whoExtraCount: 0,
     frequencyLine: null,

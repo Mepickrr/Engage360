@@ -48,4 +48,22 @@ describe("StartTriggerWizard — Google Sheet Data Entry trigger", () => {
       }),
     );
   });
+
+  it("skips Step 2 when re-opening an existing saved google_sheet_new_row trigger for editing", () => {
+    const savedConfig = {
+      kind: "google_sheet_new_row",
+      sheetUrl: "https://docs.google.com/x",
+      sheetId: "",
+      columnIdMode: "id",
+      columns: ["A"],
+      contactIdentifierColumn: "A",
+      pollIntervalMinutes: 5,
+      sampleValues: {},
+    };
+    render(
+      <StartTriggerWizard open initialConfig={savedConfig} onClose={() => {}} onComplete={() => {}} />,
+    );
+    expect(screen.getByTestId("trigger-wizard-finish")).toBeInTheDocument();
+    expect(screen.queryByTestId("trigger-wizard-next")).not.toBeInTheDocument();
+  });
 });

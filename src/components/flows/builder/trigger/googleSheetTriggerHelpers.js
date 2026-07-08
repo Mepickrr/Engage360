@@ -49,8 +49,7 @@ export function simulateSampleRow(config) {
       error: "Enter at least one sample value to simulate a row.",
     };
   }
-  const resolvedContactValue = contactIdentifierColumn
-    ? sampleValues[contactIdentifierColumn] || null
-    : null;
+  const rawContactValue = contactIdentifierColumn ? sampleValues[contactIdentifierColumn] : null;
+  const resolvedContactValue = rawContactValue && rawContactValue.trim() ? rawContactValue : null;
   return { success: true, variableCount: filled.length, resolvedContactValue, error: null };
 }

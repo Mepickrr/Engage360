@@ -75,4 +75,17 @@ describe("simulateSampleRow", () => {
     expect(result.success).toBe(true);
     expect(result.resolvedContactValue).toBeNull();
   });
+
+  it("resolves a whitespace-only identifier column value to null, while other filled columns still count toward variableCount", () => {
+    const cfg = {
+      ...emptyGoogleSheetTriggerConfig(),
+      columns: ["Phone", "Order ID"],
+      contactIdentifierColumn: "Phone",
+      sampleValues: { Phone: "   ", "Order ID": "555" },
+    };
+    const result = simulateSampleRow(cfg);
+    expect(result.success).toBe(true);
+    expect(result.variableCount).toBe(1);
+    expect(result.resolvedContactValue).toBeNull();
+  });
 });
