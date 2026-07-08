@@ -493,10 +493,39 @@ function summariseOldFormat(config) {
   };
 }
 
+function summariseGoogleSheet(config) {
+  return {
+    headerLabel: "Start Trigger",
+    isWebhook: false,
+    isBroadcast: false,
+    isDateRelative: false,
+    isEventOffset: false,
+    isGoogleSheet: true,
+    sheetUrl: config.sheetUrl,
+    sheetId: config.sheetId,
+    columns: config.columns || [],
+    contactIdentifierColumn: config.contactIdentifierColumn,
+    pollIntervalMinutes: config.pollIntervalMinutes,
+    whoLine: null,
+    whoExtraCount: 0,
+    frequencyLine: null,
+    audienceTypePill: null,
+    audienceTab: null,
+    audienceConditions: [],
+    audienceCombinator: "AND",
+    noExitCondition: true,
+    exitLine: null,
+    exitExtraCount: 0,
+    exitEvents: [],
+    exitCombinator: "OR",
+  };
+}
+
 // ── main export ───────────────────────────────────────────────
 export function summariseTriggerConfig(config) {
   if (!config) return null;
   if (config.kind === "webhook") return summariseWebhook(config);
+  if (config.kind === "google_sheet_new_row") return summariseGoogleSheet(config);
   if (config.kind === "date_relative") return summariseDateRelative(config);
   if (config.kind === "event_offset") return summariseEventOffset(config);
   // Detect new wizard format: triggerGroups have a string `.event` field
