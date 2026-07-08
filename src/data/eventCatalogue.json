@@ -1493,6 +1493,18 @@
           "time_attribute_allow": false,
           "header": "ALL",
           "section": "External signals"
+        },
+        {
+          "name": "Google Sheet Data Entry",
+          "description": "A new row is added to a connected Google Sheet",
+          "source": "",
+          "device_tag": [],
+          "attribute_allowed": false,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
+          "time_attribute_allow": false,
+          "header": "ALL",
+          "section": "External signals"
         }
       ],
       "Audience source": [
@@ -2346,6 +2358,18 @@
           "attribute_allowed": true,
           "advance_evaluate": false,
           "audience_qualification_allow": true,
+          "time_attribute_allow": false,
+          "header": "Webhook and API",
+          "section": "External signals"
+        },
+        {
+          "name": "Google Sheet Data Entry",
+          "description": "A new row is added to a connected Google Sheet",
+          "source": "",
+          "device_tag": [],
+          "attribute_allowed": false,
+          "advance_evaluate": false,
+          "audience_qualification_allow": false,
           "time_attribute_allow": false,
           "header": "Webhook and API",
           "section": "External signals"

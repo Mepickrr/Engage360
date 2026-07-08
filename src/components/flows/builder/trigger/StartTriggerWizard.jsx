@@ -13,6 +13,8 @@ import EventOffsetTriggerContent, { emptyEventOffsetConfig } from "./EventOffset
 import { mockedAudienceCount, emptyConditionBlock } from "./triggerHelpers";
 import WebhookTriggerStep1, { isWebhookStep1Valid } from "./WebhookTriggerStep1";
 import { emptyWebhookConfig, flattenPayload } from "./webhookHelpers";
+import GoogleSheetTriggerStep1, { isGoogleSheetStep1Valid } from "./GoogleSheetTriggerStep1";
+import { emptyGoogleSheetTriggerConfig } from "./googleSheetTriggerHelpers";
 
 function emptyAudience() {
   return {
@@ -86,6 +88,8 @@ export default function StartTriggerWizard({
   const [eventOffsetConfig, setEventOffsetConfig] = useState(emptyEventOffsetConfig());
   const [isWebhook, setIsWebhook] = useState(false);
   const [webhookConfig, setWebhookConfig] = useState(emptyWebhookConfig());
+  const [isGoogleSheet, setIsGoogleSheet] = useState(false);
+  const [googleSheetConfig, setGoogleSheetConfig] = useState(emptyGoogleSheetTriggerConfig());
 
   const [count, setCount] = useState(null);
   const [loadingCount, setLoadingCount] = useState(false);
@@ -104,6 +108,7 @@ export default function StartTriggerWizard({
         setIsWebhook(true);
         setIsDateRelative(false);
         setIsEventOffset(false);
+        setIsGoogleSheet(false);
         setWebhookConfig({
           webhookUrl: initialConfig.webhookUrl,
           authProtected: initialConfig.authProtected || false,
@@ -117,18 +122,36 @@ export default function StartTriggerWizard({
       } else if (initialConfig?.kind === "date_relative") {
         setIsWebhook(false);
         setIsEventOffset(false);
+        setIsGoogleSheet(false);
         setIsDateRelative(true);
         setDateConfig(initialConfig.dateConfig || emptyDateConfig());
         setStage("step1");
       } else if (initialConfig?.kind === "event_offset") {
         setIsWebhook(false);
         setIsDateRelative(false);
+        setIsGoogleSheet(false);
         setIsEventOffset(true);
         setEventOffsetConfig(initialConfig.eventOffsetConfig || emptyEventOffsetConfig());
+        setStage("step1");
+      } else if (initialConfig?.kind === "google_sheet_new_row") {
+        setIsWebhook(false);
+        setIsDateRelative(false);
+        setIsEventOffset(false);
+        setIsGoogleSheet(true);
+        setGoogleSheetConfig({
+          sheetUrl: initialConfig.sheetUrl || "",
+          sheetId: initialConfig.sheetId || "",
+          columnIdMode: initialConfig.columnIdMode || "id",
+          columns: initialConfig.columns || [],
+          contactIdentifierColumn: initialConfig.contactIdentifierColumn || "",
+          pollIntervalMinutes: initialConfig.pollIntervalMinutes || 5,
+          sampleValues: initialConfig.sampleValues || {},
+        });
         setStage("step1");
       } else if (ev?.header === "Broadcast") {
         setIsWebhook(false);
         setIsDateRelative(false);
+        setIsGoogleSheet(false);
         if (ev?.name === "Saved segment" || ev?.name === "CSV upload") {
           setBroadcastSourceType(ev.name === "CSV upload" ? "csv" : "segment");
           setBroadcastSourceConfig(initialConfig.broadcastSourceConfig || emptyBroadcastSourceConfig());
@@ -142,6 +165,7 @@ export default function StartTriggerWizard({
         setIsWebhook(false);
         setIsDateRelative(false);
         setIsEventOffset(false);
+        setIsGoogleSheet(false);
         setStage("step1");
       }
     } else {
@@ -156,9 +180,11 @@ export default function StartTriggerWizard({
       setIsDateRelative(false);
       setIsEventOffset(false);
       setIsWebhook(false);
+      setIsGoogleSheet(false);
       setWebhookConfig(emptyWebhookConfig());
       setDateConfig(emptyDateConfig());
       setEventOffsetConfig(emptyEventOffsetConfig());
+      setGoogleSheetConfig(emptyGoogleSheetTriggerConfig());
       setStage("picker");
       setPickingForGroupIdx(null);
     }
@@ -184,12 +210,21 @@ export default function StartTriggerWizard({
         setIsWebhook(true);
         setIsDateRelative(false);
         setIsEventOffset(false);
+        setIsGoogleSheet(false);
         setWebhookConfig(emptyWebhookConfig());
+        setStage("step1");
+      } else if (card.name === "Google Sheet Data Entry") {
+        setIsWebhook(false);
+        setIsDateRelative(false);
+        setIsEventOffset(false);
+        setIsGoogleSheet(true);
+        setGoogleSheetConfig(emptyGoogleSheetTriggerConfig());
         setStage("step1");
       } else if (card.header === "Broadcast") {
         setIsWebhook(false);
         setIsDateRelative(false);
         setIsEventOffset(false);
+        setIsGoogleSheet(false);
         if (card.name === "Saved segment" || card.name === "CSV upload") {
           setBroadcastSourceType(card.name === "CSV upload" ? "csv" : "segment");
           setBroadcastSourceConfig(emptyBroadcastSourceConfig());
@@ -201,12 +236,14 @@ export default function StartTriggerWizard({
       } else if (card.date_relative) {
         setIsWebhook(false);
         setIsEventOffset(false);
+        setIsGoogleSheet(false);
         setIsDateRelative(true);
         setDateConfig(emptyDateConfig(card.attribute_key));
         setStage("step1");
       } else if (card.system_event_relative) {
         setIsWebhook(false);
         setIsDateRelative(false);
+        setIsGoogleSheet(false);
         setIsEventOffset(true);
         setEventOffsetConfig(emptyEventOffsetConfig(card.name));
         setStage("step1");
@@ -214,6 +251,7 @@ export default function StartTriggerWizard({
         setIsWebhook(false);
         setIsDateRelative(false);
         setIsEventOffset(false);
+        setIsGoogleSheet(false);
         setStage("step1");
       }
     } else {
@@ -254,6 +292,8 @@ export default function StartTriggerWizard({
         payloadVariables: flattenPayload(webhookConfig.samplePayload).variables,
         audience,
       };
+    } else if (isGoogleSheet) {
+      config = { kind: "google_sheet_new_row", ...googleSheetConfig };
     } else if (isBroadcastSource) {
       config = {
         kind: "broadcast_source",
@@ -301,6 +341,8 @@ export default function StartTriggerWizard({
       ? `1. ${sourceStepLabel} → 2. Schedule & audience`
       : isWebhook
       ? "1. Configure Webhook → 2. Who will enter the flow"
+      : isGoogleSheet
+      ? "1. Configure Google Sheet Data Entry"
       : "1. When will users enter the flow → 2. Who will enter the flow";
 
   return (
@@ -326,7 +368,7 @@ export default function StartTriggerWizard({
 
           {stage !== "broadcast" && !stage.startsWith("broadcast-source") && (
             <div className="px-5 pt-4 flex items-center gap-3">
-              <StepDot n={1} active={stage === "step1"} done={stage === "step2"} label={isWebhook ? "Configure Webhook" : "When"} />
+              <StepDot n={1} active={stage === "step1"} done={stage === "step2"} label={isWebhook ? "Configure Webhook" : isGoogleSheet ? "Configure Google Sheet Data Entry" : "When"} />
               <span className="flex-1 h-px bg-border" />
               <StepDot
                 n={2}
@@ -360,6 +402,9 @@ export default function StartTriggerWizard({
             {stage === "step1" && isWebhook && (
               <WebhookTriggerStep1 config={webhookConfig} setConfig={setWebhookConfig} />
             )}
+            {stage === "step1" && isGoogleSheet && (
+              <GoogleSheetTriggerStep1 config={googleSheetConfig} setConfig={setGoogleSheetConfig} />
+            )}
             {stage === "step1" && isDateRelative && !isWebhook && (
               <DateRelativeTriggerContent
                 dateConfig={dateConfig}
@@ -372,7 +417,7 @@ export default function StartTriggerWizard({
                 setConfig={setEventOffsetConfig}
               />
             )}
-            {stage === "step1" && !isDateRelative && !isEventOffset && !isWebhook && (
+            {stage === "step1" && !isDateRelative && !isEventOffset && !isWebhook && !isGoogleSheet && (
               <Step1WhenContent
                 triggerGroups={triggerGroups}
                 setTriggerGroups={setTriggerGroups}
@@ -462,8 +507,9 @@ export default function StartTriggerWizard({
                 <button
                   type="button"
                   onClick={handleFinish}
+                  disabled={isGoogleSheet && !isGoogleSheetStep1Valid(googleSheetConfig)}
                   data-testid="trigger-wizard-finish"
-                  className="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium text-white rounded-md"
+                  className="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium text-white rounded-md disabled:opacity-40 disabled:cursor-not-allowed"
                   style={{ backgroundImage: "linear-gradient(135deg, #6C3AE8 0%, #8B5CF6 100%)" }}
                 >
                   Finish
