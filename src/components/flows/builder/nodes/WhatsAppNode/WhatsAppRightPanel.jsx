@@ -308,13 +308,14 @@ function TemplateStylePicker({ onSelect }) {
 }
 
 // ── Fallback Template Section ──────────────────────────────────
-export function FallbackTemplateSection({ data, patch }) {
+export function FallbackTemplateSection({ data, patch, customTemplates = [], onSaveCustomTemplate }) {
   const [fallbackModalOpen, setFallbackModalOpen] = useState(false);
   const { fallback = {} } = data;
 
   const handleFallbackSave = (tpl) => {
     const withId = tpl.id ? tpl : { ...tpl, id: `tpl_standard_${Date.now()}` };
     patch({ fallback: { ...fallback, template: withId } });
+    if (onSaveCustomTemplate) onSaveCustomTemplate(withId);
     setFallbackModalOpen(false);
   };
 
@@ -326,6 +327,7 @@ export function FallbackTemplateSection({ data, patch }) {
           styleId="standard"
           styleLabel="Template"
           initialTemplate={null}
+          customTemplates={customTemplates}
           onSave={handleFallbackSave}
           onClose={() => setFallbackModalOpen(false)}
         />
@@ -485,7 +487,16 @@ export function TemplateTab({ data, patch }) {
         </div>
 
         {template && !styleInfo?.mapsTo && resolvedStyleId !== "collect_input" && (
-          <FallbackTemplateSection data={data} patch={patch} />
+          <FallbackTemplateSection
+            data={data}
+            patch={patch}
+            customTemplates={customTemplatesByStyle.standard || []}
+            onSaveCustomTemplate={(tpl) => setCustomTemplatesByStyle((prev) => {
+              const existing = prev.standard || [];
+              const already = existing.find((t) => t.id === tpl.id);
+              return { ...prev, standard: already ? existing.map((t) => (t.id === tpl.id ? tpl : t)) : [...existing, tpl] };
+            })}
+          />
         )}
       </div>
     </>
