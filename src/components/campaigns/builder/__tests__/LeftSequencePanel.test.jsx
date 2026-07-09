@@ -34,12 +34,12 @@ describe("LeftSequencePanel", () => {
     expect(useCampaignBuilderStore.getState().sequence[1].channel).toBe("sms");
   });
 
-  it("shows a relative-delay badge on a new follow-up step", () => {
+  it("shows a behavior badge on a new follow-up step", () => {
     useCampaignBuilderStore.getState().addPrimaryStep("email");
     render(<LeftSequencePanel />);
     fireEvent.click(screen.getByTestId("add-followup-btn"));
     fireEvent.click(screen.getByTestId("channel-option-sms"));
     fireEvent.click(screen.getByTestId("channel-picker-continue"));
-    expect(screen.getByText("+1h DELAY")).toBeInTheDocument();
+    expect(screen.getByText("ON NOT VIEWED")).toBeInTheDocument();
   });
 });

@@ -45,4 +45,33 @@ describe("CenterConfigPanel", () => {
     expect(useCampaignBuilderStore.getState().sequence[1].trigger_condition.mode).toBe("delay");
     expect(useCampaignBuilderStore.getState().sequence[1].trigger_condition.fire_at).toBeNull();
   });
+
+  it("shows the behavior selector alongside the timing UI, single-select", () => {
+    useCampaignBuilderStore.getState().addPrimaryStep("whatsapp");
+    useCampaignBuilderStore.getState().addFollowupStep("sms");
+    const step = useCampaignBuilderStore.getState().sequence[1];
+    render(<CenterConfigPanel step={step} />);
+
+    expect(screen.getByTestId("tc-behavior-delivered_not_viewed")).toBeChecked();
+    expect(screen.getByTestId("tc-behavior-failed")).not.toBeChecked();
+
+    fireEvent.click(screen.getByTestId("tc-behavior-failed"));
+    expect(useCampaignBuilderStore.getState().sequence[1].trigger_condition.behavior).toBe("failed");
+    expect(screen.getByTestId("tc-mode-delay")).toBeInTheDocument();
+  });
+
+  it("renders WhatsAppBroadcastDetails below the Broadcast Name field for a primary WhatsApp step", () => {
+    useCampaignBuilderStore.getState().addPrimaryStep("whatsapp");
+    const step = useCampaignBuilderStore.getState().sequence[0];
+    render(<CenterConfigPanel step={step} />);
+    expect(screen.getByTestId("broadcast-name-field")).toBeInTheDocument();
+    expect(screen.getByTestId("whatsapp-broadcast-details")).toBeInTheDocument();
+  });
+
+  it("does not render WhatsAppBroadcastDetails for a non-WhatsApp primary step", () => {
+    useCampaignBuilderStore.getState().addPrimaryStep("sms");
+    const step = useCampaignBuilderStore.getState().sequence[0];
+    render(<CenterConfigPanel step={step} />);
+    expect(screen.queryByTestId("whatsapp-broadcast-details")).not.toBeInTheDocument();
+  });
 });

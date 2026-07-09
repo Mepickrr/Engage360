@@ -143,4 +143,19 @@ describe("CampaignBuilderPage", () => {
     const persisted = await fetchCampaign(campaignId);
     expect(persisted.meta.name).toBe("Flush Me");
   });
+
+  it("shows created-at once the campaign exists, and opens Test Mode / Save & Schedule from the header", async () => {
+    renderAt("/campaigns/builder/new");
+    fireEvent.click(screen.getByTestId("channel-option-whatsapp"));
+    fireEvent.click(screen.getByTestId("channel-picker-continue"));
+    await waitFor(() => expect(useCampaignBuilderStore.getState().campaignId).toBeTruthy());
+
+    expect(screen.getByTestId("campaign-created-at")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("header-test-mode-btn"));
+    expect(screen.getByTestId("test-mode-modal")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("header-save-schedule-btn"));
+    expect(screen.getByTestId("save-schedule-modal")).toBeInTheDocument();
+  });
 });

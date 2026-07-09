@@ -1,20 +1,16 @@
 import React from "react";
 import { CHANNEL_META } from "@/lib/flowMeta";
 
-function formatDate(iso) {
-  if (!iso) return "DATE";
-  return new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short" }).toUpperCase();
-}
+const BEHAVIOR_BADGE_LABELS = {
+  delivered_not_viewed: "ON NOT VIEWED",
+  viewed_not_clicked: "ON NOT CLICKED",
+  clicked: "ON CLICK",
+  failed: "ON FAILED",
+};
 
 function badgeFor(step) {
   if (step.is_primary) return "PRIMARY";
-  const tc = step.trigger_condition;
-  if (tc.mode === "date") return `ON ${formatDate(tc.fire_at)}`;
-  if (tc.condition_type === "behavior" && tc.behavior) {
-    return `ON ${tc.behavior.toUpperCase().replace(/_/g, " ")}`;
-  }
-  const unit = (tc.delay?.unit ?? "hours")[0];
-  return `+${tc.delay?.value ?? 0}${unit} DELAY`;
+  return BEHAVIOR_BADGE_LABELS[step.trigger_condition.behavior] || "ON FAILED";
 }
 
 export default function StepCard({ step, selected, onSelect }) {

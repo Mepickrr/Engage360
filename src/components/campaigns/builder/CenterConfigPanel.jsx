@@ -1,6 +1,7 @@
 import React from "react";
 import { useCampaignBuilderStore } from "@/store/campaignBuilderStore";
 import TriggerConditionEditor from "./TriggerConditionEditor";
+import WhatsAppBroadcastDetails from "./WhatsAppBroadcastDetails";
 
 export default function CenterConfigPanel({ step }) {
   const meta = useCampaignBuilderStore((s) => s.meta);
@@ -17,15 +18,18 @@ export default function CenterConfigPanel({ step }) {
   return (
     <div className="flex-1 border-r border-border bg-white p-4 overflow-y-auto" data-testid="center-config-panel">
       {step.is_primary ? (
-        <div>
-          <label className="block text-[12px] font-medium text-text-secondary mb-1">Broadcast Name</label>
-          <input
-            type="text"
-            value={meta.name}
-            onChange={(e) => patchMeta({ name: e.target.value })}
-            data-testid="broadcast-name-field"
-            className="w-full border border-border rounded-md px-3 py-2 text-sm"
-          />
+        <div className="space-y-6">
+          <div>
+            <label className="block text-[12px] font-medium text-text-secondary mb-1">Broadcast Name</label>
+            <input
+              type="text"
+              value={meta.name}
+              onChange={(e) => patchMeta({ name: e.target.value })}
+              data-testid="broadcast-name-field"
+              className="w-full border border-border rounded-md px-3 py-2 text-sm"
+            />
+          </div>
+          {step.channel === "whatsapp" && <WhatsAppBroadcastDetails step={step} />}
         </div>
       ) : (
         <TriggerConditionEditor step={step} />

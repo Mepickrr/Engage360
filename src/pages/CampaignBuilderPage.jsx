@@ -7,6 +7,8 @@ import ChannelPickerModal from "@/components/campaigns/builder/ChannelPickerModa
 import LeftSequencePanel from "@/components/campaigns/builder/LeftSequencePanel";
 import CenterConfigPanel from "@/components/campaigns/builder/CenterConfigPanel";
 import CampaignContentPanel from "@/components/campaigns/builder/CampaignContentPanel";
+import TestModeModal from "@/components/campaigns/builder/TestModeModal";
+import SaveAndScheduleModal from "@/components/campaigns/builder/SaveAndScheduleModal";
 
 const AUTOSAVE_DEBOUNCE_MS = 1500;
 
@@ -27,6 +29,10 @@ export default function CampaignBuilderPage() {
   const addPrimaryStep = useCampaignBuilderStore((s) => s.addPrimaryStep);
   const patchMeta = useCampaignBuilderStore((s) => s.patchMeta);
   const setAutosaveStatus = useCampaignBuilderStore((s) => s.setAutosaveStatus);
+  const createdAt = useCampaignBuilderStore((s) => s.createdAt);
+  const setCreatedAt = useCampaignBuilderStore((s) => s.setCreatedAt);
+  const [testModeOpen, setTestModeOpen] = useState(false);
+  const [saveScheduleOpen, setSaveScheduleOpen] = useState(false);
 
   useEffect(() => () => reset(), [reset]);
 
@@ -47,6 +53,7 @@ export default function CampaignBuilderPage() {
       const doc = await createCampaign({ meta: m, sequence: seq });
       hydratedIdRef.current = doc.id;
       setCampaignId(doc.id);
+      setCreatedAt(doc.createdAt);
       navigate(`/campaigns/builder/${doc.id}`, { replace: true });
     },
     [addPrimaryStep, setCampaignId, navigate],
@@ -104,16 +111,47 @@ export default function CampaignBuilderPage() {
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
-        <input
-          type="text"
-          value={meta.name}
-          onChange={(e) => patchMeta({ name: e.target.value })}
-          data-testid="campaign-name-input"
-          className="text-sm font-medium border border-transparent hover:border-border focus:border-primary rounded px-2 py-1 flex-1 max-w-xs"
-        />
+        <div className="flex flex-col">
+          <input
+            type="text"
+            value={meta.name}
+            onChange={(e) => patchMeta({ name: e.target.value })}
+            data-testid="campaign-name-input"
+            className="text-sm font-medium border border-transparent hover:border-border focus:border-primary rounded px-2 py-1 max-w-xs"
+          />
+          {createdAt && (
+            <span className="text-[10px] text-text-muted px-2" data-testid="campaign-created-at">
+              Created {new Date(createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}
+            </span>
+          )}
+        </div>
         <span className="text-[12px] text-text-muted ml-auto" data-testid="campaign-autosave-status">
           {autosaveStatus === "saving" ? "Saving..." : autosaveStatus === "saved" ? "All changes saved" : ""}
         </span>
+        <button
+          type="button"
+          data-testid="switch-to-flow-builder-btn"
+          onClick={() => navigate("/flows-v2/builder/new")}
+          className="px-3 py-1.5 rounded-md border border-border text-text-secondary text-[12px] font-medium"
+        >
+          Switch to Flow Builder
+        </button>
+        <button
+          type="button"
+          data-testid="header-test-mode-btn"
+          onClick={() => setTestModeOpen(true)}
+          className="px-3 py-1.5 rounded-md border border-border text-text-secondary text-[12px] font-medium"
+        >
+          Test Mode
+        </button>
+        <button
+          type="button"
+          data-testid="header-save-schedule-btn"
+          onClick={() => setSaveScheduleOpen(true)}
+          className="px-4 py-2 rounded-md bg-primary text-white text-[12px] font-medium"
+        >
+          Save & Schedule
+        </button>
       </div>
       <div className="flex-1 flex min-h-0" style={pickerOpen ? { pointerEvents: "none" } : undefined}>
         <LeftSequencePanel />
@@ -126,6 +164,8 @@ export default function CampaignBuilderPage() {
         onSelect={handleChannelPicked}
         onClose={handlePickerClose}
       />
+      <TestModeModal open={testModeOpen} onClose={() => setTestModeOpen(false)} />
+      <SaveAndScheduleModal open={saveScheduleOpen} onClose={() => setSaveScheduleOpen(false)} />
     </div>
   );
 }
