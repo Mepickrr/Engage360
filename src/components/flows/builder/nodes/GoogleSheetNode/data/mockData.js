@@ -11,11 +11,23 @@ export const GOOGLE_SHEET_ACTIONS = [
 
 export const COLUMN_LETTERS = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
+export const GOOGLE_SHEET_DUMMY_COLUMNS = [
+  "Order ID", "Customer Name", "Phone Number", "Email", "Status", "Amount",
+];
+
 export const defaultGoogleSheetNodeData = {
   action: null, // "add_row" | "update_row" | "get_row" | "upsert_row"
 
   sheetUrl: "",
   sheetId: "",
+
+  sheetConnected: false,
+
+  sync: {
+    status: "idle", // "idle" | "syncing" | "synced"
+    lastSyncedAt: null,
+    detectedColumns: [],
+  },
 
   addRow: {
     columnIdMode: "id", // "header" | "id"
