@@ -308,7 +308,7 @@ function TemplateStylePicker({ onSelect }) {
 }
 
 // ── Template Tab ────────────────────────────────────────────────
-function TemplateTab({ data, patch }) {
+export function TemplateTab({ data, patch }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("browse"); // browse | edit-existing
   const [pendingPresetInputType, setPendingPresetInputType] = useState(null);
