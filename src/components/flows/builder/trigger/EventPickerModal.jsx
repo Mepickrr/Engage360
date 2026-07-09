@@ -5,7 +5,14 @@ import catalogueData from "@/data/eventCatalogue.json";
 import { useFlowVariant } from "@/components/flows/FlowVariantContext";
 
 // Two-column "Select Start Trigger" picker (Part 1).
-export default function EventPickerModal({ open, onClose, onPick }) {
+export default function EventPickerModal({
+  open,
+  onClose,
+  onPick,
+  lockdown = false,
+  onSaveDraft,
+  onDeleteFlow,
+}) {
   const { hiddenCatalogueSections = [] } = useFlowVariant();
   const [activeHeader, setActiveHeader] = useState("All");
   const [search, setSearch] = useState("");
@@ -60,10 +67,11 @@ export default function EventPickerModal({ open, onClose, onPick }) {
   }, [activeHeader, search, hiddenCatalogueSections]);
 
   return (
-    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+    <Dialog open={open} onOpenChange={(o) => { if (!o && !lockdown) onClose(); }}>
       <DialogContent
         className="max-w-4xl p-0 max-h-[90vh] flex flex-col overflow-hidden"
         data-testid="event-picker-modal"
+        hideCloseButton={lockdown}
       >
         <DialogTitle className="sr-only">Select Start Trigger</DialogTitle>
         <header className="px-5 py-4 border-b border-border flex items-center justify-between">
@@ -75,6 +83,26 @@ export default function EventPickerModal({ open, onClose, onPick }) {
               Choose the event that will start this flow.
             </div>
           </div>
+          {lockdown && (
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={onSaveDraft}
+                data-testid="trigger-wizard-save-draft"
+                className="px-2.5 py-1.5 text-[12px] font-medium text-text-secondary hover:text-text-primary rounded-md hover:bg-slate-100"
+              >
+                Save draft
+              </button>
+              <button
+                type="button"
+                onClick={onDeleteFlow}
+                data-testid="trigger-wizard-delete-flow"
+                className="px-2.5 py-1.5 text-[12px] font-medium text-rose-600 hover:text-rose-700 rounded-md hover:bg-rose-50"
+              >
+                Delete flow
+              </button>
+            </div>
+          )}
         </header>
 
         <div className="flex flex-1 min-h-0">
