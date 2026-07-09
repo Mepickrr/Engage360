@@ -307,13 +307,57 @@ function TemplateStylePicker({ onSelect }) {
   );
 }
 
+// ── Fallback Template Section ──────────────────────────────────
+export function FallbackTemplateSection({ data, patch }) {
+  const [fallbackModalOpen, setFallbackModalOpen] = useState(false);
+  const { fallback = {} } = data;
+
+  const handleFallbackSave = (tpl) => {
+    const withId = tpl.id ? tpl : { ...tpl, id: `tpl_standard_${Date.now()}` };
+    patch({ fallback: { ...fallback, template: withId } });
+    setFallbackModalOpen(false);
+  };
+
+  return (
+    <>
+      {fallbackModalOpen && (
+        <UnifiedTemplateModal
+          open
+          styleId="standard"
+          styleLabel="Template"
+          initialTemplate={null}
+          onSave={handleFallbackSave}
+          onClose={() => setFallbackModalOpen(false)}
+        />
+      )}
+      <div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+          <Label>Fallback Template</Label>
+          <Toggle on={!!fallback?.enabled} onChange={(v) => patch({ fallback: { ...fallback, enabled: v } })} />
+        </div>
+        {fallback?.enabled && (
+          !fallback.template ? (
+            <button onClick={() => setFallbackModalOpen(true)} style={{ width: "100%", padding: "12px", border: `2px dashed ${BORDER}`, borderRadius: 8, background: "transparent", cursor: "pointer", color: MUTED, fontSize: 12, textAlign: "center" }}>
+              Click to select approved fallback template
+            </button>
+          ) : (
+            <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A" }}>{fallback.template.name}</span>
+              <button onClick={() => patch({ fallback: { ...fallback, template: null } })} style={{ fontSize: 11, color: "#EF4444", background: "none", border: "none", cursor: "pointer" }}>Remove</button>
+            </div>
+          )
+        )}
+      </div>
+    </>
+  );
+}
+
 // ── Template Tab ────────────────────────────────────────────────
 export function TemplateTab({ data, patch }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("browse"); // browse | edit-existing
   const [pendingPresetInputType, setPendingPresetInputType] = useState(null);
   const [customTemplatesByStyle, setCustomTemplatesByStyle] = useState({});
-  const [fallbackModalOpen, setFallbackModalOpen] = useState(false);
 
   const templateStyle = data.templateStyle ?? null;
   const styleInfo = resolveStyleInfo(templateStyle);
@@ -367,17 +411,6 @@ export function TemplateTab({ data, patch }) {
     setModalOpen(false);
   };
 
-  const handleFallbackModalSave = (tpl) => {
-    const withId = tpl.id ? tpl : { ...tpl, id: `tpl_standard_${Date.now()}` };
-    setCustomTemplatesByStyle((prev) => {
-      const existing = prev.standard || [];
-      const already = existing.find((t) => t.id === withId.id);
-      return { ...prev, standard: already ? existing.map((t) => (t.id === withId.id ? withId : t)) : [...existing, withId] };
-    });
-    patch({ fallback: { ...fallback, template: withId } });
-    setFallbackModalOpen(false);
-  };
-
   return (
     <>
       {modalOpen && (
@@ -390,18 +423,6 @@ export function TemplateTab({ data, patch }) {
           customTemplates={customTemplatesByStyle[resolvedStyleId] || []}
           onSave={handleModalSave}
           onClose={() => setModalOpen(false)}
-        />
-      )}
-
-      {fallbackModalOpen && (
-        <UnifiedTemplateModal
-          open
-          styleId="standard"
-          styleLabel="Template"
-          initialTemplate={null}
-          customTemplates={customTemplatesByStyle.standard || []}
-          onSave={handleFallbackModalSave}
-          onClose={() => setFallbackModalOpen(false)}
         />
       )}
 
@@ -463,26 +484,8 @@ export function TemplateTab({ data, patch }) {
           )}
         </div>
 
-        {/* Fallback template */}
         {template && !styleInfo?.mapsTo && resolvedStyleId !== "collect_input" && (
-          <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-              <Label>Fallback Template</Label>
-              <Toggle on={!!fallback?.enabled} onChange={(v) => patch({ fallback: { ...fallback, enabled: v } })} />
-            </div>
-            {fallback?.enabled && (
-              !fallback.template ? (
-                <button onClick={() => setFallbackModalOpen(true)} style={{ width: "100%", padding: "12px", border: `2px dashed ${BORDER}`, borderRadius: 8, background: "transparent", cursor: "pointer", color: MUTED, fontSize: 12, textAlign: "center" }}>
-                  Click to select approved fallback template
-                </button>
-              ) : (
-                <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A" }}>{fallback.template.name}</span>
-                  <button onClick={() => patch({ fallback: { ...fallback, template: null } })} style={{ fontSize: 11, color: "#EF4444", background: "none", border: "none", cursor: "pointer" }}>Remove</button>
-                </div>
-              )
-            )}
-          </div>
+          <FallbackTemplateSection data={data} patch={patch} />
         )}
       </div>
     </>
