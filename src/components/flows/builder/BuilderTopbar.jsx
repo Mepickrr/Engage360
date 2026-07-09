@@ -276,7 +276,7 @@ export function TopbarIconButton({ icon: Icon, label, onClick, disabled, testId 
 }
 
 // ── Main topbar ──────────────────────────────────────────────────────────────
-export default function BuilderTopbar({ basePath = "/flows" }) {
+export default function BuilderTopbar({ basePath = "/flows", locked = false }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -457,8 +457,13 @@ export default function BuilderTopbar({ basePath = "/flows" }) {
           <button
             type="button"
             data-testid="builder-back"
-            onClick={() => navigate(basePath)}
-            className="p-1.5 rounded-md hover:bg-slate-100 text-text-muted hover:text-text-primary transition-colors flex-shrink-0"
+            onClick={() => { if (!locked) navigate(basePath); }}
+            disabled={locked}
+            className={`p-1.5 rounded-md transition-colors flex-shrink-0 ${
+              locked
+                ? "text-slate-300 cursor-not-allowed"
+                : "hover:bg-slate-100 text-text-muted hover:text-text-primary"
+            }`}
           >
             <ArrowLeft className="w-4 h-4" />
           </button>

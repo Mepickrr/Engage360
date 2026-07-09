@@ -13,8 +13,9 @@ import { toast } from "sonner";
 // useNavigate() and never touches any other routing context, so MemoryRouter
 // can be safely mocked as a plain passthrough wrapper here, consistent with
 // the virtual-mock convention used by every other test in this directory.
+const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
-  useNavigate: () => jest.fn(),
+  useNavigate: () => mockNavigate,
   MemoryRouter: ({ children }) => children,
 }), { virtual: true });
 
@@ -28,6 +29,7 @@ jest.mock("@/lib/flowsApi", () => ({
 jest.mock("sonner", () => ({ toast: { info: jest.fn(), success: jest.fn(), error: jest.fn() } }));
 
 function renderTopbar(metaOverrides = {}) {
+  mockNavigate.mockClear();
   useFlowBuilderStore.setState({
     flowId: "flow-1",
     meta: { name: "Diwali Sale Flow", status: "active", ...metaOverrides },
@@ -74,5 +76,40 @@ describe("BuilderTopbar integration", () => {
     renderTopbar();
     fireEvent.click(screen.getByTestId("builder-redo"));
     expect(toast.info).toHaveBeenCalledWith("Redo coming soon");
+  });
+});
+
+function renderTopbarWithProps(props = {}) {
+  mockNavigate.mockClear();
+  useFlowBuilderStore.setState({
+    flowId: "flow-1",
+    meta: { name: "Diwali Sale Flow", status: "active" },
+    nodes: [],
+    edges: [],
+    autosaveStatus: "idle",
+  });
+  const queryClient = new QueryClient();
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>
+        <BuilderTopbar {...props} />
+      </MemoryRouter>
+    </QueryClientProvider>
+  );
+}
+
+describe("BuilderTopbar — locked mode", () => {
+  it("disables the back button and does not navigate when locked", () => {
+    renderTopbarWithProps({ locked: true });
+    const backButton = screen.getByTestId("builder-back");
+    expect(backButton).toBeDisabled();
+    fireEvent.click(backButton);
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("navigates on back-button click when not locked", () => {
+    renderTopbarWithProps({ locked: false });
+    fireEvent.click(screen.getByTestId("builder-back"));
+    expect(mockNavigate).toHaveBeenCalledWith("/flows");
   });
 });
