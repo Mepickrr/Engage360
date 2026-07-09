@@ -43,7 +43,7 @@ jest.mock("@/lib/flowsApi", () => ({
 jest.mock("sonner", () => ({ toast: { success: jest.fn(), error: jest.fn() } }));
 
 import FlowBuilderV2 from "../FlowBuilderV2";
-import { createFlow, deleteFlow } from "@/lib/flowsApi";
+import { createFlow, deleteFlow, fetchFlow } from "@/lib/flowsApi";
 
 function renderBuilder() {
   mockNavigate.mockClear();
@@ -85,5 +85,52 @@ describe("FlowBuilderV2 — start-trigger lockdown wiring", () => {
     fireEvent.click(screen.getByTestId("wizard-delete-flow"));
     expect(deleteFlow).not.toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith("/flows-v2");
+  });
+
+  it("force-opens the wizard in lockdown when reopening an existing flow with no trigger node", async () => {
+    mockParams = { id: "flow-42" };
+    fetchFlow.mockResolvedValueOnce({
+      id: "flow-42",
+      name: "Untitled flow",
+      nodes: [],
+      edges: [],
+    });
+    renderBuilder();
+    await waitFor(() => {
+      expect(screen.getByTestId("wizard")).toHaveAttribute("data-lockdown", "true");
+      expect(screen.getByTestId("topbar")).toHaveAttribute("data-locked", "true");
+    });
+  });
+
+  it("does not force-open the wizard when reopening a flow that already has a trigger node", async () => {
+    mockParams = { id: "flow-42" };
+    fetchFlow.mockResolvedValueOnce({
+      id: "flow-42",
+      name: "Configured flow",
+      nodes: [
+        {
+          id: "start-trigger-node",
+          type: "start-trigger",
+          position: { x: 260, y: 60 },
+          data: { config: { kind: "event", triggerGroups: [] } },
+        },
+        {
+          id: "n1",
+          type: "email",
+          position: { x: 500, y: 60 },
+          data: {},
+        },
+      ],
+      edges: [],
+    });
+    renderBuilder();
+    await waitFor(() => {
+      expect(screen.getByTestId("topbar")).toHaveAttribute("data-locked", "false");
+    });
+    const wizard = screen.queryByTestId("wizard");
+    if (wizard) {
+      expect(wizard).toHaveAttribute("data-lockdown", "false");
+    }
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });

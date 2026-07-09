@@ -35,16 +35,30 @@ there.
 
 ### 1. Auto-open condition
 
-Replace the wizard's auto-open condition from "route is `/new`" to:
+The initial `triggerModalOpen` state stays seeded from `isNew` (route is
+`/new`), so an existing configured flow never briefly flashes the wizard open
+before hydration completes. The hydrate effect that already loads
+`serverFlow` is extended to force the wizard open in lockdown once the loaded
+flow resolves and turns out to have no `start-trigger-node`:
 
 ```js
-const hasTriggerNode = nodes?.some((n) => n.id === "start-trigger-node");
-const [triggerModalOpen, setTriggerModalOpen] = useState(!hasTriggerNode);
+const isNew = !id || id === "new";
+const [triggerModalOpen, setTriggerModalOpen] = useState(isNew);
+
+// ...
+
+const hydratedIdRef = useRef(null);
+useEffect(() => {
+  if (serverFlow && hydratedIdRef.current !== serverFlow.id) {
+    hydratedIdRef.current = serverFlow.id;
+    hydrate(serverFlow);
+    const hasTrigger = (serverFlow.nodes || []).some((n) => n.id === "start-trigger-node");
+    if (!hasTrigger) setTriggerModalOpen(true);
+  }
+}, [serverFlow, hydrate]);
 ```
 
-and keep it in sync as `nodes` hydrates from the server (existing
-`hydrate`/`serverFlow` effect) — if a loaded flow has no `start-trigger` node,
-force `triggerModalOpen` to `true`. This covers:
+This covers:
 
 - Brand-new flows (`/new`, zero nodes).
 - Drafts saved via the new "Save draft" action before a trigger was

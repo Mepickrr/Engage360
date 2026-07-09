@@ -184,15 +184,24 @@ export default function FlowBuilderV2() {
   const handleSaveDraft = useCallback(async () => {
     setTriggerModalOpen(false);
     if (!flowId) {
-      await createFlow({ name: "Untitled flow", nodes: [], edges: [] });
+      try {
+        await createFlow({ name: "Untitled flow", nodes: [], edges: [] });
+        queryClient.invalidateQueries({ queryKey: ["flows"] });
+      } catch (e) {
+        toast.error("Couldn't save the draft.");
+      }
     }
     navigate("/flows-v2");
-  }, [flowId, navigate]);
+  }, [flowId, navigate, queryClient]);
 
   const handleDeleteFlow = useCallback(async () => {
     setTriggerModalOpen(false);
     if (flowId) {
-      await deleteFlow(flowId);
+      try {
+        await deleteFlow(flowId);
+      } catch (e) {
+        toast.error("Couldn't delete the flow, but you can safely leave it as a draft.");
+      }
     }
     navigate("/flows-v2");
   }, [flowId, navigate]);
