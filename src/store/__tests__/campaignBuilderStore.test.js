@@ -21,7 +21,7 @@ describe("campaignBuilderStore", () => {
     expect(sequence[0].channel).toBe("whatsapp");
     expect(sequence[0].order_index).toBe(0);
     expect(sequence[0].trigger_condition).toBeNull();
-    expect(sequence[0].channel_config.fallback).toEqual({ enabled: false, template: null });
+    expect(sequence[0].channel_config.fallback).toEqual({ enabled: false, template: null, categoryChangeEnabled: false });
     expect(selectedStepId).toBe(sequence[0].id);
   });
 
@@ -79,5 +79,58 @@ describe("campaignBuilderStore", () => {
     getState().reset();
     expect(getState().campaignId).toBeNull();
     expect(getState().sequence).toEqual([]);
+  });
+
+  it("addPrimaryStep gives whatsapp steps campaign-specific channel_config defaults", () => {
+    getState().addPrimaryStep("whatsapp");
+    const cc = getState().sequence[0].channel_config;
+    expect(cc.suppressionList).toBe("wa_default");
+    expect(cc.utm).toEqual({ enabled: false, source: "Engage 360", medium: "WhatsApp", campaign: "Untitled Broadcast 1" });
+    expect(cc.aiSmartSend).toBe(false);
+    expect(cc.campaignSmartRetry).toEqual({ enabled: false, windowHours: 72 });
+    expect(cc.internationalAudience).toBe(false);
+    expect(cc.validityWindow).toEqual({ custom: false, minutes: 10 });
+    expect(cc.fallback).toEqual({ enabled: false, template: null, categoryChangeEnabled: false });
+  });
+
+  it("addFollowupStep defaults behavior to delivered_not_viewed and has no condition_type", () => {
+    getState().addPrimaryStep("whatsapp");
+    getState().addFollowupStep("sms");
+    const tc = getState().sequence[1].trigger_condition;
+    expect(tc.behavior).toBe("delivered_not_viewed");
+    expect(tc.condition_type).toBeUndefined();
+  });
+
+  it("updateStepAudience merges into the step's audience field", () => {
+    getState().addPrimaryStep("whatsapp");
+    const id = getState().sequence[0].id;
+    getState().updateStepAudience(id, { sourceType: "segment", broadcastSourceConfig: { selectedSegments: [{ id: "s1", userCount: 500 }] } });
+    expect(getState().sequence[0].audience.sourceType).toBe("segment");
+    expect(getState().sequence[0].audience.broadcastSourceConfig.selectedSegments).toHaveLength(1);
+  });
+
+  it("createdAt/status/schedule default and can be set", () => {
+    expect(getState().createdAt).toBeNull();
+    expect(getState().status).toBe("draft");
+    expect(getState().schedule).toEqual({ mode: null, datetime: null });
+    getState().setCreatedAt("2026-07-09T00:00:00.000Z");
+    getState().setStatus("scheduled");
+    getState().setSchedule({ mode: "scheduled", datetime: "2026-07-10T09:00" });
+    expect(getState().createdAt).toBe("2026-07-09T00:00:00.000Z");
+    expect(getState().status).toBe("scheduled");
+    expect(getState().schedule).toEqual({ mode: "scheduled", datetime: "2026-07-10T09:00" });
+  });
+
+  it("hydrate restores createdAt/status/schedule, reset clears them", () => {
+    getState().hydrate({
+      id: "c1", meta: { name: "X" }, sequence: [],
+      createdAt: "2026-07-01T00:00:00.000Z", status: "scheduled", schedule: { mode: "now", datetime: null },
+    });
+    expect(getState().createdAt).toBe("2026-07-01T00:00:00.000Z");
+    expect(getState().status).toBe("scheduled");
+    getState().reset();
+    expect(getState().createdAt).toBeNull();
+    expect(getState().status).toBe("draft");
+    expect(getState().schedule).toEqual({ mode: null, datetime: null });
   });
 });

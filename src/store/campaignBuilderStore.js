@@ -10,11 +10,31 @@ function nextStepId() {
 function defaultTriggerCondition(referenceStepId) {
   return {
     reference_step_id: referenceStepId,
-    condition_type: "time_elapsed",
-    behavior: null,
+    behavior: "delivered_not_viewed",
     mode: "delay",
     delay: { value: 1, unit: "hours" },
     fire_at: null,
+  };
+}
+
+function whatsappCampaignConfigDefaults(broadcastName) {
+  return {
+    suppressionList: "wa_default",
+    utm: { enabled: false, source: "Engage 360", medium: "WhatsApp", campaign: broadcastName },
+    aiSmartSend: false,
+    campaignSmartRetry: { enabled: false, windowHours: 72 },
+    internationalAudience: false,
+    validityWindow: { custom: false, minutes: 10 },
+  };
+}
+
+function channelConfigFor(channel, broadcastName) {
+  const base = defaultDataForPaletteItem({ kind: channel });
+  if (channel !== "whatsapp") return base;
+  return {
+    ...base,
+    ...whatsappCampaignConfigDefaults(broadcastName),
+    fallback: { ...base.fallback, categoryChangeEnabled: false },
   };
 }
 
@@ -24,6 +44,9 @@ const initialState = {
   sequence: [],
   selectedStepId: null,
   autosaveStatus: "idle",
+  createdAt: null,
+  status: "draft",
+  schedule: { mode: null, datetime: null },
 };
 
 export const useCampaignBuilderStore = create((set, get) => ({
@@ -37,9 +60,12 @@ export const useCampaignBuilderStore = create((set, get) => ({
       meta: campaign.meta ?? { name: "Untitled Broadcast" },
       sequence: campaign.sequence ?? [],
       selectedStepId: campaign.sequence?.[0]?.id ?? null,
+      createdAt: campaign.createdAt ?? null,
+      status: campaign.status ?? "draft",
+      schedule: campaign.schedule ?? { mode: null, datetime: null },
     }),
 
-  reset: () => set({ ...initialState, meta: { ...initialState.meta } }),
+  reset: () => set({ ...initialState, meta: { ...initialState.meta }, schedule: { ...initialState.schedule } }),
 
   patchMeta: (patch) => set((s) => ({ meta: { ...s.meta, ...patch } })),
 
@@ -53,7 +79,7 @@ export const useCampaignBuilderStore = create((set, get) => ({
         is_primary: true,
         trigger_condition: null,
         audience: { mode: "manual", segments_or_lists: [], suppression_lists: [] },
-        channel_config: defaultDataForPaletteItem({ kind: channel }),
+        channel_config: channelConfigFor(channel, s.meta.name),
       };
       return { sequence: [step], selectedStepId: step.id };
     }),
@@ -68,7 +94,7 @@ export const useCampaignBuilderStore = create((set, get) => ({
         is_primary: false,
         trigger_condition: defaultTriggerCondition(previous?.id ?? null),
         audience: { mode: "computed", segments_or_lists: [], suppression_lists: [] },
-        channel_config: defaultDataForPaletteItem({ kind: channel }),
+        channel_config: channelConfigFor(channel, s.meta.name),
       };
       return { sequence: [...s.sequence, step], selectedStepId: step.id };
     }),
@@ -78,6 +104,15 @@ export const useCampaignBuilderStore = create((set, get) => ({
       sequence: s.sequence.map((step) =>
         step.id === stepId
           ? { ...step, channel_config: { ...step.channel_config, ...patch } }
+          : step,
+      ),
+    })),
+
+  updateStepAudience: (stepId, patch) =>
+    set((s) => ({
+      sequence: s.sequence.map((step) =>
+        step.id === stepId
+          ? { ...step, audience: { ...step.audience, ...patch } }
           : step,
       ),
     })),
@@ -100,4 +135,7 @@ export const useCampaignBuilderStore = create((set, get) => ({
   selectStep: (stepId) => set({ selectedStepId: stepId }),
 
   setAutosaveStatus: (status) => set({ autosaveStatus: status }),
+  setCreatedAt: (createdAt) => set({ createdAt }),
+  setStatus: (status) => set({ status }),
+  setSchedule: (schedule) => set({ schedule }),
 }));
