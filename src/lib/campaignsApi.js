@@ -15,7 +15,8 @@ function writeAll(all) {
 export async function createCampaign(body) {
   const all = readAll();
   const id = `campaign-${Object.keys(all).length + 1}-${Math.round(performance.now())}`;
-  const doc = { id, ...body, createdAt: new Date().toISOString() };
+  const now = new Date().toISOString();
+  const doc = { ...body, createdAt: now, updatedAt: now, id };
   all[id] = doc;
   writeAll(all);
   return doc;
@@ -32,7 +33,7 @@ export async function updateCampaign(id, patch) {
   const all = readAll();
   const existing = all[id];
   if (!existing) throw new Error(`Campaign ${id} not found`);
-  const doc = { ...existing, ...patch, updatedAt: new Date().toISOString() };
+  const doc = { ...existing, ...patch, updatedAt: new Date().toISOString(), id };
   all[id] = doc;
   writeAll(all);
   return doc;

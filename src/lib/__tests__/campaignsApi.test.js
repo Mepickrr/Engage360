@@ -12,6 +12,19 @@ describe("campaignsApi", () => {
     expect(doc.createdAt).toBeTruthy();
   });
 
+  it("createCampaign returns complete doc shape with all required fields", async () => {
+    const doc = await createCampaign({ meta: { name: "Test" }, sequence: [] });
+    expect(doc).toHaveProperty("id");
+    expect(doc).toHaveProperty("meta");
+    expect(doc).toHaveProperty("sequence");
+    expect(doc).toHaveProperty("createdAt");
+    expect(doc).toHaveProperty("updatedAt");
+    expect(doc.id).toBeTruthy();
+    expect(typeof doc.id).toBe("string");
+    expect(doc.updatedAt).toBeTruthy();
+    expect(typeof doc.updatedAt).toBe("string");
+  });
+
   it("fetchCampaign returns a previously created doc", async () => {
     const created = await createCampaign({ meta: { name: "Test" }, sequence: [] });
     const fetched = await fetchCampaign(created.id);
