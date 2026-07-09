@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PreviewHeader, { KpiTile, previewToast } from "@/components/common/PreviewHeader";
 import ChannelChip from "@/components/flows/ChannelChip";
 import StatusPill from "@/components/flows/StatusPill";
@@ -31,6 +32,7 @@ const TABS = [
 ];
 
 export default function CampaignsPage() {
+  const navigate = useNavigate();
   const [tab, setTab] = useState("all");
   const filtered =
     tab === "all"
@@ -51,7 +53,7 @@ export default function CampaignsPage() {
           <button
             type="button"
             data-testid="campaigns-new-btn"
-            onClick={() => previewToast()}
+            onClick={() => navigate("/campaigns/builder/new")}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md bg-primary hover:bg-primary-hover text-white text-sm font-medium"
           >
             <Plus className="w-4 h-4" />

@@ -7,6 +7,7 @@ import "@/App.css";
 
 import AppShell from "@/components/layout/AppShell";
 import CampaignsPage from "@/pages/Campaigns";
+import CampaignBuilderPage from "@/pages/CampaignBuilderPage";
 import PushPage from "@/pages/Push";
 import FlowsPage from "@/pages/Flows";
 import FlowBuilder from "@/pages/FlowBuilder";
@@ -56,6 +57,8 @@ function App() {
             <Route path="/home-v4" element={<HomeV4Page />} />
             <Route path="/home-v5" element={<HomeV5Page />} />
             <Route path="/campaigns" element={<CampaignsPage />} />
+            <Route path="/campaigns/builder/new" element={<CampaignBuilderPage />} />
+            <Route path="/campaigns/builder/:id" element={<CampaignBuilderPage />} />
             <Route path="/push" element={<PushPage />} />
             <Route path="/flows" element={<FlowsPage />} />
             <Route path="/flows/create" element={<FlowCreatePage />} />
