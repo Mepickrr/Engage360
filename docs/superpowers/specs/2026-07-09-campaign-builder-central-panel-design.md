@@ -74,7 +74,33 @@ Task 7 built the delay/date timing toggle but never added a behavior selector at
 
 **Data model simplification:** `trigger_condition.condition_type` (currently `"time_elapsed"`, set but never read by any UI) is dropped — behavior is now always present rather than an alternate condition type. `campaignBuilderStore.js`'s `defaultTriggerCondition` drops the `condition_type` field entirely.
 
-## 7. Summary of file changes
+## 7. Header — name/created-at, Switch to Flow Builder, Test Mode, Save & Schedule
+
+**Current state:** `CampaignBuilderPage.jsx`'s header is just a back-arrow, the name input, and the autosave status — no created-at display, no other actions.
+
+**New behavior**, added to the same header bar:
+
+- **Created-at date** — a small muted date string next to the name input (e.g. "09 Jul 2026"), sourced from a new `createdAt` field on the store (set once from `createCampaign`'s response when the campaign is first created, or from `hydrate()`'s `campaign.createdAt` when reopening an existing one). Read-only, never edited.
+- **Switch to Flow Builder** — a button that navigates to `/flows-v2/builder/new`. Per the original `Campaign Builder.md` spec (Section 0), this is out-of-scope as anything beyond plain navigation — no data hand-off between the two builders.
+- **Test Mode** — a button that opens a small modal: a phone-number input + "Send Test" button. Clicking "Send Test" shows a mocked confirmation toast ("Test message sent to +91XXXXXXXXXX") and closes the modal — no real send, consistent with this app's existing `previewToast()` pattern elsewhere. This modal is reused unchanged inside the Save & Schedule modal (Section 8) as its own "Test Mode" secondary action.
+- **Save & Schedule** — a button that opens the Save & Schedule modal (Section 8). This replaces the header's need for a separate "Save Draft" action — autosave (already built, Task 5) continuously persists the draft, so there's no separate draft-save button in this design.
+
+**New component**, `TestModeModal.jsx` — self-contained, takes `open`/`onClose`, no store coupling beyond reading nothing (it's purely a mocked phone-number-and-send UI).
+
+## 8. Save & Schedule modal
+
+Opened by the header's "Save & Schedule" button. Contents, in order:
+
+- **Estimated Audience Size** — reads the resolved count already produced by Section 3's `BroadcastSourceStep1`/`BroadcastSourceStep2` (`channel_config.audience`), displayed as a plain number. No new computation — this modal just surfaces what the Central Panel's audience step already resolved.
+- **AI Suggestion** — a static, mocked text card (e.g. "This segment overlaps with your suppression list — consider reviewing before sending" or similar illustrative copy), matching the original spec's Audience Summary Card AI Suggestion concept at a minimal, non-computed level for this pass.
+- **Test Mode button** — opens the same `TestModeModal` from Section 7, as a secondary action that does not close this modal.
+- **Switch to Flow Builder button** — same navigation action as Section 7, secondary action.
+- **Schedule control** — `Send now` / `Schedule for {date} {time}` (radio-style choice; the latter reveals a date/time picker). Written to new store state `schedule: { mode: 'now' | 'scheduled', datetime }`.
+- **Confirm & Schedule** — primary CTA, disabled until a schedule mode is chosen (implicit in the original spec's Section 8; not explicitly re-stated in your latest message but required to actually finalize — flagging this assumption for your confirmation). On click: sets `status: 'scheduled'` (or `'sending'` if "Send now"), persists via `updateCampaign`, and closes the modal.
+
+**New component**, `SaveAndScheduleModal.jsx`.
+
+## 9. Summary of file changes
 
 - Modify: `src/components/flows/builder/nodes/WhatsAppNode/WhatsAppRightPanel.jsx` — extract `FallbackTemplateSection` (new named export), `TemplateTab` calls it instead of its inline block. Pure refactor, no behavior change.
 - Modify: `src/components/flows/builder/nodes/WhatsAppNode/UnifiedTemplateModal.jsx` — add AI Enhance and Upload & Submit buttons (shared with Flow Builder).
@@ -84,8 +110,12 @@ Task 7 built the delay/date timing toggle but never added a behavior selector at
 - Modify: `src/components/campaigns/builder/CenterConfigPanel.jsx` — render `WhatsAppBroadcastDetails` for the primary WhatsApp step instead of the bare name field.
 - Create: `src/components/campaigns/builder/WhatsAppBroadcastDetails.jsx` (Section 3 — all primary-step config, including Sender Number and the extracted `FallbackTemplateSection`).
 - Modify: `src/components/campaigns/builder/TriggerConditionEditor.jsx` — add the "Send to users" behavior selector alongside the existing timing UI.
-- Modify: `src/store/campaignBuilderStore.js` — extend `channel_config`'s audience/utm/smartRetry/fallback/internationalAudience/validityWindow shape for the primary WhatsApp step; drop `condition_type`, default `behavior` to `"delivered_not_viewed"`.
+- Modify: `src/store/campaignBuilderStore.js` — extend `channel_config`'s audience/utm/smartRetry/fallback/internationalAudience/validityWindow shape for the primary WhatsApp step; drop `condition_type`, default `behavior` to `"delivered_not_viewed"`; add top-level `createdAt`, `status` (default `"draft"`), `schedule` (default `{ mode: null, datetime: null }`) state + `setSchedule`/`setStatus` actions; `hydrate()` picks up `createdAt`/`status`/`schedule` from the loaded campaign doc.
+- Modify: `src/pages/CampaignBuilderPage.jsx` — add created-at display, Switch to Flow Builder button, Test Mode button, and Save & Schedule button to the header; populate `createdAt` on creation.
+- Create: `src/components/campaigns/builder/TestModeModal.jsx` (Section 7).
+- Create: `src/components/campaigns/builder/SaveAndScheduleModal.jsx` (Section 8).
+- Modify: `src/lib/campaignsApi.js` — no shape change needed; `updateCampaign` already accepts an arbitrary patch, so persisting `status`/`schedule` works with the existing function as-is.
 
-## 8. Out of scope (still deferred)
+## 10. Out of scope (still deferred)
 
-Audience Summary Card (live recalculation, AI suggestions), Save & Schedule modal, Header actions (Switch to Flow Builder, Test Mode, Save & Schedule button), campaign list page real data wiring. These remain the next follow-up passes per the entry-flow spec's Section 9, now further specified as their own future design docs.
+Live-recalculating Audience Summary Card (the "AI Suggestion" in Section 8 is static/mocked for this pass, not recalculated on every edit), campaign list page real data wiring (`Campaigns.jsx` still shows static mock rows — this pass doesn't touch it). These remain the next follow-up passes.
