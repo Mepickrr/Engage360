@@ -6,6 +6,7 @@ import {
   createFlow,
   fetchFlow,
   updateFlow,
+  deleteFlow,
 } from "@/lib/flowsApi";
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import { defaultDataForPaletteItem } from "@/lib/flowMeta";
@@ -63,8 +64,6 @@ export default function FlowBuilderV2() {
   const [triggerModalOpen, setTriggerModalOpen] = useState(isNew);
   const [aiCallingWizardOpen,  setAiCallingWizardOpen]  = useState(false);
   const [aiChatbotWizardOpen,  setAiChatbotWizardOpen]  = useState(false);
-  // Ref so onClose can check without stale closure issues
-  const triggerConfigured = useRef(false);
   const queryClient = useQueryClient();
 
   const flowId = useFlowBuilderStore((s) => s.flowId);
@@ -104,6 +103,8 @@ export default function FlowBuilderV2() {
     if (serverFlow && hydratedIdRef.current !== serverFlow.id) {
       hydratedIdRef.current = serverFlow.id;
       hydrate(serverFlow);
+      const hasTrigger = (serverFlow.nodes || []).some((n) => n.id === "start-trigger-node");
+      if (!hasTrigger) setTriggerModalOpen(true);
     }
   }, [serverFlow, hydrate]);
 
@@ -178,6 +179,24 @@ export default function FlowBuilderV2() {
   // Derive existing trigger config from the canvas node (for edit pre-population)
   const existingTriggerConfig = nodes?.find((n) => n.id === "start-trigger-node")?.data?.config ?? null;
 
+  const lockdown = !existingTriggerConfig;
+
+  const handleSaveDraft = useCallback(async () => {
+    setTriggerModalOpen(false);
+    if (!flowId) {
+      await createFlow({ name: "Untitled flow", nodes: [], edges: [] });
+    }
+    navigate("/flows-v2");
+  }, [flowId, navigate]);
+
+  const handleDeleteFlow = useCallback(async () => {
+    setTriggerModalOpen(false);
+    if (flowId) {
+      await deleteFlow(flowId);
+    }
+    navigate("/flows-v2");
+  }, [flowId, navigate]);
+
   // Open AI Calling global wizard whenever an aicalling node is selected and not yet configured
   useEffect(() => {
     if (!selectedNodeId) return;
@@ -211,7 +230,6 @@ export default function FlowBuilderV2() {
   // Fires when the wizard completes (any path: step1-skip, step2-finish, broadcast)
   const handleTriggerComplete = useCallback(
     (config) => {
-      triggerConfigured.current = true;
       setTriggerModalOpen(false);
       placeTriggerNode(config);
       toast.success("Trigger configured");
@@ -325,7 +343,7 @@ export default function FlowBuilderV2() {
         className="flex flex-col h-[calc(100vh-3rem)] -m-6 bg-app-bg"
         data-testid="flow-builder-v2"
       >
-        <BuilderTopbar basePath="/flows-v2" />
+        <BuilderTopbar basePath="/flows-v2" locked={triggerModalOpen && lockdown} />
         <div className="flex-1 flex min-h-0">
           <NodePalette onNodeAdd={handlePaletteNodeAdd} allowedNodeIds={V2_ALLOWED_NODES} />
           {/* Only block the canvas + right panel while the trigger modal is being configured */}
@@ -341,11 +359,11 @@ export default function FlowBuilderV2() {
       <StartTriggerWizard
         open={triggerModalOpen}
         initialConfig={existingTriggerConfig}
-        onClose={() => {
-          setTriggerModalOpen(false);
-          if (!triggerConfigured.current && isNew) navigate(-1);
-        }}
+        lockdown={lockdown}
+        onClose={() => setTriggerModalOpen(false)}
         onComplete={handleTriggerComplete}
+        onSaveDraft={handleSaveDraft}
+        onDeleteFlow={handleDeleteFlow}
       />
 
       <AiCallingGlobalWizard
