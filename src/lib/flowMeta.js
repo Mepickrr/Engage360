@@ -155,7 +155,7 @@ export function defaultDataForPaletteItem(item) {
         label: "Send WhatsApp",
         template: null,
         variableMap: {},
-        wabaNumberId: null,
+        wabaNumberId: "waba_1",
         templateType: "Marketing",
         markAsMarketing: true,
         utm: { enabled: false, source: "whatsapp", medium: "journey", campaign: "" },
