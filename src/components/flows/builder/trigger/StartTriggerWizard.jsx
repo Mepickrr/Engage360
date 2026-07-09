@@ -69,6 +69,9 @@ export default function StartTriggerWizard({
   initialConfig,
   onClose,
   onComplete,
+  lockdown = false,
+  onSaveDraft,
+  onDeleteFlow,
 }) {
   // "picker" | "step1" | "step2" | "broadcast" | "broadcast-source-1" | "broadcast-source-2"
   const [stage, setStage] = useState("picker");
@@ -332,6 +335,9 @@ export default function StartTriggerWizard({
         open={open}
         onClose={onClose}
         onPick={onPickEvent}
+        lockdown={lockdown}
+        onSaveDraft={onSaveDraft}
+        onDeleteFlow={onDeleteFlow}
       />
     );
   }
@@ -351,10 +357,11 @@ export default function StartTriggerWizard({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+      <Dialog open={open} onOpenChange={(o) => { if (!o && !lockdown) onClose(); }}>
         <DialogContent
           className="max-w-3xl p-0 max-h-[92vh] flex flex-col overflow-hidden"
           data-testid="trigger-wizard"
+          hideCloseButton={lockdown}
           onPointerDownOutside={(e) => e.preventDefault()}
           onInteractOutside={(e) => e.preventDefault()}
         >
@@ -368,6 +375,26 @@ export default function StartTriggerWizard({
                 {stepperLabel}
               </div>
             </div>
+            {lockdown && (
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={onSaveDraft}
+                  data-testid="trigger-wizard-save-draft"
+                  className="px-2.5 py-1.5 text-[12px] font-medium text-text-secondary hover:text-text-primary rounded-md hover:bg-slate-100"
+                >
+                  Save draft
+                </button>
+                <button
+                  type="button"
+                  onClick={onDeleteFlow}
+                  data-testid="trigger-wizard-delete-flow"
+                  className="px-2.5 py-1.5 text-[12px] font-medium text-rose-600 hover:text-rose-700 rounded-md hover:bg-rose-50"
+                >
+                  Delete flow
+                </button>
+              </div>
+            )}
           </header>
 
           {stage !== "broadcast" && !stage.startsWith("broadcast-source") && (
@@ -465,19 +492,21 @@ export default function StartTriggerWizard({
           </div>
 
           <footer className="px-5 py-3 border-t border-border flex items-center justify-between gap-2 bg-surface">
-            <button
-              type="button"
-              onClick={() => {
-                if (stage === "step2") setStage("step1");
-                else if (stage === "broadcast-source-2") setStage("broadcast-source-1");
-                else onClose();
-              }}
-              className="inline-flex items-center gap-1 px-3 py-2 text-sm text-text-secondary hover:text-text-primary rounded-md hover:bg-slate-100"
-              data-testid="trigger-wizard-back"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              {stage === "step2" || stage === "broadcast-source-2" ? "Back" : "Cancel"}
-            </button>
+            {(stage === "step2" || stage === "broadcast-source-2" || !lockdown) && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (stage === "step2") setStage("step1");
+                  else if (stage === "broadcast-source-2") setStage("broadcast-source-1");
+                  else onClose();
+                }}
+                className="inline-flex items-center gap-1 px-3 py-2 text-sm text-text-secondary hover:text-text-primary rounded-md hover:bg-slate-100"
+                data-testid="trigger-wizard-back"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                {stage === "step2" || stage === "broadcast-source-2" ? "Back" : "Cancel"}
+              </button>
+            )}
             <div className="flex items-center gap-2">
               {stage === "step1" && !skipStep2 && (
                 <button
