@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import CampaignBuilderPage from "../CampaignBuilderPage";
 import { useCampaignBuilderStore } from "@/store/campaignBuilderStore";
+import { fetchCampaign } from "@/lib/campaignsApi";
 
 // react-router-dom cannot be resolved by Jest in this project (its package.json
 // "exports" map is ESM-only under Jest's default "node" condition, and forcing
@@ -119,5 +120,27 @@ describe("CampaignBuilderPage", () => {
     const input = screen.getByTestId("campaign-name-input");
     fireEvent.change(input, { target: { value: "Diwali Blast" } });
     expect(useCampaignBuilderStore.getState().meta.name).toBe("Diwali Blast");
+  });
+
+  it("flushes a pending autosave on unmount instead of losing the edit", async () => {
+    const { unmount } = renderAt("/campaigns/builder/new");
+    fireEvent.click(screen.getByTestId("channel-option-whatsapp"));
+    fireEvent.click(screen.getByTestId("channel-picker-continue"));
+
+    await waitFor(() => expect(useCampaignBuilderStore.getState().campaignId).toBeTruthy());
+    const campaignId = useCampaignBuilderStore.getState().campaignId;
+
+    // Edit the name — this schedules a 1.5s debounced autosave that has not
+    // fired yet.
+    const input = screen.getByTestId("campaign-name-input");
+    fireEvent.change(input, { target: { value: "Flush Me" } });
+
+    // Unmount immediately, well before AUTOSAVE_DEBOUNCE_MS elapses.
+    unmount();
+
+    // The pending edit must still have been persisted via the unmount flush,
+    // not silently dropped with the cleared debounce timer.
+    const persisted = await fetchCampaign(campaignId);
+    expect(persisted.meta.name).toBe("Flush Me");
   });
 });

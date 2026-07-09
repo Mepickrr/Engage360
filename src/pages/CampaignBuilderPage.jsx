@@ -59,6 +59,7 @@ export default function CampaignBuilderPage() {
 
   const lastSavedRef = useRef(null);
   const debounceRef = useRef(null);
+  const pendingSaveRef = useRef(null);
   useEffect(() => {
     if (!campaignId) return;
     const snapshot = JSON.stringify({ meta, sequence });
@@ -69,14 +70,26 @@ export default function CampaignBuilderPage() {
     if (lastSavedRef.current === snapshot) return;
     if (debounceRef.current) clearTimeout(debounceRef.current);
     setAutosaveStatus("saving");
+    pendingSaveRef.current = { campaignId, meta, sequence, snapshot };
     debounceRef.current = setTimeout(async () => {
       await updateCampaign(campaignId, { meta, sequence });
       lastSavedRef.current = snapshot;
+      pendingSaveRef.current = null;
       setAutosaveStatus("saved");
       setTimeout(() => setAutosaveStatus("idle"), 1500);
     }, AUTOSAVE_DEBOUNCE_MS);
     return () => debounceRef.current && clearTimeout(debounceRef.current);
   }, [campaignId, meta, sequence, setAutosaveStatus]);
+
+  useEffect(() => {
+    return () => {
+      const pending = pendingSaveRef.current;
+      if (pending) {
+        updateCampaign(pending.campaignId, { meta: pending.meta, sequence: pending.sequence });
+        pendingSaveRef.current = null;
+      }
+    };
+  }, []);
 
   const selectedStep = sequence.find((s) => s.id === selectedStepId) || sequence[0] || null;
 
