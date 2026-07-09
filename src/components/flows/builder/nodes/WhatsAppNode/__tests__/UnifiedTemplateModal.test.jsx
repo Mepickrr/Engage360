@@ -71,10 +71,10 @@ describe("AI Enhance and Upload & Submit", () => {
         onClose={jest.fn()}
       />,
     );
-    const before = screen.getByDisplayValue("Hello there");
+    expect(screen.getByDisplayValue("Hello there")).toBeInTheDocument();
     fireEvent.click(screen.getByTestId("ai-enhance-btn"));
     expect(screen.queryByDisplayValue("Hello there")).not.toBeInTheDocument();
-    expect(before).not.toBeInTheDocument();
+    expect(screen.getByDisplayValue(/limited time only/)).toBeInTheDocument();
   });
 
   it("Upload & Submit sets a pending-review status and saves", () => {
