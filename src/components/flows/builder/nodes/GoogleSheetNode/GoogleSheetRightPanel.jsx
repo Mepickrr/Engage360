@@ -3,7 +3,7 @@ import { Table, CheckCircle2, Loader2 } from "lucide-react";
 import {
   GOOGLE_SHEET_ACTIONS, GOOGLE_SHEET_BLUE, GOOGLE_SHEET_DUMMY_COLUMNS, defaultGoogleSheetNodeData,
 } from "./data/mockData";
-import { getGoogleSheetSummary } from "./data/summary";
+import { getGoogleSheetPanelSummary } from "./data/summary";
 import GoogleSheetConfigModal from "./GoogleSheetConfigModal";
 
 const BORDER = "#E5E7EB";
@@ -261,7 +261,7 @@ export default function GoogleSheetRightPanel({ node, updateNodeData, removeNode
             </div>
             <ActionSummaryCard
               actionMeta={actionMeta}
-              summary={getGoogleSheetSummary(data)}
+              summary={getGoogleSheetPanelSummary(data)}
               onEdit={() => setModalOpen(true)}
             />
           </>

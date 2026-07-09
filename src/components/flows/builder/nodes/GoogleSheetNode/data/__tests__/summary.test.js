@@ -1,4 +1,4 @@
-import { getGoogleSheetSummary } from "../summary";
+import { getGoogleSheetSummary, getGoogleSheetPanelSummary } from "../summary";
 
 describe("getGoogleSheetSummary", () => {
   it("returns null when no action is set", () => {
@@ -44,5 +44,36 @@ describe("getGoogleSheetSummary", () => {
       action: "upsert_row",
       upsertRow: { lookupColumn: "B", lookupField: "{{email}}" },
     })).toBe("Row added or updated where B = {{email}}");
+  });
+});
+
+describe("getGoogleSheetPanelSummary", () => {
+  it("appends a field-mapped count for add_row", () => {
+    expect(getGoogleSheetPanelSummary({
+      action: "add_row",
+      sheetId: "",
+      addRow: { fields: [{ column: "A", field: "" }, { column: "B", field: "" }] },
+    })).toBe("Row added to Sheet · default · 2 field(s) mapped");
+  });
+
+  it("appends a field-mapped count for upsert_row", () => {
+    expect(getGoogleSheetPanelSummary({
+      action: "upsert_row",
+      upsertRow: {
+        lookupColumn: "B", lookupField: "{{email}}",
+        fields: [{ column: "A", field: "" }],
+      },
+    })).toBe("Row added or updated where B = {{email}} · 1 field(s) mapped");
+  });
+
+  it("does not append a count for update_row or get_row", () => {
+    expect(getGoogleSheetPanelSummary({
+      action: "update_row",
+      updateRow: { targetMode: "row_number", rowNumber: 5 },
+    })).toBe("Row #5 updated");
+  });
+
+  it("returns null when no action is set", () => {
+    expect(getGoogleSheetPanelSummary({})).toBeNull();
   });
 });

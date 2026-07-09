@@ -97,8 +97,19 @@ describe("GoogleSheetRightPanel", () => {
 
     it("shows a summary card and change-action link once an action is set", () => {
       render(<GoogleSheetRightPanel node={makeNode({ action: "add_row", sheetId: "" })} updateNodeData={noop} removeNode={noop} />);
-      expect(screen.getByText("Row added to Sheet · default")).toBeInTheDocument();
+      expect(screen.getByText("Row added to Sheet · default · 1 field(s) mapped")).toBeInTheDocument();
       expect(screen.getByTestId("gsheet-change-action")).toBeInTheDocument();
+    });
+
+    it("summary card field count updates after saving more fields from the modal", () => {
+      const update = jest.fn();
+      const { rerender } = render(<GoogleSheetRightPanel node={makeNode({ action: "add_row", sheetId: "" })} updateNodeData={update} removeNode={noop} />);
+      fireEvent.click(screen.getByTestId("gsheet-edit-config"));
+      fireEvent.click(screen.getByTestId("gsheet-addrow-add-field"));
+      fireEvent.click(screen.getByTestId("gsheet-config-modal-save"));
+      const savedData = update.mock.calls[update.mock.calls.length - 1][1];
+      rerender(<GoogleSheetRightPanel node={makeNode(savedData)} updateNodeData={update} removeNode={noop} />);
+      expect(screen.getByText("Row added to Sheet · default · 2 field(s) mapped")).toBeInTheDocument();
     });
 
     it("change-action resets action to null", () => {

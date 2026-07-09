@@ -20,3 +20,18 @@ export function getGoogleSheetSummary(data) {
   }
   return null;
 }
+
+export function getGoogleSheetPanelSummary(data) {
+  const base = getGoogleSheetSummary(data);
+  if (!base) return null;
+  const action = data?.action;
+  if (action === "add_row") {
+    const count = data?.addRow?.fields?.length ?? 0;
+    return `${base} · ${count} field(s) mapped`;
+  }
+  if (action === "upsert_row") {
+    const count = data?.upsertRow?.fields?.length ?? 0;
+    return `${base} · ${count} field(s) mapped`;
+  }
+  return base;
+}
