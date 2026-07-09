@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Handle, Position } from "reactflow";
 import { Bell } from "lucide-react";
 import { PUSH_DELIVERY_OPTIONS, PUSH_TEMPLATE_STYLES } from "./data/mockData";
+import NodeHoverActions from "../shared/NodeHoverActions";
 
 const AMBER  = "#F59E0B";
 const BORDER = "#E5E7EB";
@@ -71,6 +72,7 @@ function MiniNotification({ title, body }) {
 }
 
 export default function PushNode({ id, data, selected }) {
+  const [hovered, setHovered] = useState(false);
   const template   = data?.template ?? null;
   const label      = data?.label ?? "Push Notification";
   const outputCfg  = data?.outputConfig ?? { routingMode: "next_step", deliveryOutputs: [], wiredPorts: [] };
@@ -93,17 +95,23 @@ export default function PushNode({ id, data, selected }) {
 
   return (
     <div
-      data-testid={`rf-push-node-${id}`}
-      style={{
-        background: "#fff",
-        border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${borderColor}`,
-        borderRadius: 12,
-        boxShadow: selected ? "0 0 0 3px rgba(245,158,11,0.15)" : "0 1px 6px rgba(0,0,0,0.07)",
-        width: 270,
-        position: "relative",
-        overflow: "visible",
-      }}
+      style={{ position: "relative" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
+      <NodeHoverActions nodeId={id} visible={hovered || selected} channel="push" />
+      <div
+        data-testid={`rf-push-node-${id}`}
+        style={{
+          background: "#fff",
+          border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${borderColor}`,
+          borderRadius: 12,
+          boxShadow: selected ? "0 0 0 3px rgba(245,158,11,0.15)" : "0 1px 6px rgba(0,0,0,0.07)",
+          width: 270,
+          position: "relative",
+          overflow: "visible",
+        }}
+      >
       <Handle
         type="target"
         position={Position.Top}
@@ -164,6 +172,7 @@ export default function PushNode({ id, data, selected }) {
           )}
         </>
       )}
+      </div>
     </div>
   );
 }

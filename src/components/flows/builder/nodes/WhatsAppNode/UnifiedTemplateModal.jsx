@@ -121,25 +121,9 @@ export default function UnifiedTemplateModal({ open, styleId, styleLabel, preset
             <div style={{ flex: "0 0 55%", overflowY: "auto", padding: 24, display: "flex", flexDirection: "column", gap: 16, borderRight: `1px solid ${BORDER}` }}>
               <div style={{ fontSize: 16, fontWeight: 700, color: "#0F172A" }}>{initialTemplate ? "Edit Template" : `Create ${styleLabel} Template`}</div>
               <GenericEditForm fields={config.fields} draft={draft} onPatch={patch} />
-              <button
-                type="button"
-                data-testid="ai-enhance-btn"
-                onClick={() => patch({ body: `${draft.body || ""}\n\n✨ Don't miss out — limited time only!` })}
-                style={{ alignSelf: "flex-start", padding: "6px 12px", border: `1px solid ${PRIMARY}`, borderRadius: 8, background: "#fff", color: PRIMARY, fontSize: 12, fontWeight: 600, cursor: "pointer" }}
-              >
-                ✨ AI Enhance
-              </button>
               <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
                 <button type="button" onClick={onClose} style={{ flex: 1, padding: 9, border: `1px solid ${BORDER}`, borderRadius: 8, background: "#fff", fontSize: 13, cursor: "pointer" }}>Cancel</button>
-                <button type="button" onClick={() => handleSave()} style={{ flex: 1, padding: 9, border: "none", borderRadius: 8, background: WA_GREEN, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Save</button>
-                <button
-                  type="button"
-                  data-testid="upload-submit-btn"
-                  onClick={() => handleSave({ ...draft, status: "In Review" })}
-                  style={{ flex: 1, padding: 9, border: "none", borderRadius: 8, background: PRIMARY, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
-                >
-                  Upload & Submit
-                </button>
+                <button type="button" onClick={() => handleSave()} style={{ flex: 2, padding: 9, border: "none", borderRadius: 8, background: WA_GREEN, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Save</button>
               </div>
             </div>
             <div style={{ flex: "0 0 45%", background: "#F8FAFC", padding: 20, overflowY: "auto" }}>

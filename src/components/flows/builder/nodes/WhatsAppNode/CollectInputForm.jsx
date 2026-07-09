@@ -22,6 +22,15 @@ const INPUT_TYPE_GROUPS = [
     types: [
       { value: "quick_reply", label: "Quick Reply", emoji: "🔘" },
       { value: "list",        label: "List",        emoji: "📋" },
+      { value: "selection",   label: "Selection",   emoji: "✅" },
+    ],
+  },
+  {
+    label: "Personal Details",
+    types: [
+      { value: "gender",      label: "Gender",      emoji: "🚻" },
+      { value: "rating",      label: "Rating",      emoji: "⭐" },
+      { value: "address",     label: "Address",     emoji: "🏠" },
     ],
   },
   {
@@ -42,7 +51,7 @@ const INPUT_TYPE_GROUPS = [
 ];
 
 // Types that support confirmation (text-based only)
-const CONFIRMATION_TYPES = new Set(["text", "number", "phone", "email", "date"]);
+const CONFIRMATION_TYPES = new Set(["text", "number", "phone", "email", "date", "gender", "rating", "address"]);
 
 // Default error message per input type
 const DEFAULT_ERROR_MSG = {
@@ -53,11 +62,15 @@ const DEFAULT_ERROR_MSG = {
   date:        "That doesn't look like a valid date. Please try again.",
   quick_reply: "Please tap one of the options below.",
   list:        "Please select one of the options from the list.",
+  selection:   "That doesn't look like a valid selection. Please choose one of the options.",
   image:       "Please send an image (JPG, PNG, or WebP).",
   video:       "Please send a video (MP4).",
   audio:       "Please send a voice note or audio file.",
   document:    "Please send a document (PDF, DOCX, XLS, etc.).",
   location:    "Please share a location pin (not a text address).",
+  gender:      "That doesn't look like a valid gender",
+  rating:      "That doesn't look like a valid rating",
+  address:     "That doesn't look like a valid address {{reason}}",
 };
 
 // Auto-suggested variable name per input type
@@ -69,11 +82,15 @@ const DEFAULT_VAR_NAME = {
   date:        "collected_date",
   quick_reply: "collected_choice",
   list:        "collected_choice",
+  selection:   "collected_selection",
   image:       "collected_image_url",
   video:       "collected_video_url",
   audio:       "collected_audio_url",
   document:    "collected_document_url",
   location:    "collected_location",
+  gender:      "collected_gender",
+  rating:      "collected_rating",
+  address:     "collected_address",
 };
 
 function defaultDraft(inputType = "email") {
@@ -310,8 +327,12 @@ export default function CollectInputForm({ initial, onApply, onCancel, defaultIn
             draft.inputType === "email"       ? "What's your email address?" :
             draft.inputType === "phone"       ? "What's your phone number?" :
             draft.inputType === "quick_reply" ? "Which option do you prefer?" :
+            draft.inputType === "selection"   ? "Which option do you prefer?" :
             draft.inputType === "location"    ? "Please share your delivery address." :
             draft.inputType === "image"       ? "Please share a photo of your product." :
+            draft.inputType === "gender"      ? "What's your gender?" :
+            draft.inputType === "rating"      ? "How would you rate your experience (1-5)?" :
+            draft.inputType === "address"     ? "What's your delivery address?" :
             "Enter your question…"
           }
           rows={3}

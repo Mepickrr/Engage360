@@ -10,7 +10,7 @@ export const STANDARD_FIELDS = [
   { key: "language", label: "Language", type: "select", options: LANGUAGE_OPTIONS },
   { key: "status", label: "Status", type: "select", options: STATUS_OPTIONS },
   { key: "header", label: "Header", type: "header-picker" },
-  { key: "body", label: "Message Body", type: "textarea", rows: 5 },
+  { key: "body", label: "Message Body", type: "body-with-variables", rows: 5 },
   { key: "footer", label: "Footer (optional)", type: "text", placeholder: "Reply STOP to unsubscribe" },
   { key: "buttons", label: "Buttons", type: "buttons-list", max: 3 },
 ];
@@ -21,7 +21,7 @@ export const AUTH_FIELDS = [
   { key: "name", label: "Template Name", type: "text", placeholder: "e.g. otp_verification_v1" },
   { key: "language", label: "Language", type: "select", options: LANGUAGE_OPTIONS },
   { key: "status", label: "Status", type: "select", options: STATUS_OPTIONS },
-  { key: "body", label: "Message Body", type: "textarea", rows: 4 },
+  { key: "body", label: "Message Body", type: "body-with-variables", rows: 4 },
   { key: "codeButtonLabel", label: "Copy Code Button Label", type: "text", placeholder: "Copy Code" },
 ];
 
@@ -30,7 +30,7 @@ export const CATALOG_FIELDS = [
   { key: "category", label: "Category", type: "select", options: ["Marketing", "Utility"] },
   { key: "language", label: "Language", type: "select", options: LANGUAGE_OPTIONS },
   { key: "status", label: "Status", type: "select", options: STATUS_OPTIONS },
-  { key: "body", label: "Message Body", type: "textarea", rows: 3 },
+  { key: "body", label: "Message Body", type: "body-with-variables", rows: 3 },
   { key: "productNames", label: "Products (comma-separated)", type: "text", placeholder: "Rosemary Water, Hair Oil, Grey Hair Serum" },
 ];
 
@@ -38,7 +38,7 @@ export const LOCATION_FIELDS = [
   { key: "name", label: "Template Name", type: "text", placeholder: "e.g. store_location_v1" },
   { key: "language", label: "Language", type: "select", options: LANGUAGE_OPTIONS },
   { key: "status", label: "Status", type: "select", options: STATUS_OPTIONS },
-  { key: "body", label: "Message Body", type: "textarea", rows: 3 },
+  { key: "body", label: "Message Body", type: "body-with-variables", rows: 3 },
   { key: "addressLabel", label: "Address Caption", type: "text", placeholder: "123 Rosemary Lane, Bengaluru" },
 ];
 
@@ -46,11 +46,11 @@ export const AUDIO_FIELDS = [
   { key: "name", label: "Template Name", type: "text", placeholder: "e.g. founder_welcome_note" },
   { key: "language", label: "Language", type: "select", options: LANGUAGE_OPTIONS },
   { key: "status", label: "Status", type: "select", options: STATUS_OPTIONS },
-  { key: "body", label: "Caption", type: "textarea", rows: 3 },
+  { key: "body", label: "Caption", type: "body-with-variables", rows: 3 },
   { key: "audioLabel", label: "Audio Clip Label", type: "text", placeholder: "Founder's welcome note · 0:32" },
 ];
 
-const STANDARD_DEFAULT_DRAFT = { name: "", category: "Marketing", language: "en", status: "Draft", header: { type: "none" }, body: "", footer: "", buttons: [] };
+const STANDARD_DEFAULT_DRAFT = { name: "", category: "Marketing", language: "en", status: "Draft", header: { type: "none" }, body: "", footer: "", buttons: [], variableMap: {} };
 
 export const COLLECT_INPUT_PRESETS = {
   text: { inputType: "text", questionMessage: "Tell us what you're looking for today" },
@@ -61,6 +61,10 @@ export const COLLECT_INPUT_PRESETS = {
   image: { inputType: "image", questionMessage: "Please share a photo of your product." },
   video: { inputType: "video", questionMessage: "Please share a short video." },
   document: { inputType: "document", questionMessage: "Please share a document for reference." },
+  selection: { inputType: "selection", questionMessage: "Which option do you prefer?" },
+  address: { inputType: "address", questionMessage: "What's your delivery address?" },
+  rating: { inputType: "rating", questionMessage: "How would you rate your experience (1-5)?" },
+  gender: { inputType: "gender", questionMessage: "What's your gender?" },
 };
 
 export const TEMPLATE_STYLE_CONFIGS = {
@@ -84,7 +88,7 @@ export const TEMPLATE_STYLE_CONFIGS = {
   authentication: {
     previewKind: "standard",
     fields: AUTH_FIELDS,
-    defaultDraft: { name: "", language: "en", status: "Draft", body: "Your verification code is {{otp}}. Valid for 5 minutes. Don't share this code.", codeButtonLabel: "Copy Code" },
+    defaultDraft: { name: "", language: "en", status: "Draft", body: "Your verification code is {{otp}}. Valid for 5 minutes. Don't share this code.", codeButtonLabel: "Copy Code", variableMap: {} },
     mockTemplates: [
       { id: "auth_1", name: "otp_verification_v1", language: "en", status: "Approved", body: "Your verification code is {{otp}}. Valid for 5 minutes. Don't share this code.", codeButtonLabel: "Copy Code" },
       { id: "auth_2", name: "otp_resend_v1", language: "en", status: "Draft", body: "Didn't get it? Your new code is {{otp}}. Valid for 5 minutes.", codeButtonLabel: "Copy Code" },
@@ -117,7 +121,7 @@ export const TEMPLATE_STYLE_CONFIGS = {
   location: {
     previewKind: "location",
     fields: LOCATION_FIELDS,
-    defaultDraft: { name: "", language: "en", status: "Draft", body: "", addressLabel: "" },
+    defaultDraft: { name: "", language: "en", status: "Draft", body: "", addressLabel: "", variableMap: {} },
     mockTemplates: [
       { id: "location_1", name: "store_location_v1", language: "en", status: "Active", body: "Our store is here — see you soon!", addressLabel: "123 Rosemary Lane, Bengaluru" },
       { id: "location_2", name: "pickup_point_confirmed", language: "en", status: "Active", body: "Pickup point confirmed for order #7842", addressLabel: "Avimee Pickup Point, MG Road" },
@@ -127,7 +131,7 @@ export const TEMPLATE_STYLE_CONFIGS = {
   audio: {
     previewKind: "audio",
     fields: AUDIO_FIELDS,
-    defaultDraft: { name: "", language: "en", status: "Draft", body: "", audioLabel: "" },
+    defaultDraft: { name: "", language: "en", status: "Draft", body: "", audioLabel: "", variableMap: {} },
     mockTemplates: [
       { id: "audio_1", name: "founder_welcome_note", language: "en", status: "Active", body: "Here's a quick voice note from our founder 🎙", audioLabel: "Founder's welcome note · 0:32" },
       { id: "audio_2", name: "rosemary_howto_audio", language: "en", status: "Draft", body: "Listen to how to use your Rosemary Water", audioLabel: "How-to guide · 0:48" },
@@ -207,7 +211,7 @@ export const TEMPLATE_STYLE_CONFIGS = {
   catalog_single: {
     previewKind: "catalog",
     fields: CATALOG_FIELDS,
-    defaultDraft: { name: "", category: "Marketing", language: "en", status: "Draft", body: "", productNames: "" },
+    defaultDraft: { name: "", category: "Marketing", language: "en", status: "Draft", body: "", productNames: "", variableMap: {} },
     mockTemplates: [
       { id: "catalog_single_1", name: "featured_rosemary_water", category: "Marketing", language: "en", status: "Active", body: "Our most-loved product, one tap away.", productNames: "Rosemary Water" },
       { id: "catalog_single_2", name: "featured_hair_oil", category: "Marketing", language: "en", status: "Draft", body: "The oil everyone's talking about.", productNames: "Keshpallav Hair Oil" },
@@ -217,7 +221,7 @@ export const TEMPLATE_STYLE_CONFIGS = {
   catalog_multiple: {
     previewKind: "catalog",
     fields: CATALOG_FIELDS,
-    defaultDraft: { name: "", category: "Marketing", language: "en", status: "Draft", body: "", productNames: "" },
+    defaultDraft: { name: "", category: "Marketing", language: "en", status: "Draft", body: "", productNames: "", variableMap: {} },
     mockTemplates: [
       { id: "catalog_multiple_1", name: "top_3_products", category: "Marketing", language: "en", status: "Active", body: "Our top 3 picks for you.", productNames: "Rosemary Water, Keshpallav Hair Oil, Grey Hair Serum" },
       { id: "catalog_multiple_2", name: "combo_deal_set", category: "Marketing", language: "en", status: "Draft", body: "Bundle & save on our Combo Deal.", productNames: "Rosemary Water, Keshpallav Hair Oil" },
@@ -227,7 +231,7 @@ export const TEMPLATE_STYLE_CONFIGS = {
   catalog_view: {
     previewKind: "catalog",
     fields: CATALOG_FIELDS,
-    defaultDraft: { name: "", category: "Marketing", language: "en", status: "Draft", body: "", productNames: "" },
+    defaultDraft: { name: "", category: "Marketing", language: "en", status: "Draft", body: "", productNames: "", variableMap: {} },
     mockTemplates: [
       { id: "catalog_view_1", name: "browse_full_catalog", category: "Marketing", language: "en", status: "Active", body: "Browse our full catalog.", productNames: "Rosemary Water, Keshpallav Hair Oil, Grey Hair Serum, Scalptone Serum" },
       { id: "catalog_view_2", name: "new_collection_drop", category: "Marketing", language: "en", status: "Draft", body: "New collection just dropped.", productNames: "Scalptone Serum, Grey Hair Serum" },
@@ -237,7 +241,7 @@ export const TEMPLATE_STYLE_CONFIGS = {
   catalog_list_bestsellers: {
     previewKind: "catalog",
     fields: CATALOG_FIELDS,
-    defaultDraft: { name: "", category: "Marketing", language: "en", status: "Draft", body: "", productNames: "" },
+    defaultDraft: { name: "", category: "Marketing", language: "en", status: "Draft", body: "", productNames: "", variableMap: {} },
     mockTemplates: [
       { id: "catalog_list_bestsellers_1", name: "top_5_bestsellers", category: "Marketing", language: "en", status: "Active", body: "Our Top 5 Bestsellers.", productNames: "Rosemary Water, Hair Oil, Grey Hair Serum, Scalptone Serum, Hair Fall Kit" },
       { id: "catalog_list_bestsellers_2", name: "trending_this_month", category: "Marketing", language: "en", status: "Draft", body: "Trending This Month.", productNames: "Rosemary Water, Hair Fall Kit" },
@@ -247,7 +251,7 @@ export const TEMPLATE_STYLE_CONFIGS = {
   catalog: {
     previewKind: "catalog",
     fields: CATALOG_FIELDS,
-    defaultDraft: { name: "", category: "Marketing", language: "en", status: "Draft", body: "", productNames: "" },
+    defaultDraft: { name: "", category: "Marketing", language: "en", status: "Draft", body: "", productNames: "", variableMap: {} },
     mockTemplates: [
       { id: "catalog_1", name: "bestsellers_showcase", category: "Marketing", language: "en", status: "Active", body: "🔥 Bestsellers you'll love.", productNames: "Rosemary Water, Keshpallav Hair Oil" },
       { id: "catalog_2", name: "seasonal_sale_showcase", category: "Marketing", language: "en", status: "Draft", body: "Seasonal sale — up to 30% off bestsellers.", productNames: "Grey Hair Serum, Scalptone Serum" },

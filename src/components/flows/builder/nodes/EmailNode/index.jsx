@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Handle, Position } from "reactflow";
 import { Mail, Paperclip } from "lucide-react";
 import NodeAnalyticsFooter from "@/components/flows/analytics/NodeAnalyticsFooter";
 import { EMAIL_FROM_ADDRESSES, EMAIL_DELIVERY_OPTIONS } from "./data/mockData";
 import { useFlowVariant } from "@/components/flows/FlowVariantContext";
+import NodeHoverActions from "../shared/NodeHoverActions";
 import emailIcon from "@/assets/icons/email.png";
 
 const EMAIL_BLUE = "#3B82F6";
@@ -53,6 +54,7 @@ function PortRow({ portId, label, wired }) {
 }
 
 export default function EmailNode({ id, data, selected }) {
+  const [hovered, setHovered] = useState(false);
   const { brandIcons } = useFlowVariant();
   const useBrandIcon  = !!brandIcons?.email;
   const template      = data?.template ?? null;
@@ -81,17 +83,23 @@ export default function EmailNode({ id, data, selected }) {
 
   return (
     <div
-      data-testid={`rf-email-node-${id}`}
-      style={{
-        background: "#fff",
-        border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${borderColor}`,
-        borderRadius: cardRadius,
-        boxShadow: selected ? "0 0 0 3px rgba(59,130,246,0.15)" : "0 1px 6px rgba(0,0,0,0.07)",
-        width: 270,
-        position: "relative",
-        overflow: "visible",
-      }}
+      style={{ position: "relative" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
+      <NodeHoverActions nodeId={id} visible={hovered || selected} channel="email" />
+      <div
+        data-testid={`rf-email-node-${id}`}
+        style={{
+          background: "#fff",
+          border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${borderColor}`,
+          borderRadius: cardRadius,
+          boxShadow: selected ? "0 0 0 3px rgba(59,130,246,0.15)" : "0 1px 6px rgba(0,0,0,0.07)",
+          width: 270,
+          position: "relative",
+          overflow: "visible",
+        }}
+      >
       <Handle
         type="target"
         position={Position.Top}
@@ -184,6 +192,7 @@ export default function EmailNode({ id, data, selected }) {
       )}
 
       <NodeAnalyticsFooter type="email" analyticsData={analyticsData} />
+      </div>
     </div>
   );
 }

@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Handle, Position } from "reactflow";
 import { MessagesSquare, Image, Video, FileText } from "lucide-react";
 import { RCS_DELIVERY_OUTPUT_OPTIONS, RCS_NUMBERS, rcsIsConnectable } from "./data/mockData";
+import NodeHoverActions from "../shared/NodeHoverActions";
 
 const RCS_INDIGO = "#4F46E5";
 const BORDER = "#E5E7EB";
@@ -184,6 +185,7 @@ function ButtonPortRow({ portId, label, wired }) {
 
 // ── Main node ───────────────────────────────────────────────────
 export default function RCSNode({ id, data, selected }) {
+  const [hovered, setHovered] = useState(false);
   const template = data?.template ?? null;
   const outputCfg = data?.outputConfig ?? {
     routingMode: "next_step",
@@ -229,17 +231,23 @@ export default function RCSNode({ id, data, selected }) {
 
   return (
     <div
-      data-testid={`rf-rcs-node-${id}`}
-      style={{
-        background: "#fff",
-        border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${borderColor}`,
-        borderRadius: 12,
-        boxShadow: selected
-          ? "0 0 0 3px rgba(79,70,229,0.15)"
-          : "0 1px 6px rgba(0,0,0,0.07)",
-        width: 290,
-        position: "relative",
-        overflow: "visible",
+      style={{ position: "relative" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <NodeHoverActions nodeId={id} visible={hovered || selected} channel="rcs" />
+      <div
+        data-testid={`rf-rcs-node-${id}`}
+        style={{
+          background: "#fff",
+          border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${borderColor}`,
+          borderRadius: 12,
+          boxShadow: selected
+            ? "0 0 0 3px rgba(79,70,229,0.15)"
+            : "0 1px 6px rgba(0,0,0,0.07)",
+          width: 290,
+          position: "relative",
+          overflow: "visible",
       }}
     >
       {/* Input handle */}
@@ -518,6 +526,7 @@ export default function RCSNode({ id, data, selected }) {
           )}
         </>
       )}
+      </div>
     </div>
   );
 }

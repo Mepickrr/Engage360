@@ -13,16 +13,46 @@ export const POLL_INTERVAL_OPTIONS = [
   { value: 60, label: "Every 60 minutes" },
 ];
 
+// Fixed mock header row a "Connect" click pretends to read from the sheet —
+// there is no live Sheets API connection, same mocking convention as
+// GoogleSheetNode's Sync button.
+export const MOCK_DETECTED_COLUMNS = [
+  "Customer Name",
+  "Phone Number",
+  "Email",
+  "Order Value",
+  "Internal Notes",
+];
+
 export function emptyGoogleSheetTriggerConfig() {
   return {
     sheetUrl: "",
     sheetId: "",
-    columnIdMode: "id", // "header" | "id"
+    connected: false,
+    columnIdMode: "header", // "header" | "id"
+    detectedColumns: [],
     columns: [],
+    variableNames: {},
     contactIdentifierColumn: "",
     pollIntervalMinutes: 5,
     sampleValues: {},
   };
+}
+
+// Slugifies a detected column header into a default variable name,
+// e.g. "Customer Name" -> "customer_name".
+export function slugifyVariableName(label) {
+  const slug = (label || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  return slug || "column";
+}
+
+// Mocks reading the sheet's header row after "Connect" is clicked.
+export function simulateConnectSheet() {
+  return MOCK_DETECTED_COLUMNS;
 }
 
 // Simulates what a triggered run would look like from manually-entered sample

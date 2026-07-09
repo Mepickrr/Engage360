@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Handle, Position } from "reactflow";
 import { DELIVERY_OUTPUT_OPTIONS, isConnectable, WABA_NUMBERS } from "./data/mockTemplates";
+import { resolveStyleInfo } from "./WhatsAppRightPanel";
 import NodeAnalyticsFooter from "@/components/flows/analytics/NodeAnalyticsFooter";
 import { useFlowVariant } from "@/components/flows/FlowVariantContext";
+import NodeHoverActions from "../shared/NodeHoverActions";
 import whatsappIcon from "@/assets/icons/whatsapp.png";
 
 const WA_GREEN = "#25D366";
@@ -234,6 +236,7 @@ function ListMessageNodePreview({ template }) {
 
 // ── Main node ───────────────────────────────────────────────────
 export default function WhatsAppNode({ id, data, selected }) {
+  const [hovered, setHovered] = useState(false);
   const { brandIcons } = useFlowVariant();
   const useBrandIcon = !!brandIcons?.whatsapp;
   const template    = data?.template ?? null;
@@ -288,17 +291,23 @@ export default function WhatsAppNode({ id, data, selected }) {
 
   return (
     <div
-      data-testid={`rf-whatsapp-node-${id}`}
-      style={{
-        background: "#fff",
-        border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${borderColor}`,
-        borderRadius: cardRadius,
-        boxShadow: selected ? "0 0 0 3px rgba(37,211,102,0.15)" : "0 1px 6px rgba(0,0,0,0.07)",
-        width: 290,
-        position: "relative",
-        overflow: "visible",
-      }}
+      style={{ position: "relative" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
+      <NodeHoverActions nodeId={id} visible={hovered || selected} channel="whatsapp" />
+      <div
+        data-testid={`rf-whatsapp-node-${id}`}
+        style={{
+          background: "#fff",
+          border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${borderColor}`,
+          borderRadius: cardRadius,
+          boxShadow: selected ? "0 0 0 3px rgba(37,211,102,0.15)" : "0 1px 6px rgba(0,0,0,0.07)",
+          width: 290,
+          position: "relative",
+          overflow: "visible",
+        }}
+      >
       {/* Input handle */}
       <Handle
         type="target"
@@ -335,7 +344,9 @@ export default function WhatsAppNode({ id, data, selected }) {
                 {data?.label || "WhatsApp"}
               </div>
               <div style={{ fontSize: 9, color: "#94A3B8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {template.name || (data?.templateStyle === "collect_input" ? "Collect Input" : data?.templateStyle === "list" ? "List Message" : "")}
+                {template.name
+                  || (data?.templateStyle === "collect_input" ? "Collect Input" : data?.templateStyle === "list" ? "List Message" : resolveStyleInfo(data?.templateStyle)?.label)
+                  || ""}
               </div>
             </div>
             {phoneDisplay && (
@@ -468,6 +479,7 @@ export default function WhatsAppNode({ id, data, selected }) {
         </>
       )}
       <NodeAnalyticsFooter type="whatsapp" analyticsData={analyticsData} />
+      </div>
     </div>
   );
 }

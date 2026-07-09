@@ -57,39 +57,3 @@ describe("UnifiedTemplateModal", () => {
     expect(screen.getAllByText("Live preview check").length).toBeGreaterThan(0);
   });
 });
-
-describe("AI Enhance and Upload & Submit", () => {
-  it("AI Enhance rewrites the body field with a mocked variant", () => {
-    const onSave = jest.fn();
-    render(
-      <UnifiedTemplateModal
-        open
-        styleId="standard"
-        styleLabel="Template"
-        initialTemplate={{ name: "t1", category: "Marketing", language: "en", header: { type: "none" }, body: "Hello there", footer: "", buttons: [] }}
-        onSave={onSave}
-        onClose={jest.fn()}
-      />,
-    );
-    expect(screen.getByDisplayValue("Hello there")).toBeInTheDocument();
-    fireEvent.click(screen.getByTestId("ai-enhance-btn"));
-    expect(screen.queryByDisplayValue("Hello there")).not.toBeInTheDocument();
-    expect(screen.getByDisplayValue(/limited time only/)).toBeInTheDocument();
-  });
-
-  it("Upload & Submit sets a pending-review status and saves", () => {
-    const onSave = jest.fn();
-    render(
-      <UnifiedTemplateModal
-        open
-        styleId="standard"
-        styleLabel="Template"
-        initialTemplate={{ name: "t1", category: "Marketing", language: "en", status: "Active", header: { type: "none" }, body: "Hi", footer: "", buttons: [] }}
-        onSave={onSave}
-        onClose={jest.fn()}
-      />,
-    );
-    fireEvent.click(screen.getByTestId("upload-submit-btn"));
-    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ status: "In Review" }));
-  });
-});

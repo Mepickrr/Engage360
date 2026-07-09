@@ -82,6 +82,14 @@ export const EXPRESSION_OPERATORS = [
 
 export const PATH_LABELS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
+export const SPLIT_BLOCK_TYPES = [
+  { id: "property",       label: "User property" },
+  { id: "behavior",       label: "User behavior" },
+  { id: "affinity",       label: "User affinity" },
+  { id: "event_property", label: "Event property" },
+  { id: "segment",        label: "Custom segment" },
+];
+
 export function newBlock() {
   return {
     id: `blk_${Date.now()}_${Math.random().toString(36).slice(2, 5)}`,

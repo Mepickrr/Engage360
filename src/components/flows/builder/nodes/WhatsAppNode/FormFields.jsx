@@ -1,5 +1,6 @@
 import React from "react";
 import { Trash2 } from "lucide-react";
+import { SYSTEM_VARIABLES } from "./data/mockTemplates";
 
 export const PRIMARY = "#6C3AE8";
 export const BORDER = "#E5E7EB";
@@ -116,12 +117,115 @@ function ButtonsListField({ field, value, onChange }) {
   );
 }
 
+function extractVars(body) {
+  const seen = new Set();
+  return [...(body || "").matchAll(/\{\{([^}]+)\}\}/g)].map((m) => m[1]).filter((v) => {
+    if (seen.has(v)) return false;
+    seen.add(v);
+    return true;
+  });
+}
+
+function BodyWithVariablesField({ field, draft, onPatch }) {
+  const body = draft[field.key] || "";
+  const variableMap = draft.variableMap || {};
+  const vars = extractVars(body);
+
+  const insertVar = () => {
+    const next = vars.length + 1;
+    onPatch({ [field.key]: body + `{{$${next}}}` });
+  };
+
+  const handleAiEnhance = () => {
+    alert("AI Enhance: generates Friendly / Persuasive / Urgent tone variants — coming soon");
+  };
+
+  const updateChain = (v, newChain) => onPatch({ variableMap: { ...variableMap, [v]: newChain } });
+
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+        <Label>{field.label}</Label>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button type="button" onClick={insertVar} style={{ fontSize: 10, color: PRIMARY, fontWeight: 600, background: "none", border: `1px solid ${PRIMARY}`, borderRadius: 6, padding: "2px 8px", cursor: "pointer" }}>
+            + Add Variable
+          </button>
+          <button type="button" onClick={handleAiEnhance} style={{ fontSize: 10, color: PRIMARY, fontWeight: 600, background: "none", border: `1px solid ${PRIMARY}`, borderRadius: 6, padding: "2px 8px", cursor: "pointer" }}>
+            ✨ AI Enhance
+          </button>
+        </div>
+      </div>
+      <textarea value={body} onChange={(e) => onPatch({ [field.key]: e.target.value })} placeholder={field.placeholder} rows={field.rows || 4}
+        style={{ ...fieldWrapperStyle(), resize: "none", lineHeight: 1.55, fontFamily: "inherit" }} />
+
+      {vars.length > 0 && (
+        <div style={{ marginTop: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+            <Label>Variable Mapping</Label>
+            <span style={{ fontSize: 10, color: MUTED }}>First non-empty value is used</span>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {vars.map((v) => {
+              const rawVal = variableMap[v];
+              const chain = Array.isArray(rawVal) ? rawVal : rawVal ? [rawVal] : [""];
+              return (
+                <div key={v} style={{ border: `1px solid ${BORDER}`, borderRadius: 8, overflow: "hidden" }}>
+                  <div style={{ padding: "6px 10px", background: "#F8FAFC", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontFamily: "monospace", fontSize: 11, fontWeight: 700, color: PRIMARY }}>{`{{${v}}}`}</span>
+                    <span style={{ fontSize: 10, color: MUTED }}>OR chain</span>
+                  </div>
+                  {chain.map((entry, idx) => (
+                    <div key={idx}>
+                      {idx > 0 && (
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "0 10px" }}>
+                          <div style={{ flex: 1, height: 1, background: BORDER }} />
+                          <span style={{ fontSize: 9, fontWeight: 700, color: "#94A3B8", padding: "1px 6px", borderRadius: 10, background: "#F1F5F9", letterSpacing: 1 }}>OR</span>
+                          <div style={{ flex: 1, height: 1, background: BORDER }} />
+                        </div>
+                      )}
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <select
+                          value={entry || ""}
+                          onChange={(e) => { const c = [...chain]; c[idx] = e.target.value; updateChain(v, c); }}
+                          style={{ flex: 1, padding: "7px 8px", fontSize: 12, border: "none", background: "transparent", outline: "none", cursor: "pointer", minWidth: 0 }}
+                        >
+                          <option value="">Select attribute…</option>
+                          {Object.entries(SYSTEM_VARIABLES).map(([group, svars]) => (
+                            <optgroup key={group} label={group}>
+                              {svars.map((sv) => <option key={sv.key} value={sv.key}>{sv.label} · {sv.example}</option>)}
+                            </optgroup>
+                          ))}
+                        </select>
+                        {chain.length > 1 && (
+                          <button type="button" onClick={() => updateChain(v, chain.filter((_, j) => j !== idx))}
+                            style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer", color: MUTED, padding: "4px 8px", fontSize: 13, lineHeight: 1 }}>×</button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  <div style={{ borderTop: `1px solid ${BORDER}` }}>
+                    <button type="button" onClick={() => updateChain(v, [...chain, ""])}
+                      style={{ width: "100%", padding: "6px 10px", background: "transparent", border: "none", cursor: "pointer", fontSize: 11, color: PRIMARY, fontWeight: 600, textAlign: "left" }}>
+                      + Add fallback
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function FieldRenderer({ field, draft, onPatch }) {
   const value = draft[field.key];
   const onChange = (next) => onPatch({ [field.key]: next });
 
   if (field.type === "text") return <TextField field={field} value={value} onChange={onChange} />;
   if (field.type === "textarea") return <TextAreaField field={field} value={value} onChange={onChange} />;
+  if (field.type === "body-with-variables") return <BodyWithVariablesField field={field} draft={draft} onPatch={onPatch} />;
   if (field.type === "select") return <SelectField field={field} value={value} onChange={onChange} />;
   if (field.type === "header-picker") return <HeaderPickerField field={field} value={value} onChange={onChange} />;
   if (field.type === "buttons-list") return <ButtonsListField field={field} value={value} onChange={onChange} />;

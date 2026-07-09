@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Handle, Position } from "reactflow";
 import { Route } from "lucide-react";
 import NodeAnalyticsFooter from "@/components/flows/analytics/NodeAnalyticsFooter";
 import { SFO_INDIGO, SFO_CHANNEL_OPTIONS } from "./data/mockData";
+import NodeHoverActions from "../shared/NodeHoverActions";
 
 const BORDER = "#E5E7EB";
 
@@ -38,6 +39,7 @@ function BranchPortRow({ branch, wired }) {
 }
 
 export default function SmartFlowOptimizerNode({ id, data, selected }) {
+  const [hovered, setHovered] = useState(false);
   const label      = data?.label      ?? "Smart Flow Optimizer";
   const branches   = data?.branches   ?? [];
   const distribution = data?.distribution ?? "auto";
@@ -55,17 +57,23 @@ export default function SmartFlowOptimizerNode({ id, data, selected }) {
 
   return (
     <div
-      data-testid={`rf-sfo-node-${id}`}
-      style={{
-        background: "#fff",
-        border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${borderColor}`,
-        borderRadius: cardRadius,
-        boxShadow: selected ? `0 0 0 3px ${SFO_INDIGO}26` : "0 1px 6px rgba(0,0,0,0.07)",
-        width: 270,
-        position: "relative",
-        overflow: "visible",
-      }}
+      style={{ position: "relative" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
+      <NodeHoverActions nodeId={id} visible={hovered || selected} />
+      <div
+        data-testid={`rf-sfo-node-${id}`}
+        style={{
+          background: "#fff",
+          border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${borderColor}`,
+          borderRadius: cardRadius,
+          boxShadow: selected ? `0 0 0 3px ${SFO_INDIGO}26` : "0 1px 6px rgba(0,0,0,0.07)",
+          width: 270,
+          position: "relative",
+          overflow: "visible",
+        }}
+      >
       <Handle
         type="target"
         position={Position.Top}
@@ -114,6 +122,7 @@ export default function SmartFlowOptimizerNode({ id, data, selected }) {
       )}
 
       <NodeAnalyticsFooter type="smartflowoptimizer" analyticsData={analyticsData} />
+      </div>
     </div>
   );
 }

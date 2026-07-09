@@ -1,8 +1,13 @@
 export const EMAIL_FROM_ADDRESSES = [
-  { id: "from_1", name: "Avimee Herbal",     email: "hello@avimeeherbal.com",   verified: true  },
-  { id: "from_2", name: "Avimee Support",    email: "support@avimeeherbal.com", verified: true  },
-  { id: "from_3", name: "Avimee Offers",     email: "offers@avimeeherbal.com",  verified: true  },
-  { id: "from_4", name: "Avimee Orders",     email: "orders@avimeeherbal.com",  verified: false },
+  { id: "from_1", name: "Your Store",          email: "hello@yourstore.com",   verified: true  },
+  { id: "from_2", name: "Your Store Support",  email: "support@yourstore.com", verified: true  },
+  { id: "from_3", name: "Your Store Offers",   email: "offers@yourstore.com",  verified: true  },
+  { id: "from_4", name: "Your Store Orders",   email: "orders@yourstore.com",  verified: false },
+];
+
+export const EMAIL_PROVIDERS = [
+  { id: "trust_signal", label: "Trust signal" },
+  { id: "karix",        label: "Karix" },
 ];
 
 export const MOCK_EMAIL_TEMPLATES = [
@@ -24,7 +29,7 @@ export const MOCK_EMAIL_TEMPLATES = [
   {
     id: "email_tpl_002",
     name: "Welcome Series — Day 1",
-    subject: "Welcome to Avimee Herbal, {{first_name}}! 🌿",
+    subject: "Welcome to Your Store, {{first_name}}! 🌿",
     previewText: "Discover our bestsellers and claim your welcome offer.",
     category: "Marketing",
     thumbnailColor: "#F0FDF4",
@@ -88,10 +93,12 @@ export const SYSTEM_VARIABLES = {
     { key: "product.url",   label: "Product URL",  example: "https://store.com/rosemary" },
   ],
   Store: [
-    { key: "store.name", label: "Store Name", example: "Avimee Herbal"  },
-    { key: "store.url",  label: "Store URL",  example: "https://avimee.com" },
+    { key: "store.name", label: "Store Name", example: "Your Store"  },
+    { key: "store.url",  label: "Store URL",  example: "https://yourstore.com" },
   ],
 };
+
+export const TO_EMAIL_VARIABLES = Object.values(SYSTEM_VARIABLES).flat();
 
 export const EMAIL_DELIVERY_OPTIONS = [
   { id: "next_step",  label: "Next Step",       isDefault: true  },
@@ -126,8 +133,10 @@ export const EDITOR_ROW_LAYOUTS = [
 export const defaultEmailNodeData = {
   label:       "Send Email",
   template:    null,
+  provider:    "trust_signal",
   fromId:      "from_1",
-  replyTo:     "",
+  toEmailMode:     "auto",
+  toEmailVariable: null,
   subject:     "",
   previewText: "",
   attachments: [],

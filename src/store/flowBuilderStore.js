@@ -56,6 +56,21 @@ export const useFlowBuilderStore = create((set, get) => ({
       edges: get().edges.filter((e) => e.source !== id && e.target !== id),
       selectedNodeId: get().selectedNodeId === id ? null : get().selectedNodeId,
     }),
+  duplicateNode: (id) => {
+    const source = get().nodes.find((n) => n.id === id);
+    if (!source) return;
+    const clone = {
+      ...source,
+      id: `${source.type}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      position: { x: source.position.x + 40, y: source.position.y + 40 },
+      data: JSON.parse(JSON.stringify(source.data ?? {})),
+      selected: true,
+    };
+    set({
+      nodes: [...get().nodes.map((n) => ({ ...n, selected: false })), clone],
+      selectedNodeId: clone.id,
+    });
+  },
   updateNodeData: (id, dataPatch) =>
     set({
       nodes: get().nodes.map((n) =>

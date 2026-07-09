@@ -293,12 +293,6 @@ function NodeConfig({ node, updateNodeData, removeNode }) {
         </>
       )}
 
-      {type === "wait" && (
-        <div className="-mx-4 -mt-4">
-          <DelayConfig data={data} patch={patch} />
-        </div>
-      )}
-
       {type === "condition" && (
         <>
           <TextInput
@@ -546,6 +540,20 @@ export default function ConfigTab() {
     return (
       <div className="absolute inset-0 overflow-hidden flex flex-col">
         <ConditionalSplitRightPanel />
+      </div>
+    );
+  }
+
+  if (node?.type === "wait") {
+    return (
+      <div className="absolute inset-0 overflow-hidden flex flex-col" data-testid="right-config-tab">
+        <DelayConfig
+          data={node.data}
+          patch={(p) => updateNodeData(node.id, p)}
+          label={node.data?.label}
+          onLabelChange={(v) => updateNodeData(node.id, { label: v })}
+          onDelete={() => removeNode(node.id)}
+        />
       </div>
     );
   }

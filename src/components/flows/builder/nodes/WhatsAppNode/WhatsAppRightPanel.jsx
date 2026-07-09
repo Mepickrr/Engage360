@@ -81,11 +81,11 @@ const TEMPLATE_STYLE_GROUPS = [
         desc: "Ask for a phone number during a conversation" },
       { id: "ask_email", mapsTo: "collect_input", presetInputType: "email", label: "Email", Icon: Mail,
         desc: "Ask for an email address during a conversation" },
-      { id: "ask_gender", mapsTo: "collect_input", presetInputType: "text", label: "Gender", Icon: UserCircle2,
+      { id: "ask_gender", mapsTo: "collect_input", presetInputType: "gender", label: "Gender", Icon: UserCircle2,
         desc: "Ask for a gender during a conversation" },
-      { id: "address", label: "Address", Icon: MapPinned,
-        desc: "Share a delivery or pickup address with a map preview" },
-      { id: "ask_rating", mapsTo: "collect_input", presetInputType: "number", label: "Rating", Icon: Star,
+      { id: "address", mapsTo: "collect_input", presetInputType: "address", label: "Address", Icon: MapPinned,
+        desc: "Ask for a delivery or pickup address during a conversation" },
+      { id: "ask_rating", mapsTo: "collect_input", presetInputType: "rating", label: "Rating", Icon: Star,
         desc: "Ask for a rating during a conversation" },
       { id: "ask_location", mapsTo: "collect_input", presetInputType: "location", label: "Location", Icon: LocateFixed,
         desc: "Ask for the customer's location during a conversation" },
@@ -209,6 +209,9 @@ function StyleCard({ style, isSelected, onSelect }) {
         flexDirection: "column",
         alignItems: "center",
         height: 112,
+        width: "100%",
+        minWidth: 0,
+        maxWidth: "100%",
         background: isSelected ? "#F0FDF4" : "#fff",
         border: `${isSelected ? 2 : 1.5}px solid ${isSelected || hovered ? "#25D366" : "#E5E7EB"}`,
         borderRadius: 10,
@@ -216,6 +219,7 @@ function StyleCard({ style, isSelected, onSelect }) {
         cursor: "pointer",
         transition: "border-color 0.15s, background 0.15s",
         boxSizing: "border-box",
+        overflow: "hidden",
       }}
     >
       {/* Popular pill row — reserved on every card (empty when not popular) so heights stay uniform */}
@@ -252,8 +256,9 @@ function StyleCard({ style, isSelected, onSelect }) {
 
       {/* Name — fixed-height, vertically centered so 1-line and 2-line labels align across cards without shrinking text */}
       <div style={{
-        flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
+        flex: 1, minWidth: 0, width: "100%", display: "flex", alignItems: "center", justifyContent: "center",
         fontSize: 11, fontWeight: 600, color: "#0F172A", marginTop: 6, textAlign: "center", lineHeight: 1.25,
+        overflowWrap: "break-word", wordBreak: "break-word",
       }}>{style.label}</div>
 
       {hovered && <StyleCardTooltip anchorRect={anchorRect} text={style.desc} />}
@@ -287,7 +292,7 @@ function TemplateStylePicker({ onSelect }) {
         {visibleGroups.map((g) => (
           <div key={g.group}>
             <div style={{ fontSize: 10, fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>{g.group}</div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 8 }}>
               {g.items.map((style) => (
                 <StyleCard
                   key={style.id}
@@ -403,13 +408,14 @@ export function TemplateTab({ data, patch }) {
   const resolvedStyleId = styleInfo ? (styleInfo.mapsTo || styleInfo.id) : templateStyle;
 
   const handleModalSave = (tpl) => {
-    const withId = tpl.id ? tpl : { ...tpl, id: `tpl_${resolvedStyleId}_${Date.now()}` };
+    const { variableMap, ...templateFields } = tpl;
+    const withId = templateFields.id ? templateFields : { ...templateFields, id: `tpl_${resolvedStyleId}_${Date.now()}` };
     setCustomTemplatesByStyle((prev) => {
       const existing = prev[resolvedStyleId] || [];
       const already = existing.find((t) => t.id === withId.id);
       return { ...prev, [resolvedStyleId]: already ? existing.map((t) => (t.id === withId.id ? withId : t)) : [...existing, withId] };
     });
-    patch({ template: withId, variableMap: {} });
+    patch({ template: withId, variableMap: variableMap || {} });
     setModalOpen(false);
   };
 
@@ -421,7 +427,7 @@ export function TemplateTab({ data, patch }) {
           styleId={resolvedStyleId}
           styleLabel={styleInfo?.label || "Template"}
           presetInputType={pendingPresetInputType}
-          initialTemplate={modalMode === "edit-existing" ? template : null}
+          initialTemplate={modalMode === "edit-existing" && template ? { ...template, variableMap: data.variableMap || {} } : null}
           customTemplates={customTemplatesByStyle[resolvedStyleId] || []}
           onSave={handleModalSave}
           onClose={() => setModalOpen(false)}

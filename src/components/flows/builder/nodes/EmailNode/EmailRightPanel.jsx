@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import {
-  Mail, Paperclip, ChevronDown, ChevronRight, Plus, Trash2,
+  Mail, Paperclip, ChevronDown, ChevronRight, Trash2,
   Sparkles, Link, Upload, X, ExternalLink, Eye, Edit3,
   CheckCircle, AlertCircle, Info,
 } from "lucide-react";
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import {
   EMAIL_FROM_ADDRESSES, MOCK_EMAIL_TEMPLATES,
-  EMAIL_DELIVERY_OPTIONS, defaultEmailNodeData,
+  EMAIL_DELIVERY_OPTIONS, EMAIL_PROVIDERS, TO_EMAIL_VARIABLES,
+  defaultEmailNodeData,
 } from "./data/mockData";
 import TemplateEditorModal from "./TemplateEditorModal";
+import EmailTemplateGalleryModal from "./EmailTemplateGalleryModal";
 
 const EMAIL_BLUE = "#3B82F6";
 const BORDER     = "#E5E7EB";
@@ -139,76 +141,6 @@ function Section({ title, children, defaultOpen = true, badge }) {
           {children}
         </div>
       )}
-    </div>
-  );
-}
-
-// ── Template picker overlay ────────────────────────────────────
-function TemplatePicker({ onSelect, onClose }) {
-  const [q, setQ] = useState("");
-  const filtered = MOCK_EMAIL_TEMPLATES.filter((t) =>
-    t.name.toLowerCase().includes(q.toLowerCase()) ||
-    t.subject.toLowerCase().includes(q.toLowerCase())
-  );
-
-  return (
-    <div style={{ position: "absolute", inset: 0, background: "#fff", zIndex: 10, display: "flex", flexDirection: "column" }}>
-      {/* Header */}
-      <div style={{ padding: "12px 16px", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-        <button type="button" onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, fontSize: 18, lineHeight: 1, padding: 0 }}>
-          ←
-        </button>
-        <span style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>Select Email Template</span>
-      </div>
-
-      {/* Search */}
-      <div style={{ padding: "10px 16px", borderBottom: `1px solid ${BORDER}`, flexShrink: 0 }}>
-        <input
-          type="text"
-          placeholder="Search by name or subject…"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          autoFocus
-          style={{ width: "100%", padding: "7px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", boxSizing: "border-box" }}
-        />
-      </div>
-
-      {/* List */}
-      <div style={{ flex: 1, overflowY: "auto" }}>
-        {filtered.length === 0 ? (
-          <div style={{ padding: 24, textAlign: "center", fontSize: 12, color: MUTED }}>No templates match</div>
-        ) : filtered.map((t) => (
-          <div
-            key={t.id}
-            onClick={() => onSelect(t)}
-            style={{ padding: "12px 16px", borderBottom: `1px solid ${BORDER}`, cursor: "pointer" }}
-            onMouseEnter={(e) => e.currentTarget.style.background = "#F8FAFC"}
-            onMouseLeave={(e) => e.currentTarget.style.background = "#fff"}
-          >
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-              {/* Color thumbnail */}
-              <div style={{ width: 36, height: 44, borderRadius: 6, background: t.thumbnailColor, border: `1px solid ${BORDER}`, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Mail size={14} color={EMAIL_BLUE} />
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>{t.name}</span>
-                  <span style={{ fontSize: 9, padding: "1px 6px", borderRadius: 8, background: t.status === "Active" ? "#ECFDF5" : "#F1F5F9", color: t.status === "Active" ? "#065F46" : "#6B7280", fontWeight: 600, flexShrink: 0 }}>
-                    {t.status}
-                  </span>
-                </div>
-                <div style={{ fontSize: 11, color: "#64748B", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {t.subject}
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
-                  <span style={{ fontSize: 10, color: MUTED }}>{t.category}</span>
-                  <span style={{ fontSize: 10, color: MUTED }}>Updated {t.lastUpdated}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
@@ -400,7 +332,7 @@ export default function EmailRightPanel({ node, updateNodeData, removeNode }) {
   const resolvedRemoveNode     = removeNode ?? storeRemoveNode;
 
   const [activeTab, setActiveTab] = useState("template");
-  const [showPicker, setShowPicker] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [testEmail,  setTestEmail]  = useState("");
 
@@ -464,6 +396,14 @@ export default function EmailRightPanel({ node, updateNodeData, removeNode }) {
               <Section title="Sender Details" defaultOpen>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <div>
+                    <Label>Email Provider</Label>
+                    <SelectField
+                      value={data.provider}
+                      onChange={(v) => patch({ provider: v })}
+                      options={EMAIL_PROVIDERS.map((p) => ({ value: p.id, label: p.label }))}
+                    />
+                  </div>
+                  <div>
                     <Label>From Address</Label>
                     <SelectField
                       value={data.fromId}
@@ -478,11 +418,17 @@ export default function EmailRightPanel({ node, updateNodeData, removeNode }) {
                     )}
                   </div>
                   <div>
-                    <Label>Reply-To Email</Label>
-                    <TextField
-                      value={data.replyTo}
-                      onChange={(v) => patch({ replyTo: v })}
-                      placeholder="Leave blank to use From address"
+                    <Label>To Email</Label>
+                    <SelectField
+                      value={data.toEmailMode === "variable" ? data.toEmailVariable : "auto"}
+                      onChange={(v) => {
+                        if (v === "auto") patch({ toEmailMode: "auto", toEmailVariable: null });
+                        else patch({ toEmailMode: "variable", toEmailVariable: v });
+                      }}
+                      options={[
+                        { value: "auto", label: "Automatically detects the email address" },
+                        ...TO_EMAIL_VARIABLES.map((v) => ({ value: v.key, label: `{{${v.key}}} — ${v.label}` })),
+                      ]}
                     />
                   </div>
                 </div>
@@ -529,49 +475,24 @@ export default function EmailRightPanel({ node, updateNodeData, removeNode }) {
               {/* Template */}
               <Section title="Template" defaultOpen>
                 {!data.template ? (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {/* Select existing */}
-                    <button
-                      onClick={() => setShowPicker(true)}
-                      style={{
-                        width: "100%", padding: "11px 14px",
-                        border: `1.5px dashed ${EMAIL_BLUE}`,
-                        borderRadius: 9, background: "#EFF6FF",
-                        cursor: "pointer", textAlign: "left",
-                        display: "flex", alignItems: "center", gap: 10,
-                      }}
-                    >
-                      <div style={{ width: 32, height: 32, borderRadius: 7, background: EMAIL_BLUE, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <Eye size={15} color="#fff" />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: EMAIL_BLUE }}>Select Existing Template</div>
-                        <div style={{ fontSize: 11, color: "#93C5FD" }}>Choose from your template library</div>
-                      </div>
-                    </button>
-
-                    {/* Create new */}
-                    <button
-                      onClick={() => setShowEditor(true)}
-                      style={{
-                        width: "100%", padding: "11px 14px",
-                        border: `1.5px solid ${BORDER}`,
-                        borderRadius: 9, background: "#fff",
-                        cursor: "pointer", textAlign: "left",
-                        display: "flex", alignItems: "center", gap: 10,
-                      }}
-                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = EMAIL_BLUE; e.currentTarget.style.background = "#F8FAFF"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.background = "#fff"; }}
-                    >
-                      <div style={{ width: 32, height: 32, borderRadius: 7, background: "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <Plus size={15} color="#64748B" />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>Create New Template</div>
-                        <div style={{ fontSize: 11, color: MUTED }}>Design from scratch in visual editor</div>
-                      </div>
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => setShowGallery(true)}
+                    style={{
+                      width: "100%", padding: "11px 14px",
+                      border: `1.5px dashed ${EMAIL_BLUE}`,
+                      borderRadius: 9, background: "#EFF6FF",
+                      cursor: "pointer", textAlign: "left",
+                      display: "flex", alignItems: "center", gap: 10,
+                    }}
+                  >
+                    <div style={{ width: 32, height: 32, borderRadius: 7, background: EMAIL_BLUE, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <Eye size={15} color="#fff" />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: EMAIL_BLUE }}>Select Template</div>
+                      <div style={{ fontSize: 11, color: "#93C5FD" }}>Choose from your template library or create new</div>
+                    </div>
+                  </button>
                 ) : (
                   <TemplatePreviewCard
                     template={data.template}
@@ -676,13 +597,18 @@ export default function EmailRightPanel({ node, updateNodeData, removeNode }) {
           )}
         </div>
 
-        {/* Template Picker overlay */}
-        {showPicker && (
-          <TemplatePicker
-            onSelect={(t) => { patch({ template: t, subject: data.subject || t.subject, previewText: data.previewText || t.previewText }); setShowPicker(false); }}
-            onClose={() => setShowPicker(false)}
-          />
-        )}
+        {/* Template Gallery modal */}
+        <EmailTemplateGalleryModal
+          open={showGallery}
+          templates={MOCK_EMAIL_TEMPLATES}
+          onSelect={(t) => {
+            patch({ template: t, subject: data.subject || t.subject, previewText: data.previewText || t.previewText });
+            setShowGallery(false);
+            setShowEditor(true);
+          }}
+          onCreateNew={() => { setShowGallery(false); setShowEditor(true); }}
+          onClose={() => setShowGallery(false)}
+        />
       </div>
 
       {/* Template Editor Modal */}

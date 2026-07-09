@@ -18,14 +18,26 @@ import StartTriggerWizard from "@/components/flows/builder/trigger/StartTriggerW
 import AiCallingGlobalWizard from "@/components/flows/builder/nodes/AiCallingNode/AiCallingGlobalWizard";
 import AiChatbotGlobalWizard from "@/components/flows/builder/nodes/AiChatbotNode/AiChatbotGlobalWizard";
 import { FlowVariantContext } from "@/components/flows/FlowVariantContext";
+import { confirmAndRemoveNode } from "@/components/flows/builder/nodes/shared/nodeActions";
 
 const AUTOSAVE_DEBOUNCE_MS = 1500;
 
-// V2 WhatsApp template style allow-list.
-// To re-enable a hidden style, add its id here.
-// Blueprint ids (currently hidden): "address", "catalog", "audio", "location"
+// V2 WhatsApp template style allow-list — full parity with V1's grouped catalogue
+// (Standard, Order, Ask Customer, Catalog, List). To hide a style in V2 only,
+// remove its id here.
 const V2_ALLOWED_TEMPLATE_STYLES = [
-  "standard", "list", "carousel", "payment_link", "call_permission", "collect_input",
+  // Standard
+  "standard", "session", "authentication", "carousel", "location", "audio",
+  // Order
+  "order_payment", "order_confirmation", "complete_checkout", "payment_link",
+  // Ask Customer
+  "ask_name", "ask_phone", "ask_email", "ask_gender", "address", "ask_rating",
+  "ask_location", "ask_order_id", "ask_image", "ask_video", "ask_text",
+  "collect_input", "call_permission",
+  // Catalog
+  "catalog_single", "catalog_multiple", "catalog_view", "catalog_list_bestsellers", "catalog",
+  // List
+  "list", "list_order", "list_bestsellers",
 ];
 
 // V2 node allow-list — only these node IDs are visible in the left panel.
@@ -291,12 +303,7 @@ export default function FlowBuilderV2() {
       if (tag === "input" || tag === "textarea" || e.target?.isContentEditable)
         return;
       if (!selectedNodeId) return;
-      const hasEdges = edges.some(
-        (ed) => ed.source === selectedNodeId || ed.target === selectedNodeId,
-      );
-      if (hasEdges && !window.confirm("Delete this node and its connections?"))
-        return;
-      removeNode(selectedNodeId);
+      confirmAndRemoveNode(selectedNodeId, edges, removeNode);
     }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);

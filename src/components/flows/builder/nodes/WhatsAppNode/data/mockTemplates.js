@@ -155,7 +155,7 @@ export const isConnectable = (btn) =>
 export const defaultWANodeData = {
   template: null,
   variableMap: {},
-  wabaNumberId: "waba_1",
+  wabaNumberId: null,
   templateType: "Marketing",
   markAsMarketing: true,
   utm: { enabled: false, source: "whatsapp", medium: "journey", campaign: "", content: "", term: "" },

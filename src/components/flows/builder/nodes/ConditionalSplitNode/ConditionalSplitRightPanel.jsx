@@ -1,16 +1,15 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from "react";
-import { Trash2, Plus, ChevronDown, ChevronUp, X } from "lucide-react";
+import { Trash2, Plus, Pencil } from "lucide-react";
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import {
   EXPRESSION_VARIABLE_GROUPS,
   EXPRESSION_OPERATORS,
   PATH_LABELS,
-  newFilterGroup,
   newExpression,
 } from "./data/mockData";
-import AudienceFilterBuilder from "@/components/flows/builder/trigger/audience/AudienceFilterBuilder";
-import CombinatorPill from "@/components/flows/builder/trigger/audience/CombinatorPill";
 import TwoPanelDropdown from "@/components/flows/builder/trigger/TwoPanelDropdown";
+import ConditionalFilterModal from "./ConditionalFilterModal";
+import { summarizeFilterGroup } from "./filterSummary";
 
 // ── Reusable small atoms ──────────────────────────────────────────────────────
 
@@ -39,66 +38,51 @@ function IconBtn({ onClick, title, children, danger }) {
 
 // ── Filter Tab ────────────────────────────────────────────────────────────────
 
-const SPLIT_BLOCK_TYPES = [
-  { id: "property",       label: "User property" },
-  { id: "behavior",       label: "User behavior" },
-  { id: "affinity",       label: "User affinity" },
-  { id: "event_property", label: "Event property" },
-  { id: "segment",        label: "Custom segment" },
-];
-
 function FilterTab({ data, patch }) {
   const groups = useMemo(() => data.filterGroups ?? [], [data.filterGroups]);
   const groupsCombinator = data.filterGroupsCombinator ?? "AND";
-
-  const updateGroup = useCallback(
-    (id, next) =>
-      patch({ filterGroups: groups.map((g) => (g.id === id ? { ...g, ...next } : g)) }),
-    [groups, patch],
-  );
-
-  const removeGroup = useCallback(
-    (id) => {
-      const next = groups.filter((g) => g.id !== id);
-      patch({ filterGroups: next.length ? next : [newFilterGroup(0)] });
-    },
-    [groups, patch],
-  );
-
-  const addGroup = useCallback(() => {
-    patch({ filterGroups: [...groups, newFilterGroup(groups.length)] });
-  }, [groups, patch]);
+  const hasAnyCondition = useMemo(() => groups.some((g) => summarizeFilterGroup(g)), [groups]);
+  const [modalOpen, setModalOpen] = useState(!hasAnyCondition);
 
   return (
     <div className="space-y-3">
-      {groups.map((group, gi) => (
-        <React.Fragment key={group.id}>
-          {gi > 0 && (
-            <div className="py-1">
-              <CombinatorPill
-                value={groupsCombinator}
-                onChange={(v) => patch({ filterGroupsCombinator: v })}
-                testId="filter-groups-combinator"
-              />
-            </div>
-          )}
-          <FilterGroupCard
-            group={group}
-            index={gi}
-            onChange={(next) => updateGroup(group.id, next)}
-            onRemove={() => removeGroup(group.id)}
-            canRemove={groups.length > 1}
-          />
-        </React.Fragment>
-      ))}
+      {groups.map((group, gi) => {
+        const summary = summarizeFilterGroup(group);
+        return (
+          <React.Fragment key={group.id}>
+            {gi > 0 && (
+              <div className="flex justify-center">
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-text-muted bg-slate-100 px-2 py-0.5 rounded-full">
+                  {groupsCombinator}
+                </span>
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => setModalOpen(true)}
+              data-testid={`filter-summary-branch-${gi}`}
+              className="w-full text-left border border-border rounded-lg px-3 py-2.5 hover:border-teal-300 hover:bg-teal-50/40 transition-colors group"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-sm font-medium text-text-primary truncate">{group.label}</span>
+                <Pencil className="w-3.5 h-3.5 text-text-muted group-hover:text-teal-600 flex-shrink-0" />
+              </div>
+              <div className="text-[11px] text-text-muted mt-0.5 truncate">
+                {summary || "No conditions set"}
+              </div>
+            </button>
+          </React.Fragment>
+        );
+      })}
 
       <button
         type="button"
-        onClick={addGroup}
+        onClick={() => setModalOpen(true)}
+        data-testid="filter-configure-btn"
         className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-600 hover:text-teal-700"
       >
         <Plus className="w-3.5 h-3.5" />
-        Add branch
+        {groups.length ? "Edit conditions" : "Configure conditions"}
       </button>
 
       <div className="flex items-center gap-2 mt-1 p-2 bg-slate-50 rounded-md border border-border">
@@ -107,62 +91,14 @@ function FilterTab({ data, patch }) {
           <span className="font-medium">Else</span> — users that don't match any branch
         </span>
       </div>
-    </div>
-  );
-}
 
-function FilterGroupCard({ group, index, onChange, onRemove, canRemove }) {
-  const [collapsed, setCollapsed] = useState(false);
-
-  return (
-    <div className="border border-border rounded-lg overflow-hidden">
-      <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 border-b border-border">
-        <button
-          type="button"
-          onClick={() => setCollapsed((c) => !c)}
-          className="text-text-muted"
-        >
-          {collapsed ? (
-            <ChevronDown className="w-3.5 h-3.5" />
-          ) : (
-            <ChevronUp className="w-3.5 h-3.5" />
-          )}
-        </button>
-        <input
-          type="text"
-          value={group.label}
-          onChange={(e) => onChange({ label: e.target.value })}
-          className="flex-1 min-w-0 text-sm font-medium bg-transparent focus:outline-none"
-        />
-        {canRemove && (
-          <button
-            type="button"
-            onClick={onRemove}
-            className="p-1.5 rounded-md text-text-muted hover:text-rose-600 hover:bg-rose-50"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
-        )}
-      </div>
-
-      {!collapsed && (
-        <div className="p-3">
-          <AudienceFilterBuilder
-            blockSet={{
-              blocks: group.blocks || [],
-              blocksCombinator: group.blocksCombinator || "AND",
-            }}
-            onChange={(next) =>
-              onChange({
-                blocks: next.blocks,
-                blocksCombinator: next.blocksCombinator,
-              })
-            }
-            testIdPrefix={`fg-${group.id}`}
-            blockTypes={SPLIT_BLOCK_TYPES}
-          />
-        </div>
-      )}
+      <ConditionalFilterModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        filterGroups={groups}
+        filterGroupsCombinator={groupsCombinator}
+        onSave={(next) => patch(next)}
+      />
     </div>
   );
 }

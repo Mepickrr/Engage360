@@ -141,8 +141,11 @@ export default function StartTriggerWizard({
         setGoogleSheetConfig({
           sheetUrl: initialConfig.sheetUrl || "",
           sheetId: initialConfig.sheetId || "",
-          columnIdMode: initialConfig.columnIdMode || "id",
+          connected: !!initialConfig.sheetUrl,
+          columnIdMode: initialConfig.columnIdMode || "header",
+          detectedColumns: initialConfig.detectedColumns || [],
           columns: initialConfig.columns || [],
+          variableNames: initialConfig.variableNames || {},
           contactIdentifierColumn: initialConfig.contactIdentifierColumn || "",
           pollIntervalMinutes: initialConfig.pollIntervalMinutes || 5,
           sampleValues: initialConfig.sampleValues || {},

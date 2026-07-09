@@ -527,24 +527,58 @@ const TABS = [
   { id: "event",    label: "Event",    Icon: TimerReset   },
 ];
 
-export default function DelayConfig({ data, patch }) {
+export default function DelayConfig({ data, patch, label, onLabelChange, onDelete }) {
   // Migrate old delayMode shape
   const rawTab = data?.delayTab;
   const activeTab = rawTab ?? (data?.delayMode === "till" ? "schedule" : "duration");
 
   const preview = buildPreviewLabel({ ...data, delayTab: activeTab });
 
+  const [editingLabel, setEditingLabel] = useState(false);
+
   return (
-    <div style={{ color: TPRI }}>
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 16px", borderBottom: `1px solid ${BORDER}` }}>
-        <div style={{ width: 32, height: 32, borderRadius: 8, background: "#FEF3C7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-          <Clock size={16} style={{ color: AMBER }} />
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, color: TPRI }}>
+      {/* Header — editable label */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderBottom: `1px solid ${BORDER}`, flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1, minWidth: 0 }}>
+          <div style={{ width: 32, height: 32, borderRadius: 8, background: "#FEF3C7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <Clock size={16} style={{ color: AMBER }} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {editingLabel ? (
+              <input
+                autoFocus
+                value={label ?? ""}
+                onChange={(e) => onLabelChange?.(e.target.value)}
+                onBlur={() => setEditingLabel(false)}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === "Escape") setEditingLabel(false); }}
+                placeholder="Wait 1 hour"
+                style={{ fontSize: 13, fontWeight: 700, color: TPRI, border: "none", borderBottom: `1.5px solid ${AMBER}`, outline: "none", background: "transparent", width: "100%", padding: "0 0 1px" }}
+              />
+            ) : (
+              <div
+                onClick={() => setEditingLabel(true)}
+                title="Click to rename"
+                style={{ fontSize: 13, fontWeight: 700, color: TPRI, cursor: "text", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+              >
+                {label || "Wait 1 hour"}
+                <span style={{ fontSize: 9, color: MUTED, marginLeft: 5, fontWeight: 400 }}>✎</span>
+              </div>
+            )}
+            <div style={{ fontSize: 10, color: MUTED }}>Pause flow execution</div>
+          </div>
         </div>
-        <div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: TPRI }}>Delay Node</div>
-          <div style={{ fontSize: 11, color: MUTED }}>Pause flow execution</div>
-        </div>
+        {onDelete && (
+          <button
+            type="button"
+            onClick={onDelete}
+            style={{ fontSize: 11, color: "#EF4444", background: "none", border: "none", cursor: "pointer", padding: "4px 8px", borderRadius: 6, flexShrink: 0 }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#FEF2F2"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "none"; }}
+          >
+            Delete
+          </button>
+        )}
       </div>
 
       {/* Tab strip */}
@@ -578,21 +612,21 @@ export default function DelayConfig({ data, patch }) {
         })}
       </div>
 
-      {/* Tab content */}
-      <div style={{ padding: "16px 16px 20px" }}>
+      {/* Tab content — scrollable */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "16px 16px 0" }}>
         {activeTab === "duration" && <DurationTab data={data} patch={patch} />}
         {activeTab === "schedule" && <ScheduleTab data={data} patch={patch} />}
         {activeTab === "event"    && <EventTab    data={data} patch={patch} />}
-      </div>
 
-      {/* Canvas preview */}
-      <div style={{ margin: "0 16px 20px", padding: "10px 12px", background: BGSOFT, border: `1px solid ${BORDER}`, borderRadius: 8 }}>
-        <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 4 }}>
-          Canvas label preview
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <Clock size={12} style={{ color: AMBER, flexShrink: 0 }} />
-          <span style={{ fontSize: 12, fontWeight: 500, color: TPRI }}>{preview}</span>
+        {/* Canvas preview */}
+        <div style={{ margin: "16px 0 20px", padding: "10px 12px", background: BGSOFT, border: `1px solid ${BORDER}`, borderRadius: 8 }}>
+          <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 4 }}>
+            Canvas label preview
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <Clock size={12} style={{ color: AMBER, flexShrink: 0 }} />
+            <span style={{ fontSize: 12, fontWeight: 500, color: TPRI }}>{preview}</span>
+          </div>
         </div>
       </div>
     </div>

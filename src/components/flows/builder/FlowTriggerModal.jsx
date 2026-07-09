@@ -17,7 +17,7 @@ import {
   ShoppingBag, Package, Truck, UsersRound, GitBranch,
   MessageCircle, Camera, Mail, CalendarHeart, TimerReset,
   Tag, Plug, DatabaseZap, Headphones, Zap, Check,
-  AlertTriangle, RefreshCw, Info,
+  AlertTriangle, RefreshCw, Info, Smartphone, MessageSquare,
 } from "lucide-react";
 import {
   ATTRIBUTE_GROUPS, ATTRIBUTE_MAP, BEHAVIOR_EVENT_GROUPS, EVENT_MAP,
@@ -27,7 +27,7 @@ import {
 import {
   BROADCAST_MOCK_SEGMENTS, MOCK_TOTAL_USERS, TIMEZONES,
   SAMPLE_CSV_CONTENT, SAMPLE_CSV_FILENAME,
-  getMockReachCount, isPastDateTime,
+  getMockReachCount, getChannelReachability, isPastDateTime,
 } from "./broadcastAudienceData";
 import {
   Popover, PopoverContent, PopoverTrigger,
@@ -2091,19 +2091,51 @@ function CSVUploader({ csvFile, csvMapping, onFileChange, onMappingChange }) {
   );
 }
 
+const CHANNEL_ICON_MAP = { Push: Smartphone, Email: Mail, SMS: MessageSquare, WhatsApp: MessageCircle };
+
+function formatCompact(n) {
+  if (n >= 100000) return `${(n / 100000).toFixed(1)}L`;
+  if (n >= 1000)   return `${(n / 1000).toFixed(1)}K`;
+  return String(n);
+}
+
 function EstimatedReachPanel({ reach }) {
+  // TODO: update reach via real GET /api/audience/count when sourceType/filters change
+  const pctOfTotal = MOCK_TOTAL_USERS > 0 ? Math.round((reach / MOCK_TOTAL_USERS) * 10000) / 100 : 0;
+  const channels = getChannelReachability(reach);
+
   return (
     <div className="w-56 flex-shrink-0 border border-border rounded-xl overflow-hidden flex flex-col">
       <div className="px-4 py-3 bg-slate-50 border-b border-border">
         <div className="text-[13px] font-semibold text-text-primary text-center">Estimated Reach</div>
         <div className="text-[11px] text-text-muted text-center mt-0.5">This count is an approximate value</div>
       </div>
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-6 bg-white">
-        {/* TODO: update reach via real GET /api/audience/count when sourceType/filters change */}
-        <div className="text-[40px] font-bold text-text-primary tabular-nums">
+      <div className="flex flex-col items-center px-4 py-5 bg-white">
+        <div className="text-[36px] font-bold text-text-primary tabular-nums leading-none">
           {new Intl.NumberFormat("en-IN").format(reach)}
         </div>
+        <div className="text-[11px] text-text-muted mt-1">{pctOfTotal}% of total user count</div>
       </div>
+
+      {/* Reachability by channel */}
+      <div className="px-4 py-3 border-t border-border bg-white space-y-2.5">
+        <div className="text-[11px] font-semibold text-text-secondary">Reachability by channel</div>
+        {channels.map(({ channel, count, pctOfReachable }) => {
+          const Icon = CHANNEL_ICON_MAP[channel];
+          return (
+            <div key={channel} className="flex items-center gap-2">
+              <Icon className="w-3.5 h-3.5 text-text-muted flex-shrink-0" />
+              <div className="min-w-0">
+                <div className="text-[11px] font-medium text-text-primary">
+                  {channel} · <span className="tabular-nums">{formatCompact(count)}</span>
+                </div>
+                <div className="text-[10px] text-text-muted">{pctOfReachable}% of reachable users</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
       <div className="px-4 py-3 border-t border-border bg-slate-50 text-center">
         <p className="text-[11px] text-text-muted leading-relaxed mb-1.5">
           The contacts from your suppression list will not be included in this broadcast

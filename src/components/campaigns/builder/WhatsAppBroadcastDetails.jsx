@@ -132,44 +132,58 @@ export default function WhatsAppBroadcastDetails({ step }) {
         </label>
         {cc.utm?.enabled && (
           <div className="grid grid-cols-2 gap-2">
-            <input
-              type="text"
-              data-testid="utm-source-field"
-              value={cc.utm?.source || ""}
-              onChange={(e) => patch({ utm: { ...cc.utm, source: e.target.value } })}
-              placeholder="UTM Source"
-              className="border border-border rounded-md px-3 py-2 text-sm"
-            />
-            <input
-              type="text"
-              data-testid="utm-medium-field"
-              value={cc.utm?.medium || ""}
-              onChange={(e) => patch({ utm: { ...cc.utm, medium: e.target.value } })}
-              placeholder="UTM Medium"
-              className="border border-border rounded-md px-3 py-2 text-sm"
-            />
-            <input
-              type="text"
-              data-testid="utm-campaign-field"
-              value={cc.utm?.campaign || ""}
-              onChange={(e) => patch({ utm: { ...cc.utm, campaign: e.target.value } })}
-              placeholder="UTM Campaign"
-              className="col-span-2 border border-border rounded-md px-3 py-2 text-sm"
-            />
+            <div>
+              <label className="block text-[11px] text-text-muted mb-1">UTM Source</label>
+              <input
+                type="text"
+                data-testid="utm-source-field"
+                value={cc.utm?.source || ""}
+                onChange={(e) => patch({ utm: { ...cc.utm, source: e.target.value } })}
+                placeholder="UTM Source"
+                className="w-full border border-border rounded-md px-3 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] text-text-muted mb-1">UTM Medium</label>
+              <input
+                type="text"
+                data-testid="utm-medium-field"
+                value={cc.utm?.medium || ""}
+                onChange={(e) => patch({ utm: { ...cc.utm, medium: e.target.value } })}
+                placeholder="UTM Medium"
+                className="w-full border border-border rounded-md px-3 py-2 text-sm"
+              />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-[11px] text-text-muted mb-1">UTM Campaign</label>
+              <input
+                type="text"
+                data-testid="utm-campaign-field"
+                value={cc.utm?.campaign || ""}
+                onChange={(e) => patch({ utm: { ...cc.utm, campaign: e.target.value } })}
+                placeholder="UTM Campaign"
+                className="w-full border border-border rounded-md px-3 py-2 text-sm"
+              />
+            </div>
           </div>
         )}
       </div>
 
-      <label className="flex items-center justify-between text-[13px] font-medium text-text-primary">
-        AI Smart Send
-        <input
-          type="checkbox"
-          data-testid="ai-smart-send-toggle"
-          checked={!!cc.aiSmartSend}
-          onChange={(e) => patch({ aiSmartSend: e.target.checked })}
-          className="accent-primary"
-        />
-      </label>
+      <div>
+        <label className="flex items-center justify-between text-[13px] font-medium text-text-primary">
+          AI Smart Send
+          <input
+            type="checkbox"
+            data-testid="ai-smart-send-toggle"
+            checked={!!cc.aiSmartSend}
+            onChange={(e) => patch({ aiSmartSend: e.target.checked })}
+            className="accent-primary"
+          />
+        </label>
+        <p className="text-[11px] text-text-muted mt-1">
+          AI Smart sender boosts broadcast deliverability and revenue by retrying sends to unreached recipients on the best send time behaviour. Set the time window for reattempting delivery.
+        </p>
+      </div>
 
       <div>
         <label className="flex items-center justify-between text-[13px] font-medium text-text-primary mb-2">
@@ -203,6 +217,9 @@ export default function WhatsAppBroadcastDetails({ step }) {
       {cc.template && (
         <div>
           <FallbackTemplateSection data={cc} patch={patch} />
+          <p className="text-[11px] text-text-muted mt-1">
+            Meta pauses deliverability of templates after a certain point to enhance user experience. Choose a fallback template to send when the primary template delivery is paused.
+          </p>
           {cc.fallback?.enabled && (
             <label className="flex items-center justify-between text-[13px] font-medium text-text-primary mt-2">
               Fallback Template Category Change
@@ -218,16 +235,21 @@ export default function WhatsAppBroadcastDetails({ step }) {
         </div>
       )}
 
-      <label className="flex items-center justify-between text-[13px] font-medium text-text-primary">
-        Enable International Audience
-        <input
-          type="checkbox"
-          data-testid="international-audience-toggle"
-          checked={!!cc.internationalAudience}
-          onChange={(e) => patch({ internationalAudience: e.target.checked })}
-          className="accent-primary"
-        />
-      </label>
+      <div>
+        <label className="flex items-center justify-between text-[13px] font-medium text-text-primary">
+          Enable International Audience
+          <input
+            type="checkbox"
+            data-testid="international-audience-toggle"
+            checked={!!cc.internationalAudience}
+            onChange={(e) => patch({ internationalAudience: e.target.checked })}
+            className="accent-primary"
+          />
+        </label>
+        <p className="text-[11px] text-text-muted mt-1">
+          Send your campaign on international audience, when disabled only the Indian audience will be attempted.
+        </p>
+      </div>
 
       <div>
         <label className="flex items-center justify-between text-[13px] font-medium text-text-primary mb-2">

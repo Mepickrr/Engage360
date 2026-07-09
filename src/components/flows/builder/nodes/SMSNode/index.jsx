@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import NodeAnalyticsFooter from "@/components/flows/analytics/NodeAnalyticsFooter";
 import { Handle, Position } from "reactflow";
 import { MessageSquare } from "lucide-react";
 import { SMS_DELIVERY_OPTIONS, SMS_GATEWAYS } from "./data/mockData";
+import NodeHoverActions from "../shared/NodeHoverActions";
 
 const SMS_PURPLE = "#6366F1";
 const BORDER     = "#E5E7EB";
@@ -70,6 +71,7 @@ function PortRow({ portId, label, wired }) {
 }
 
 export default function SMSNode({ id, data, selected }) {
+  const [hovered, setHovered] = useState(false);
   const template   = data?.template ?? null;
   const label      = data?.label ?? "Send SMS";
   const outputCfg  = data?.outputConfig ?? { routingMode: "next_step", deliveryOutputs: [], wiredPorts: [] };
@@ -94,17 +96,23 @@ export default function SMSNode({ id, data, selected }) {
 
   return (
     <div
-      data-testid={`rf-sms-node-${id}`}
-      style={{
-        background: "#fff",
-        border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${borderColor}`,
-        borderRadius: cardRadius,
-        boxShadow: selected ? "0 0 0 3px rgba(99,102,241,0.15)" : "0 1px 6px rgba(0,0,0,0.07)",
-        width: 270,
-        position: "relative",
-        overflow: "visible",
-      }}
+      style={{ position: "relative" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
+      <NodeHoverActions nodeId={id} visible={hovered || selected} channel="sms" />
+      <div
+        data-testid={`rf-sms-node-${id}`}
+        style={{
+          background: "#fff",
+          border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${borderColor}`,
+          borderRadius: cardRadius,
+          boxShadow: selected ? "0 0 0 3px rgba(99,102,241,0.15)" : "0 1px 6px rgba(0,0,0,0.07)",
+          width: 270,
+          position: "relative",
+          overflow: "visible",
+        }}
+      >
       <Handle
         type="target"
         position={Position.Top}
@@ -174,6 +182,7 @@ export default function SMSNode({ id, data, selected }) {
         </>
       )}
       <NodeAnalyticsFooter type="sms" analyticsData={analyticsData} />
+      </div>
     </div>
   );
 }

@@ -7,6 +7,17 @@ function pickGoogleSheetTrigger() {
   fireEvent.click(screen.getByTestId("event-picker-card-Google Sheet Data Entry"));
 }
 
+// Drives the internal 4-step Google Sheet config flow to completion using the
+// default header-based mode, ending on Step 4 (Trigger behavior) where the
+// outer wizard's Finish button is expected to be enabled.
+function completeGoogleSheetSteps() {
+  fireEvent.change(screen.getByTestId("gsheet-trigger-sheet-url"), { target: { value: "https://docs.google.com/x" } });
+  fireEvent.click(screen.getByTestId("gsheet-trigger-connect-btn"));
+  fireEvent.click(screen.getByTestId("gsheet-trigger-step1-continue"));
+  fireEvent.click(screen.getByTestId("gsheet-trigger-step2-continue"));
+  fireEvent.change(screen.getByTestId("gsheet-trigger-contact-column"), { target: { value: "Phone Number" } });
+}
+
 describe("StartTriggerWizard — Google Sheet Data Entry trigger", () => {
   it("routes to GoogleSheetTriggerStep1 instead of Step1WhenContent when picked", () => {
     render(<StartTriggerWizard open initialConfig={null} onClose={() => {}} onComplete={() => {}} />);
@@ -20,10 +31,7 @@ describe("StartTriggerWizard — Google Sheet Data Entry trigger", () => {
     expect(screen.queryByTestId("trigger-wizard-next")).not.toBeInTheDocument();
     expect(screen.getByTestId("trigger-wizard-finish")).toBeDisabled();
 
-    fireEvent.change(screen.getByTestId("gsheet-trigger-sheet-url"), { target: { value: "https://docs.google.com/x" } });
-    fireEvent.change(screen.getByTestId("gsheet-trigger-column-select"), { target: { value: "A" } });
-    fireEvent.click(screen.getByTestId("gsheet-trigger-column-add"));
-    fireEvent.change(screen.getByTestId("gsheet-trigger-contact-column"), { target: { value: "A" } });
+    completeGoogleSheetSteps();
     expect(screen.getByTestId("trigger-wizard-finish")).not.toBeDisabled();
   });
 
@@ -32,18 +40,14 @@ describe("StartTriggerWizard — Google Sheet Data Entry trigger", () => {
     render(<StartTriggerWizard open initialConfig={null} onClose={() => {}} onComplete={onComplete} />);
     pickGoogleSheetTrigger();
 
-    fireEvent.change(screen.getByTestId("gsheet-trigger-sheet-url"), { target: { value: "https://docs.google.com/x" } });
-    fireEvent.change(screen.getByTestId("gsheet-trigger-column-select"), { target: { value: "A" } });
-    fireEvent.click(screen.getByTestId("gsheet-trigger-column-add"));
-    fireEvent.change(screen.getByTestId("gsheet-trigger-contact-column"), { target: { value: "A" } });
+    completeGoogleSheetSteps();
     fireEvent.click(screen.getByTestId("trigger-wizard-finish"));
 
     expect(onComplete).toHaveBeenCalledWith(
       expect.objectContaining({
         kind: "google_sheet_new_row",
         sheetUrl: "https://docs.google.com/x",
-        columns: ["A"],
-        contactIdentifierColumn: "A",
+        contactIdentifierColumn: "Phone Number",
         pollIntervalMinutes: 5,
       }),
     );
@@ -65,5 +69,6 @@ describe("StartTriggerWizard — Google Sheet Data Entry trigger", () => {
     );
     expect(screen.getByTestId("trigger-wizard-finish")).toBeInTheDocument();
     expect(screen.queryByTestId("trigger-wizard-next")).not.toBeInTheDocument();
+    expect(screen.getByTestId("trigger-wizard-finish")).not.toBeDisabled();
   });
 });

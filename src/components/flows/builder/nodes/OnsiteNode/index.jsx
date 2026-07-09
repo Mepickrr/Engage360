@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Handle, Position } from "reactflow";
 import { Monitor } from "lucide-react";
 import NodeAnalyticsFooter from "@/components/flows/analytics/NodeAnalyticsFooter";
 import {
   ONSITE_TEAL, DISPLAY_TYPES, ONSITE_DELIVERY_OPTIONS, PLATFORM_OPTIONS,
 } from "./data/mockData";
+import NodeHoverActions from "../shared/NodeHoverActions";
 
 const BORDER = "#E5E7EB";
 
@@ -65,6 +66,7 @@ function PortRow({ portId, label, wired }) {
 }
 
 export default function OnsiteNode({ id, data, selected }) {
+  const [hovered, setHovered] = useState(false);
   const template     = data?.template ?? null;
   const displayType  = data?.displayType ?? null;
   const label        = data?.label ?? "Onsite Message";
@@ -93,17 +95,23 @@ export default function OnsiteNode({ id, data, selected }) {
 
   return (
     <div
-      data-testid={`rf-onsite-node-${id}`}
-      style={{
-        background: "#fff",
-        border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${borderColor}`,
-        borderRadius: cardRadius,
-        boxShadow: selected ? `0 0 0 3px ${ONSITE_TEAL}26` : "0 1px 6px rgba(0,0,0,0.07)",
-        width: 270,
-        position: "relative",
-        overflow: "visible",
-      }}
+      style={{ position: "relative" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
+      <NodeHoverActions nodeId={id} visible={hovered || selected} channel="onsite" />
+      <div
+        data-testid={`rf-onsite-node-${id}`}
+        style={{
+          background: "#fff",
+          border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${borderColor}`,
+          borderRadius: cardRadius,
+          boxShadow: selected ? `0 0 0 3px ${ONSITE_TEAL}26` : "0 1px 6px rgba(0,0,0,0.07)",
+          width: 270,
+          position: "relative",
+          overflow: "visible",
+        }}
+      >
       <Handle
         type="target"
         position={Position.Top}
@@ -167,6 +175,7 @@ export default function OnsiteNode({ id, data, selected }) {
       )}
 
       <NodeAnalyticsFooter type="onsite" analyticsData={analyticsData} />
+      </div>
     </div>
   );
 }

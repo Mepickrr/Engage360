@@ -62,6 +62,26 @@ export function getMockReachCount({ sourceType, selectedSegments = [], csvRowCou
   return base;
 }
 
+// TODO: replace with real GET /api/audience/reachability?userCount=
+const CHANNEL_REACH_PCT = [
+  { channel: "Push",     pct: 0.5446 },
+  { channel: "Email",    pct: 0.8299 },
+  { channel: "SMS",      pct: 0.8841 },
+  { channel: "WhatsApp", pct: 0.8839 },
+];
+
+/**
+ * getChannelReachability — mock split of a reach count across channels.
+ * TODO: replace with real GET /api/audience/reachability call.
+ */
+export function getChannelReachability(reach) {
+  return CHANNEL_REACH_PCT.map(({ channel, pct }) => ({
+    channel,
+    count: Math.round(reach * pct),
+    pctOfReachable: Math.round(pct * 100 * 100) / 100,
+  }));
+}
+
 /**
  * Check if a given date + time combination is in the past relative to now.
  */

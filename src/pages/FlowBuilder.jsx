@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import StartTriggerWizard from "@/components/flows/builder/trigger/StartTriggerWizard";
 import AiCallingGlobalWizard from "@/components/flows/builder/nodes/AiCallingNode/AiCallingGlobalWizard";
 import AiChatbotGlobalWizard from "@/components/flows/builder/nodes/AiChatbotNode/AiChatbotGlobalWizard";
+import { confirmAndRemoveNode } from "@/components/flows/builder/nodes/shared/nodeActions";
 
 const AUTOSAVE_DEBOUNCE_MS = 1500;
 
@@ -269,12 +270,7 @@ export default function FlowBuilder() {
       if (tag === "input" || tag === "textarea" || e.target?.isContentEditable)
         return;
       if (!selectedNodeId) return;
-      const hasEdges = edges.some(
-        (ed) => ed.source === selectedNodeId || ed.target === selectedNodeId,
-      );
-      if (hasEdges && !window.confirm("Delete this node and its connections?"))
-        return;
-      removeNode(selectedNodeId);
+      confirmAndRemoveNode(selectedNodeId, edges, removeNode);
     }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);

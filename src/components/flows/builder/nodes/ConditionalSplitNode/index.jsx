@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Handle, Position } from "reactflow";
 import { GitFork } from "lucide-react";
+import { summarizeFilterGroup } from "./filterSummary";
+import NodeHoverActions from "../shared/NodeHoverActions";
 
 const TEAL = "#0D9488";
 const BORDER = "#E5E7EB";
@@ -13,7 +15,10 @@ function PortRow({ portId, label, color, wired }) {
       display: "flex", alignItems: "center", justifyContent: "flex-end",
       gap: 6, padding: "3px 16px 3px 12px", minHeight: 24,
     }}>
-      <span style={{ fontSize: 10, color: "#475569", whiteSpace: "nowrap", maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis" }}>
+      <span
+        title={label}
+        style={{ fontSize: 10, color: "#475569", whiteSpace: "nowrap", maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis" }}
+      >
         {label}
       </span>
       <div style={{
@@ -38,6 +43,7 @@ function PortRow({ portId, label, color, wired }) {
 }
 
 export default function ConditionalSplitNode({ id, data, selected }) {
+  const [hovered, setHovered] = useState(false);
   const mode = data?.mode ?? null;
   const wiredPorts = data?.wiredPorts ?? [];
 
@@ -46,7 +52,8 @@ export default function ConditionalSplitNode({ id, data, selected }) {
   if (mode === "filter") {
     const groups = data?.filterGroups ?? [];
     groups.forEach((g, i) => {
-      ports.push({ id: g.id, label: g.label || `Branch ${i + 1}`, color: TEAL });
+      const summary = summarizeFilterGroup(g, { maxLength: 40 });
+      ports.push({ id: g.id, label: summary || g.label || `Branch ${i + 1}`, color: TEAL });
     });
     ports.push({ id: "else", label: "Else", color: "#94A3B8" });
   } else if (mode === "ab") {
@@ -68,17 +75,23 @@ export default function ConditionalSplitNode({ id, data, selected }) {
 
   return (
     <div
-      data-testid={`rf-conditionalsplit-node-${id}`}
-      style={{
-        background: "#fff",
-        border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${isEmpty ? "rgba(13,148,136,0.4)" : TEAL}`,
-        borderRadius: 12,
-        boxShadow: selected ? "0 0 0 3px rgba(13,148,136,0.15)" : "0 1px 6px rgba(0,0,0,0.07)",
-        width: 260,
-        position: "relative",
-        overflow: "visible",
-      }}
+      style={{ position: "relative" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
+      <NodeHoverActions nodeId={id} visible={hovered || selected} />
+      <div
+        data-testid={`rf-conditionalsplit-node-${id}`}
+        style={{
+          background: "#fff",
+          border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${isEmpty ? "rgba(13,148,136,0.4)" : TEAL}`,
+          borderRadius: 12,
+          boxShadow: selected ? "0 0 0 3px rgba(13,148,136,0.15)" : "0 1px 6px rgba(0,0,0,0.07)",
+          width: 260,
+          position: "relative",
+          overflow: "visible",
+        }}
+      >
       <Handle
         type="target"
         position={Position.Top}
@@ -129,6 +142,7 @@ export default function ConditionalSplitNode({ id, data, selected }) {
           )}
         </>
       )}
+      </div>
     </div>
   );
 }

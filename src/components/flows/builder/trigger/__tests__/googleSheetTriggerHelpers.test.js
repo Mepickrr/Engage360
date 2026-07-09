@@ -1,6 +1,9 @@
 import {
   emptyGoogleSheetTriggerConfig,
   simulateSampleRow,
+  simulateConnectSheet,
+  slugifyVariableName,
+  MOCK_DETECTED_COLUMNS,
   POLL_INTERVAL_OPTIONS,
   COLUMN_LETTERS,
   GOOGLE_SHEET_SERVICE_ACCOUNT_EMAIL,
@@ -11,8 +14,11 @@ describe("emptyGoogleSheetTriggerConfig", () => {
     const cfg = emptyGoogleSheetTriggerConfig();
     expect(cfg.sheetUrl).toBe("");
     expect(cfg.sheetId).toBe("");
-    expect(cfg.columnIdMode).toBe("id");
+    expect(cfg.connected).toBe(false);
+    expect(cfg.columnIdMode).toBe("header");
+    expect(cfg.detectedColumns).toEqual([]);
     expect(cfg.columns).toEqual([]);
+    expect(cfg.variableNames).toEqual({});
     expect(cfg.contactIdentifierColumn).toBe("");
     expect(cfg.pollIntervalMinutes).toBe(5);
     expect(cfg.sampleValues).toEqual({});
@@ -28,6 +34,28 @@ describe("re-exported constants", () => {
 
   it("offers five poll interval options from 1 to 60 minutes", () => {
     expect(POLL_INTERVAL_OPTIONS.map((o) => o.value)).toEqual([1, 5, 15, 30, 60]);
+  });
+});
+
+describe("slugifyVariableName", () => {
+  it("converts a header label into a snake_case variable name", () => {
+    expect(slugifyVariableName("Customer Name")).toBe("customer_name");
+    expect(slugifyVariableName("Phone Number")).toBe("phone_number");
+  });
+
+  it("strips leading/trailing separators and non-alphanumerics", () => {
+    expect(slugifyVariableName("  Order #ID!  ")).toBe("order_id");
+  });
+
+  it("falls back to a default when the label has no usable characters", () => {
+    expect(slugifyVariableName("")).toBe("column");
+    expect(slugifyVariableName("   ")).toBe("column");
+  });
+});
+
+describe("simulateConnectSheet", () => {
+  it("returns the fixed mock header row", () => {
+    expect(simulateConnectSheet()).toEqual(MOCK_DETECTED_COLUMNS);
   });
 });
 
