@@ -4,7 +4,7 @@
 
 **Goal:** Build the "+ New Campaign" entry flow: a channel-picker modal, a new standalone Campaign Builder page with a 3-column layout (Sequence Panel / Config Panel / Content Preview), and wiring for the primary step plus follow-up steps with trigger conditions.
 
-**Architecture:** A new, self-contained page (`CampaignBuilderPage.jsx`) backed by a new zustand store (`campaignBuilderStore.js`) modeling `sequence: SequenceStep[]` (per `Campaign Builder.md` Section 2) — not Flow Builder's `nodes`/`edges` graph. Per-channel content config reuses Flow Builder's existing `TemplatePicker` component and default-data shape directly (same component, new shell), without modifying Flow Builder's existing files.
+**Architecture:** A new, self-contained page (`CampaignBuilderPage.jsx`) backed by a new zustand store (`campaignBuilderStore.js`) modeling `sequence: SequenceStep[]` (per `Campaign Builder.md` Section 2) — not Flow Builder's `nodes`/`edges` graph. Per-channel content config reuses Flow Builder's existing `TemplateTab` component (sender number → style picker → `UnifiedTemplateModal` → fallback toggle) and default-data shape directly (same component, new shell), via one additive named-export change to `WhatsAppRightPanel.jsx`.
 
 **Tech Stack:** React, react-router-dom, zustand, Tailwind, lucide-react icons, shadcn `Dialog` primitive, Jest + React Testing Library (existing `craco test` setup).
 
@@ -16,7 +16,7 @@
 - Trigger Condition timing is either/or: `mode: "delay"` XOR `mode: "date"` — switching modes clears the other mode's fields (spec Section 6.1).
 - The Broadcast Name field is one piece of state (`store.meta.name`) rendered in two places (header + center panel) — never two separate inputs.
 - Follow existing codebase conventions: `@/...` import alias, Tailwind utility classes (no CSS modules), no TypeScript, no comments unless explaining a non-obvious constraint, `data-testid` on interactive elements for testability.
-- Do not modify `WhatsAppRightPanel.jsx` or any other Flow Builder node/canvas file — content reuse happens via importing `TemplatePicker` directly, not by editing Flow Builder's panel.
+- Do not modify Flow Builder node/canvas files except the single additive named-export change to `WhatsAppRightPanel.jsx` specified in Task 8 — content reuse otherwise happens by importing, not editing.
 
 ---
 
@@ -1290,14 +1290,17 @@ git commit -m "feat: add Broadcast Name and Trigger Condition editing to config 
 
 ---
 
-### Task 8: Campaign Content Panel reusing WhatsApp's TemplatePicker
+### Task 8: Campaign Content Panel reusing Flow Builder's TemplateTab
+
+> **Note:** a prior, unrelated commit on this branch (`41d94a7`, "wire UnifiedTemplateModal into WhatsAppRightPanel, retire TemplatePicker/TemplateEditor") removed the `TemplatePicker` component this plan originally targeted. In its place, `WhatsAppRightPanel.jsx` now has a local `TemplateTab({ data, patch })` function (line 311) that already orchestrates sender-number selection → template-style picker → `UnifiedTemplateModal` → fallback toggle, entirely off the `{ data, patch }` contract — exactly the shape this plan needs, just not exported yet. This task exports it and renders it directly, which is a stronger result than the original plan (full parity, not just the template/fallback slice).
 
 **Files:**
+- Modify: `src/components/flows/builder/nodes/WhatsAppNode/WhatsAppRightPanel.jsx:311` (add `export` to the existing `function TemplateTab({ data, patch })` — no other change to that file)
 - Modify: `src/components/campaigns/builder/CampaignContentPanel.jsx` (replace Task 5's placeholder body)
 - Test: `src/components/campaigns/builder/__tests__/CampaignContentPanel.test.jsx`
 
 **Interfaces:**
-- Consumes: `useCampaignBuilderStore` (Task 2), `TemplatePicker` from `@/components/flows/builder/nodes/WhatsAppNode/TemplatePicker` (existing, unmodified — `onSelect(template)` / `onClose()` props).
+- Consumes: `useCampaignBuilderStore` (Task 2), `TemplateTab` from `@/components/flows/builder/nodes/WhatsAppNode/WhatsAppRightPanel` (existing, made a named export by this task — signature `TemplateTab({ data, patch })`, unchanged otherwise).
 - Produces: `CampaignContentPanel` keeps its `{ step }` prop signature from Task 5. This is the final task; no further tasks consume this file.
 
 - [ ] **Step 1: Write the failing test**
@@ -1309,15 +1312,6 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import CampaignContentPanel from "../CampaignContentPanel";
 import { useCampaignBuilderStore } from "@/store/campaignBuilderStore";
-
-jest.mock("@/components/flows/builder/nodes/WhatsAppNode/TemplatePicker", () => (props) => (
-  <div data-testid="mock-template-picker">
-    <button type="button" onClick={() => props.onSelect({ name: "order_confirm" })}>
-      pick order_confirm
-    </button>
-    <button type="button" onClick={props.onClose}>close picker</button>
-  </div>
-));
 
 beforeEach(() => {
   useCampaignBuilderStore.getState().reset();
@@ -1331,28 +1325,25 @@ describe("CampaignContentPanel", () => {
     expect(screen.getByText("NO TEMPLATE SELECTED")).toBeInTheDocument();
   });
 
-  it("opens the shared TemplatePicker and stores the selected template for WhatsApp", () => {
+  it("renders Flow Builder's TemplateTab for WhatsApp, starting at the sender-number step", () => {
     useCampaignBuilderStore.getState().addPrimaryStep("whatsapp");
     const step = useCampaignBuilderStore.getState().sequence[0];
-    const { rerender } = render(<CampaignContentPanel step={step} />);
-    fireEvent.click(screen.getByTestId("select-template-btn"));
-    expect(screen.getByTestId("mock-template-picker")).toBeInTheDocument();
-    fireEvent.click(screen.getByText("pick order_confirm"));
-    const updated = useCampaignBuilderStore.getState().sequence[0];
-    expect(updated.channel_config.template).toEqual({ name: "order_confirm" });
-    rerender(<CampaignContentPanel step={updated} />);
-    expect(screen.getByText("order_confirm")).toBeInTheDocument();
+    render(<CampaignContentPanel step={step} />);
+    expect(screen.getByText("Sender Number")).toBeInTheDocument();
   });
 
-  it("toggles the fallback template setting", () => {
+  it("advancing to a sender number reveals the template style picker, wired through the same patch contract", () => {
     useCampaignBuilderStore.getState().addPrimaryStep("whatsapp");
     const step = useCampaignBuilderStore.getState().sequence[0];
     const { rerender } = render(<CampaignContentPanel step={step} />);
-    fireEvent.click(screen.getByTestId("fallback-toggle"));
-    const updated = useCampaignBuilderStore.getState().sequence[0];
-    expect(updated.channel_config.fallback.enabled).toBe(true);
-    rerender(<CampaignContentPanel step={updated} />);
-    expect(screen.getByTestId("select-fallback-template-btn")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "waba_1" } });
+
+    const updatedStep = useCampaignBuilderStore.getState().sequence[0];
+    expect(updatedStep.channel_config.wabaNumberId).toBe("waba_1");
+    rerender(<CampaignContentPanel step={updatedStep} />);
+
+    expect(screen.getByText("Choose Template Style")).toBeInTheDocument();
   });
 });
 ```
@@ -1362,19 +1353,33 @@ describe("CampaignContentPanel", () => {
 Run: `npx craco test src/components/campaigns/builder/__tests__/CampaignContentPanel.test.jsx --watchAll=false`
 Expected: FAIL — placeholder panel renders no matching elements.
 
-- [ ] **Step 3: Rewrite CampaignContentPanel**
+- [ ] **Step 3: Export TemplateTab**
+
+In `src/components/flows/builder/nodes/WhatsAppNode/WhatsAppRightPanel.jsx`, change line 311 from:
+
+```js
+function TemplateTab({ data, patch }) {
+```
+
+to:
+
+```js
+export function TemplateTab({ data, patch }) {
+```
+
+No other change to this file. The existing default export (`WhatsAppRightPanel`) and its internal usage of `TemplateTab` at line 778 are unaffected — adding a named export alongside a default export is additive.
+
+- [ ] **Step 4: Rewrite CampaignContentPanel**
 
 Replace `src/components/campaigns/builder/CampaignContentPanel.jsx` in full:
 
 ```jsx
-import React, { useState } from "react";
+import React from "react";
 import { useCampaignBuilderStore } from "@/store/campaignBuilderStore";
-import TemplatePicker from "@/components/flows/builder/nodes/WhatsAppNode/TemplatePicker";
+import { TemplateTab } from "@/components/flows/builder/nodes/WhatsAppNode/WhatsAppRightPanel";
 
 export default function CampaignContentPanel({ step }) {
   const updateStepChannelConfig = useCampaignBuilderStore((s) => s.updateStepChannelConfig);
-  const [showPicker, setShowPicker] = useState(false);
-  const [showFallbackPicker, setShowFallbackPicker] = useState(false);
 
   if (!step) {
     return <div className="w-[320px] shrink-0 bg-white p-4" data-testid="campaign-content-panel" />;
@@ -1391,102 +1396,40 @@ export default function CampaignContentPanel({ step }) {
     );
   }
 
-  const { template, fallback = { enabled: false, template: null } } = step.channel_config || {};
-
   return (
     <div className="w-[320px] shrink-0 bg-white p-4 overflow-y-auto" data-testid="campaign-content-panel">
       <h3 className="text-[13px] font-semibold text-text-primary mb-3">Broadcast Content</h3>
-
-      {template ? (
-        <div className="border border-border rounded-lg p-3 mb-4">
-          <div className="text-[12px] font-mono text-text-secondary">{template.name}</div>
-          <button
-            type="button"
-            data-testid="change-template-btn"
-            onClick={() => setShowPicker(true)}
-            className="mt-2 text-[12px] text-primary font-medium"
-          >
-            Change Template
-          </button>
-        </div>
-      ) : (
-        <button
-          type="button"
-          data-testid="select-template-btn"
-          onClick={() => setShowPicker(true)}
-          className="w-full border-2 border-dashed border-border rounded-lg py-6 text-[12px] font-medium text-amber-700 bg-amber-50/50 mb-4"
-        >
-          NO TEMPLATE SELECTED — click to choose
-        </button>
-      )}
-
-      <div className="flex items-center justify-between">
-        <span className="text-[12px] font-medium text-text-secondary">Fallback Template</span>
-        <button
-          type="button"
-          data-testid="fallback-toggle"
-          onClick={() =>
-            updateStepChannelConfig(step.id, { fallback: { ...fallback, enabled: !fallback.enabled } })
-          }
-          className={`w-9 h-5 rounded-full transition-colors ${fallback.enabled ? "bg-primary" : "bg-slate-300"}`}
-        >
-          <span
-            className={`block w-4 h-4 bg-white rounded-full transition-transform ${
-              fallback.enabled ? "translate-x-4" : "translate-x-0.5"
-            }`}
-          />
-        </button>
-      </div>
-      {fallback.enabled && (
-        <button
-          type="button"
-          data-testid="select-fallback-template-btn"
-          onClick={() => setShowFallbackPicker(true)}
-          className="mt-2 w-full border border-border rounded-md py-2 text-[12px] text-text-secondary"
-        >
-          {fallback.template ? fallback.template.name : "Choose fallback template"}
-        </button>
-      )}
-
-      {showPicker && (
-        <TemplatePicker
-          onSelect={(tpl) => {
-            updateStepChannelConfig(step.id, { template: tpl });
-            setShowPicker(false);
-          }}
-          onClose={() => setShowPicker(false)}
-        />
-      )}
-      {showFallbackPicker && (
-        <TemplatePicker
-          onSelect={(tpl) => {
-            updateStepChannelConfig(step.id, { fallback: { ...fallback, template: tpl } });
-            setShowFallbackPicker(false);
-          }}
-          onClose={() => setShowFallbackPicker(false)}
-        />
-      )}
+      <TemplateTab
+        data={step.channel_config}
+        patch={(p) => updateStepChannelConfig(step.id, p)}
+      />
     </div>
   );
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [ ] **Step 5: Run test to verify it passes**
 
 Run: `npx craco test src/components/campaigns/builder/__tests__/CampaignContentPanel.test.jsx --watchAll=false`
 Expected: PASS (3 tests).
 
-- [ ] **Step 5: Run the full new test suite together**
+- [ ] **Step 6: Run the full new test suite together**
 
 Run: `npx craco test src/lib/__tests__/flowMeta.test.js src/lib/__tests__/campaignsApi.test.js src/store/__tests__/campaignBuilderStore.test.js src/pages/__tests__/CampaignBuilderPage.test.jsx src/components/campaigns/builder/__tests__ --watchAll=false`
 Expected: PASS (all tests across every task in this plan).
 
-- [ ] **Step 6: Commit**
+Also run the existing Flow Builder suite for the one file this task touches, to confirm the added export didn't disturb it:
+
+Run: `npx craco test src/components/flows/builder/nodes/WhatsAppNode --watchAll=false`
+Expected: PASS (no regressions).
+
+- [ ] **Step 7: Commit**
 
 ```bash
-git add src/components/campaigns/builder/CampaignContentPanel.jsx \
+git add src/components/flows/builder/nodes/WhatsAppNode/WhatsAppRightPanel.jsx \
+  src/components/campaigns/builder/CampaignContentPanel.jsx \
   src/components/campaigns/builder/__tests__/CampaignContentPanel.test.jsx
-git commit -m "feat: reuse WhatsApp TemplatePicker for campaign content and fallback config"
+git commit -m "feat: reuse Flow Builder's TemplateTab for campaign content and fallback config"
 ```
 
 ---
@@ -1494,9 +1437,9 @@ git commit -m "feat: reuse WhatsApp TemplatePicker for campaign content and fall
 ## Manual verification (after all tasks)
 
 1. `npm start`, navigate to `/campaigns`, click "New campaign".
-2. Confirm the channel picker opens, pick "WhatsApp", click Continue — lands on `/campaigns/builder/<id>` with a `PRIMARY` WhatsApp card, `NO TEMPLATE SELECTED` states in the left card and right content panel.
-3. Click "Select Template" in the right panel, pick any template from the picker grid — left card and right panel both update to show the template name.
-4. Toggle "Fallback Template" on — a "Choose fallback template" button appears; pick a template — persists.
+2. Confirm the channel picker opens, pick "WhatsApp", click Continue — lands on `/campaigns/builder/<id>` with a `PRIMARY` WhatsApp card, `NO TEMPLATE SELECTED` in the left card, and the right content panel starting at "Sender Number".
+3. In the right panel, pick a sender number, then a template style, then a template from the modal — left card and right panel both update to show the template name.
+4. Toggle "Fallback Template" on in the right panel — pick a fallback template — persists.
 5. Click "Add a follow-up", confirm WhatsApp is absent from the picker, pick SMS — new follow-up card appears with a `+1h DELAY` badge.
 6. Select the follow-up card, in the center panel switch to "On a specific date & time" — delay fields disappear, a datetime picker appears; switch back — datetime clears, delay fields return with defaults.
 7. Edit the Broadcast Name in the header — confirm the same value appears if you select the primary step (center panel Broadcast Name field shows the identical value).
