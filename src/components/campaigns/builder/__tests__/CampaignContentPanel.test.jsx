@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import CampaignContentPanel from "../CampaignContentPanel";
 import { useCampaignBuilderStore } from "@/store/campaignBuilderStore";
+import { WHATSAPP_CATALOG_TEMPLATES } from "../templateCatalog";
 
 beforeEach(() => {
   useCampaignBuilderStore.getState().reset();
@@ -15,24 +16,54 @@ describe("CampaignContentPanel", () => {
     expect(screen.getByText("NO TEMPLATE SELECTED")).toBeInTheDocument();
   });
 
-  it("renders Flow Builder's TemplateTab for WhatsApp, starting at the sender-number step", () => {
+  it("shows the template gallery for a WhatsApp step with no template yet", () => {
     useCampaignBuilderStore.getState().addPrimaryStep("whatsapp");
     const step = useCampaignBuilderStore.getState().sequence[0];
     render(<CampaignContentPanel step={step} />);
-    expect(screen.getByText("Sender Number")).toBeInTheDocument();
+    expect(screen.getByTestId("template-gallery-panel")).toBeInTheDocument();
   });
 
-  it("advancing to a sender number reveals the template style picker, wired through the same patch contract", () => {
+  it("Confirm on a gallery card sets channel_config.template and switches to preview mode", () => {
     useCampaignBuilderStore.getState().addPrimaryStep("whatsapp");
     const step = useCampaignBuilderStore.getState().sequence[0];
     const { rerender } = render(<CampaignContentPanel step={step} />);
+    const first = WHATSAPP_CATALOG_TEMPLATES[0];
+    fireEvent.click(screen.getByTestId(`gallery-confirm-${first.id}`));
 
-    fireEvent.change(screen.getByRole("combobox"), { target: { value: "waba_1" } });
+    const updated = useCampaignBuilderStore.getState().sequence[0];
+    expect(updated.channel_config.template.name).toBe(first.name);
+    rerender(<CampaignContentPanel step={updated} />);
+    expect(screen.getByTestId("template-preview-mode")).toBeInTheDocument();
+    expect(screen.queryByTestId("template-gallery-panel")).not.toBeInTheDocument();
+  });
 
-    const updatedStep = useCampaignBuilderStore.getState().sequence[0];
-    expect(updatedStep.channel_config.wabaNumberId).toBe("waba_1");
-    rerender(<CampaignContentPanel step={updatedStep} />);
+  it("Change returns to gallery mode", () => {
+    useCampaignBuilderStore.getState().addPrimaryStep("whatsapp");
+    const step = useCampaignBuilderStore.getState().sequence[0];
+    const { rerender } = render(<CampaignContentPanel step={step} />);
+    const first = WHATSAPP_CATALOG_TEMPLATES[0];
+    fireEvent.click(screen.getByTestId(`gallery-confirm-${first.id}`));
+    let updated = useCampaignBuilderStore.getState().sequence[0];
+    rerender(<CampaignContentPanel step={updated} />);
 
-    expect(screen.getByText("Choose Template Style")).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("change-template-btn"));
+    updated = useCampaignBuilderStore.getState().sequence[0];
+    expect(updated.channel_config.template).toBeNull();
+    rerender(<CampaignContentPanel step={updated} />);
+    expect(screen.getByTestId("template-gallery-panel")).toBeInTheDocument();
+  });
+
+  it("Edit from the gallery opens UnifiedTemplateModal pre-filled, and Save writes the edited draft", () => {
+    useCampaignBuilderStore.getState().addPrimaryStep("whatsapp");
+    const step = useCampaignBuilderStore.getState().sequence[0];
+    render(<CampaignContentPanel step={step} />);
+    const first = WHATSAPP_CATALOG_TEMPLATES[0];
+    fireEvent.click(screen.getByTestId(`gallery-edit-${first.id}`));
+
+    expect(screen.getByDisplayValue(first.name)).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Save"));
+
+    const updated = useCampaignBuilderStore.getState().sequence[0];
+    expect(updated.channel_config.template.name).toBe(first.name);
   });
 });
