@@ -50,6 +50,7 @@ export const CHANNEL_META = {
   push: { label: "Push", color: "#F59E0B", Icon: Bell },
   inapp: { label: "InApp", color: "#7C3AED", Icon: Smartphone },
   rcs: { label: "RCS", color: "#6366F1", Icon: MessageCircleMore },
+  aicallingv2: { label: "AI Voice", color: "#4F46E5", Icon: PhoneCall },
 };
 
 export const STATUS_META = {
@@ -154,7 +155,7 @@ export function defaultDataForPaletteItem(item) {
         label: "Send WhatsApp",
         template: null,
         variableMap: {},
-        wabaNumberId: "waba_1",
+        wabaNumberId: null,
         templateType: "Marketing",
         markAsMarketing: true,
         utm: { enabled: false, source: "whatsapp", medium: "journey", campaign: "" },
