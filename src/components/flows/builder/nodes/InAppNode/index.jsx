@@ -6,6 +6,7 @@ import {
   INAPP_VIOLET, INAPP_DISPLAY_TYPES, INAPP_DELIVERY_OPTIONS, INAPP_PLATFORM_OPTIONS,
 } from "./data/mockData";
 import NodeHoverActions from "../shared/NodeHoverActions";
+import InAppPreview from "./InAppPreview";
 
 const BORDER = "#E5E7EB";
 
@@ -143,14 +144,11 @@ export default function InAppNode({ id, data, selected }) {
             {displayType && <DisplayTypePill displayType={displayType} />}
           </div>
 
-          {/* Template preview strip */}
+          {/* Template preview — renders the real blocks sized to their
+              content instead of a fixed-height box clipped to an emoji. */}
           {template && (
-            <div style={{ margin: "0 8px 8px", borderRadius: 8, overflow: "hidden", border: `1px solid ${BORDER}` }}>
-              <div style={{ height: 36, background: template.thumbnailBg ?? "#F5F3FF", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontSize: 18 }}>
-                  {INAPP_DISPLAY_TYPES.find((d) => d.id === displayType)?.emoji || "📱"}
-                </span>
-              </div>
+            <div style={{ margin: "0 8px 8px" }}>
+              <InAppPreview draft={template} />
             </div>
           )}
 

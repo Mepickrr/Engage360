@@ -247,6 +247,7 @@ function UTMSection({ utm, onChange }) {
             { key: "source",   label: "utm_source",   placeholder: "email"   },
             { key: "medium",   label: "utm_medium",   placeholder: "journey" },
             { key: "campaign", label: "utm_campaign", placeholder: "cart-recovery" },
+            { key: "term",     label: "utm_term",     placeholder: "" },
             { key: "content",  label: "utm_content",  placeholder: "button-1" },
           ].map(({ key, label, placeholder }) => (
             <div key={key}>

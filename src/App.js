@@ -18,6 +18,7 @@ import FlowCreateV2Page from "@/pages/FlowCreateV2";
 import FlowAnalyticsV2 from "@/pages/FlowAnalyticsV2";
 import InstagramPage from "@/pages/Instagram";
 import SegmentsPage from "@/pages/Segments";
+import SegmentBuilderPage from "@/pages/SegmentBuilderPage";
 import AudiencePage from "@/pages/Audience";
 import AgentsPage from "@/pages/Agents";
 import HomeV2Page from "@/pages/HomeV2";
@@ -72,6 +73,8 @@ function App() {
             <Route path="/flows-v2/builder/:id/analytics" element={<FlowAnalyticsV2 />} />
             <Route path="/instagram" element={<InstagramPage />} />
             <Route path="/segments" element={<SegmentsPage />} />
+            <Route path="/segments/builder/new" element={<SegmentBuilderPage />} />
+            <Route path="/segments/builder/:id" element={<SegmentBuilderPage />} />
             <Route path="/audience" element={<AudiencePage />} />
             <Route path="/templates" element={<TemplatesPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />

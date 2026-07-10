@@ -240,7 +240,7 @@ function DeliveryTab({ data, patch }) {
         </div>
         {utm.enabled && (
           <div style={{ border: `1px solid ${BORDER}`, borderRadius: 8, overflow: "hidden" }}>
-            {[["utm_source", "Source", "sms"], ["utm_medium", "Medium", "journey"], ["utm_campaign", "Campaign", data.template?.name || ""]].map(([key, label, placeholder]) => (
+            {[["utm_source", "Source", "sms"], ["utm_medium", "Medium", "journey"], ["utm_campaign", "Campaign", data.template?.name || ""], ["utm_term", "Term", ""], ["utm_content", "Content", ""]].map(([key, label, placeholder]) => (
               <div key={key} style={{ display: "flex", alignItems: "center", borderBottom: `1px solid ${BORDER}` }}>
                 <span style={{ fontSize: 11, color: "#64748B", padding: "7px 10px", width: 80, flexShrink: 0, background: "#F8FAFC", borderRight: `1px solid ${BORDER}`, fontFamily: "monospace" }}>{label}</span>
                 <input value={utm[key] || ""} placeholder={placeholder} onChange={(e) => patch({ utm: { ...utm, [key]: e.target.value } })}

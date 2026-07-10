@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Smartphone, ChevronRight, Search } from "lucide-react";
+import { Smartphone } from "lucide-react";
 import {
   INAPP_VIOLET,
   INAPP_DISPLAY_TYPES,
@@ -8,12 +8,13 @@ import {
   NUDGE_PLACEMENTS,
   ANIMATIONS,
   INAPP_DELIVERY_OPTIONS,
-  MOCK_INAPP_TEMPLATES,
-  FILTER_VERTICALS,
-  FILTER_USE_CASES,
+  INAPP_TEMPLATE_STYLE_CONFIGS,
   defaultInAppNodeData,
 } from "./data/mockData";
+import { getInAppTemplateAnalytics, INAPP_ANALYTICS_METRICS } from "./data/mockInAppAnalytics";
 import InAppTemplateEditorModal from "./TemplateEditorModal";
+import UnifiedTemplateModal from "../WhatsAppNode/UnifiedTemplateModal";
+import InAppPreview from "./InAppPreview";
 
 const BORDER = "#E5E7EB";
 const MUTED  = "#94A3B8";
@@ -41,119 +42,6 @@ function SelectField({ value, onChange, options }) {
     <select value={value || ""} onChange={(e) => onChange(e.target.value)} style={{ width: "100%", padding: "7px 28px 7px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", background: "#fff", appearance: "none", cursor: "pointer" }}>
       {options.map((o) => <option key={typeof o === "string" ? o : o.id} value={typeof o === "string" ? o : o.id}>{typeof o === "string" ? o : o.label}</option>)}
     </select>
-  );
-}
-
-// ── Template Picker Overlay ────────────────────────────────────
-function TemplatePicker({ displayType, onSelect, onClose }) {
-  const [search,      setSearch]      = useState("");
-  const [typeFilter,  setTypeFilter]  = useState(displayType || "all");
-  const [vertical,    setVertical]    = useState("all");
-  const [useCase,     setUseCase]     = useState("all");
-
-  const filtered = MOCK_INAPP_TEMPLATES.filter((t) => {
-    const matchType   = typeFilter === "all" || t.displayType === typeFilter;
-    const matchSearch = !search || t.name.toLowerCase().includes(search.toLowerCase()) || t.useCase.toLowerCase().includes(search.toLowerCase());
-    const matchVert   = vertical === "all" || t.vertical === vertical;
-    const matchUC     = useCase  === "all" || t.useCase  === useCase;
-    return matchType && matchSearch && matchVert && matchUC;
-  });
-
-  return (
-    <div style={{ position: "absolute", inset: 0, background: "#fff", zIndex: 50, display: "flex", flexDirection: "column" }}>
-      {/* Header */}
-      <div style={{ padding: "14px 16px 10px", borderBottom: `1px solid ${BORDER}`, flexShrink: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>Select Template</span>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED }}><X size={16} /></button>
-        </div>
-        {/* Search */}
-        <div style={{ position: "relative" }}>
-          <Search size={13} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: MUTED }} />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search templates…"
-            style={{ width: "100%", padding: "7px 10px 7px 26px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", boxSizing: "border-box" }} />
-        </div>
-        {/* Type tabs */}
-        <div style={{ display: "flex", gap: 0, marginTop: 8, borderBottom: `1px solid ${BORDER}` }}>
-          {[{ id: "all", label: "All" }, ...INAPP_DISPLAY_TYPES.map((d) => ({ id: d.id, label: d.label }))].map((tab) => (
-            <button key={tab.id} onClick={() => setTypeFilter(tab.id)} style={{
-              padding: "5px 10px", fontSize: 11, background: "none", border: "none", cursor: "pointer",
-              color: typeFilter === tab.id ? PRIMARY : MUTED, fontWeight: typeFilter === tab.id ? 700 : 400,
-              borderBottom: `2px solid ${typeFilter === tab.id ? PRIMARY : "transparent"}`,
-            }}>{tab.label}</button>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
-        {/* Sidebar filters */}
-        <div style={{ width: 130, borderRight: `1px solid ${BORDER}`, overflowY: "auto", padding: "10px 0", flexShrink: 0 }}>
-          <div style={{ padding: "0 10px 6px", fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.06em" }}>Vertical</div>
-          {["all", ...FILTER_VERTICALS].map((v) => (
-            <button key={v} onClick={() => setVertical(v)} style={{
-              width: "100%", padding: "5px 10px", textAlign: "left", background: vertical === v ? "#F5F3FF" : "none",
-              border: "none", cursor: "pointer", fontSize: 11, color: vertical === v ? PRIMARY : "#475569", fontWeight: vertical === v ? 600 : 400,
-            }}>{v === "all" ? "All" : v}</button>
-          ))}
-          <div style={{ padding: "10px 10px 6px", fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.06em" }}>Use Case</div>
-          {["all", ...FILTER_USE_CASES].map((u) => (
-            <button key={u} onClick={() => setUseCase(u)} style={{
-              width: "100%", padding: "5px 10px", textAlign: "left", background: useCase === u ? "#F5F3FF" : "none",
-              border: "none", cursor: "pointer", fontSize: 11, color: useCase === u ? PRIMARY : "#475569", fontWeight: useCase === u ? 600 : 400,
-            }}>{u === "all" ? "All" : u}</button>
-          ))}
-        </div>
-
-        {/* Template grid */}
-        <div style={{ flex: 1, overflowY: "auto", padding: 12 }}>
-          <div style={{ fontSize: 11, color: MUTED, marginBottom: 10 }}>Templates ({filtered.length})</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-            {filtered.map((tpl) => (
-              <div key={tpl.id} onClick={() => onSelect(tpl)}
-                style={{ border: `1.5px solid ${BORDER}`, borderRadius: 10, overflow: "hidden", cursor: "pointer" }}
-                onMouseEnter={(e) => e.currentTarget.style.borderColor = PRIMARY}
-                onMouseLeave={(e) => e.currentTarget.style.borderColor = BORDER}>
-                {/* Thumbnail */}
-                <div style={{ height: 72, background: tpl.thumbnailBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: 24 }}>{INAPP_DISPLAY_TYPES.find((d) => d.id === tpl.displayType)?.emoji || "📱"}</span>
-                </div>
-                <div style={{ padding: "8px 10px" }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: "#0F172A", lineHeight: 1.3 }}>{tpl.name}</div>
-                  <div style={{ fontSize: 10, color: MUTED, marginTop: 2 }}>{tpl.useCase}</div>
-                </div>
-              </div>
-            ))}
-            {filtered.length === 0 && (
-              <div style={{ gridColumn: "span 2", textAlign: "center", padding: "32px 0", color: MUTED, fontSize: 12 }}>
-                No templates match your filters
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Merlin AI banner ───────────────────────────────────────────
-function MerlinBanner() {
-  return (
-    <div style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "10px 12px", background: "linear-gradient(135deg, #F5F3FF, #EDE9FE)", borderRadius: 10, border: `1px solid #DDD6FE` }}>
-      <div style={{ width: 32, height: 32, borderRadius: 8, background: PRIMARY, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 16 }}>✨</div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#0F172A" }}>Merlin AI Generator</span>
-          <span style={{ fontSize: 9, padding: "1px 6px", background: "#7C3AED", color: "#fff", borderRadius: 8, fontWeight: 600 }}>New</span>
-        </div>
-        <p style={{ fontSize: 11, color: "#64748B", margin: "2px 0 6px", lineHeight: 1.4 }}>
-          Give a prompt and Merlin will create a market-ready in-app design for you.
-        </p>
-        <button
-          onClick={() => alert("Merlin AI — coming soon")}
-          style={{ fontSize: 11, fontWeight: 600, color: PRIMARY, background: "none", border: `1px solid ${PRIMARY}`, borderRadius: 6, padding: "4px 10px", cursor: "pointer" }}
-        >Create new →</button>
-      </div>
-    </div>
   );
 }
 
@@ -194,35 +82,63 @@ function DisplayTypePicker({ onSelect }) {
 function TemplateTab({ data, patch }) {
   const [showPicker,  setShowPicker]  = useState(false);
   const [showEditor,  setShowEditor]  = useState(false);
+  const [editorInitialTemplate, setEditorInitialTemplate] = useState(null);
+  const [customTemplatesByType, setCustomTemplatesByType] = useState({});
 
   const { displayType, template } = data;
+
+  const openCreate = () => { setEditorInitialTemplate(null); setShowEditor(true); };
+  const openEdit   = (tpl) => { setEditorInitialTemplate(tpl); setShowEditor(true); };
 
   if (showEditor) {
     return (
       <InAppTemplateEditorModal
         displayType={displayType}
-        template={template}
+        template={editorInitialTemplate}
         onSave={(updated) => {
-          patch({ template: { ...(template || { id: `ia_new_${Date.now()}`, name: "Custom Template", displayType }), ...updated, status: "Active", lastUpdated: new Date().toISOString().slice(0, 10) } });
+          const base = editorInitialTemplate ?? { id: `ia_new_${Date.now()}`, name: "Custom Template", displayType, useCase: "Custom" };
+          const tpl = { ...base, ...updated, status: "Active", lastUpdated: new Date().toISOString().slice(0, 10) };
+          setCustomTemplatesByType((prev) => {
+            const existing = prev[displayType] || [];
+            const already = existing.find((t) => t.id === tpl.id);
+            return { ...prev, [displayType]: already ? existing.map((t) => (t.id === tpl.id ? tpl : t)) : [...existing, tpl] };
+          });
+          patch({ template: tpl });
           setShowEditor(false);
+          setEditorInitialTemplate(null);
         }}
-        onClose={() => setShowEditor(false)}
+        onClose={() => { setShowEditor(false); setEditorInitialTemplate(null); }}
       />
     );
   }
 
   if (!displayType) {
-    return <DisplayTypePicker onSelect={(dt) => patch({ displayType: dt })} />;
+    return <DisplayTypePicker onSelect={(dt) => { patch({ displayType: dt }); setShowPicker(true); }} />;
   }
 
   const dt = INAPP_DISPLAY_TYPES.find((d) => d.id === displayType);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      {/* Template browse modal — hover Edit/Analytics/Select cards, real
+          non-cropped preview, same shared component SMS/RCS/Push/Onsite use.
+          Edit / "+ Create new" delegate out to the existing full-screen
+          block editor rather than fitting a drag-and-drop canvas into the
+          modal's form slot. */}
       {showPicker && (
-        <TemplatePicker
-          displayType={displayType}
-          onSelect={(tpl) => { patch({ template: tpl, displayType: tpl.displayType }); setShowPicker(false); }}
+        <UnifiedTemplateModal
+          open
+          styleId={displayType}
+          styleLabel={dt?.label || "Template"}
+          customTemplates={customTemplatesByType[displayType] || []}
+          configRegistry={INAPP_TEMPLATE_STYLE_CONFIGS}
+          accentColor={PRIMARY}
+          PreviewComponent={InAppPreview}
+          metaInsightsStyleIds={[]}
+          getAnalytics={getInAppTemplateAnalytics}
+          analyticsMetrics={INAPP_ANALYTICS_METRICS}
+          onRequestExternalEditor={(tpl) => { openEdit(tpl); setShowPicker(false); }}
+          onSave={(t) => { patch({ template: t, displayType: t.displayType }); setShowPicker(false); }}
           onClose={() => setShowPicker(false)}
         />
       )}
@@ -233,9 +149,6 @@ function TemplateTab({ data, patch }) {
         <span style={{ fontSize: 11, color: MUTED }}>·</span>
         <span onClick={() => patch({ displayType: null, template: null })} style={{ fontSize: 11, color: PRIMARY, cursor: "pointer", fontWeight: 500 }}>Change</span>
       </div>
-
-      {/* Merlin AI banner */}
-      <MerlinBanner />
 
       {/* Template selection */}
       {!template ? (
@@ -249,7 +162,7 @@ function TemplateTab({ data, patch }) {
             <div style={{ fontSize: 18, marginBottom: 4 }}>☰</div>
             Prebuilt templates
           </button>
-          <button onClick={() => setShowEditor(true)} style={{
+          <button onClick={openCreate} style={{
             flex: 1, padding: "14px 10px", border: `1.5px dashed ${BORDER}`, borderRadius: 10,
             background: "transparent", cursor: "pointer", fontSize: 12, color: "#475569", textAlign: "center",
           }}
@@ -261,12 +174,12 @@ function TemplateTab({ data, patch }) {
         </div>
       ) : (
         <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
-          {/* Thumbnail */}
-          <div style={{ height: 60, background: template.thumbnailBg ?? "#F5F3FF", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ fontSize: 26 }}>{dt?.emoji || "📱"}</span>
+          {/* Real content preview — sized to fit, not cropped */}
+          <div style={{ padding: 10 }}>
+            <InAppPreview draft={template} />
           </div>
           {/* Info + actions */}
-          <div style={{ padding: "8px 12px", display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+          <div style={{ padding: "8px 12px", borderTop: `1px solid ${BORDER}`, display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
             <div>
               <div style={{ fontSize: 12, fontWeight: 600, color: "#0F172A" }}>{template.name}</div>
               <div style={{ fontSize: 10, color: MUTED, marginTop: 1 }}>{template.useCase}</div>
@@ -274,7 +187,7 @@ function TemplateTab({ data, patch }) {
             <span style={{ fontSize: 9, padding: "2px 7px", borderRadius: 8, background: "#DCFCE7", color: "#065F46", fontWeight: 700, flexShrink: 0 }}>{template.status || "Active"}</span>
           </div>
           <div style={{ borderTop: `1px solid ${BORDER}`, display: "flex" }}>
-            <button onClick={() => setShowEditor(true)} style={{ flex: 1, padding: "8px", background: "none", border: "none", cursor: "pointer", fontSize: 11, fontWeight: 600, color: PRIMARY }}
+            <button onClick={() => openEdit(template)} style={{ flex: 1, padding: "8px", background: "none", border: "none", cursor: "pointer", fontSize: 11, fontWeight: 600, color: PRIMARY }}
               onMouseEnter={(e) => e.currentTarget.style.background = "#F5F3FF"} onMouseLeave={(e) => e.currentTarget.style.background = "none"}>Edit Template</button>
             <div style={{ width: 1, background: BORDER }} />
             <button onClick={() => patch({ template: null })} style={{ flex: 1, padding: "8px", background: "none", border: "none", cursor: "pointer", fontSize: 11, color: "#EF4444" }}

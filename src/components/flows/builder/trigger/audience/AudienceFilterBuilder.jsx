@@ -5,14 +5,7 @@ import UserPropertyConditions from "./UserPropertyConditions";
 import UserBehaviorConditions from "./UserBehaviorConditions";
 import UserAffinityConditions from "./UserAffinityConditions";
 import EventPropertyConditions from "./EventPropertyConditions";
-
-const MOCK_SEGMENTS = [
-  "Top 10% buyers (90d)",
-  "Lapsed VIPs (60d+)",
-  "Cart abandoners (24h)",
-  "First-time buyers (30d)",
-  "Newsletter subscribers",
-];
+import { listSegments } from "@/data/segmentsData";
 
 function emptyBlock(type = "property") {
   return {
@@ -29,6 +22,7 @@ export default function AudienceFilterBuilder({
   onChange,
   testIdPrefix,
   blockTypes,
+  excludeSegmentName,
 }) {
   const blocks = blockSet.blocks?.length
     ? blockSet.blocks
@@ -69,6 +63,7 @@ export default function AudienceFilterBuilder({
             onRemove={blocks.length > 1 ? () => removeBlock(block.id) : null}
             testIdPrefix={`${testIdPrefix}-block-${idx}`}
             blockTypes={blockTypes}
+            excludeSegmentName={excludeSegmentName}
           />
         </React.Fragment>
       ))}
@@ -83,7 +78,7 @@ export default function AudienceFilterBuilder({
   );
 }
 
-function ConditionBlock({ block, onUpdate, onRemove, testIdPrefix, blockTypes }) {
+function ConditionBlock({ block, onUpdate, onRemove, testIdPrefix, blockTypes, excludeSegmentName }) {
   const handleTypeChange = (newType) => {
     onUpdate({ type: newType, conditions: [], segments: [], combinator: "AND" });
   };
@@ -144,6 +139,7 @@ function ConditionBlock({ block, onUpdate, onRemove, testIdPrefix, blockTypes })
             block={{ segments: block.segments || [] }}
             onChange={(b) => onUpdate({ segments: b.segments })}
             testIdPrefix={`${testIdPrefix}-segment`}
+            excludeSegmentName={excludeSegmentName}
           />
         )}
       </div>
@@ -210,8 +206,11 @@ function AddBlockMenu({ onAdd, testIdPrefix, blockTypes }) {
   );
 }
 
-function SegmentList({ block, onChange, testIdPrefix }) {
+function SegmentList({ block, onChange, testIdPrefix, excludeSegmentName }) {
   const segments = block.segments || [];
+  const options = listSegments()
+    .map((s) => s.name)
+    .filter((name) => name !== excludeSegmentName);
 
   React.useEffect(() => {
     if (segments.length === 0) {
@@ -238,7 +237,7 @@ function SegmentList({ block, onChange, testIdPrefix }) {
             className="h-9 text-sm flex-1 rounded-md border border-border bg-surface px-2"
           >
             <option value="">Select a segment</option>
-            {MOCK_SEGMENTS.map((m) => (
+            {options.map((m) => (
               <option key={m} value={m}>
                 {m}
               </option>

@@ -223,6 +223,28 @@ export const INAPP_BLOCK_GROUPS = [
   },
 ];
 
+// ── Template config registry — reused by UnifiedTemplateModal ────
+// Keyed by displayType, mirroring SMS/RCS/Onsite's style-config pattern.
+function summaryFromBlocks(blocks) {
+  const textBlock = (blocks || []).find((b) => b.type === "heading" || b.type === "text");
+  return textBlock?.content || "";
+}
+
+function makeInAppStyleConfig(displayType) {
+  return {
+    defaultDraft: { id: null, name: "", displayType, useCase: "Custom", blocks: [], bgColor: "#FFFFFF" },
+    mockTemplates: MOCK_INAPP_TEMPLATES
+      .filter((t) => t.displayType === displayType)
+      .map((t) => ({ ...t, body: summaryFromBlocks(t.blocks) })),
+  };
+}
+
+export const INAPP_TEMPLATE_STYLE_CONFIGS = {
+  popup:      makeInAppStyleConfig("popup"),
+  fullscreen: makeInAppStyleConfig("fullscreen"),
+  nudge:      makeInAppStyleConfig("nudge"),
+};
+
 export const INAPP_SYSTEM_VARIABLES = {
   Customer: [
     { key: "customer.firstName", label: "First Name",  example: "Priya"    },
