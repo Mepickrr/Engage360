@@ -150,7 +150,6 @@ export default function UnifiedTemplateModal({
 }) {
   const config = configRegistry[styleId];
   const greenAccent = accentColor || WA_GREEN;
-  const purpleAccent = accentColor || PRIMARY;
   const [mode, setMode] = useState(initialTemplate ? "edit" : "browse");
   const [draft, setDraft] = useState(() => initialTemplate || config?.defaultDraft || {});
 
