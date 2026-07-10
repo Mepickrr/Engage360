@@ -123,7 +123,9 @@ The portal-rendering, viewport-clamped positioning, outside-click/Escape handlin
 - `SMSNode/data/mockData.js` — replace `SMS_GATEWAYS` with `SMS_PROVIDERS` + `SMS_SENDER_IDS`; add `category` to each `MOCK_SMS_TEMPLATES` entry; add `SMS_TEMPLATE_STYLES` and `SMS_TEMPLATE_STYLE_CONFIGS` (the `configRegistry` passed to the modal); extend `defaultSMSNodeData`.
 - `SMSNode/SMSRightPanel.jsx` — rewrite `TemplateTab` with the Step-0 gate (Provider → Sender ID → Template Style cards, the latter local to this file since its always-visible-description/2-card layout differs enough from WhatsApp's tooltip-driven `StyleCard` to not be worth generalizing) and wire up `UnifiedTemplateModal` with the SMS-specific props; remove the now-superseded `SMSTemplatePicker` overlay and inline-form-in-panel code (both replaced by the modal).
 
-**Unchanged**: `SMSNode/index.jsx` (canvas card), `DeliveryTab`, `OutputTab`, all three WhatsApp bespoke forms (`CarouselForm.jsx`, `ListMessageForm.jsx`, `CollectInputForm.jsx`) and their `styleId`-keyed branches. No `FlowBuilder.jsx`/`FlowBuilderV2.jsx` changes.
+**Also modified**: `SMSNode/index.jsx` — its canvas-card chip currently reads `SMS_GATEWAYS.find(g => g.id === template?.gateway)`; since `SMS_GATEWAYS`/`gateway` are removed, this one lookup is updated to `SMS_SENDER_IDS.find(s => s.id === data?.senderIdId)`, showing the sender ID (e.g. "TXTIND") instead. No other change to the canvas card.
+
+**Unchanged**: `DeliveryTab`, `OutputTab`, all three WhatsApp bespoke forms (`CarouselForm.jsx`, `ListMessageForm.jsx`, `CollectInputForm.jsx`) and their `styleId`-keyed branches. No `FlowBuilder.jsx`/`FlowBuilderV2.jsx` changes.
 
 ## Testing / verification
 
