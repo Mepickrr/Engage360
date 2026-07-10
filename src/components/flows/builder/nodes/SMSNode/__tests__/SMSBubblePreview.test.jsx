@@ -26,4 +26,22 @@ describe("SMSBubblePreview", () => {
     render(<SMSBubblePreview draft={{ body: "Code: {{$9}}", variableMap: {} }} />);
     expect(screen.getByText("Code: {{$9}}")).toBeInTheDocument();
   });
+
+  it("substitutes a {{$1}} token using the first truthy entry in an array variableMap", () => {
+    render(
+      <SMSBubblePreview
+        draft={{ body: "Hi {{$1}}, thanks!", variableMap: { $1: ["", "customer.firstName"] } }}
+      />
+    );
+    expect(screen.getByText("Hi Priya, thanks!")).toBeInTheDocument();
+  });
+
+  it("leaves a {{$1}} token literal when all variableMap array entries are falsy", () => {
+    render(
+      <SMSBubblePreview
+        draft={{ body: "Code: {{$1}}", variableMap: { $1: [null, "", 0] } }}
+      />
+    );
+    expect(screen.getByText("Code: {{$1}}")).toBeInTheDocument();
+  });
 });
