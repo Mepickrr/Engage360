@@ -10,7 +10,7 @@ The WhatsApp node (`WhatsAppNode/`) already has the richer pattern this work sho
 - A central `UnifiedTemplateModal` with a Browse view (search, "+ Create new", grid of `TemplateCard`s) and an Edit view (form + live bubble preview split pane).
 - Hover-triggered actions on each `TemplateCard`: Edit, Analytics (opens `TemplateAnalyticsPopover`), Select (quick-select).
 
-This spec brings the same UX to the SMS node, adapted to SMS's simpler, category-based (Transactional/Promotional) DLT world, reusing the WhatsApp files as a copy-and-adapt starting point (consistent with how `SMSNode/` already independently mirrors `WhatsAppNode/` rather than sharing components).
+This spec brings the same UX to the SMS node, adapted to SMS's simpler, category-based (Transactional/Promotional) DLT world. **Revision:** the modal shell, hover-action bar, and analytics popover are substantial, already-tested WhatsApp code (`UnifiedTemplateModal.jsx`, `TemplateAnalyticsPopover.jsx`) — duplicating them into SMS-specific copies would mean maintaining two copies of the same backdrop/grid/hover-bar/positioning logic. Instead, both files are generalized in place with a small set of optional, backward-compatible props (theme color, config registry, preview component, analytics data/metrics, a custom-form render prop) — the WhatsApp node passes none of them and behaves identically to today; the SMS node passes its own. There's already precedent for cross-node reuse of `UnifiedTemplateModal` (`CampaignContentPanel.jsx` already imports it directly from `WhatsAppNode/`), so this follows an established pattern rather than introducing a new "shared" folder.
 
 ## Goals
 
@@ -23,7 +23,8 @@ This spec brings the same UX to the SMS node, adapted to SMS's simpler, category
 ## Non-goals
 
 - No backend/API integration — this is mock-data-driven UI, matching the existing WhatsApp and SMS node conventions (`data/mockData.js`, `data/mockTemplates.js` are all static arrays).
-- No generalization/sharing of components between WhatsApp and SMS (e.g. no color-token-parameterized shared `UnifiedTemplateModal`) — SMS gets its own copied-and-adapted files, per existing project convention.
+- No relocation of `UnifiedTemplateModal.jsx`/`TemplateAnalyticsPopover.jsx` into a new "shared" folder, and no behavior change for existing WhatsApp call sites (`WhatsAppRightPanel.jsx`, `CampaignContentPanel.jsx`) — generalization is additive-only (new optional props with defaults that reproduce today's WhatsApp behavior exactly).
+- No rewrite of the three WhatsApp-only bespoke forms (Carousel/List/CollectInput) or their `styleId`-keyed branches inside `UnifiedTemplateModal.jsx` — left untouched.
 - No "Meta insights" style benchmarking/recommendations section in SMS analytics — out of scope, WhatsApp/Meta-specific.
 - No changes to the Delivery or Output tabs.
 
@@ -81,57 +82,57 @@ File: `SMSRightPanel.jsx`, `TemplateTab` component — rewritten to mirror `What
 
 **After a style is chosen** — collapse Provider/Sender ID/Style into a compact summary above the template section (matching WhatsApp's post-selection layout at `WhatsAppRightPanel.jsx:452-459`): a style chip (icon + label + "Change" link that resets `templateStyle`/`template` back to null) and the Provider/Sender ID selects still editable above it.
 
-## Central Template Picker Modal
+## Central Template Picker Modal (standardized, reused from WhatsApp)
 
-New file: `SMSNode/SMSTemplateModal.jsx` — copy-and-adapt of `UnifiedTemplateModal.jsx`, simplified because SMS has one flat field-set (no per-style `TEMPLATE_STYLE_CONFIGS` map, no Carousel/List/CollectInput branching) — SMS only ever needs one form shape.
+`UnifiedTemplateModal.jsx` gains new **optional** props, each defaulting to today's exact WhatsApp behavior:
 
-Props: `{ open, category, categoryLabel, initialTemplate, customTemplates, onSave, onClose }`.
+- `configRegistry` (default `TEMPLATE_STYLE_CONFIGS`) — SMS passes its own registry keyed by `"transactional"`/`"promotional"`, each entry `{ defaultDraft, mockTemplates }` (no `fields` — see `customFormRenderer` below).
+- `accentColor` (default `null`) — when set, replaces both of the modal's two WhatsApp brand colors (`WA_GREEN` for select/save/hover-border, `PRIMARY` for the "+ Create new" button) with this single color everywhere inside the modal. SMS passes `SMS_PURPLE` (`#6366F1`) so both roles collapse to one purple, matching the rest of the SMS panel.
+- `PreviewComponent` (default `WhatsAppBubblePreview`) — SMS passes the new `SMSBubblePreview`.
+- `metaInsightsStyleIds` (default `["standard"]`) — replaces the hardcoded `styleId === "standard"` check that gates the "Meta insights" benchmarking block. SMS passes `[]` so that block never renders (out of scope per Goals).
+- `getAnalytics` / `analyticsMetrics` — forwarded through to the analytics popover (see below). SMS passes `getSMSTemplateAnalytics` and a 3-row metric list.
+- `customFormRenderer` — an optional render-prop `({ draft, patch, onSave, onCancel }) => ReactNode`, checked after the existing `config.fields` branch and before the three hardcoded WhatsApp bespoke-form branches (Carousel/List/CollectInput — untouched, still keyed by literal `styleId` strings SMS never uses). SMS passes a renderer for the new `SMSTemplateForm` component, since SMS's field set (char/segment counter, OR-chain variable mapping, shorten URL, AI Enhance) is too bespoke for the generic `FieldRenderer`-driven form — the same reasoning that already justifies WhatsApp's own three bespoke forms.
 
-**Browse view** (`SMSBrowseView`, adapted from `BrowseView`):
-- Header: "Select a {categoryLabel} template" + close (X).
-- Search input (filters by name/body, same as existing `SMSTemplatePicker` search logic) + "+ Create new" button (purple `#6366F1`).
-- 3-col grid of `SMSTemplateCard`s, filtered to `template.category === category`.
-- Footer: count + Cancel.
+None of WhatsApp's existing call sites (`WhatsAppRightPanel.jsx`, `CampaignContentPanel.jsx`) pass any of these new props, so their behavior and existing tests (`UnifiedTemplateModal.test.jsx`, `TemplateTabCarousel.test.jsx`, etc.) are unaffected.
 
-**`SMSTemplateCard`** (adapted from `TemplateCard`): name + 2-line body preview (reusing existing body-preview truncation from `SMSTemplatePicker`). On hover, bottom overlay bar (dark translucent) with three buttons:
-- **Edit** (pencil) → flips modal to edit mode pre-filled with this template.
-- **Analytics** (bar-chart) → opens `SMSTemplateAnalyticsPopover` anchored to the card's rect.
-- **Select** (check, purple bg) → quick-selects and calls `onSave`, closing the modal.
-- Clicking the card body (not a specific button) also quick-selects, same as WhatsApp.
+**What SMS reuses as-is, unmodified:** the modal shell/backdrop/sizing, the Browse view (search, "+ Create new", 3-col grid, footer count/Cancel), the `TemplateCard` hover bar (Edit/Analytics/Select), and the 55/45 edit-view split-pane layout.
 
-**Edit/create view**: 55/45 split pane, matching WhatsApp's modal layout.
-- Left (form): reuses `InlineSMSTemplateForm`'s field set — Template Name, Approved Template ID, Text Message (textarea + char/segment-count meter), "+ Add Variables", Variable Mapping OR-chain, Shorten URL, AI Enhance button — **minus** the "Select SMS Gateway" field (removed: provider/sender is now chosen upstream in Step 0, not per-template).
-- Right (preview): new `SMSBubblePreview.jsx` — a simple phone-frame mockup rendering the message body as a single SMS bubble, with `{{var}}` tokens substituted from `SYSTEM_VARIABLES` example values (lighter-weight than `WhatsAppBubblePreview`, since SMS has no header/footer/buttons/media to render).
-- Save/Cancel buttons at the bottom of the form pane, same as WhatsApp.
+**What's SMS-specific:** the `SMSTemplateForm.jsx` render-prop component (Template Name, Approved Template ID, Text Message w/ char-count meter, "+ Add Variables", Variable Mapping OR-chain, Shorten URL, AI Enhance — adapted from today's `InlineSMSTemplateForm`, minus the "Select SMS Gateway" field, since provider/sender is now chosen upstream in Step 0) and `SMSBubblePreview.jsx` (a simple phone-frame mockup rendering the body with `{{var}}` tokens substituted from `SYSTEM_VARIABLES` example values — lighter than `WhatsAppBubblePreview` since SMS has no header/footer/buttons/media).
 
-The modal is invoked from `TemplateTab` exactly like WhatsApp's is from its own `TemplateTab` — a fixed-position full-screen overlay (`position: fixed, inset: 0`, dark backdrop, `zIndex: 9999`), not a route change.
+The modal is invoked from `TemplateTab` exactly like WhatsApp's is — a fixed-position full-screen overlay, not a route change.
 
-## Analytics popover
+## Analytics popover (standardized, reused from WhatsApp)
 
-New file: `SMSNode/SMSTemplateAnalyticsPopover.jsx` — trimmed copy of `TemplateAnalyticsPopover.jsx`:
-- Same portal-rendering + viewport-clamped positioning logic (anchored to the hovered card's `getBoundingClientRect()`, flips above/below to stay on-screen).
-- Metrics shown: **Sent**, **Delivered** (count + %), **Failed** (count + %). No Read/CTR row, no "Meta insights" benchmarks/recommendations/feedback section — all removed as WhatsApp/Meta-specific and out of scope per the Goals section.
-- Backing data: new `SMSNode/data/mockSMSAnalytics.js`, `getSMSTemplateAnalytics(template)` using the same deterministic `hashString(template.id) + mulberry32` seeding pattern as `mockTemplateAnalytics.js`, returning `{ sent, delivered, deliveredPct, failed, failedPct }`.
+`TemplateAnalyticsPopover.jsx` gains two new **optional** props, both defaulting to today's exact WhatsApp behavior:
+
+- `getAnalytics` (default `getTemplateAnalytics` from `mockTemplateAnalytics.js`) — SMS passes `getSMSTemplateAnalytics` from a new `mockSMSAnalytics.js`, using the same deterministic `hashString(template.id) + mulberry32` seeding pattern, returning `{ sent, delivered, deliveredPct, failed, failedPct }`.
+- `metrics` (default the existing 4 rows: Sent, Delivered, Read, CTR) — an array of `{ label, value: (data) => string }` describing which rows to render. SMS passes 3 rows: Sent, Delivered, Failed.
+
+The portal-rendering, viewport-clamped positioning, outside-click/Escape handling, and the `showMetaInsights`-gated benchmarks block are all reused unchanged (SMS's `metaInsightsStyleIds={[]}` from the modal means `showMetaInsights` is always `false` for SMS, so that block never mounts).
 
 ## File plan
 
 **New files** (all under `src/components/flows/builder/nodes/SMSNode/`):
-- `SMSTemplateModal.jsx`
-- `SMSTemplateAnalyticsPopover.jsx`
-- `SMSBubblePreview.jsx`
-- `data/mockSMSAnalytics.js`
+- `SMSTemplateForm.jsx` — the bespoke create/edit form, passed into `UnifiedTemplateModal`'s `customFormRenderer` prop.
+- `SMSBubblePreview.jsx` — passed as `PreviewComponent`.
+- `data/mockSMSAnalytics.js` — `getSMSTemplateAnalytics(template)`.
 
 **Modified files**:
-- `data/mockData.js` — replace `SMS_GATEWAYS` with `SMS_PROVIDERS` + `SMS_SENDER_IDS`; add `category` to each `MOCK_SMS_TEMPLATES` entry; add `SMS_TEMPLATE_STYLES`; extend `defaultSMSNodeData`.
-- `SMSRightPanel.jsx` — rewrite `TemplateTab` with the Step-0 gate (Provider → Sender ID → Template Style cards) and modal wiring; remove the standalone `SMSTemplatePicker` overlay (superseded by the modal's Browse view); simplify `InlineSMSTemplateForm` by dropping the "Select SMS Gateway" field (still used as the Edit-form field set inside the modal, minus that one field).
+- `WhatsAppNode/UnifiedTemplateModal.jsx` — add the optional props listed above; thread `accentColor`/`PreviewComponent`/`customFormRenderer`/analytics props through to `BrowseView`, `TemplateCard`, `HoverActionButton`, and the analytics-popover instantiation. No change to default-path rendering.
+- `WhatsAppNode/TemplateAnalyticsPopover.jsx` — add the optional `getAnalytics`/`metrics` props; replace the 4 hardcoded `MetricRow` calls with a `metrics.map(...)`. No change to default-path rendering.
+- `SMSNode/data/mockData.js` — replace `SMS_GATEWAYS` with `SMS_PROVIDERS` + `SMS_SENDER_IDS`; add `category` to each `MOCK_SMS_TEMPLATES` entry; add `SMS_TEMPLATE_STYLES` and `SMS_TEMPLATE_STYLE_CONFIGS` (the `configRegistry` passed to the modal); extend `defaultSMSNodeData`.
+- `SMSNode/SMSRightPanel.jsx` — rewrite `TemplateTab` with the Step-0 gate (Provider → Sender ID → Template Style cards, the latter local to this file since its always-visible-description/2-card layout differs enough from WhatsApp's tooltip-driven `StyleCard` to not be worth generalizing) and wire up `UnifiedTemplateModal` with the SMS-specific props; remove the now-superseded `SMSTemplatePicker` overlay and inline-form-in-panel code (both replaced by the modal).
 
-**Unchanged**: `SMSNode/index.jsx` (canvas card), `DeliveryTab`, `OutputTab`. No `FlowBuilder.jsx`/`FlowBuilderV2.jsx` changes — this ships as shared code with no v1/v2 divergence, consistent with how the rest of the SMS node already works.
+**Unchanged**: `SMSNode/index.jsx` (canvas card), `DeliveryTab`, `OutputTab`, all three WhatsApp bespoke forms (`CarouselForm.jsx`, `ListMessageForm.jsx`, `CollectInputForm.jsx`) and their `styleId`-keyed branches. No `FlowBuilder.jsx`/`FlowBuilderV2.jsx` changes.
 
 ## Testing / verification
 
-Manual verification in-browser (no automated tests exist for this node tree today, per the existing WhatsApp/SMS node conventions):
+This codebase has an existing Jest + React Testing Library setup (`craco test`) with test coverage already in place for the exact files this spec touches (`WhatsAppNode/__tests__/UnifiedTemplateModal.test.jsx`, `TemplateTabCarousel.test.jsx`, `TemplateTabCollectInput.test.jsx`, `TemplateTabListMessage.test.jsx`, `FallbackTemplateSection.test.jsx`). The implementation plan adds RTL tests per task, following these files' existing conventions (`render`/`screen`/`fireEvent`, `jest.mock` for store/router dependencies), and re-runs the existing `UnifiedTemplateModal` test suite after each modification to confirm no regression to WhatsApp's behavior.
+
+Manual in-browser verification (in addition to automated tests):
 1. Open an SMS node's right panel with no template configured — confirm Provider → Sender ID → Template Style sequencing gates correctly, including inactive sender IDs being disabled.
 2. Pick Transactional — confirm the modal opens showing only `category: "transactional"` templates.
 3. Hover a template card — confirm Edit/Analytics/Select all appear and each does the right thing (edit pre-fills the form, analytics opens the popover with Sent/Delivered/Failed, select quick-saves and closes).
 4. Create a new template via "+ Create new" — confirm the form (minus gateway field) + live bubble preview work, and the saved template appears in the node's canvas card afterward.
-5. Confirm "Change" on the style chip resets back to Step 0 without losing the Provider/Sender ID selection (only `templateStyle`/`template` reset, per WhatsApp's existing "Change" behavior at `WhatsAppRightPanel.jsx:446`).
+5. Confirm "Change" on the style chip resets back to Step 0 without losing the Provider/Sender ID selection.
+6. Open the WhatsApp node's template picker and confirm it looks and behaves identically to before this change (regression check on the generalized modal/popover).
