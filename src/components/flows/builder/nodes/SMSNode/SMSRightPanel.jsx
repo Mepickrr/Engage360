@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import { MessageSquare, Sparkles, Link } from "lucide-react";
-import { useFlowBuilderStore } from "@/store/flowBuilderStore";
+import { MessageSquare } from "lucide-react";
 import {
-  MOCK_SMS_TEMPLATES, SMS_GATEWAYS, SYSTEM_VARIABLES,
+  SMS_PROVIDERS, SMS_SENDER_IDS, SMS_TEMPLATE_STYLES, SMS_TEMPLATE_STYLE_CONFIGS,
   SMS_DELIVERY_OPTIONS, defaultSMSNodeData,
 } from "./data/mockData";
+import { getSMSTemplateAnalytics, SMS_ANALYTICS_METRICS } from "./data/mockSMSAnalytics";
+import UnifiedTemplateModal from "../WhatsAppNode/UnifiedTemplateModal";
+import SMSTemplateForm from "./SMSTemplateForm";
+import SMSBubblePreview from "./SMSBubblePreview";
 
 const SMS_PURPLE = "#6366F1";
 const BORDER     = "#E5E7EB";
@@ -26,369 +29,200 @@ function Toggle({ on, onChange }) {
   );
 }
 
-// ── Extract {{$1}}, {{$2}} etc. from body ───────────────────────
-function extractVars(body) {
-  const seen = new Set();
-  return [...(body || "").matchAll(/\{\{([^}]+)\}\}/g)]
-    .map((m) => m[1])
-    .filter((v) => { if (seen.has(v)) return false; seen.add(v); return true; });
-}
-
-// ── Character / SMS count ───────────────────────────────────────
-function charCount(text) {
-  const len = (text || "").length;
-  const msgs = Math.ceil(len / 160) || 1;
-  return { len, msgs };
-}
-
-// ── Template Picker overlay ─────────────────────────────────────
-function SMSTemplatePicker({ onSelect, onClose }) {
-  const [q, setQ] = useState("");
-  const filtered = MOCK_SMS_TEMPLATES.filter((t) =>
-    t.name.toLowerCase().includes(q.toLowerCase()) ||
-    t.approvedTemplateId.includes(q)
-  );
+function SMSStyleCard({ style, onSelect }) {
+  const Icon = style.Icon;
   return (
-    <div style={{ position: "absolute", inset: 0, background: "#fff", zIndex: 10, display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: "12px 16px", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-        <button type="button" onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, fontSize: 18, lineHeight: 1, padding: 0 }}>←</button>
-        <span style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>Select SMS Template</span>
+    <div
+      onClick={onSelect}
+      style={{
+        flex: 1, display: "flex", flexDirection: "column", gap: 8, padding: 14,
+        border: `1.5px solid ${BORDER}`, borderRadius: 12, cursor: "pointer", background: "#fff",
+        transition: "border-color 0.15s, background 0.15s",
+      }}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = SMS_PURPLE; e.currentTarget.style.background = "#EEF2FF"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.background = "#fff"; }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <Icon size={15} color="#4338CA" />
+        </div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>{style.label}</div>
       </div>
-      <div style={{ padding: "10px 16px", borderBottom: `1px solid ${BORDER}`, flexShrink: 0 }}>
-        <input
-          type="text"
-          placeholder="Search by name or template ID…"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          autoFocus
-          style={{ width: "100%", padding: "7px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", boxSizing: "border-box" }}
-        />
-      </div>
-      <div style={{ flex: 1, overflowY: "auto" }}>
-        {filtered.length === 0 ? (
-          <div style={{ padding: 24, textAlign: "center", fontSize: 12, color: MUTED }}>No templates match</div>
-        ) : filtered.map((t) => (
-          <div
-            key={t.id}
-            onClick={() => onSelect(t)}
-            style={{ padding: "12px 16px", borderBottom: `1px solid ${BORDER}`, cursor: "pointer" }}
-            onMouseEnter={(e) => e.currentTarget.style.background = "#F8FAFC"}
-            onMouseLeave={(e) => e.currentTarget.style.background = "#fff"}
-          >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-              <span style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>{t.name}</span>
-              <span style={{ fontSize: 10, padding: "1px 6px", borderRadius: 8, background: "#ECFDF5", color: "#065F46", fontWeight: 600 }}>{t.status}</span>
-            </div>
-            <div style={{ fontSize: 10, color: MUTED, fontFamily: "monospace", marginBottom: 4 }}>ID: {t.approvedTemplateId}</div>
-            <div style={{ fontSize: 11, color: "#475569", lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-              {t.body}
-            </div>
-          </div>
+      <p style={{ fontSize: 11, color: "#64748B", lineHeight: 1.5, margin: 0 }}>{style.desc}</p>
+    </div>
+  );
+}
+
+function SMSTemplateStylePicker({ onSelect }) {
+  return (
+    <div>
+      <div style={{ fontSize: 14, fontWeight: 700, color: "#0F172A" }}>Choose Template Style</div>
+      <div style={{ fontSize: 11, color: "#64748B", marginTop: 3, marginBottom: 12 }}>Select the type of SMS you want to send</div>
+      <div style={{ display: "flex", gap: 10 }}>
+        {SMS_TEMPLATE_STYLES.map((style) => (
+          <SMSStyleCard key={style.id} style={style} onSelect={() => onSelect(style)} />
         ))}
       </div>
     </div>
   );
 }
 
-// ── Inline SMS Template Form ────────────────────────────────────
-function InlineSMSTemplateForm({ draft, onChange }) {
-  const patch   = (p) => onChange({ ...draft, ...p });
-  const vars    = extractVars(draft.body);
-  const { len, msgs } = charCount(draft.body);
-
-  const insertVar = () => {
-    const next  = vars.length + 1;
-    const token = `{{$${next}}}`;
-    patch({ body: (draft.body || "") + token });
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-
-      {/* Template Name */}
-      <div>
-        <Label>Template Name</Label>
-        <input
-          value={draft.name || ""}
-          onChange={(e) => patch({ name: e.target.value })}
-          placeholder="e.g. cart_recovery_v1"
-          style={{ width: "100%", padding: "7px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", boxSizing: "border-box" }}
-        />
-      </div>
-
-      {/* Approved Template ID */}
-      <div>
-        <Label>Approved Template ID</Label>
-        <input
-          value={draft.approvedTemplateId || ""}
-          onChange={(e) => patch({ approvedTemplateId: e.target.value })}
-          placeholder="e.g. 1707177711975941111"
-          style={{ width: "100%", padding: "7px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", boxSizing: "border-box", fontFamily: "monospace" }}
-        />
-      </div>
-
-      {/* SMS Gateway */}
-      <div>
-        <Label>Select SMS Gateway</Label>
-        <div style={{ position: "relative" }}>
-          <select
-            value={draft.gateway || ""}
-            onChange={(e) => patch({ gateway: e.target.value })}
-            style={{ width: "100%", padding: "7px 28px 7px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", background: "#fff", appearance: "none", cursor: "pointer" }}
-          >
-            <option value="">Select gateway…</option>
-            {SMS_GATEWAYS.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}
-          </select>
-          <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", fontSize: 12, color: MUTED }}>▾</span>
-        </div>
-      </div>
-
-      {/* Text Message */}
-      <div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-          <Label>Text Message</Label>
-          <button
-            type="button"
-            onClick={insertVar}
-            style={{ fontSize: 10, color: SMS_PURPLE, fontWeight: 600, background: "none", border: `1px solid ${SMS_PURPLE}`, borderRadius: 6, padding: "2px 8px", cursor: "pointer" }}
-          >
-            + Add Variables
-          </button>
-        </div>
-        <textarea
-          value={draft.body || ""}
-          onChange={(e) => patch({ body: e.target.value })}
-          placeholder="Hey {{$1}}, your order is almost done…"
-          rows={5}
-          style={{ width: "100%", padding: "8px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", resize: "none", lineHeight: 1.55, fontFamily: "inherit", boxSizing: "border-box" }}
-        />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 4 }}>
-          <span style={{ fontSize: 11, color: MUTED }}>
-            Characters: {len}/160 (No. of SMS to be sent: {msgs})
-          </span>
-        </div>
-      </div>
-
-      {/* Variable Mapping — OR chain per variable */}
-      {vars.length > 0 && (
-        <div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-            <Label>Variable Mapping</Label>
-            <span style={{ fontSize: 10, color: MUTED }}>First non-empty value is used</span>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {vars.map((v) => {
-              const rawVal  = (draft.variableMap || {})[v];
-              const chain   = Array.isArray(rawVal) ? rawVal : rawVal ? [rawVal] : [""];
-              const updateChain = (newChain) =>
-                patch({ variableMap: { ...(draft.variableMap || {}), [v]: newChain } });
-
-              return (
-                <div key={v} style={{ border: `1px solid ${BORDER}`, borderRadius: 8, overflow: "hidden" }}>
-                  <div style={{ padding: "6px 10px", background: "#F8FAFC", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <span style={{ fontFamily: "monospace", fontSize: 11, fontWeight: 700, color: SMS_PURPLE }}>{`{{${v}}}`}</span>
-                    <span style={{ fontSize: 10, color: MUTED }}>OR chain</span>
-                  </div>
-                  {chain.map((entry, idx) => (
-                    <div key={idx}>
-                      {idx > 0 && (
-                        <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "0 10px" }}>
-                          <div style={{ flex: 1, height: 1, background: BORDER }} />
-                          <span style={{ fontSize: 9, fontWeight: 700, color: MUTED, padding: "1px 6px", borderRadius: 10, background: "#F1F5F9", letterSpacing: 1 }}>OR</span>
-                          <div style={{ flex: 1, height: 1, background: BORDER }} />
-                        </div>
-                      )}
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        <select
-                          value={entry || ""}
-                          onChange={(e) => { const c = [...chain]; c[idx] = e.target.value; updateChain(c); }}
-                          style={{ flex: 1, padding: "7px 8px", fontSize: 12, border: "none", background: "transparent", outline: "none", cursor: "pointer", minWidth: 0 }}
-                        >
-                          <option value="">Select attribute…</option>
-                          {Object.entries(SYSTEM_VARIABLES).map(([group, svars]) => (
-                            <optgroup key={group} label={group}>
-                              {svars.map((sv) => <option key={sv.key} value={sv.key}>{sv.label} · {sv.example}</option>)}
-                            </optgroup>
-                          ))}
-                        </select>
-                        {chain.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => updateChain(chain.filter((_, j) => j !== idx))}
-                            style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer", color: MUTED, padding: "4px 8px", fontSize: 13, lineHeight: 1 }}
-                            onMouseEnter={(e) => e.currentTarget.style.color = "#EF4444"}
-                            onMouseLeave={(e) => e.currentTarget.style.color = MUTED}
-                          >×</button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  <div style={{ borderTop: `1px solid ${BORDER}` }}>
-                    <button
-                      type="button"
-                      onClick={() => updateChain([...chain, ""])}
-                      style={{ width: "100%", padding: "6px 10px", background: "transparent", border: "none", cursor: "pointer", fontSize: 11, color: SMS_PURPLE, fontWeight: 600, textAlign: "left" }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = "#EEF2FF"}
-                      onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
-                    >+ Add fallback</button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Shorten URL */}
-      <div>
-        <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 6 }}>
-          <Label>Shorten URL</Label>
-          <Link size={11} color={MUTED} style={{ marginTop: -6 }} />
-        </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <input
-            value={draft.shortenUrl || ""}
-            onChange={(e) => patch({ shortenUrl: e.target.value })}
-            placeholder="Example https://app-engage.shiprocket.in"
-            style={{ flex: 1, padding: "7px 10px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", color: "#64748B" }}
-          />
-          <button
-            type="button"
-            onClick={() => alert("Shorten URL — coming soon")}
-            style={{ padding: "7px 12px", fontSize: 12, fontWeight: 500, background: "#F1F5F9", color: "#64748B", border: `1px solid ${BORDER}`, borderRadius: 8, cursor: "pointer", whiteSpace: "nowrap" }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "#E2E8F0"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "#F1F5F9"; }}
-          >
-            Shorten URL
-          </button>
-        </div>
-      </div>
-
-      {/* AI Enhance */}
-      <button
-        type="button"
-        onClick={() => alert("AI Enhance: generates Friendly / Persuasive / Urgent tone variants — coming soon")}
-        style={{ width: "100%", padding: "9px", border: `1px solid ${SMS_PURPLE}`, borderRadius: 8, background: "#EEF2FF", color: SMS_PURPLE, fontSize: 12, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
-      >
-        <Sparkles size={13} />
-        AI Enhance — Generate tone variants
-      </button>
-    </div>
-  );
-}
-
 // ── Template Tab ────────────────────────────────────────────────
 function TemplateTab({ data, patch }) {
-  const [showPicker,   setShowPicker]   = useState(false);
-  const [creatingNew,  setCreatingNew]  = useState(false);
-  const [newDraft,     setNewDraft]     = useState({ name: "", approvedTemplateId: "", gateway: "", body: "", shortenUrl: "", variableMap: {} });
+  const [modalOpen, setModalOpen] = useState(false);
+  const [customTemplatesByStyle, setCustomTemplatesByStyle] = useState({});
 
-  const { template } = data;
+  const { providerId, senderIdId, templateStyle, template } = data;
+  const styleInfo = SMS_TEMPLATE_STYLES.find((s) => s.id === templateStyle);
+  const senderOptions = SMS_SENDER_IDS.filter((s) => s.providerId === providerId);
 
-  const handleTemplateSelect = (tpl) => {
-    patch({ template: tpl, variableMap: {} });
-    setShowPicker(false);
-  };
-
-  const handleCreateSave = () => {
-    const tpl = { ...newDraft, id: `sms_new_${Date.now()}`, status: "Draft", lastUpdated: new Date().toISOString().slice(0, 10) };
-    patch({ template: tpl, variableMap: newDraft.variableMap || {} });
-    setCreatingNew(false);
-  };
-
-  if (showPicker) {
-    return <SMSTemplatePicker onSelect={handleTemplateSelect} onClose={() => setShowPicker(false)} />;
-  }
-
-  if (creatingNew) {
+  if (!providerId || !senderIdId || !templateStyle) {
     return (
-      <div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, paddingBottom: 12, borderBottom: `1px solid ${BORDER}` }}>
-          <button type="button" onClick={() => setCreatingNew(false)} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, fontSize: 18, lineHeight: 1, padding: 0 }}>←</button>
-          <span style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>Create New Template</span>
-        </div>
-        <InlineSMSTemplateForm draft={newDraft} onChange={setNewDraft} />
-        <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
-          <button type="button" onClick={() => setCreatingNew(false)} style={{ flex: 1, padding: "9px", border: `1px solid ${BORDER}`, borderRadius: 8, background: "#fff", fontSize: 13, cursor: "pointer" }}>Cancel</button>
-          <button
-            type="button"
-            onClick={handleCreateSave}
-            disabled={!newDraft.name || !newDraft.body}
-            style={{ flex: 1, padding: "9px", border: "none", borderRadius: 8, background: SMS_PURPLE, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", opacity: (!newDraft.name || !newDraft.body) ? 0.5 : 1 }}
+      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+        <div>
+          <Label>Provider</Label>
+          <select
+            value={providerId || ""}
+            onChange={(e) => patch({ providerId: e.target.value, senderIdId: null })}
+            style={{ width: "100%", padding: "7px 28px 7px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", background: "#fff", appearance: "none", cursor: "pointer" }}
           >
-            Save Template
-          </button>
+            <option value="" disabled>Select a provider</option>
+            {SMS_PROVIDERS.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </select>
         </div>
+
+        {providerId && (
+          <div>
+            <Label>Sender ID</Label>
+            <select
+              value={senderIdId || ""}
+              onChange={(e) => patch({ senderIdId: e.target.value })}
+              style={{ width: "100%", padding: "7px 28px 7px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", background: "#fff", appearance: "none", cursor: "pointer" }}
+            >
+              <option value="" disabled>Select a sender ID</option>
+              {senderOptions.map((s) => (
+                <option key={s.id} value={s.id} disabled={s.status === "inactive"}>
+                  {s.senderId}{s.status === "inactive" ? " (Inactive)" : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {senderIdId && (
+          <SMSTemplateStylePicker onSelect={(style) => patch({ templateStyle: style.id })} />
+        )}
       </div>
     );
   }
 
+  const handleModalSave = (tpl) => {
+    const { variableMap, ...templateFields } = tpl;
+    const withId = templateFields.id
+      ? templateFields
+      : { ...templateFields, id: `sms_new_${Date.now()}`, category: templateStyle, status: "Draft" };
+    setCustomTemplatesByStyle((prev) => {
+      const existing = prev[templateStyle] || [];
+      const already = existing.find((t) => t.id === withId.id);
+      return { ...prev, [templateStyle]: already ? existing.map((t) => (t.id === withId.id ? withId : t)) : [...existing, withId] };
+    });
+    patch({ template: withId, variableMap: variableMap || {} });
+    setModalOpen(false);
+  };
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      {/* Template selection */}
-      <div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <Label>Template</Label>
-          {template && (
-            <button type="button" onClick={() => setCreatingNew(true)} style={{ fontSize: 11, color: SMS_PURPLE, fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}>
-              + Create New
-            </button>
-          )}
-        </div>
+    <>
+      {modalOpen && (
+        <UnifiedTemplateModal
+          open
+          styleId={templateStyle}
+          styleLabel={styleInfo?.label || "Template"}
+          customTemplates={customTemplatesByStyle[templateStyle] || []}
+          configRegistry={SMS_TEMPLATE_STYLE_CONFIGS}
+          accentColor={SMS_PURPLE}
+          PreviewComponent={SMSBubblePreview}
+          metaInsightsStyleIds={[]}
+          getAnalytics={getSMSTemplateAnalytics}
+          analyticsMetrics={SMS_ANALYTICS_METRICS}
+          customFormRenderer={({ draft, patch: patchDraft }) => <SMSTemplateForm draft={draft} patch={patchDraft} />}
+          onSave={handleModalSave}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
 
-        {!template ? (
-          <div style={{ display: "flex", gap: 8 }}>
-            <button type="button" onClick={() => setCreatingNew(true)} style={{
-              flex: 1, padding: "14px 10px", border: `1.5px dashed ${BORDER}`, borderRadius: 10,
-              background: "transparent", cursor: "pointer", fontSize: 12, color: "#475569", textAlign: "center",
-            }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = SMS_PURPLE; e.currentTarget.style.color = SMS_PURPLE; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.color = "#475569"; }}>
-              <div style={{ fontSize: 18, marginBottom: 4 }}>+</div>
-              Create New
-            </button>
-            <button type="button" onClick={() => setShowPicker(true)} style={{
-              flex: 1, padding: "14px 10px", border: `1.5px dashed ${BORDER}`, borderRadius: 10,
-              background: "transparent", cursor: "pointer", fontSize: 12, color: "#475569", textAlign: "center",
-            }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = SMS_PURPLE; e.currentTarget.style.color = SMS_PURPLE; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.color = "#475569"; }}>
-              <div style={{ fontSize: 18, marginBottom: 4 }}>☰</div>
-              Select Existing
-            </button>
-          </div>
-        ) : (
-          <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
-            {/* Action bar */}
-            <div style={{ padding: "8px 12px", background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{template.name}</span>
-              <div style={{ display: "flex", gap: 10, flexShrink: 0 }}>
-                <button onClick={() => setShowPicker(true)} style={{ fontSize: 11, color: SMS_PURPLE, fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}>Change</button>
-                <button onClick={() => patch({ template: null, variableMap: {} })} style={{ fontSize: 11, color: "#EF4444", background: "none", border: "none", cursor: "pointer" }}>Remove</button>
-              </div>
-            </div>
-
-            {/* Inline edit form */}
-            <div style={{ padding: "12px", borderTop: `1px solid ${BORDER}` }}>
-              <InlineSMSTemplateForm
-                draft={{
-                  name: template.name,
-                  approvedTemplateId: template.approvedTemplateId,
-                  gateway: template.gateway,
-                  body: template.body,
-                  shortenUrl: template.shortenUrl || "",
-                  variableMap: data.variableMap || {},
-                }}
-                onChange={(updated) => patch({
-                  template: { ...template, ...updated },
-                  variableMap: updated.variableMap,
-                })}
-              />
-            </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        {styleInfo && (
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", background: "#EEF2FF", borderRadius: 20, border: "1px solid #C7D2FE", alignSelf: "flex-start" }}>
+            <styleInfo.Icon size={13} color="#4338CA" />
+            <span style={{ fontSize: 12, fontWeight: 600, color: "#4338CA" }}>{styleInfo.label}</span>
+            <span style={{ fontSize: 11, color: MUTED }}>·</span>
+            <span
+              onClick={() => patch({ templateStyle: null, template: null })}
+              style={{ fontSize: 11, color: SMS_PURPLE, cursor: "pointer", fontWeight: 500 }}
+            >Change</span>
           </div>
         )}
+
+        <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ flex: 1 }}>
+            <Label>Provider</Label>
+            <select
+              value={providerId}
+              onChange={(e) => patch({ providerId: e.target.value, senderIdId: null })}
+              style={{ width: "100%", padding: "7px 28px 7px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", background: "#fff", appearance: "none", cursor: "pointer" }}
+            >
+              {SMS_PROVIDERS.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          </div>
+          <div style={{ flex: 1 }}>
+            <Label>Sender ID</Label>
+            <select
+              value={senderIdId}
+              onChange={(e) => patch({ senderIdId: e.target.value })}
+              style={{ width: "100%", padding: "7px 28px 7px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", background: "#fff", appearance: "none", cursor: "pointer" }}
+            >
+              {senderOptions.map((s) => (
+                <option key={s.id} value={s.id} disabled={s.status === "inactive"}>
+                  {s.senderId}{s.status === "inactive" ? " (Inactive)" : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+            <Label>Template</Label>
+            {template && (
+              <div style={{ display: "flex", gap: 10 }}>
+                <button type="button" onClick={() => setModalOpen(true)} style={{ fontSize: 11, color: SMS_PURPLE, fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}>Change</button>
+                <button type="button" onClick={() => patch({ template: null, variableMap: {} })} style={{ fontSize: 11, color: "#EF4444", background: "none", border: "none", cursor: "pointer" }}>Remove</button>
+              </div>
+            )}
+          </div>
+
+          {!template ? (
+            <button
+              type="button"
+              onClick={() => setModalOpen(true)}
+              style={{ width: "100%", padding: "14px 10px", border: `1.5px dashed ${BORDER}`, borderRadius: 10, background: "transparent", cursor: "pointer", fontSize: 12, color: "#475569", textAlign: "center" }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = SMS_PURPLE; e.currentTarget.style.color = SMS_PURPLE; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.color = "#475569"; }}
+            >
+              <div style={{ fontSize: 18, marginBottom: 4 }}>+</div>
+              Select or create a template
+            </button>
+          ) : (
+            <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, padding: "10px 12px", background: "#F8FAFC" }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#0F172A", marginBottom: 4 }}>{template.name}</div>
+              <div style={{ fontSize: 11, color: "#475569", lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+                {template.body}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
