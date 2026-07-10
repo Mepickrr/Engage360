@@ -1,10 +1,11 @@
-import React, { useMemo, useState } from "react";
-import { X, Search } from "lucide-react";
+import React, { useMemo, useRef, useState } from "react";
+import { X, Search, Pencil, BarChart3, Check } from "lucide-react";
 import { PRIMARY, BORDER, MUTED, FieldRenderer } from "./FormFields";
 import WhatsAppBubblePreview from "./WhatsAppBubblePreview";
 import CarouselForm from "./CarouselForm";
 import ListMessageForm from "./ListMessageForm";
 import CollectInputForm from "./CollectInputForm";
+import TemplateAnalyticsPopover from "./TemplateAnalyticsPopover";
 import { TEMPLATE_STYLE_CONFIGS, COLLECT_INPUT_PRESETS } from "./data/templateStyleConfigs";
 
 const WA_GREEN = "#25D366";
@@ -16,24 +17,59 @@ function templateSummaryText(t) {
   return t.body || "";
 }
 
-function TemplateCard({ template, onSelect }) {
+function HoverActionButton({ icon: Icon, label, onClick, primary }) {
+  return (
+    <button
+      type="button"
+      onClick={(e) => { e.stopPropagation(); onClick(e); }}
+      style={{
+        flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
+        padding: "6px 4px", border: "none", borderRight: `1px solid rgba(255,255,255,0.15)`,
+        background: primary ? WA_GREEN : "transparent", color: "#fff",
+        fontSize: 10, fontWeight: 600, cursor: "pointer",
+      }}
+    >
+      <Icon size={13} />
+      {label}
+    </button>
+  );
+}
+
+function TemplateCard({ template, onQuickSelect, onEdit, onViewAnalytics }) {
+  const [hovered, setHovered] = useState(false);
+  const cardRef = useRef(null);
+
+  const handleViewAnalytics = () => {
+    onViewAnalytics(cardRef.current?.getBoundingClientRect() || null);
+  };
+
   return (
     <div
-      onClick={onSelect}
-      style={{ border: `1px solid ${BORDER}`, borderRadius: 10, padding: 12, cursor: "pointer", background: "#fff", transition: "border-color 0.15s" }}
-      onMouseEnter={(e) => (e.currentTarget.style.borderColor = WA_GREEN)}
-      onMouseLeave={(e) => (e.currentTarget.style.borderColor = BORDER)}
+      ref={cardRef}
+      onClick={onQuickSelect}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{ position: "relative", border: `1px solid ${hovered ? WA_GREEN : BORDER}`, borderRadius: 10, padding: 12, cursor: "pointer", background: "#fff", transition: "border-color 0.15s", overflow: "hidden" }}
     >
       <div style={{ fontSize: 12, fontWeight: 600, color: "#0F172A", marginBottom: 4 }}>{template.name}</div>
       <p style={{ fontSize: 11, color: "#64748B", lineHeight: 1.5, margin: 0, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
         {templateSummaryText(template)}
       </p>
+
+      {hovered && (
+        <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, display: "flex", background: "rgba(15,23,42,0.92)" }}>
+          <HoverActionButton icon={Pencil} label="Edit" onClick={onEdit} />
+          <HoverActionButton icon={BarChart3} label="Analytics" onClick={handleViewAnalytics} />
+          <HoverActionButton icon={Check} label="Select" onClick={onQuickSelect} primary />
+        </div>
+      )}
     </div>
   );
 }
 
-function BrowseView({ styleLabel, templates, onSelect, onCreateNew, onClose }) {
+function BrowseView({ styleId, styleLabel, templates, onQuickSelect, onEdit, onCreateNew, onClose }) {
   const [search, setSearch] = useState("");
+  const [analyticsTarget, setAnalyticsTarget] = useState(null); // { template, anchorRect }
   const filtered = templates.filter((t) => (t.name || "").toLowerCase().includes(search.toLowerCase()) || templateSummaryText(t).toLowerCase().includes(search.toLowerCase()));
 
   return (
@@ -61,7 +97,15 @@ function BrowseView({ styleLabel, templates, onSelect, onCreateNew, onClose }) {
           <div style={{ textAlign: "center", color: MUTED, padding: "40px 0", fontSize: 13 }}>No templates found</div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
-            {filtered.map((t) => <TemplateCard key={t.id} template={t} onSelect={() => onSelect(t)} />)}
+            {filtered.map((t) => (
+              <TemplateCard
+                key={t.id}
+                template={t}
+                onQuickSelect={() => onQuickSelect(t)}
+                onEdit={() => onEdit(t)}
+                onViewAnalytics={(rect) => setAnalyticsTarget({ template: t, anchorRect: rect })}
+              />
+            ))}
           </div>
         )}
       </div>
@@ -70,6 +114,15 @@ function BrowseView({ styleLabel, templates, onSelect, onCreateNew, onClose }) {
         <span style={{ fontSize: 12, color: MUTED }}>{filtered.length} template{filtered.length !== 1 ? "s" : ""} found</span>
         <button onClick={onClose} style={{ padding: "7px 18px", border: `1px solid ${BORDER}`, borderRadius: 8, background: "#fff", fontSize: 13, cursor: "pointer", color: "#475569" }}>Cancel</button>
       </div>
+
+      {analyticsTarget && (
+        <TemplateAnalyticsPopover
+          anchorRect={analyticsTarget.anchorRect}
+          template={analyticsTarget.template}
+          showMetaInsights={styleId === "standard"}
+          onClose={() => setAnalyticsTarget(null)}
+        />
+      )}
     </div>
   );
 }
@@ -114,7 +167,7 @@ export default function UnifiedTemplateModal({ open, styleId, styleLabel, preset
       <div style={{ background: "#fff", borderRadius: 16, width: "min(92vw, 900px)", maxHeight: "90vh", boxShadow: "0 20px 60px rgba(0,0,0,0.2)", overflow: "hidden", display: "flex" }}>
         {mode === "browse" ? (
           <div style={{ width: "100%" }}>
-            <BrowseView styleLabel={styleLabel} templates={allTemplates} onSelect={openExisting} onCreateNew={openBlankDraft} onClose={onClose} />
+            <BrowseView styleId={styleId} styleLabel={styleLabel} templates={allTemplates} onQuickSelect={handleSave} onEdit={openExisting} onCreateNew={openBlankDraft} onClose={onClose} />
           </div>
         ) : config.fields ? (
           <>
