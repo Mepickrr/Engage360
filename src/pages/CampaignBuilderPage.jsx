@@ -56,7 +56,7 @@ export default function CampaignBuilderPage() {
       setCreatedAt(doc.createdAt);
       navigate(`/campaigns/builder/${doc.id}`, { replace: true });
     },
-    [addPrimaryStep, setCampaignId, navigate],
+    [addPrimaryStep, setCampaignId, setCreatedAt, navigate],
   );
 
   const handlePickerClose = useCallback(() => {
