@@ -1,10 +1,23 @@
-export const SMS_GATEWAYS = [
-  { id: "trustsignal_promo",  label: "TRUSTSIGNAL - Promotional" },
-  { id: "trustsignal_trans",  label: "TRUSTSIGNAL - Transactional" },
-  { id: "msg91_promo",        label: "MSG91 - Promotional" },
-  { id: "msg91_trans",        label: "MSG91 - Transactional" },
-  { id: "kaleyra_promo",      label: "KALEYRA - Promotional" },
-  { id: "kaleyra_trans",      label: "KALEYRA - Transactional" },
+import { PackageCheck, Megaphone } from "lucide-react";
+
+export const SMS_PROVIDERS = [
+  { id: "trustsignal", name: "TrustSignal" },
+  { id: "msg91",       name: "MSG91" },
+  { id: "kaleyra",     name: "Kaleyra" },
+];
+
+export const SMS_SENDER_IDS = [
+  { id: "trustsignal_txtind", providerId: "trustsignal", senderId: "TXTIND", status: "active" },
+  { id: "trustsignal_shprkt", providerId: "trustsignal", senderId: "SHPRKT", status: "active" },
+  { id: "msg91_avimee",       providerId: "msg91",       senderId: "AVIMEE", status: "active" },
+  { id: "kaleyra_studdm",     providerId: "kaleyra",     senderId: "STUDDM", status: "inactive" },
+];
+
+export const SMS_TEMPLATE_STYLES = [
+  { id: "transactional", label: "Transactional", Icon: PackageCheck,
+    desc: "Order updates, OTPs, delivery alerts — sent to a specific customer about their own activity." },
+  { id: "promotional", label: "Promotional", Icon: Megaphone,
+    desc: "Marketing blasts, offers, and sale alerts — sent to customers who've opted in to promotions." },
 ];
 
 export const MOCK_SMS_TEMPLATES = [
@@ -12,7 +25,7 @@ export const MOCK_SMS_TEMPLATES = [
     id: "sms_001",
     name: "product",
     approvedTemplateId: "1707177711975941111",
-    gateway: "trustsignal_promo",
+    category: "promotional",
     body: "Hey! Hurry, %event:productview:item% almost sold out! At Studd Muffyn, use FINAL20 & abhi buy karo: %event:productview:url%",
     variables: ["$1", "$2"],
     status: "Approved",
@@ -22,7 +35,7 @@ export const MOCK_SMS_TEMPLATES = [
     id: "sms_002",
     name: "cart_recovery_v1",
     approvedTemplateId: "1707177711975940001",
-    gateway: "trustsignal_promo",
+    category: "promotional",
     body: "Hi {{$1}}, you left items in your cart! Complete your order now and get 10% off with code SAVE10: {{$2}}",
     variables: ["$1", "$2"],
     status: "Approved",
@@ -32,7 +45,7 @@ export const MOCK_SMS_TEMPLATES = [
     id: "sms_003",
     name: "order_shipped",
     approvedTemplateId: "1707177711975940002",
-    gateway: "trustsignal_trans",
+    category: "transactional",
     body: "Your order #{{$1}} has been shipped! Track it here: {{$2}}. Expected delivery: {{$3}}",
     variables: ["$1", "$2", "$3"],
     status: "Approved",
@@ -42,7 +55,7 @@ export const MOCK_SMS_TEMPLATES = [
     id: "sms_004",
     name: "flash_sale_alert",
     approvedTemplateId: "1707177711975940003",
-    gateway: "msg91_promo",
+    category: "promotional",
     body: "FLASH SALE! Up to 50% off on all products at Studd Muffyn for the next 2 hours only. Shop now: {{$1}}",
     variables: ["$1"],
     status: "Approved",
@@ -52,13 +65,26 @@ export const MOCK_SMS_TEMPLATES = [
     id: "sms_005",
     name: "otp_verification",
     approvedTemplateId: "1707177711975940004",
-    gateway: "kaleyra_trans",
+    category: "transactional",
     body: "Your OTP for verification is {{$1}}. Valid for 10 minutes. Do not share this with anyone.",
     variables: ["$1"],
     status: "Approved",
     lastUpdated: "2025-04-15",
   },
 ];
+
+function makeStyleConfig(category) {
+  return {
+    defaultDraft: { name: "", approvedTemplateId: "", body: "", shortenUrl: "", variableMap: {} },
+    mockTemplates: MOCK_SMS_TEMPLATES.filter((t) => t.category === category),
+    isValid: (draft) => Boolean(draft.name) && Boolean(draft.body),
+  };
+}
+
+export const SMS_TEMPLATE_STYLE_CONFIGS = {
+  transactional: makeStyleConfig("transactional"),
+  promotional: makeStyleConfig("promotional"),
+};
 
 export const SYSTEM_VARIABLES = {
   Customer: [
@@ -88,7 +114,6 @@ export const SYSTEM_VARIABLES = {
   ],
 };
 
-// Delivery output options for SMS
 export const SMS_DELIVERY_OPTIONS = [
   { id: "next_step", label: "Next Step",       isDefault: true  },
   { id: "sent",      label: "Sent",            isDefault: false },
@@ -98,7 +123,10 @@ export const SMS_DELIVERY_OPTIONS = [
 
 export const defaultSMSNodeData = {
   label: "Send SMS",
-  template:    null,
+  providerId: null,
+  senderIdId: null,
+  templateStyle: null,
+  template: null,
   variableMap: {},
   outputConfig: {
     routingMode:      "next_step",
