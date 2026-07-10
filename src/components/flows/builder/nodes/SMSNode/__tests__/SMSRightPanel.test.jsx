@@ -1,10 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import SMSRightPanel from "../SMSRightPanel";
 import { defaultSMSNodeData } from "../data/mockData";
 
 function makeNode(dataOverrides = {}) {
   return { id: "n1", data: { ...defaultSMSNodeData, ...dataOverrides } };
+}
+
+// Mirrors how the real FlowBuilder store feeds patched node data back into
+// the panel as props — needed to prove the modal opens on the same click
+// that sets templateStyle, not just that patch() was called.
+function StatefulPanel({ initialData }) {
+  const [node, setNode] = useState({ id: "n1", data: initialData });
+  const updateNodeData = (id, patch) => setNode((n) => ({ ...n, data: { ...n.data, ...patch } }));
+  return <SMSRightPanel node={node} updateNodeData={updateNodeData} removeNode={() => {}} />;
 }
 
 describe("SMSRightPanel — Template tab Step 0 gate", () => {
@@ -40,7 +49,7 @@ describe("SMSRightPanel — Template tab Step 0 gate", () => {
     expect(screen.getByText(/order updates, otps, delivery alerts/i)).toBeInTheDocument();
   });
 
-  it("opens the template modal filtered to the chosen style once a style card is clicked", () => {
+  it("patches templateStyle when a style card is clicked", () => {
     const updateNodeData = jest.fn();
     render(
       <SMSRightPanel
@@ -51,6 +60,18 @@ describe("SMSRightPanel — Template tab Step 0 gate", () => {
     );
     fireEvent.click(screen.getByText("Transactional"));
     expect(updateNodeData).toHaveBeenCalledWith("n1", { templateStyle: "transactional" });
+  });
+
+  it("opens the template picker modal directly on the same click that selects a style, with no extra 'select template' click", () => {
+    const modalHeading = (_, el) => el.tagName.toLowerCase() === "h2" && /select a transactional template/i.test(el.textContent);
+    render(
+      <StatefulPanel
+        initialData={{ ...defaultSMSNodeData, providerId: "trustsignal", senderIdId: "trustsignal_txtind" }}
+      />
+    );
+    expect(screen.queryByText(modalHeading)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText("Transactional"));
+    expect(screen.getByText(modalHeading)).toBeInTheDocument();
   });
 
   it("shows the selected template's browse-modal card and lets the seller change provider/sender after a style is chosen", () => {

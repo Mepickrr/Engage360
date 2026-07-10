@@ -110,7 +110,7 @@ function TemplateTab({ data, patch }) {
         )}
 
         {senderIdId && (
-          <SMSTemplateStylePicker onSelect={(style) => patch({ templateStyle: style.id })} />
+          <SMSTemplateStylePicker onSelect={(style) => { patch({ templateStyle: style.id }); setModalOpen(true); }} />
         )}
       </div>
     );
