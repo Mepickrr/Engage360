@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import NodeAnalyticsFooter from "@/components/flows/analytics/NodeAnalyticsFooter";
 import { Handle, Position } from "reactflow";
 import { MessageSquare } from "lucide-react";
-import { SMS_DELIVERY_OPTIONS, SMS_GATEWAYS } from "./data/mockData";
+import { SMS_DELIVERY_OPTIONS, SMS_SENDER_IDS } from "./data/mockData";
 import NodeHoverActions from "../shared/NodeHoverActions";
 
 const SMS_PURPLE = "#6366F1";
@@ -83,7 +83,7 @@ export default function SMSNode({ id, data, selected }) {
     ? SMS_DELIVERY_OPTIONS.filter((o) => o.id === "next_step")
     : SMS_DELIVERY_OPTIONS.filter((o) => (outputCfg.deliveryOutputs ?? []).includes(o.id));
 
-  const gateway     = SMS_GATEWAYS.find((g) => g.id === template?.gateway);
+  const senderId    = SMS_SENDER_IDS.find((s) => s.id === data?.senderIdId);
   const borderColor   = isEmpty ? "rgba(99,102,241,0.4)" : SMS_PURPLE;
   const analyticsData = data?.analyticsData ?? null;
   const cardRadius    = analyticsData ? "12px 12px 0 0" : 12;
@@ -142,9 +142,9 @@ export default function SMSNode({ id, data, selected }) {
                 {template.name}
               </div>
             </div>
-            {gateway && (
+            {senderId && (
               <span style={{ fontSize: 8, background: "#F1F5F9", color: "#64748B", padding: "2px 5px", borderRadius: 4, flexShrink: 0, maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {gateway.label.split(" - ")[0]}
+                {senderId.senderId}
               </span>
             )}
             <StatusPill status={template.status} />
