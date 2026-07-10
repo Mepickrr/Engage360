@@ -17,7 +17,7 @@ function templateSummaryText(t) {
   return t.body || "";
 }
 
-function HoverActionButton({ icon: Icon, label, onClick, primary }) {
+function HoverActionButton({ icon: Icon, label, onClick, primary, accentColor }) {
   return (
     <button
       type="button"
@@ -25,7 +25,7 @@ function HoverActionButton({ icon: Icon, label, onClick, primary }) {
       style={{
         flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
         padding: "6px 4px", border: "none", borderRight: `1px solid rgba(255,255,255,0.15)`,
-        background: primary ? WA_GREEN : "transparent", color: "#fff",
+        background: primary ? (accentColor || WA_GREEN) : "transparent", color: "#fff",
         fontSize: 10, fontWeight: 600, cursor: "pointer",
       }}
     >
@@ -35,7 +35,7 @@ function HoverActionButton({ icon: Icon, label, onClick, primary }) {
   );
 }
 
-function TemplateCard({ template, onQuickSelect, onEdit, onViewAnalytics }) {
+function TemplateCard({ template, onQuickSelect, onEdit, onViewAnalytics, accentColor }) {
   const [hovered, setHovered] = useState(false);
   const cardRef = useRef(null);
 
@@ -49,7 +49,7 @@ function TemplateCard({ template, onQuickSelect, onEdit, onViewAnalytics }) {
       onClick={onQuickSelect}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      style={{ position: "relative", border: `1px solid ${hovered ? WA_GREEN : BORDER}`, borderRadius: 10, padding: 12, cursor: "pointer", background: "#fff", transition: "border-color 0.15s", overflow: "hidden" }}
+      style={{ position: "relative", border: `1px solid ${hovered ? (accentColor || WA_GREEN) : BORDER}`, borderRadius: 10, padding: 12, cursor: "pointer", background: "#fff", transition: "border-color 0.15s", overflow: "hidden" }}
     >
       <div style={{ fontSize: 12, fontWeight: 600, color: "#0F172A", marginBottom: 4 }}>{template.name}</div>
       <p style={{ fontSize: 11, color: "#64748B", lineHeight: 1.5, margin: 0, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
@@ -58,16 +58,16 @@ function TemplateCard({ template, onQuickSelect, onEdit, onViewAnalytics }) {
 
       {hovered && (
         <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, display: "flex", background: "rgba(15,23,42,0.92)" }}>
-          <HoverActionButton icon={Pencil} label="Edit" onClick={onEdit} />
-          <HoverActionButton icon={BarChart3} label="Analytics" onClick={handleViewAnalytics} />
-          <HoverActionButton icon={Check} label="Select" onClick={onQuickSelect} primary />
+          <HoverActionButton icon={Pencil} label="Edit" onClick={onEdit} accentColor={accentColor} />
+          <HoverActionButton icon={BarChart3} label="Analytics" onClick={handleViewAnalytics} accentColor={accentColor} />
+          <HoverActionButton icon={Check} label="Select" onClick={onQuickSelect} primary accentColor={accentColor} />
         </div>
       )}
     </div>
   );
 }
 
-function BrowseView({ styleId, styleLabel, templates, onQuickSelect, onEdit, onCreateNew, onClose }) {
+function BrowseView({ styleId, styleLabel, templates, onQuickSelect, onEdit, onCreateNew, onClose, accentColor, showMetaInsights, getAnalytics, analyticsMetrics }) {
   const [search, setSearch] = useState("");
   const [analyticsTarget, setAnalyticsTarget] = useState(null); // { template, anchorRect }
   const filtered = templates.filter((t) => (t.name || "").toLowerCase().includes(search.toLowerCase()) || templateSummaryText(t).toLowerCase().includes(search.toLowerCase()));
@@ -87,7 +87,7 @@ function BrowseView({ styleId, styleLabel, templates, onQuickSelect, onEdit, onC
           <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search templates…"
             style={{ width: "100%", paddingLeft: 30, paddingRight: 10, paddingTop: 8, paddingBottom: 8, fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", boxSizing: "border-box" }} />
         </div>
-        <button type="button" onClick={onCreateNew} style={{ padding: "8px 16px", background: PRIMARY, color: "#fff", borderRadius: 8, border: "none", fontSize: 13, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap" }}>
+        <button type="button" onClick={onCreateNew} style={{ padding: "8px 16px", background: accentColor || PRIMARY, color: "#fff", borderRadius: 8, border: "none", fontSize: 13, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap" }}>
           + Create new
         </button>
       </div>
@@ -104,6 +104,7 @@ function BrowseView({ styleId, styleLabel, templates, onQuickSelect, onEdit, onC
                 onQuickSelect={() => onQuickSelect(t)}
                 onEdit={() => onEdit(t)}
                 onViewAnalytics={(rect) => setAnalyticsTarget({ template: t, anchorRect: rect })}
+                accentColor={accentColor}
               />
             ))}
           </div>
@@ -119,7 +120,9 @@ function BrowseView({ styleId, styleLabel, templates, onQuickSelect, onEdit, onC
         <TemplateAnalyticsPopover
           anchorRect={analyticsTarget.anchorRect}
           template={analyticsTarget.template}
-          showMetaInsights={styleId === "standard"}
+          showMetaInsights={showMetaInsights}
+          getAnalytics={getAnalytics}
+          metrics={analyticsMetrics}
           onClose={() => setAnalyticsTarget(null)}
         />
       )}
@@ -135,8 +138,19 @@ function GenericEditForm({ fields, draft, onPatch }) {
   );
 }
 
-export default function UnifiedTemplateModal({ open, styleId, styleLabel, presetInputType, initialTemplate, customTemplates = [], onSave, onClose }) {
-  const config = TEMPLATE_STYLE_CONFIGS[styleId];
+export default function UnifiedTemplateModal({
+  open, styleId, styleLabel, presetInputType, initialTemplate, customTemplates = [], onSave, onClose,
+  configRegistry = TEMPLATE_STYLE_CONFIGS,
+  accentColor = null,
+  PreviewComponent = WhatsAppBubblePreview,
+  metaInsightsStyleIds = ["standard"],
+  getAnalytics,
+  analyticsMetrics,
+  customFormRenderer,
+}) {
+  const config = configRegistry[styleId];
+  const greenAccent = accentColor || WA_GREEN;
+  const purpleAccent = accentColor || PRIMARY;
   const [mode, setMode] = useState(initialTemplate ? "edit" : "browse");
   const [draft, setDraft] = useState(() => initialTemplate || config?.defaultDraft || {});
 
@@ -167,20 +181,41 @@ export default function UnifiedTemplateModal({ open, styleId, styleLabel, preset
       <div style={{ background: "#fff", borderRadius: 16, width: "min(92vw, 900px)", maxHeight: "90vh", boxShadow: "0 20px 60px rgba(0,0,0,0.2)", overflow: "hidden", display: "flex" }}>
         {mode === "browse" ? (
           <div style={{ width: "100%" }}>
-            <BrowseView styleId={styleId} styleLabel={styleLabel} templates={allTemplates} onQuickSelect={handleSave} onEdit={openExisting} onCreateNew={openBlankDraft} onClose={onClose} />
+            <BrowseView
+              styleId={styleId}
+              styleLabel={styleLabel}
+              templates={allTemplates}
+              onQuickSelect={handleSave}
+              onEdit={openExisting}
+              onCreateNew={openBlankDraft}
+              onClose={onClose}
+              accentColor={accentColor}
+              showMetaInsights={metaInsightsStyleIds.includes(styleId)}
+              getAnalytics={getAnalytics}
+              analyticsMetrics={analyticsMetrics}
+            />
           </div>
-        ) : config.fields ? (
+        ) : config.fields || customFormRenderer ? (
           <>
             <div style={{ flex: "0 0 55%", overflowY: "auto", padding: 24, display: "flex", flexDirection: "column", gap: 16, borderRight: `1px solid ${BORDER}` }}>
               <div style={{ fontSize: 16, fontWeight: 700, color: "#0F172A" }}>{initialTemplate ? "Edit Template" : `Create ${styleLabel} Template`}</div>
-              <GenericEditForm fields={config.fields} draft={draft} onPatch={patch} />
+              {config.fields ? (
+                <GenericEditForm fields={config.fields} draft={draft} onPatch={patch} />
+              ) : (
+                customFormRenderer({ draft, patch })
+              )}
               <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
                 <button type="button" onClick={onClose} style={{ flex: 1, padding: 9, border: `1px solid ${BORDER}`, borderRadius: 8, background: "#fff", fontSize: 13, cursor: "pointer" }}>Cancel</button>
-                <button type="button" onClick={() => handleSave()} style={{ flex: 2, padding: 9, border: "none", borderRadius: 8, background: WA_GREEN, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Save</button>
+                <button
+                  type="button"
+                  onClick={() => handleSave()}
+                  disabled={config.isValid ? !config.isValid(draft) : false}
+                  style={{ flex: 2, padding: 9, border: "none", borderRadius: 8, background: greenAccent, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", opacity: (config.isValid && !config.isValid(draft)) ? 0.5 : 1 }}
+                >Save</button>
               </div>
             </div>
             <div style={{ flex: "0 0 45%", background: "#F8FAFC", padding: 20, overflowY: "auto" }}>
-              <WhatsAppBubblePreview draft={draft} previewKind={config.previewKind} />
+              <PreviewComponent draft={draft} previewKind={config.previewKind} />
             </div>
           </>
         ) : (
@@ -191,7 +226,7 @@ export default function UnifiedTemplateModal({ open, styleId, styleLabel, preset
               {styleId === "collect_input" && <CollectInputForm initial={draft.isCollectInput ? draft : null} defaultInputType={draft.inputType} onChange={setDraft} onApply={handleSave} onCancel={onClose} />}
             </div>
             <div style={{ flex: "0 0 45%", background: "#F8FAFC", padding: 20, overflowY: "auto" }}>
-              <WhatsAppBubblePreview draft={draft} previewKind={config.previewKind} />
+              <PreviewComponent draft={draft} previewKind={config.previewKind} />
             </div>
           </>
         )}
