@@ -6,6 +6,7 @@ import {
   ONSITE_TEAL, DISPLAY_TYPES, ONSITE_DELIVERY_OPTIONS, PLATFORM_OPTIONS,
 } from "./data/mockData";
 import NodeHoverActions from "../shared/NodeHoverActions";
+import OnsitePreview from "./OnsitePreview";
 
 const BORDER = "#E5E7EB";
 
@@ -144,14 +145,13 @@ export default function OnsiteNode({ id, data, selected }) {
             {displayType && <DisplayTypePill displayType={displayType} />}
           </div>
 
-          {/* Template preview strip */}
+          {/* Template preview — renders the real blocks (title/text/image/
+              button/etc.) sized to their content instead of a fixed-height
+              box clipped down to a single emoji glyph. The card grows to
+              fit, same as WhatsApp/SMS's message-bubble previews already do. */}
           {template && (
-            <div style={{ margin: "0 8px 8px", borderRadius: 8, overflow: "hidden", border: `1px solid ${BORDER}` }}>
-              <div style={{ height: 36, background: template.thumbnailBg ?? "#F0FDFA", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontSize: 18 }}>
-                  {DISPLAY_TYPES.find((d) => d.id === displayType)?.emoji || "🪟"}
-                </span>
-              </div>
+            <div style={{ margin: "0 8px 8px" }}>
+              <OnsitePreview draft={template} />
             </div>
           )}
 

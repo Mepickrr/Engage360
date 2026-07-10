@@ -194,6 +194,31 @@ export const EDITOR_BLOCK_GROUPS = [
   },
 ];
 
+// ── Template config registry — reused by UnifiedTemplateModal ────
+// Keyed by displayType, mirroring SMS/RCS's Transactional/Promotional split.
+// Each mockTemplate gets a computed `body` summary (first title/text block)
+// so UnifiedTemplateModal's browse-card text preview has something to show —
+// Onsite templates have no single `body` string, they have `blocks`.
+function summaryFromBlocks(blocks) {
+  const textBlock = (blocks || []).find((b) => b.type === "title" || b.type === "text");
+  return textBlock?.content || "";
+}
+
+function makeOnsiteStyleConfig(displayType) {
+  return {
+    defaultDraft: { id: null, name: "", displayType, useCase: "Custom", blocks: [], bgColor: "#FFFFFF" },
+    mockTemplates: MOCK_ONSITE_TEMPLATES
+      .filter((t) => t.displayType === displayType)
+      .map((t) => ({ ...t, body: summaryFromBlocks(t.blocks) })),
+  };
+}
+
+export const ONSITE_TEMPLATE_STYLE_CONFIGS = {
+  popup:  makeOnsiteStyleConfig("popup"),
+  banner: makeOnsiteStyleConfig("banner"),
+  nudge:  makeOnsiteStyleConfig("nudge"),
+};
+
 export const SYSTEM_VARIABLES = {
   Customer: [
     { key: "customer.firstName", label: "First Name",  example: "Priya"    },

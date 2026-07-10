@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { Handle, Position } from "reactflow";
 import { Bell } from "lucide-react";
-import { PUSH_DELIVERY_OPTIONS, PUSH_TEMPLATE_STYLES } from "./data/mockData";
+import { useFlowBuilderStore } from "@/store/flowBuilderStore";
+import { PUSH_DELIVERY_OPTIONS, PUSH_TEMPLATE_STYLES, PUSH_TEMPLATE_STYLE_CONFIGS } from "./data/mockData";
+import { getPushTemplateAnalytics, PUSH_ANALYTICS_METRICS } from "./data/mockPushAnalytics";
 import NodeHoverActions from "../shared/NodeHoverActions";
+import UnifiedTemplateModal from "../WhatsAppNode/UnifiedTemplateModal";
+import PushTemplateForm from "./PushTemplateForm";
+import PushBubblePreview from "./PushBubblePreview";
 
 const AMBER  = "#F59E0B";
 const BORDER = "#E5E7EB";
@@ -73,11 +78,19 @@ function MiniNotification({ title, body }) {
 
 export default function PushNode({ id, data, selected }) {
   const [hovered, setHovered] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const updateNodeData = useFlowBuilderStore((s) => s.updateNodeData);
   const template   = data?.template ?? null;
   const label      = data?.label ?? "Push Notification";
   const outputCfg  = data?.outputConfig ?? { routingMode: "next_step", deliveryOutputs: [], wiredPorts: [] };
   const wiredPorts = outputCfg.wiredPorts ?? [];
   const isEmpty    = !template;
+
+  const handleModalSave = (tpl) => {
+    const withId = tpl.id ? tpl : { ...tpl, id: `push_new_${Date.now()}`, status: "Draft", lastUpdated: new Date().toISOString().slice(0, 10) };
+    updateNodeData(id, { template: withId, variableMap: {} });
+    setModalOpen(false);
+  };
 
   const routingMode         = outputCfg.routingMode ?? "next_step";
   const activeDeliveryPorts = routingMode === "next_step"
@@ -100,8 +113,25 @@ export default function PushNode({ id, data, selected }) {
       onMouseLeave={() => setHovered(false)}
     >
       <NodeHoverActions nodeId={id} visible={hovered || selected} channel="push" />
+      {modalOpen && (
+        <UnifiedTemplateModal
+          open
+          styleId="push"
+          styleLabel="Push"
+          configRegistry={PUSH_TEMPLATE_STYLE_CONFIGS}
+          accentColor={AMBER}
+          PreviewComponent={PushBubblePreview}
+          metaInsightsStyleIds={[]}
+          getAnalytics={getPushTemplateAnalytics}
+          analyticsMetrics={PUSH_ANALYTICS_METRICS}
+          customFormRenderer={({ draft, patch }) => <PushTemplateForm draft={draft} patch={patch} />}
+          onSave={handleModalSave}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
       <div
         data-testid={`rf-push-node-${id}`}
+        onClick={() => { if (isEmpty) setModalOpen(true); }}
         style={{
           background: "#fff",
           border: `${selected ? "2px" : "1.5px"} ${isEmpty ? "dashed" : "solid"} ${borderColor}`,

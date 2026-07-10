@@ -147,6 +147,7 @@ export default function UnifiedTemplateModal({
   getAnalytics,
   analyticsMetrics,
   customFormRenderer,
+  onRequestExternalEditor,
 }) {
   const config = configRegistry[styleId];
   const greenAccent = accentColor || WA_GREEN;
@@ -160,6 +161,7 @@ export default function UnifiedTemplateModal({
   const patch = (p) => setDraft((d) => ({ ...d, ...p }));
 
   const openBlankDraft = () => {
+    if (onRequestExternalEditor) { onClose(); onRequestExternalEditor(null); return; }
     let blank = config.defaultDraft;
     if (styleId === "collect_input" && presetInputType && COLLECT_INPUT_PRESETS[presetInputType]) {
       blank = { ...blank, ...COLLECT_INPUT_PRESETS[presetInputType] };
@@ -169,6 +171,7 @@ export default function UnifiedTemplateModal({
   };
 
   const openExisting = (tpl) => {
+    if (onRequestExternalEditor) { onClose(); onRequestExternalEditor(tpl); return; }
     setDraft(tpl);
     setMode("edit");
   };

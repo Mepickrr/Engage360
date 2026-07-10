@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import {
-  Monitor, ChevronRight, Plus, X, Check, Info,
+  Monitor, ChevronRight, Plus, X, Info,
 } from "lucide-react";
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import {
-  ONSITE_TEAL, DISPLAY_TYPES, MOCK_ONSITE_TEMPLATES,
+  ONSITE_TEAL, DISPLAY_TYPES, MOCK_ONSITE_TEMPLATES, ONSITE_TEMPLATE_STYLE_CONFIGS,
   PLATFORM_OPTIONS, TRIGGER_TYPES, ONSITE_DELIVERY_OPTIONS,
 } from "./data/mockData";
+import { getOnsiteTemplateAnalytics, ONSITE_ANALYTICS_METRICS } from "./data/mockOnsiteAnalytics";
 import OnsiteTemplateEditorModal from "./TemplateEditorModal";
+import UnifiedTemplateModal from "../WhatsAppNode/UnifiedTemplateModal";
+import OnsitePreview from "./OnsitePreview";
 
 const BORDER = "#E5E7EB";
 const MUTED  = "#94A3B8";
@@ -128,99 +131,29 @@ function DisplayTypePicker({ onSelect }) {
   );
 }
 
-// ── Template picker overlay ────────────────────────────────────
-function TemplatePicker({ displayType, onSelect, onClose }) {
-  const [q, setQ] = useState("");
-  const [filter, setFilter] = useState("all");
-
-  const templates = MOCK_ONSITE_TEMPLATES.filter((t) => {
-    const matchType = filter === "all" || t.displayType === filter;
-    const matchQ = !q || t.name.toLowerCase().includes(q.toLowerCase()) || t.useCase.toLowerCase().includes(q.toLowerCase());
-    return matchType && matchQ;
-  });
-
-  return (
-    <div style={{ position: "absolute", inset: 0, background: "#fff", zIndex: 10, display: "flex", flexDirection: "column" }}>
-      {/* Header */}
-      <div style={{ padding: "12px 16px", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-        <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, fontSize: 18, lineHeight: 1, padding: 0 }}>←</button>
-        <span style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>Select Template</span>
-      </div>
-
-      {/* Search + filter */}
-      <div style={{ padding: "10px 16px", borderBottom: `1px solid ${BORDER}`, flexShrink: 0 }}>
-        <input
-          type="text" placeholder="Search templates…" value={q}
-          onChange={(e) => setQ(e.target.value)} autoFocus
-          style={{ width: "100%", padding: "7px 10px", fontSize: 13, border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none", boxSizing: "border-box", marginBottom: 8 }}
-        />
-        <div style={{ display: "flex", gap: 6 }}>
-          {["all", "popup", "banner", "nudge"].map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              style={{
-                padding: "3px 10px", borderRadius: 20, border: `1px solid ${filter === f ? ONSITE_TEAL : BORDER}`,
-                background: filter === f ? `${ONSITE_TEAL}15` : "#fff",
-                color: filter === f ? ONSITE_TEAL : "#64748B",
-                fontSize: 11, fontWeight: 600, cursor: "pointer",
-              }}
-            >
-              {f.charAt(0).toUpperCase() + f.slice(1)}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Template list */}
-      <div style={{ flex: 1, overflowY: "auto" }}>
-        {templates.length === 0 ? (
-          <div style={{ padding: 24, textAlign: "center", fontSize: 12, color: MUTED }}>No templates match</div>
-        ) : templates.map((t) => (
-          <div
-            key={t.id}
-            onClick={() => onSelect(t)}
-            style={{ padding: "12px 16px", borderBottom: `1px solid ${BORDER}`, cursor: "pointer", display: "flex", alignItems: "flex-start", gap: 10 }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "#F8FAFC"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; }}
-          >
-            <div style={{ width: 44, height: 44, borderRadius: 8, background: t.thumbnailBg, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>
-              {DISPLAY_TYPES.find((d) => d.id === t.displayType)?.emoji}
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>{t.name}</span>
-                <span style={{ fontSize: 9, padding: "1px 6px", borderRadius: 8, background: t.status === "Active" ? "#ECFDF5" : "#F1F5F9", color: t.status === "Active" ? "#065F46" : "#6B7280", fontWeight: 600 }}>{t.status}</span>
-              </div>
-              <div style={{ fontSize: 11, color: "#64748B" }}>{t.useCase} · {t.displayType}</div>
-              <div style={{ fontSize: 10, color: MUTED, marginTop: 2 }}>Updated {t.lastUpdated}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 // ── Template preview card ──────────────────────────────────────
-function TemplatePreviewCard({ template, displayType, onEdit, onClear }) {
-  const dt = DISPLAY_TYPES.find((d) => d.id === displayType);
+// Renders the template's real content (via OnsitePreview) inside a
+// container that sizes to its content instead of clipping it — the old
+// version was a fixed 52px `overflow:hidden` box showing only an emoji.
+function TemplatePreviewCard({ template, onEdit, onClear }) {
   return (
     <div style={{ border: `1.5px solid ${ONSITE_TEAL}44`, borderRadius: 10, overflow: "hidden", background: `${ONSITE_TEAL}08` }}>
-      <div style={{ height: 52, background: template.thumbnailBg, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", fontSize: 26 }}>
-        {dt?.emoji}
-        <button onClick={onClear} style={{ position: "absolute", top: 6, right: 6, width: 20, height: 20, borderRadius: 4, background: "rgba(0,0,0,0.15)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <X size={10} color="#fff" />
-        </button>
-      </div>
-      <div style={{ padding: "10px 12px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#0F172A" }}>{template.name}</div>
-            <div style={{ fontSize: 10, color: MUTED }}>{template.useCase}</div>
-          </div>
-          <span style={{ fontSize: 9, padding: "1px 6px", borderRadius: 8, background: template.status === "Active" ? "#ECFDF5" : "#F1F5F9", color: template.status === "Active" ? "#065F46" : "#6B7280", fontWeight: 600 }}>{template.status}</span>
+      <div style={{ padding: "10px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "#0F172A" }}>{template.name}</div>
+          <div style={{ fontSize: 10, color: MUTED }}>{template.useCase}</div>
         </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 9, padding: "1px 6px", borderRadius: 8, background: template.status === "Active" ? "#ECFDF5" : "#F1F5F9", color: template.status === "Active" ? "#065F46" : "#6B7280", fontWeight: 600 }}>{template.status}</span>
+          <button onClick={onClear} style={{ width: 20, height: 20, borderRadius: 4, background: "rgba(0,0,0,0.08)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <X size={10} color="#64748B" />
+          </button>
+        </div>
+      </div>
+      <div style={{ padding: "0 12px 12px" }}>
+        <OnsitePreview draft={template} />
+      </div>
+      <div style={{ padding: "0 12px 12px" }}>
         <button
           onClick={onEdit}
           style={{ width: "100%", padding: "8px 0", background: ONSITE_TEAL, color: "#fff", border: "none", borderRadius: 7, cursor: "pointer", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
@@ -321,6 +254,8 @@ export default function OnsiteRightPanel({ node, updateNodeData, removeNode }) {
   const [activeTab,   setActiveTab]   = useState("template");
   const [showPicker,  setShowPicker]  = useState(false);
   const [showEditor,  setShowEditor]  = useState(false);
+  const [editorInitialTemplate, setEditorInitialTemplate] = useState(null);
+  const [customTemplatesByType, setCustomTemplatesByType] = useState({});
 
   if (!resolvedNode) return null;
 
@@ -383,7 +318,7 @@ export default function OnsiteRightPanel({ node, updateNodeData, removeNode }) {
             <div>
               {/* Step 1: no display type yet → show picker */}
               {!data.displayType ? (
-                <DisplayTypePicker onSelect={(dt) => patch({ displayType: dt })} />
+                <DisplayTypePicker onSelect={(dt) => { patch({ displayType: dt }); setShowPicker(true); }} />
               ) : (
                 <>
                   {/* Display type chip + change */}
@@ -419,7 +354,7 @@ export default function OnsiteRightPanel({ node, updateNodeData, removeNode }) {
 
                         {/* Create from scratch */}
                         <button
-                          onClick={() => setShowEditor(true)}
+                          onClick={() => { setEditorInitialTemplate(null); setShowEditor(true); }}
                           style={{ width: "100%", padding: "11px 14px", border: `1.5px solid ${BORDER}`, borderRadius: 9, background: "#fff", cursor: "pointer", textAlign: "left", display: "flex", alignItems: "center", gap: 10 }}
                           onMouseEnter={(e) => { e.currentTarget.style.borderColor = ONSITE_TEAL; }}
                           onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; }}
@@ -436,8 +371,7 @@ export default function OnsiteRightPanel({ node, updateNodeData, removeNode }) {
                     ) : (
                       <TemplatePreviewCard
                         template={data.template}
-                        displayType={data.displayType}
-                        onEdit={() => setShowEditor(true)}
+                        onEdit={() => { setEditorInitialTemplate(data.template); setShowEditor(true); }}
                         onClear={() => patch({ template: null })}
                       />
                     )}
@@ -572,11 +506,25 @@ export default function OnsiteRightPanel({ node, updateNodeData, removeNode }) {
           )}
         </div>
 
-        {/* Template picker overlay */}
+        {/* Template browse modal — hover Edit/Analytics/Select cards, real
+            non-cropped preview, same shared component SMS/RCS/Push use.
+            Edit / "+ Create new" delegate out to the existing full-screen
+            block editor rather than trying to fit a drag-and-drop canvas
+            into the modal's form slot. */}
         {showPicker && (
-          <TemplatePicker
-            displayType={data.displayType}
-            onSelect={(t) => { patch({ template: t }); setShowPicker(false); }}
+          <UnifiedTemplateModal
+            open
+            styleId={data.displayType}
+            styleLabel={DISPLAY_TYPES.find((d) => d.id === data.displayType)?.label || "Template"}
+            customTemplates={customTemplatesByType[data.displayType] || []}
+            configRegistry={ONSITE_TEMPLATE_STYLE_CONFIGS}
+            accentColor={ONSITE_TEAL}
+            PreviewComponent={OnsitePreview}
+            metaInsightsStyleIds={[]}
+            getAnalytics={getOnsiteTemplateAnalytics}
+            analyticsMetrics={ONSITE_ANALYTICS_METRICS}
+            onRequestExternalEditor={(tpl) => { setEditorInitialTemplate(tpl); setShowEditor(true); }}
+            onSave={(t) => { patch({ template: t }); setShowPicker(false); }}
             onClose={() => setShowPicker(false)}
           />
         )}
@@ -585,10 +533,10 @@ export default function OnsiteRightPanel({ node, updateNodeData, removeNode }) {
       {/* Full-screen editor modal */}
       {showEditor && (
         <OnsiteTemplateEditorModal
-          template={data.template}
+          template={editorInitialTemplate}
           displayType={data.displayType}
           onSave={(editorData) => {
-            const tpl = data.template ?? {
+            const base = editorInitialTemplate ?? {
               id: `osm_custom_${Date.now()}`,
               name: `Custom ${DISPLAY_TYPES.find((d) => d.id === data.displayType)?.label}`,
               displayType: data.displayType,
@@ -600,9 +548,16 @@ export default function OnsiteRightPanel({ node, updateNodeData, removeNode }) {
               lastUpdated: new Date().toISOString().split("T")[0],
               blocks: [],
             };
-            patch({ template: { ...tpl, blocks: editorData.blocks } });
+            const tpl = { ...base, blocks: editorData.blocks, bgColor: editorData.bgColor };
+            setCustomTemplatesByType((prev) => {
+              const existing = prev[data.displayType] || [];
+              const already = existing.find((t) => t.id === tpl.id);
+              return { ...prev, [data.displayType]: already ? existing.map((t) => (t.id === tpl.id ? tpl : t)) : [...existing, tpl] };
+            });
+            patch({ template: tpl });
+            setEditorInitialTemplate(null);
           }}
-          onClose={() => setShowEditor(false)}
+          onClose={() => { setShowEditor(false); setEditorInitialTemplate(null); }}
         />
       )}
     </>

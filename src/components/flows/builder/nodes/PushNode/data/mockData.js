@@ -146,6 +146,25 @@ export const PUSH_PREVIEW_PLATFORMS = [
   { id: "android", label: "Android"   },
 ];
 
+// ── Template config registry — reused by UnifiedTemplateModal ────
+// Push has no Transactional/Promotional split (unlike SMS/RCS), so there's
+// a single "push" style entry rather than one per category.
+export const PUSH_TEMPLATE_STYLE_CONFIGS = {
+  push: {
+    defaultDraft: {
+      id: null, name: "", style: null, title: "", body: "",
+      hasImage: false, imageUrl: "", landingUrl: "", tags: "",
+      renotify: false, persistNotification: false,
+      utm: { enabled: false, utm_source: "push", utm_medium: "journey", utm_campaign: "" },
+      callToAction: false, iconType: "org", iconUrl: "",
+      platforms: { android: true, ios: true, web: true },
+      iosSendMode: "all",
+    },
+    mockTemplates: MOCK_PUSH_TEMPLATES,
+    isValid: (draft) => Boolean(draft.style) && Boolean(draft.title) && Boolean(draft.landingUrl),
+  },
+};
+
 export const defaultPushNodeData = {
   label: "Push Notification",
   template: null,

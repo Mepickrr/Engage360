@@ -1,3 +1,5 @@
+import { PackageCheck, Megaphone } from "lucide-react";
+
 export const RCS_NUMBERS = [
   { id: "rcs_1", nickname: "Main Business", number: "+91 98765 43210", status: "active" },
   { id: "rcs_2", nickname: "Support Line",  number: "+91 80000 11111", status: "active" },
@@ -92,11 +94,36 @@ export const SYSTEM_VARIABLES = [
   "productName", "offerDetails", "expiryDate", "appointmentDate", "appointmentTime",
 ];
 
+// ── Template Style catalogue (Transactional/Promotional) ─────────
+// Reuses the existing template.type values as style ids directly, so no
+// migration of MOCK_RCS_TEMPLATES is needed — same pattern as SMS/WhatsApp's
+// TemplateStylePicker, keyed by RCS_TEMPLATE_STYLE_CONFIGS below.
+export const RCS_TEMPLATE_STYLES = [
+  { id: "Transactional", label: "Transactional", Icon: PackageCheck,
+    desc: "Order updates, OTPs, delivery alerts — sent to a specific customer about their own activity." },
+  { id: "Promotional", label: "Promotional", Icon: Megaphone,
+    desc: "Marketing blasts, offers, and sale alerts — sent to customers who've opted in to promotions." },
+];
+
+function makeRCSStyleConfig(type) {
+  return {
+    defaultDraft: { id: null, name: "", type, status: "Draft", style: "single", mediaType: "none", body: "", buttons: [] },
+    mockTemplates: MOCK_RCS_TEMPLATES.filter((t) => t.type === type),
+    isValid: (draft) => Boolean(draft.name) && Boolean(draft.body),
+  };
+}
+
+export const RCS_TEMPLATE_STYLE_CONFIGS = {
+  Transactional: makeRCSStyleConfig("Transactional"),
+  Promotional: makeRCSStyleConfig("Promotional"),
+};
+
 export const defaultRCSNodeData = {
   label: "Send RCS",
   template: null,
   variableMap: {},
   rcsNumberId: "rcs_1",
+  templateStyle: null,
   outputConfig: {
     routingMode: "next_step",
     deliveryOutputs: [],

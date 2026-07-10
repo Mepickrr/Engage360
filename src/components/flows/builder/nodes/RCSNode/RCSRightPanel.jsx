@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Search, MessagesSquare, Trash2 } from "lucide-react";
+import { MessagesSquare } from "lucide-react";
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import {
   RCS_NUMBERS,
   RCS_DELIVERY_OUTPUT_OPTIONS,
-  MOCK_RCS_TEMPLATES,
+  RCS_TEMPLATE_STYLES,
+  RCS_TEMPLATE_STYLE_CONFIGS,
   SYSTEM_VARIABLES,
   rcsIsConnectable,
 } from "./data/mockData";
-import RCSTemplateModal from "./RCSTemplateModal";
+import { getRCSTemplateAnalytics, RCS_ANALYTICS_METRICS } from "./data/mockRCSAnalytics";
+import UnifiedTemplateModal from "../WhatsAppNode/UnifiedTemplateModal";
+import RCSTemplateForm from "./RCSTemplateForm";
+import RCSBubblePreview from "./RCSBubblePreview";
 
 const INDIGO = "#4F46E5";
 const BORDER = "#E5E7EB";
@@ -118,43 +122,95 @@ function extractVars(body) {
     });
 }
 
+// ── Template Style Card ──────────────────────────────────────────
+// Icon + title + always-visible description (no hover tooltip) — matches
+// the SMS node's TemplateStylePicker pattern, since there are only 2 styles.
+function RCSStyleCard({ style, onSelect }) {
+  const Icon = style.Icon;
+  return (
+    <div
+      onClick={onSelect}
+      style={{
+        flex: 1, display: "flex", flexDirection: "column", gap: 8, padding: 14,
+        border: `1.5px solid ${BORDER}`, borderRadius: 12, cursor: "pointer", background: "#fff",
+        transition: "border-color 0.15s, background 0.15s",
+      }}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = INDIGO; e.currentTarget.style.background = "#EEF2FF"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.background = "#fff"; }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <Icon size={15} color={INDIGO} />
+        </div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>{style.label}</div>
+      </div>
+      <p style={{ fontSize: 11, color: "#64748B", lineHeight: 1.5, margin: 0 }}>{style.desc}</p>
+    </div>
+  );
+}
+
+function RCSTemplateStylePicker({ onSelect }) {
+  return (
+    <div>
+      <div style={{ fontSize: 14, fontWeight: 700, color: "#0F172A" }}>Choose Template Style</div>
+      <div style={{ fontSize: 11, color: "#64748B", marginTop: 3, marginBottom: 12 }}>Select the type of RCS message you want to send</div>
+      <div style={{ display: "flex", gap: 10 }}>
+        {RCS_TEMPLATE_STYLES.map((style) => (
+          <RCSStyleCard key={style.id} style={style} onSelect={() => onSelect(style)} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ── Template Tab ────────────────────────────────────────────────
 function TemplateTab({ data, upd }) {
-  const [showBrowse, setShowBrowse] = useState(false);
-  const [searchQ, setSearchQ] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [editingTemplate, setEditingTemplate] = useState(null);
-  const [customTemplates, setCustomTemplates] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [customTemplatesByStyle, setCustomTemplatesByStyle] = useState({});
 
-  const allTemplates = [...MOCK_RCS_TEMPLATES, ...customTemplates];
-  const filtered = allTemplates.filter(
-    (t) =>
-      t.name.toLowerCase().includes(searchQ.toLowerCase()) ||
-      t.type.toLowerCase().includes(searchQ.toLowerCase())
-  );
-
-  const handleSelectTemplate = (tpl) => {
-    // Auto-populate variableMap with empty chains for each var in body
-    const vars = extractVars(tpl.body);
-    const variableMap = {};
-    vars.forEach((v) => { variableMap[v] = [""]; });
-    upd({ template: tpl, variableMap });
-    setShowBrowse(false);
-  };
+  const { templateStyle, template } = data;
+  const styleInfo = RCS_TEMPLATE_STYLES.find((s) => s.id === templateStyle);
+  const vars = extractVars(template?.body);
 
   const handleModalSave = (tpl) => {
-    setCustomTemplates((prev) => {
-      const exists = prev.find((t) => t.id === tpl.id);
-      if (exists) return prev.map((t) => (t.id === tpl.id ? tpl : t));
-      return [...prev, tpl];
-    });
-    handleSelectTemplate(tpl);
-  };
+    const withId = tpl.id ? tpl : { ...tpl, id: `rcs_new_${Date.now()}`, status: tpl.status || "Draft" };
+    const withType = { ...withId, type: templateStyle };
 
-  const vars = extractVars(data.template?.body);
+    setCustomTemplatesByStyle((prev) => {
+      const existing = prev[templateStyle] || [];
+      const already = existing.find((t) => t.id === withType.id);
+      return { ...prev, [templateStyle]: already ? existing.map((t) => (t.id === withType.id ? withType : t)) : [...existing, withType] };
+    });
+
+    // Auto-populate variableMap with empty chains for each var in body
+    const bodyVars = extractVars(withType.body);
+    const variableMap = {};
+    bodyVars.forEach((v) => { variableMap[v] = [""]; });
+
+    upd({ template: withType, variableMap });
+    setModalOpen(false);
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      {modalOpen && (
+        <UnifiedTemplateModal
+          open
+          styleId={templateStyle}
+          styleLabel={styleInfo?.label || "Template"}
+          customTemplates={customTemplatesByStyle[templateStyle] || []}
+          configRegistry={RCS_TEMPLATE_STYLE_CONFIGS}
+          accentColor={INDIGO}
+          PreviewComponent={RCSBubblePreview}
+          metaInsightsStyleIds={[]}
+          getAnalytics={getRCSTemplateAnalytics}
+          analyticsMetrics={RCS_ANALYTICS_METRICS}
+          customFormRenderer={({ draft, patch }) => <RCSTemplateForm draft={draft} patch={patch} />}
+          onSave={handleModalSave}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
+
       {/* Node Label */}
       <div>
         <SectionLabel>Node Label</SectionLabel>
@@ -202,302 +258,58 @@ function TemplateTab({ data, upd }) {
         </select>
       </div>
 
-      {/* Template section */}
-      <div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 8,
-          }}
-        >
-          <SectionLabel>Template</SectionLabel>
-          <button
-            type="button"
-            onClick={() => { setEditingTemplate(null); setShowModal(true); }}
-            style={{
-              fontSize: 11,
-              color: INDIGO,
-              fontWeight: 600,
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              padding: 0,
-            }}
-          >
-            + Create New
-          </button>
-        </div>
+      {/* Template style + template */}
+      {!templateStyle ? (
+        <RCSTemplateStylePicker onSelect={(style) => { upd({ templateStyle: style.id }); setModalOpen(true); }} />
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {/* Style chip */}
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", background: "#EEF2FF", borderRadius: 20, border: "1px solid #C7D2FE", alignSelf: "flex-start" }}>
+            {styleInfo && <styleInfo.Icon size={13} color={INDIGO} />}
+            <span style={{ fontSize: 12, fontWeight: 600, color: INDIGO }}>{styleInfo?.label}</span>
+            <span style={{ fontSize: 11, color: MUTED }}>·</span>
+            <span
+              onClick={() => upd({ templateStyle: null, template: null })}
+              style={{ fontSize: 11, color: INDIGO, cursor: "pointer", fontWeight: 500 }}
+            >Change</span>
+          </div>
 
-        {!data.template ? (
-          /* No template state */
-          <div
-            style={{
-              border: `1.5px dashed ${BORDER}`,
-              borderRadius: 10,
-              padding: "16px 12px",
-              textAlign: "center",
-              color: MUTED,
-              fontSize: 12,
-            }}
-          >
-            <div style={{ marginBottom: 8 }}>
-              No template selected. Pick one or create new.
-            </div>
-            <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-              <button
-                type="button"
-                onClick={() => setShowBrowse((v) => !v)}
-                style={{
-                  padding: "6px 14px",
-                  border: `1px solid ${INDIGO}`,
-                  borderRadius: 20,
-                  background: "#EEF2FF",
-                  color: INDIGO,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
-              >
-                Browse Templates
-              </button>
-              <button
-                type="button"
-                onClick={() => { setEditingTemplate(null); setShowModal(true); }}
-                style={{
-                  padding: "6px 14px",
-                  border: `1px solid ${BORDER}`,
-                  borderRadius: 20,
-                  background: "#fff",
-                  color: "#475569",
-                  fontSize: 12,
-                  fontWeight: 500,
-                  cursor: "pointer",
-                }}
-              >
-                Create New
-              </button>
-            </div>
-          </div>
-        ) : (
-          /* Selected template card */
-          <div
-            style={{
-              border: `1px solid ${BORDER}`,
-              borderRadius: 10,
-              overflow: "hidden",
-            }}
-          >
-            <div
-              style={{
-                padding: "8px 12px",
-                background: "#F8FAFC",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                borderBottom: `1px solid ${BORDER}`,
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 6, flex: 1, minWidth: 0 }}>
-                <span
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: "#0F172A",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {data.template.name}
-                </span>
-                <TypeBadge type={data.template.type} />
-                <StatusBadge status={data.template.status} />
-              </div>
-              <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                <button
-                  type="button"
-                  onClick={() => { setEditingTemplate(data.template); setShowModal(true); }}
-                  style={{
-                    fontSize: 11,
-                    color: "#64748B",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowBrowse((v) => !v)}
-                  style={{
-                    fontSize: 11,
-                    color: INDIGO,
-                    fontWeight: 600,
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  Change
-                </button>
-              </div>
-            </div>
-            <div style={{ padding: "8px 12px" }}>
-              <div
-                style={{
-                  fontSize: 11,
-                  color: "#475569",
-                  lineHeight: 1.5,
-                  overflow: "hidden",
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                }}
-              >
-                {data.template.body?.slice(0, 100)}
-                {(data.template.body?.length || 0) > 100 ? "…" : ""}
-              </div>
-              <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
-                <span
-                  style={{
-                    fontSize: 9,
-                    padding: "1px 6px",
-                    borderRadius: 6,
-                    background: "#F1F5F9",
-                    color: "#64748B",
-                  }}
-                >
-                  {data.template.style === "basic" ? "Basic" : "Single"}
-                </span>
-                {data.template.style === "single" && data.template.mediaType !== "none" && (
-                  <span
-                    style={{
-                      fontSize: 9,
-                      padding: "1px 6px",
-                      borderRadius: 6,
-                      background: "#EEF2FF",
-                      color: INDIGO,
-                    }}
-                  >
-                    {data.template.mediaType}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Browse templates inline list */}
-      {showBrowse && (
-        <div
-          style={{
-            border: `1px solid ${BORDER}`,
-            borderRadius: 10,
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              padding: "8px 10px",
-              borderBottom: `1px solid ${BORDER}`,
-              position: "relative",
-            }}
-          >
-            <Search
-              size={13}
-              style={{
-                position: "absolute",
-                left: 18,
-                top: "50%",
-                transform: "translateY(-50%)",
-                color: MUTED,
-                pointerEvents: "none",
-              }}
-            />
-            <input
-              value={searchQ}
-              onChange={(e) => setSearchQ(e.target.value)}
-              placeholder="Search templates…"
-              style={{
-                width: "100%",
-                padding: "6px 8px 6px 28px",
-                fontSize: 12,
-                border: `1px solid ${BORDER}`,
-                borderRadius: 6,
-                background: "#F7F8FA",
-                outline: "none",
-                boxSizing: "border-box",
-              }}
-            />
-          </div>
-          <div style={{ maxHeight: 280, overflowY: "auto" }}>
-            {filtered.length === 0 ? (
-              <div style={{ padding: "16px 12px", textAlign: "center", color: MUTED, fontSize: 12 }}>
-                No templates found
-              </div>
-            ) : (
-              filtered.map((tpl) => (
-                <div
-                  key={tpl.id}
-                  onClick={() => handleSelectTemplate(tpl)}
-                  style={{
-                    padding: "10px 12px",
-                    borderBottom: `1px solid ${BORDER}`,
-                    cursor: "pointer",
-                    transition: "background 0.13s",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = "#F8FAFF")}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 6,
-                      marginBottom: 4,
-                    }}
-                  >
-                    <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A", flex: 1 }}>
-                      {tpl.name}
-                    </span>
-                    <TypeBadge type={tpl.type} />
-                    <StatusBadge status={tpl.status} />
-                  </div>
-                  <div style={{ fontSize: 10, color: "#64748B", lineHeight: 1.4 }}>
-                    {tpl.body?.slice(0, 70)}{(tpl.body?.length || 0) > 70 ? "…" : ""}
-                  </div>
-                  <div style={{ display: "flex", gap: 5, marginTop: 4 }}>
-                    <span
-                      style={{
-                        fontSize: 9,
-                        padding: "1px 5px",
-                        borderRadius: 4,
-                        background: "#F1F5F9",
-                        color: "#64748B",
-                      }}
-                    >
-                      {tpl.style === "basic" ? "Basic" : "Single"}
-                    </span>
-                    {tpl.style === "single" && tpl.mediaType !== "none" && (
-                      <span
-                        style={{
-                          fontSize: 9,
-                          padding: "1px 5px",
-                          borderRadius: 4,
-                          background: "#EEF2FF",
-                          color: INDIGO,
-                        }}
-                      >
-                        {tpl.mediaType}
-                      </span>
-                    )}
-                  </div>
+          {/* Template section */}
+          <div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+              <SectionLabel>Template</SectionLabel>
+              {template && (
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button type="button" onClick={() => setModalOpen(true)} style={{ fontSize: 11, color: INDIGO, fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}>Change</button>
+                  <button type="button" onClick={() => upd({ template: null, variableMap: {} })} style={{ fontSize: 11, color: "#EF4444", background: "none", border: "none", cursor: "pointer" }}>Remove</button>
                 </div>
-              ))
+              )}
+            </div>
+
+            {!template ? (
+              <button
+                type="button"
+                onClick={() => setModalOpen(true)}
+                style={{ width: "100%", padding: "14px 10px", border: `1.5px dashed ${BORDER}`, borderRadius: 10, background: "transparent", cursor: "pointer", fontSize: 12, color: "#475569", textAlign: "center" }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = INDIGO; e.currentTarget.style.color = INDIGO; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.color = "#475569"; }}
+              >
+                <div style={{ fontSize: 18, marginBottom: 4 }}>+</div>
+                Select or create a template
+              </button>
+            ) : (
+              <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
+                <div style={{ padding: "8px 12px", background: "#F8FAFC", display: "flex", alignItems: "center", gap: 6, borderBottom: `1px solid ${BORDER}` }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
+                    {template.name}
+                  </span>
+                  <TypeBadge type={template.type} />
+                  <StatusBadge status={template.status} />
+                </div>
+                <div style={{ padding: 10 }}>
+                  <RCSBubblePreview draft={template} />
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -662,23 +474,117 @@ function TemplateTab({ data, upd }) {
         </div>
       )}
 
-      {/* RCSTemplateModal */}
-      {showModal && (
-        <RCSTemplateModal
-          open={showModal}
-          onClose={() => { setShowModal(false); setEditingTemplate(null); }}
-          onSave={handleModalSave}
-          initialTemplate={editingTemplate}
-        />
-      )}
     </div>
   );
 }
 
 // ── Delivery Tab ────────────────────────────────────────────────
+function DeliveryTab({ data, upd }) {
+  const smartRetry = data?.smartRetry ?? {};
+  const aiBestTime = data?.aiBestTime ?? false;
+  const utm = data?.utm ?? {};
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      {/* UTM Parameters */}
+      <div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+          <SectionLabel>UTM Parameters</SectionLabel>
+          <Toggle on={!!utm.enabled} onChange={(v) => upd({ utm: { ...utm, enabled: v } })} />
+        </div>
+        {utm.enabled && (
+          <div style={{ border: `1px solid ${BORDER}`, borderRadius: 8, overflow: "hidden" }}>
+            {[
+              ["utm_source", "Source", "rcs"],
+              ["utm_medium", "Medium", "journey"],
+              ["utm_campaign", "Campaign", data.template?.name || ""],
+              ["utm_term", "Term", ""],
+              ["utm_content", "Content", ""],
+            ].map(([key, label, placeholder]) => (
+              <div
+                key={key}
+                style={{ display: "flex", alignItems: "center", borderBottom: `1px solid ${BORDER}` }}
+              >
+                <span
+                  style={{
+                    fontSize: 11,
+                    color: "#64748B",
+                    padding: "7px 10px",
+                    width: 80,
+                    flexShrink: 0,
+                    background: "#F8FAFC",
+                    borderRight: `1px solid ${BORDER}`,
+                    fontFamily: "monospace",
+                  }}
+                >
+                  {label}
+                </span>
+                <input
+                  value={utm[key] || ""}
+                  placeholder={placeholder}
+                  onChange={(e) => upd({ utm: { ...utm, [key]: e.target.value } })}
+                  style={{ flex: 1, padding: "7px 10px", fontSize: 12, border: "none", outline: "none" }}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Smart Retry */}
+      <div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 8,
+          }}
+        >
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>Smart Retry</div>
+            <div style={{ fontSize: 11, color: MUTED, marginTop: 1 }}>
+              Automatically retry failed deliveries
+            </div>
+          </div>
+          <Toggle
+            on={!!smartRetry.enabled}
+            onChange={(v) => upd({ smartRetry: { ...smartRetry, enabled: v } })}
+          />
+        </div>
+      </div>
+
+      {/* AI Best Time */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 10,
+          padding: "12px",
+          background: "#F8FAFC",
+          borderRadius: 10,
+          border: `1px solid ${BORDER}`,
+        }}
+      >
+        <Toggle on={!!aiBestTime} onChange={(v) => upd({ aiBestTime: v })} />
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>
+            AI Best Sent Time
+          </div>
+          <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.5 }}>
+            Sends at each user's optimal engagement window. Usually within 0–4 hours.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Output Tab ──────────────────────────────────────────────────
 const BRANCH_OPTIONS = RCS_DELIVERY_OUTPUT_OPTIONS.filter((o) => o.id !== "next_step");
 
-function DeliveryTab({ data, upd }) {
+function OutputTab({ data, upd }) {
+  const template = data?.template;
   const outputCfg = data?.outputConfig ?? {
     routingMode: "next_step",
     deliveryOutputs: [],
@@ -686,8 +592,9 @@ function DeliveryTab({ data, upd }) {
     noResponseUnit: "hours",
     wiredPorts: [],
   };
-  const smartRetry = data?.smartRetry ?? {};
-  const aiBestTime = data?.aiBestTime ?? false;
+  const routingMode = outputCfg.routingMode ?? "next_step";
+  const selectedBranches = outputCfg.deliveryOutputs ?? [];
+  const connectableBtns = (template?.buttons ?? []).filter(rcsIsConnectable);
 
   const radioStyle = (active) => ({
     display: "flex",
@@ -700,9 +607,6 @@ function DeliveryTab({ data, upd }) {
     background: active ? "#EEF2FF" : "#fff",
     transition: "all 0.15s",
   });
-
-  const routingMode = outputCfg.routingMode ?? "next_step";
-  const selectedBranches = outputCfg.deliveryOutputs ?? [];
 
   const setMode = (mode) => {
     upd({
@@ -722,8 +626,21 @@ function DeliveryTab({ data, upd }) {
     upd({ outputConfig: { ...outputCfg, deliveryOutputs: next } });
   };
 
+  const deliveryPortCount =
+    routingMode === "next_step" ? 1 : Math.max(selectedBranches.length, 1);
+  const totalPorts = deliveryPortCount + connectableBtns.length;
+
+  const activeDeliveryPorts =
+    routingMode === "next_step"
+      ? RCS_DELIVERY_OUTPUT_OPTIONS.filter((o) => o.id === "next_step")
+      : RCS_DELIVERY_OUTPUT_OPTIONS.filter((o) => selectedBranches.includes(o.id));
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <p style={{ fontSize: 11, color: MUTED, lineHeight: 1.6, margin: 0 }}>
+        Choose how this node routes users after the RCS message is sent.
+      </p>
+
       {/* Routing Mode */}
       <div>
         <SectionLabel>Routing Mode</SectionLabel>
@@ -743,14 +660,7 @@ function DeliveryTab({ data, upd }) {
               }}
             >
               {routingMode === "next_step" && (
-                <div
-                  style={{
-                    width: 7,
-                    height: 7,
-                    borderRadius: "50%",
-                    background: INDIGO,
-                  }}
-                />
+                <div style={{ width: 7, height: 7, borderRadius: "50%", background: INDIGO }} />
               )}
             </div>
             <div>
@@ -776,14 +686,7 @@ function DeliveryTab({ data, upd }) {
               }}
             >
               {routingMode === "branches" && (
-                <div
-                  style={{
-                    width: 7,
-                    height: 7,
-                    borderRadius: "50%",
-                    background: INDIGO,
-                  }}
-                />
+                <div style={{ width: 7, height: 7, borderRadius: "50%", background: INDIGO }} />
               )}
             </div>
             <div>
@@ -802,13 +705,7 @@ function DeliveryTab({ data, upd }) {
       {routingMode === "branches" && (
         <div>
           <SectionLabel>Select Branch Statuses</SectionLabel>
-          <div
-            style={{
-              border: `1px solid ${BORDER}`,
-              borderRadius: 10,
-              overflow: "hidden",
-            }}
-          >
+          <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
             {BRANCH_OPTIONS.map((opt, i) => {
               const selected = selectedBranches.includes(opt.id);
               return (
@@ -893,84 +790,6 @@ function DeliveryTab({ data, upd }) {
           )}
         </div>
       )}
-
-      {/* Smart Retry */}
-      <div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 8,
-          }}
-        >
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>Smart Retry</div>
-            <div style={{ fontSize: 11, color: MUTED, marginTop: 1 }}>
-              Automatically retry failed deliveries
-            </div>
-          </div>
-          <Toggle
-            on={!!smartRetry.enabled}
-            onChange={(v) => upd({ smartRetry: { ...smartRetry, enabled: v } })}
-          />
-        </div>
-      </div>
-
-      {/* AI Best Time */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          gap: 10,
-          padding: "12px",
-          background: "#F8FAFC",
-          borderRadius: 10,
-          border: `1px solid ${BORDER}`,
-        }}
-      >
-        <Toggle on={!!aiBestTime} onChange={(v) => upd({ aiBestTime: v })} />
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>
-            AI Best Sent Time
-          </div>
-          <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.5 }}>
-            Sends at each user's optimal engagement window. Usually within 0–4 hours.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Output Tab ──────────────────────────────────────────────────
-function OutputTab({ data, upd }) {
-  const template = data?.template;
-  const outputCfg = data?.outputConfig ?? {
-    routingMode: "next_step",
-    deliveryOutputs: [],
-    noResponseValue: 5,
-    noResponseUnit: "hours",
-    wiredPorts: [],
-  };
-  const routingMode = outputCfg.routingMode ?? "next_step";
-  const selectedBranches = outputCfg.deliveryOutputs ?? [];
-  const connectableBtns = (template?.buttons ?? []).filter(rcsIsConnectable);
-
-  const deliveryPortCount =
-    routingMode === "next_step" ? 1 : Math.max(selectedBranches.length, 1);
-  const totalPorts = deliveryPortCount + connectableBtns.length;
-
-  const activeDeliveryPorts =
-    routingMode === "next_step"
-      ? RCS_DELIVERY_OUTPUT_OPTIONS.filter((o) => o.id === "next_step")
-      : RCS_DELIVERY_OUTPUT_OPTIONS.filter((o) => selectedBranches.includes(o.id));
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <p style={{ fontSize: 11, color: MUTED, lineHeight: 1.6, margin: 0 }}>
-        Active output ports based on your routing mode and template buttons.
-      </p>
 
       {/* Delivery ports */}
       {activeDeliveryPorts.length > 0 && (
