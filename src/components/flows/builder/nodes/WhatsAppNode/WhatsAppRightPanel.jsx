@@ -15,6 +15,7 @@ import {
   DELIVERY_OUTPUT_OPTIONS,
 } from "./data/mockTemplates";
 import { useFlowVariant } from "@/components/flows/FlowVariantContext";
+import { Section, UTMFields, RetryFields } from "../shared/DeliveryKit";
 
 const WA_GREEN       = "#25D366";
 const PRIMARY        = "#6C3AE8";
@@ -513,70 +514,43 @@ export function TemplateTab({ data, patch }) {
 function DeliveryTab({ data, patch }) {
   const { markAsMarketing, utm = {}, aiBestTime, smartRetry = {} } = data;
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+    <div style={{ margin: "-16px" }}>
       {/* Mark as Marketing */}
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px", background: "#F8FAFC", borderRadius: 10, border: `1px solid ${BORDER}` }}>
-        <input type="checkbox" id="wa-marketing" checked={markAsMarketing !== false} onChange={(e) => patch({ markAsMarketing: e.target.checked })} style={{ marginTop: 2, accentColor: WA_GREEN }} />
-        <div>
-          <label htmlFor="wa-marketing" style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", cursor: "pointer", display: "block", marginBottom: 2 }}>Mark as Marketing message</label>
-          <p style={{ fontSize: 11, color: "#64748B", margin: 0, lineHeight: 1.5 }}>Only marketing messages are used for revenue attribution</p>
+      <Section title="Mark as Marketing" defaultOpen>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+          <input type="checkbox" id="wa-marketing" checked={markAsMarketing !== false} onChange={(e) => patch({ markAsMarketing: e.target.checked })} style={{ marginTop: 2, accentColor: WA_GREEN }} />
+          <div>
+            <label htmlFor="wa-marketing" style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", cursor: "pointer", display: "block", marginBottom: 2 }}>Mark as Marketing message</label>
+            <p style={{ fontSize: 11, color: "#64748B", margin: 0, lineHeight: 1.5 }}>Only marketing messages are used for revenue attribution</p>
+          </div>
         </div>
-      </div>
+      </Section>
 
       {/* UTM Parameters */}
-      <div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <Label>UTM Parameters</Label>
-          <Toggle on={!!utm.enabled} onChange={(v) => patch({ utm: { ...utm, enabled: v } })} />
-        </div>
-        {utm.enabled && (
-          <div style={{ border: `1px solid ${BORDER}`, borderRadius: 8, overflow: "hidden" }}>
-            {[["utm_source", "Source", "whatsapp"], ["utm_medium", "Medium", "journey"], ["utm_campaign", "Campaign", data.template?.name || ""]].map(([key, label, placeholder]) => (
-              <div key={key} style={{ display: "flex", alignItems: "center", borderBottom: `1px solid ${BORDER}` }}>
-                <span style={{ fontSize: 11, color: "#64748B", padding: "7px 10px", width: 80, flexShrink: 0, background: "#F8FAFC", borderRight: `1px solid ${BORDER}`, fontFamily: "monospace" }}>{label}</span>
-                <input value={utm[key] || ""} placeholder={placeholder} onChange={(e) => patch({ utm: { ...utm, [key]: e.target.value } })}
-                  style={{ flex: 1, padding: "7px 10px", fontSize: 12, border: "none", outline: "none" }} />
-              </div>
-            ))}
-            {[["utm_content", "Content", ""], ["utm_term", "Term", ""]].map(([key, label, placeholder]) => (
-              <div key={key} style={{ display: "flex", alignItems: "center", borderBottom: `1px solid ${BORDER}` }}>
-                <span style={{ fontSize: 11, color: "#64748B", padding: "7px 10px", width: 80, flexShrink: 0, background: "#F8FAFC", borderRight: `1px solid ${BORDER}`, fontFamily: "monospace" }}>{label}</span>
-                <input value={utm[key] || ""} placeholder={placeholder} onChange={(e) => patch({ utm: { ...utm, [key]: e.target.value } })}
-                  style={{ flex: 1, padding: "7px 10px", fontSize: 12, border: "none", outline: "none" }} />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <Section title="UTM Parameters" defaultOpen>
+        <UTMFields
+          utm={utm}
+          onChange={(v) => patch({ utm: v })}
+          accentColor={WA_GREEN}
+          defaults={{ utm_source: "whatsapp", utm_medium: "journey", utm_campaign: data.template?.name || "" }}
+        />
+      </Section>
 
       {/* AI Best Sent Time */}
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px", background: "#F8FAFC", borderRadius: 10, border: `1px solid ${BORDER}` }}>
-        <Toggle on={!!aiBestTime} onChange={(v) => patch({ aiBestTime: v })} />
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>AI Best Sent Time</div>
-          <p style={{ fontSize: 11, color: "#64748B", margin: 0, lineHeight: 1.5 }}>Sends at each user's optimal engagement window. Usually within 0–4 hours.</p>
+      <Section title="Send Optimization" defaultOpen>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+          <Toggle on={!!aiBestTime} onChange={(v) => patch({ aiBestTime: v })} />
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>AI Best Sent Time</div>
+            <p style={{ fontSize: 11, color: "#64748B", margin: 0, lineHeight: 1.5 }}>Sends at each user's optimal engagement window. Usually within 0–4 hours.</p>
+          </div>
         </div>
-      </div>
+      </Section>
 
       {/* Smart Retry */}
-      <div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <Label>Smart Retry</Label>
-          <Toggle on={!!smartRetry.enabled} onChange={(v) => patch({ smartRetry: { ...smartRetry, enabled: v } })} />
-        </div>
-        {smartRetry.enabled && (
-          <div style={{ display: "flex", gap: 8 }}>
-            {[["smart", "Smart Retry (Recommended)"], ["manual", "Manual Retry"]].map(([mode, label]) => (
-              <button key={mode} type="button" onClick={() => patch({ smartRetry: { ...smartRetry, mode } })} style={{
-                flex: 1, padding: "10px 8px", borderRadius: 8, cursor: "pointer", fontSize: 11, fontWeight: 500,
-                border: `2px solid ${smartRetry.mode === mode ? WA_GREEN : BORDER}`,
-                background: smartRetry.mode === mode ? "#F0FDF4" : "#fff",
-                color: smartRetry.mode === mode ? "#065F46" : "#64748B",
-              }}>{label}</button>
-            ))}
-          </div>
-        )}
-      </div>
+      <Section title="Smart Retry" defaultOpen>
+        <RetryFields smartRetry={smartRetry} onChange={(v) => patch({ smartRetry: v })} accentColor={WA_GREEN} />
+      </Section>
     </div>
   );
 }

@@ -146,6 +146,7 @@ export const defaultEmailNodeData = {
     deliveryOutputs:  [],
     wiredPorts:       [],
   },
-  utm: { enabled: false, source: "email", medium: "journey", campaign: "" },
+  utm: { enabled: false, utm_source: "email", utm_medium: "journey", utm_campaign: "" },
   aiBestTime: false,
+  smartRetry: { enabled: false, mode: "smart" },
 };

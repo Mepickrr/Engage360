@@ -8,6 +8,7 @@ import { getSMSTemplateAnalytics, SMS_ANALYTICS_METRICS } from "./data/mockSMSAn
 import UnifiedTemplateModal from "../WhatsAppNode/UnifiedTemplateModal";
 import SMSTemplateForm from "./SMSTemplateForm";
 import SMSBubblePreview from "./SMSBubblePreview";
+import { Section, UTMFields, RetryFields } from "../shared/DeliveryKit";
 
 const SMS_PURPLE = "#6366F1";
 const BORDER     = "#E5E7EB";
@@ -230,57 +231,35 @@ function TemplateTab({ data, patch }) {
 function DeliveryTab({ data, patch }) {
   const { utm = {}, aiBestTime, smartRetry = {} } = data;
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+    <div style={{ margin: "-16px" }}>
 
       {/* UTM Parameters */}
-      <div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <Label>UTM Parameters</Label>
-          <Toggle on={!!utm.enabled} onChange={(v) => patch({ utm: { ...utm, enabled: v } })} />
-        </div>
-        {utm.enabled && (
-          <div style={{ border: `1px solid ${BORDER}`, borderRadius: 8, overflow: "hidden" }}>
-            {[["utm_source", "Source", "sms"], ["utm_medium", "Medium", "journey"], ["utm_campaign", "Campaign", data.template?.name || ""], ["utm_term", "Term", ""], ["utm_content", "Content", ""]].map(([key, label, placeholder]) => (
-              <div key={key} style={{ display: "flex", alignItems: "center", borderBottom: `1px solid ${BORDER}` }}>
-                <span style={{ fontSize: 11, color: "#64748B", padding: "7px 10px", width: 80, flexShrink: 0, background: "#F8FAFC", borderRight: `1px solid ${BORDER}`, fontFamily: "monospace" }}>{label}</span>
-                <input value={utm[key] || ""} placeholder={placeholder} onChange={(e) => patch({ utm: { ...utm, [key]: e.target.value } })}
-                  style={{ flex: 1, padding: "7px 10px", fontSize: 12, border: "none", outline: "none" }} />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <Section title="UTM Parameters" defaultOpen>
+        <UTMFields
+          utm={utm}
+          onChange={(v) => patch({ utm: v })}
+          accentColor={SMS_PURPLE}
+          defaults={{ utm_source: "sms", utm_medium: "journey", utm_campaign: data.template?.name || "" }}
+        />
+      </Section>
 
       {/* AI Best Sent Time */}
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px", background: "#F8FAFC", borderRadius: 10, border: `1px solid ${BORDER}` }}>
-        <Toggle on={!!aiBestTime} onChange={(v) => patch({ aiBestTime: v })} />
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>AI Best Sent Time</div>
-          <p style={{ fontSize: 11, color: "#64748B", margin: 0, lineHeight: 1.5 }}>
-            Sends at each user's optimal engagement window. Usually within 0–4 hours.
-          </p>
+      <Section title="Send Optimization" defaultOpen>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+          <Toggle on={!!aiBestTime} onChange={(v) => patch({ aiBestTime: v })} />
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>AI Best Sent Time</div>
+            <p style={{ fontSize: 11, color: "#64748B", margin: 0, lineHeight: 1.5 }}>
+              Sends at each user's optimal engagement window. Usually within 0–4 hours.
+            </p>
+          </div>
         </div>
-      </div>
+      </Section>
 
       {/* Smart Retry */}
-      <div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <Label>Smart Retry</Label>
-          <Toggle on={!!smartRetry.enabled} onChange={(v) => patch({ smartRetry: { ...smartRetry, enabled: v } })} />
-        </div>
-        {smartRetry.enabled && (
-          <div style={{ display: "flex", gap: 8 }}>
-            {[["smart", "Smart Retry (Recommended)"], ["manual", "Manual Retry"]].map(([mode, label]) => (
-              <button key={mode} type="button" onClick={() => patch({ smartRetry: { ...smartRetry, mode } })} style={{
-                flex: 1, padding: "10px 8px", borderRadius: 8, cursor: "pointer", fontSize: 11, fontWeight: 500,
-                border: `2px solid ${smartRetry.mode === mode ? SMS_PURPLE : BORDER}`,
-                background: smartRetry.mode === mode ? "#EEF2FF" : "#fff",
-                color: smartRetry.mode === mode ? SMS_PURPLE : "#64748B",
-              }}>{label}</button>
-            ))}
-          </div>
-        )}
-      </div>
+      <Section title="Smart Retry" defaultOpen>
+        <RetryFields smartRetry={smartRetry} onChange={(v) => patch({ smartRetry: v })} accentColor={SMS_PURPLE} />
+      </Section>
     </div>
   );
 }

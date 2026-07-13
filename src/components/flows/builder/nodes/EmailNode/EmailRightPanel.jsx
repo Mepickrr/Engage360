@@ -12,6 +12,7 @@ import {
 } from "./data/mockData";
 import TemplateEditorModal from "./TemplateEditorModal";
 import EmailTemplateGalleryModal from "./EmailTemplateGalleryModal";
+import { UTMFields, RetryFields } from "../shared/DeliveryKit";
 
 const EMAIL_BLUE = "#3B82F6";
 const BORDER     = "#E5E7EB";
@@ -224,42 +225,6 @@ function GmailAnnotationSection({ ga, onChange }) {
             <Info size={13} color="#D97706" style={{ flexShrink: 0, marginTop: 1 }} />
             <span style={{ fontSize: 11, color: "#92400E" }}>Gmail only shows annotations for emails sent from verified domains with good sender reputation.</span>
           </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── UTM section ────────────────────────────────────────────────
-function UTMSection({ utm, onChange }) {
-  return (
-    <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>UTM Parameters</div>
-          <div style={{ fontSize: 11, color: MUTED }}>Auto-append UTM to all links</div>
-        </div>
-        <Toggle on={utm.enabled} onChange={(v) => onChange({ ...utm, enabled: v })} />
-      </div>
-      {utm.enabled && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {[
-            { key: "source",   label: "utm_source",   placeholder: "email"   },
-            { key: "medium",   label: "utm_medium",   placeholder: "journey" },
-            { key: "campaign", label: "utm_campaign", placeholder: "cart-recovery" },
-            { key: "term",     label: "utm_term",     placeholder: "" },
-            { key: "content",  label: "utm_content",  placeholder: "button-1" },
-          ].map(({ key, label, placeholder }) => (
-            <div key={key}>
-              <Label>{label}</Label>
-              <TextField
-                value={utm[key] || ""}
-                onChange={(v) => onChange({ ...utm, [key]: v })}
-                placeholder={placeholder}
-                mono
-              />
-            </div>
-          ))}
         </div>
       )}
     </div>
@@ -546,9 +511,11 @@ export default function EmailRightPanel({ node, updateNodeData, removeNode }) {
             <div>
               {/* UTM */}
               <Section title="UTM Parameters" defaultOpen>
-                <UTMSection
-                  utm={data.utm ?? { enabled: false, source: "email", medium: "journey", campaign: "" }}
+                <UTMFields
+                  utm={data.utm ?? {}}
                   onChange={(v) => patch({ utm: v })}
+                  accentColor={EMAIL_BLUE}
+                  defaults={{ utm_source: "email", utm_medium: "journey", utm_campaign: "cart-recovery" }}
                 />
               </Section>
 
@@ -566,6 +533,15 @@ export default function EmailRightPanel({ node, updateNodeData, removeNode }) {
                     <div style={{ fontSize: 11, color: "#1D4ED8" }}>⚡ AI will deliver within a 24-hour window, optimised per user based on their open history.</div>
                   </div>
                 )}
+              </Section>
+
+              {/* Smart Retry */}
+              <Section title="Smart Retry" defaultOpen>
+                <RetryFields
+                  smartRetry={data.smartRetry ?? {}}
+                  onChange={(v) => patch({ smartRetry: v })}
+                  accentColor={EMAIL_BLUE}
+                />
               </Section>
 
               {/* Test Email */}

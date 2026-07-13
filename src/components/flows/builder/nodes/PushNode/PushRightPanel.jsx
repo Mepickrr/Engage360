@@ -5,6 +5,7 @@ import { getPushTemplateAnalytics, PUSH_ANALYTICS_METRICS } from "./data/mockPus
 import UnifiedTemplateModal from "../WhatsAppNode/UnifiedTemplateModal";
 import PushTemplateForm from "./PushTemplateForm";
 import PushBubblePreview from "./PushBubblePreview";
+import { Section, UTMFields, RetryFields } from "../shared/DeliveryKit";
 
 const AMBER  = "#F59E0B";
 const BORDER = "#E5E7EB";
@@ -118,34 +119,34 @@ function OutputTab({ data, patch }) {
 
 // ── Delivery Tab ────────────────────────────────────────────────
 function DeliveryTab({ data, patch }) {
-  const { aiBestTime, smartRetry = {} } = data;
+  const { utm = {}, aiBestTime, smartRetry = {} } = data;
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px", background: "#F8FAFC", borderRadius: 10, border: `1px solid ${BORDER}` }}>
-        <Toggle on={!!aiBestTime} onChange={(v) => patch({ aiBestTime: v })} />
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>AI Best Sent Time</div>
-          <p style={{ fontSize: 11, color: "#64748B", margin: 0, lineHeight: 1.5 }}>Sends at each user's optimal engagement window.</p>
-        </div>
-      </div>
-      <div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <Label>Smart Retry</Label>
-          <Toggle on={!!smartRetry.enabled} onChange={(v) => patch({ smartRetry: { ...smartRetry, enabled: v } })} />
-        </div>
-        {smartRetry.enabled && (
-          <div style={{ display: "flex", gap: 8 }}>
-            {[["smart", "Smart Retry (Recommended)"], ["manual", "Manual Retry"]].map(([mode, label]) => (
-              <button key={mode} type="button" onClick={() => patch({ smartRetry: { ...smartRetry, mode } })} style={{
-                flex: 1, padding: "10px 8px", borderRadius: 8, cursor: "pointer", fontSize: 11, fontWeight: 500,
-                border: `2px solid ${smartRetry.mode === mode ? AMBER : BORDER}`,
-                background: smartRetry.mode === mode ? "#FFFBEB" : "#fff",
-                color: smartRetry.mode === mode ? "#92400E" : "#64748B",
-              }}>{label}</button>
-            ))}
+    <div style={{ margin: "-16px" }}>
+      {/* UTM Parameters */}
+      <Section title="UTM Parameters" defaultOpen>
+        <UTMFields
+          utm={utm}
+          onChange={(v) => patch({ utm: v })}
+          accentColor={AMBER}
+          defaults={{ utm_source: "push", utm_medium: "journey", utm_campaign: data.template?.name || "" }}
+        />
+      </Section>
+
+      {/* AI Best Sent Time */}
+      <Section title="Send Optimization" defaultOpen>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+          <Toggle on={!!aiBestTime} onChange={(v) => patch({ aiBestTime: v })} />
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>AI Best Sent Time</div>
+            <p style={{ fontSize: 11, color: "#64748B", margin: 0, lineHeight: 1.5 }}>Sends at each user's optimal engagement window.</p>
           </div>
-        )}
-      </div>
+        </div>
+      </Section>
+
+      {/* Smart Retry */}
+      <Section title="Smart Retry" defaultOpen>
+        <RetryFields smartRetry={smartRetry} onChange={(v) => patch({ smartRetry: v })} accentColor={AMBER} />
+      </Section>
     </div>
   );
 }

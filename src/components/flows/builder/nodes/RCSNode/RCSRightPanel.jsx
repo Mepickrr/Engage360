@@ -14,6 +14,7 @@ import { getRCSTemplateAnalytics, RCS_ANALYTICS_METRICS } from "./data/mockRCSAn
 import UnifiedTemplateModal from "../WhatsAppNode/UnifiedTemplateModal";
 import RCSTemplateForm from "./RCSTemplateForm";
 import RCSBubblePreview from "./RCSBubblePreview";
+import { Section, UTMFields, RetryFields } from "../shared/DeliveryKit";
 
 const INDIGO = "#4F46E5";
 const BORDER = "#E5E7EB";
@@ -485,97 +486,36 @@ function DeliveryTab({ data, upd }) {
   const utm = data?.utm ?? {};
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+    <div style={{ margin: "-16px" }}>
       {/* UTM Parameters */}
-      <div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <SectionLabel>UTM Parameters</SectionLabel>
-          <Toggle on={!!utm.enabled} onChange={(v) => upd({ utm: { ...utm, enabled: v } })} />
-        </div>
-        {utm.enabled && (
-          <div style={{ border: `1px solid ${BORDER}`, borderRadius: 8, overflow: "hidden" }}>
-            {[
-              ["utm_source", "Source", "rcs"],
-              ["utm_medium", "Medium", "journey"],
-              ["utm_campaign", "Campaign", data.template?.name || ""],
-              ["utm_term", "Term", ""],
-              ["utm_content", "Content", ""],
-            ].map(([key, label, placeholder]) => (
-              <div
-                key={key}
-                style={{ display: "flex", alignItems: "center", borderBottom: `1px solid ${BORDER}` }}
-              >
-                <span
-                  style={{
-                    fontSize: 11,
-                    color: "#64748B",
-                    padding: "7px 10px",
-                    width: 80,
-                    flexShrink: 0,
-                    background: "#F8FAFC",
-                    borderRight: `1px solid ${BORDER}`,
-                    fontFamily: "monospace",
-                  }}
-                >
-                  {label}
-                </span>
-                <input
-                  value={utm[key] || ""}
-                  placeholder={placeholder}
-                  onChange={(e) => upd({ utm: { ...utm, [key]: e.target.value } })}
-                  style={{ flex: 1, padding: "7px 10px", fontSize: 12, border: "none", outline: "none" }}
-                />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <Section title="UTM Parameters" defaultOpen>
+        <UTMFields
+          utm={utm}
+          onChange={(v) => upd({ utm: v })}
+          accentColor={INDIGO}
+          defaults={{ utm_source: "rcs", utm_medium: "journey", utm_campaign: data.template?.name || "" }}
+        />
+      </Section>
 
       {/* Smart Retry */}
-      <div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 8,
-          }}
-        >
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>Smart Retry</div>
-            <div style={{ fontSize: 11, color: MUTED, marginTop: 1 }}>
-              Automatically retry failed deliveries
-            </div>
-          </div>
-          <Toggle
-            on={!!smartRetry.enabled}
-            onChange={(v) => upd({ smartRetry: { ...smartRetry, enabled: v } })}
-          />
-        </div>
-      </div>
+      <Section title="Smart Retry" defaultOpen>
+        <RetryFields smartRetry={smartRetry} onChange={(v) => upd({ smartRetry: v })} accentColor={INDIGO} />
+      </Section>
 
       {/* AI Best Time */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          gap: 10,
-          padding: "12px",
-          background: "#F8FAFC",
-          borderRadius: 10,
-          border: `1px solid ${BORDER}`,
-        }}
-      >
-        <Toggle on={!!aiBestTime} onChange={(v) => upd({ aiBestTime: v })} />
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>
-            AI Best Sent Time
+      <Section title="Send Optimization" defaultOpen>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+          <Toggle on={!!aiBestTime} onChange={(v) => upd({ aiBestTime: v })} />
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>
+              AI Best Sent Time
+            </div>
+            <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.5 }}>
+              Sends at each user's optimal engagement window. Usually within 0–4 hours.
+            </p>
           </div>
-          <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.5 }}>
-            Sends at each user's optimal engagement window. Usually within 0–4 hours.
-          </p>
         </div>
-      </div>
+      </Section>
     </div>
   );
 }
