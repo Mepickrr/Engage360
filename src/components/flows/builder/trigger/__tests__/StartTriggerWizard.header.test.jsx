@@ -16,7 +16,7 @@ describe("StartTriggerWizard — simplified header and Submit footer", () => {
   it("shows the simple 'Configure Start Trigger' title with no step label, for the event trigger", () => {
     render(<StartTriggerWizard open initialConfig={null} onClose={() => {}} onComplete={() => {}} />);
     pickOrderPlaced();
-    expect(screen.getByText("Configure Start Trigger")).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Configure Start Trigger" })).toBeInTheDocument();
     expect(screen.queryByText(/When will users enter the flow/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Who will enter the flow/i)).not.toBeInTheDocument();
   });
@@ -30,7 +30,7 @@ describe("StartTriggerWizard — simplified header and Submit footer", () => {
   it("shows the simple title for broadcast-source, and Submit only on its final screen", () => {
     render(<StartTriggerWizard open initialConfig={null} onClose={() => {}} onComplete={() => {}} />);
     pickCsvBroadcast();
-    expect(screen.getByText("Configure Start Trigger")).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Configure Start Trigger" })).toBeInTheDocument();
     expect(screen.getByTestId("trigger-wizard-next")).toHaveTextContent("Next");
     fireEvent.click(screen.getByTestId("trigger-wizard-next"));
     expect(screen.getByTestId("trigger-wizard-finish")).toHaveTextContent("Submit");

@@ -340,7 +340,7 @@ export default function StartTriggerWizard({
           onPointerDownOutside={(e) => e.preventDefault()}
           onInteractOutside={(e) => e.preventDefault()}
         >
-          <DialogTitle className="sr-only" />
+          <DialogTitle className="sr-only">Configure Start Trigger</DialogTitle>
           <header className="px-5 py-4 border-b border-border flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="text-base font-semibold text-text-primary">
