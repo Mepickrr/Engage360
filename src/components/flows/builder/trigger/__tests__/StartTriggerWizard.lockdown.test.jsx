@@ -61,7 +61,7 @@ describe("StartTriggerWizard — lockdown mode", () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
-  it("hides the footer Cancel button on step1 when locked, after picking a trigger", () => {
+  it("hides the footer Cancel/Back button on the merged config screen when locked", () => {
     render(
       <StartTriggerWizard
         open
@@ -76,24 +76,6 @@ describe("StartTriggerWizard — lockdown mode", () => {
     pickAnyEventTrigger();
     expect(screen.getByTestId("trigger-wizard")).toBeInTheDocument();
     expect(screen.queryByTestId("trigger-wizard-back")).not.toBeInTheDocument();
-  });
-
-  it("still shows Back (not Cancel) on step2 when locked", () => {
-    render(
-      <StartTriggerWizard
-        open
-        initialConfig={null}
-        lockdown
-        onClose={() => {}}
-        onComplete={() => {}}
-        onSaveDraft={() => {}}
-        onDeleteFlow={() => {}}
-      />,
-    );
-    pickAnyEventTrigger();
-    fireEvent.click(screen.getByTestId("trigger-wizard-next"));
-    expect(screen.getByTestId("trigger-wizard-back")).toBeInTheDocument();
-    expect(screen.getByTestId("trigger-wizard-back")).toHaveTextContent("Back");
   });
 
   it("renders the normal close button and Cancel when lockdown is false (editing)", () => {

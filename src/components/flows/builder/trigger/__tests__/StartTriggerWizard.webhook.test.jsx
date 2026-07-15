@@ -18,20 +18,20 @@ describe("StartTriggerWizard — Webhook trigger", () => {
     expect(screen.getByTestId("webhook-step1")).toBeInTheDocument();
   });
 
-  it("disables Next until the webhook config is valid, then enables it", () => {
+  it("disables Submit until the webhook config is valid, then enables it", () => {
     render(<StartTriggerWizard open initialConfig={null} onClose={() => {}} onComplete={() => {}} />);
     pickWebhookTrigger();
-    expect(screen.getByTestId("trigger-wizard-next")).toBeDisabled();
+    expect(screen.getByTestId("trigger-wizard-finish")).toBeDisabled();
 
     fireEvent.change(screen.getByTestId("webhook-sample-payload"), {
       target: { value: '{"vas_id": "+919999999999"}' },
     });
     fireEvent.change(screen.getByTestId("webhook-unique-id-type"), { target: { value: "Phone Number" } });
     fireEvent.change(screen.getByTestId("webhook-unique-id-var"), { target: { value: "vas_id" } });
-    expect(screen.getByTestId("trigger-wizard-next")).not.toBeDisabled();
+    expect(screen.getByTestId("trigger-wizard-finish")).not.toBeDisabled();
   });
 
-  it("advances to the shared Who-enters-the-flow step and finishes with a kind: webhook config", () => {
+  it("shows the Who-enters-the-flow content on the same screen and finishes with a kind: webhook config", () => {
     const onComplete = jest.fn();
     render(<StartTriggerWizard open initialConfig={null} onClose={() => {}} onComplete={onComplete} />);
     pickWebhookTrigger();
@@ -41,7 +41,6 @@ describe("StartTriggerWizard — Webhook trigger", () => {
     });
     fireEvent.change(screen.getByTestId("webhook-unique-id-type"), { target: { value: "Phone Number" } });
     fireEvent.change(screen.getByTestId("webhook-unique-id-var"), { target: { value: "vas_id" } });
-    fireEvent.click(screen.getByTestId("trigger-wizard-next"));
 
     fireEvent.click(screen.getByTestId("audience-filter-users"));
     expect(screen.getByTestId("audience-type-block")).toBeInTheDocument();

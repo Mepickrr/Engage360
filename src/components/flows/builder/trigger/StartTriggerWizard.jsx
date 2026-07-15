@@ -10,7 +10,7 @@ import BroadcastSourceStep1 from "./BroadcastSourceStep1";
 import BroadcastSourceStep2 from "./BroadcastSourceStep2";
 import DateRelativeTriggerContent, { emptyDateConfig } from "./DateRelativeTriggerContent";
 import EventOffsetTriggerContent, { emptyEventOffsetConfig } from "./EventOffsetTriggerContent";
-import { mockedAudienceCount, emptyConditionBlock } from "./triggerHelpers";
+import { emptyConditionBlock } from "./triggerHelpers";
 import WebhookTriggerStep1, { isWebhookStep1Valid } from "./WebhookTriggerStep1";
 import { emptyWebhookConfig, flattenPayload } from "./webhookHelpers";
 import GoogleSheetTriggerStep1, { isGoogleSheetStep1Valid } from "./GoogleSheetTriggerStep1";
@@ -73,7 +73,7 @@ export default function StartTriggerWizard({
   onSaveDraft,
   onDeleteFlow,
 }) {
-  // "picker" | "step1" | "step2" | "broadcast" | "broadcast-source-1" | "broadcast-source-2"
+  // "picker" | "config" | "broadcast" | "broadcast-source-1" | "broadcast-source-2"
   const [stage, setStage] = useState("picker");
   const [pickingForGroupIdx, setPickingForGroupIdx] = useState(null);
 
@@ -93,9 +93,6 @@ export default function StartTriggerWizard({
   const [webhookConfig, setWebhookConfig] = useState(emptyWebhookConfig());
   const [isGoogleSheet, setIsGoogleSheet] = useState(false);
   const [googleSheetConfig, setGoogleSheetConfig] = useState(emptyGoogleSheetTriggerConfig());
-
-  const [count, setCount] = useState(null);
-  const [loadingCount, setLoadingCount] = useState(false);
 
   // Hydrate from existing config when edit mode opens.
   useEffect(() => {
@@ -121,21 +118,21 @@ export default function StartTriggerWizard({
           secondaryId: initialConfig.secondaryId || null,
           variableMappings: initialConfig.variableMappings || [],
         });
-        setStage("step1");
+        setStage("config");
       } else if (initialConfig?.kind === "date_relative") {
         setIsWebhook(false);
         setIsEventOffset(false);
         setIsGoogleSheet(false);
         setIsDateRelative(true);
         setDateConfig(initialConfig.dateConfig || emptyDateConfig());
-        setStage("step1");
+        setStage("config");
       } else if (initialConfig?.kind === "event_offset") {
         setIsWebhook(false);
         setIsDateRelative(false);
         setIsGoogleSheet(false);
         setIsEventOffset(true);
         setEventOffsetConfig(initialConfig.eventOffsetConfig || emptyEventOffsetConfig());
-        setStage("step1");
+        setStage("config");
       } else if (initialConfig?.kind === "google_sheet_new_row") {
         setIsWebhook(false);
         setIsDateRelative(false);
@@ -153,7 +150,7 @@ export default function StartTriggerWizard({
           pollIntervalMinutes: initialConfig.pollIntervalMinutes || 5,
           sampleValues: initialConfig.sampleValues || {},
         });
-        setStage("step1");
+        setStage("config");
       } else if (ev?.header === "Broadcast") {
         setIsWebhook(false);
         setIsDateRelative(false);
@@ -172,7 +169,7 @@ export default function StartTriggerWizard({
         setIsDateRelative(false);
         setIsEventOffset(false);
         setIsGoogleSheet(false);
-        setStage("step1");
+        setStage("config");
       }
     } else {
       setTriggerGroups([]);
@@ -194,7 +191,6 @@ export default function StartTriggerWizard({
       setStage("picker");
       setPickingForGroupIdx(null);
     }
-    setCount(null);
   }, [open, initialConfig]);
 
   const primaryEvent = triggerGroups[0]?.event;
@@ -219,14 +215,14 @@ export default function StartTriggerWizard({
         setIsEventOffset(false);
         setIsGoogleSheet(false);
         setWebhookConfig(emptyWebhookConfig());
-        setStage("step1");
+        setStage("config");
       } else if (card.name === "Google Sheet Data Entry") {
         setIsWebhook(false);
         setIsDateRelative(false);
         setIsEventOffset(false);
         setIsGoogleSheet(true);
         setGoogleSheetConfig(emptyGoogleSheetTriggerConfig());
-        setStage("step1");
+        setStage("config");
       } else if (card.header === "Broadcast") {
         setIsWebhook(false);
         setIsDateRelative(false);
@@ -246,20 +242,20 @@ export default function StartTriggerWizard({
         setIsGoogleSheet(false);
         setIsDateRelative(true);
         setDateConfig(emptyDateConfig(card.attribute_key));
-        setStage("step1");
+        setStage("config");
       } else if (card.system_event_relative) {
         setIsWebhook(false);
         setIsDateRelative(false);
         setIsGoogleSheet(false);
         setIsEventOffset(true);
         setEventOffsetConfig(emptyEventOffsetConfig(card.name));
-        setStage("step1");
+        setStage("config");
       } else {
         setIsWebhook(false);
         setIsDateRelative(false);
         setIsEventOffset(false);
         setIsGoogleSheet(false);
-        setStage("step1");
+        setStage("config");
       }
     } else {
       const idx = pickingForGroupIdx;
@@ -278,16 +274,8 @@ export default function StartTriggerWizard({
         return next;
       });
       setPickingForGroupIdx(null);
-      setStage("step1");
+      setStage("config");
     }
-  };
-
-  const onShowCount = () => {
-    setLoadingCount(true);
-    setTimeout(() => {
-      setCount(mockedAudienceCount());
-      setLoadingCount(false);
-    }, 600);
   };
 
   const handleFinish = () => {
@@ -399,11 +387,11 @@ export default function StartTriggerWizard({
 
           {stage !== "broadcast" && !stage.startsWith("broadcast-source") && (
             <div className="px-5 pt-4 flex items-center gap-3">
-              <StepDot n={1} active={stage === "step1"} done={stage === "step2"} label={isWebhook ? "Configure Webhook" : isGoogleSheet ? "Configure Google Sheet Data Entry" : "When"} />
+              <StepDot n={1} active={stage === "config"} done={false} label={isWebhook ? "Configure Webhook" : isGoogleSheet ? "Configure Google Sheet Data Entry" : "When"} />
               <span className="flex-1 h-px bg-border" />
               <StepDot
                 n={2}
-                active={stage === "step2"}
+                active={stage === "config" && !skipStep2}
                 done={false}
                 label="Who"
                 disabled={skipStep2}
@@ -429,26 +417,26 @@ export default function StartTriggerWizard({
             </div>
           )}
 
-          <div className="flex-1 overflow-y-auto px-5 py-5">
-            {stage === "step1" && isWebhook && (
+          <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+            {stage === "config" && isWebhook && (
               <WebhookTriggerStep1 config={webhookConfig} setConfig={setWebhookConfig} />
             )}
-            {stage === "step1" && isGoogleSheet && (
+            {stage === "config" && isGoogleSheet && (
               <GoogleSheetTriggerStep1 config={googleSheetConfig} setConfig={setGoogleSheetConfig} />
             )}
-            {stage === "step1" && isDateRelative && !isWebhook && !isGoogleSheet && (
+            {stage === "config" && isDateRelative && !isWebhook && !isGoogleSheet && (
               <DateRelativeTriggerContent
                 dateConfig={dateConfig}
                 setDateConfig={setDateConfig}
               />
             )}
-            {stage === "step1" && isEventOffset && !isWebhook && !isGoogleSheet && (
+            {stage === "config" && isEventOffset && !isWebhook && !isGoogleSheet && (
               <EventOffsetTriggerContent
                 config={eventOffsetConfig}
                 setConfig={setEventOffsetConfig}
               />
             )}
-            {stage === "step1" && !isDateRelative && !isEventOffset && !isWebhook && !isGoogleSheet && (
+            {stage === "config" && !isDateRelative && !isEventOffset && !isWebhook && !isGoogleSheet && (
               <Step1WhenContent
                 triggerGroups={triggerGroups}
                 setTriggerGroups={setTriggerGroups}
@@ -462,14 +450,8 @@ export default function StartTriggerWizard({
                 }}
               />
             )}
-            {stage === "step2" && (
-              <Step2WhoContent
-                audience={audience}
-                setAudience={setAudience}
-                showCount={onShowCount}
-                count={count}
-                loadingCount={loadingCount}
-              />
+            {stage === "config" && !skipStep2 && (
+              <Step2WhoContent audience={audience} setAudience={setAudience} />
             )}
             {stage === "broadcast" && (
               <BroadcastConfig config={broadcast} setConfig={setBroadcast} />
@@ -492,35 +474,21 @@ export default function StartTriggerWizard({
           </div>
 
           <footer className="px-5 py-3 border-t border-border flex items-center justify-between gap-2 bg-surface">
-            {(stage === "step2" || stage === "broadcast-source-2" || !lockdown) && (
+            {(stage === "broadcast-source-2" || !lockdown) && (
               <button
                 type="button"
                 onClick={() => {
-                  if (stage === "step2") setStage("step1");
-                  else if (stage === "broadcast-source-2") setStage("broadcast-source-1");
+                  if (stage === "broadcast-source-2") setStage("broadcast-source-1");
                   else onClose();
                 }}
                 className="inline-flex items-center gap-1 px-3 py-2 text-sm text-text-secondary hover:text-text-primary rounded-md hover:bg-slate-100"
                 data-testid="trigger-wizard-back"
               >
                 <ArrowLeft className="w-4 h-4" />
-                {stage === "step2" || stage === "broadcast-source-2" ? "Back" : "Cancel"}
+                {stage === "broadcast-source-2" ? "Back" : "Cancel"}
               </button>
             )}
             <div className="flex items-center gap-2">
-              {stage === "step1" && !skipStep2 && (
-                <button
-                  type="button"
-                  onClick={() => setStage("step2")}
-                  disabled={isWebhook && !isWebhookStep1Valid(webhookConfig)}
-                  data-testid="trigger-wizard-next"
-                  className="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium text-white rounded-md disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{ backgroundImage: "linear-gradient(135deg, #6C3AE8 0%, #8B5CF6 100%)" }}
-                >
-                  Next
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              )}
               {stage === "broadcast-source-1" && (
                 <button
                   type="button"
@@ -533,14 +501,14 @@ export default function StartTriggerWizard({
                   <ArrowRight className="w-4 h-4" />
                 </button>
               )}
-              {(stage === "step2" ||
-                (stage === "step1" && skipStep2) ||
-                stage === "broadcast" ||
-                stage === "broadcast-source-2") && (
+              {(stage === "config" || stage === "broadcast" || stage === "broadcast-source-2") && (
                 <button
                   type="button"
                   onClick={handleFinish}
-                  disabled={isGoogleSheet && !isGoogleSheetStep1Valid(googleSheetConfig)}
+                  disabled={
+                    (isGoogleSheet && !isGoogleSheetStep1Valid(googleSheetConfig)) ||
+                    (isWebhook && !isWebhookStep1Valid(webhookConfig))
+                  }
                   data-testid="trigger-wizard-finish"
                   className="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium text-white rounded-md disabled:opacity-40 disabled:cursor-not-allowed"
                   style={{ backgroundImage: "linear-gradient(135deg, #6C3AE8 0%, #8B5CF6 100%)" }}
