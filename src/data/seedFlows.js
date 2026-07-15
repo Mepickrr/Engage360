@@ -24,7 +24,7 @@ export const SEED_FLOWS = [
     nodes: [
       // 1. Start Trigger — cart_abandoned event
       {
-        id: "n_start",
+        id: "start-trigger-node",
         type: "start-trigger",
         position: { x: 300, y: 40 },
         data: {
@@ -131,7 +131,7 @@ export const SEED_FLOWS = [
     edges: [
       {
         id: "e1",
-        source: "n_start",
+        source: "start-trigger-node",
         target: "n_delay",
         type: "smoothstep",
         markerEnd: { type: "arrowclosed", color: "#94A3B8" },
