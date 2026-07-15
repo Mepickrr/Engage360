@@ -330,19 +330,6 @@ export default function StartTriggerWizard({
     );
   }
 
-  const sourceStepLabel =
-    broadcastSourceType === "csv" ? "Select CSV files" : "Select segments";
-  const stepperLabel =
-    stage === "broadcast"
-      ? "Configure broadcast"
-      : stage === "broadcast-source-1" || stage === "broadcast-source-2"
-      ? `1. ${sourceStepLabel} → 2. Schedule & audience`
-      : isWebhook
-      ? "1. Configure Webhook → 2. Who will enter the flow"
-      : isGoogleSheet
-      ? "1. Configure Google Sheet Data Entry"
-      : "1. When will users enter the flow → 2. Who will enter the flow";
-
   return (
     <>
       <Dialog open={open} onOpenChange={(o) => { if (!o && !lockdown) onClose(); }}>
@@ -353,14 +340,11 @@ export default function StartTriggerWizard({
           onPointerDownOutside={(e) => e.preventDefault()}
           onInteractOutside={(e) => e.preventDefault()}
         >
-          <DialogTitle className="sr-only">Configure trigger</DialogTitle>
+          <DialogTitle className="sr-only" />
           <header className="px-5 py-4 border-b border-border flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="text-base font-semibold text-text-primary">
-                Configure trigger
-              </div>
-              <div className="text-[12px] text-text-muted hidden sm:block">
-                {stepperLabel}
+                Configure Start Trigger
               </div>
             </div>
             {lockdown && (
@@ -384,38 +368,6 @@ export default function StartTriggerWizard({
               </div>
             )}
           </header>
-
-          {stage !== "broadcast" && !stage.startsWith("broadcast-source") && (
-            <div className="px-5 pt-4 flex items-center gap-3">
-              <StepDot n={1} active={stage === "config"} done={false} label={isWebhook ? "Configure Webhook" : isGoogleSheet ? "Configure Google Sheet Data Entry" : "When"} />
-              <span className="flex-1 h-px bg-border" />
-              <StepDot
-                n={2}
-                active={stage === "config" && !skipStep2}
-                done={false}
-                label="Who"
-                disabled={skipStep2}
-              />
-            </div>
-          )}
-
-          {stage.startsWith("broadcast-source") && (
-            <div className="px-5 pt-4 flex items-center gap-3">
-              <StepDot
-                n={1}
-                active={stage === "broadcast-source-1"}
-                done={stage === "broadcast-source-2"}
-                label={sourceStepLabel}
-              />
-              <span className="flex-1 h-px bg-border" />
-              <StepDot
-                n={2}
-                active={stage === "broadcast-source-2"}
-                done={false}
-                label="Schedule & Audience"
-              />
-            </div>
-          )}
 
           <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5">
             {stage === "config" && isWebhook && (
@@ -513,7 +465,7 @@ export default function StartTriggerWizard({
                   className="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium text-white rounded-md disabled:opacity-40 disabled:cursor-not-allowed"
                   style={{ backgroundImage: "linear-gradient(135deg, #6C3AE8 0%, #8B5CF6 100%)" }}
                 >
-                  Finish
+                  Submit
                   <ArrowRight className="w-4 h-4" />
                 </button>
               )}
@@ -522,31 +474,5 @@ export default function StartTriggerWizard({
         </DialogContent>
       </Dialog>
     </>
-  );
-}
-
-function StepDot({ n, active, done, label, disabled }) {
-  const bg = active
-    ? "bg-primary text-white"
-    : done
-    ? "bg-emerald-500 text-white"
-    : disabled
-    ? "bg-slate-200 text-text-muted"
-    : "bg-slate-200 text-text-secondary";
-  return (
-    <div className="flex items-center gap-2">
-      <span
-        className={`w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center ${bg}`}
-      >
-        {n}
-      </span>
-      <span
-        className={`text-xs font-medium ${
-          active ? "text-primary" : "text-text-secondary"
-        } ${disabled ? "line-through opacity-60" : ""}`}
-      >
-        {label}
-      </span>
-    </div>
   );
 }
