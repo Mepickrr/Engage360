@@ -85,7 +85,6 @@ export const PATH_LABELS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 export const SPLIT_BLOCK_TYPES = [
   { id: "property",       label: "User property" },
   { id: "behavior",       label: "User behavior" },
-  { id: "affinity",       label: "User affinity" },
   { id: "event_property", label: "Event property" },
   { id: "segment",        label: "Custom segment" },
 ];
