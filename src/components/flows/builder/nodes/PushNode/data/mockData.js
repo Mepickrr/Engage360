@@ -137,6 +137,7 @@ export const PUSH_DELIVERY_OPTIONS = [
   { id: "clicked",   label: "Clicked",   isDefault: false },
   { id: "dismissed", label: "Dismissed", isDefault: false },
   { id: "delivered", label: "Delivered", isDefault: false },
+  { id: "not_ordered", label: "Not Ordered", isDefault: false },
 ];
 
 export const PUSH_PREVIEW_PLATFORMS = [
@@ -176,6 +177,7 @@ export const defaultPushNodeData = {
     deliveryOutputs: [],
     wiredPorts:      [],
   },
+  markAsMarketing: true,
   utm: { enabled: true, utm_source: "push", utm_medium: "journey", utm_campaign: "", utm_content: "", utm_term: "" },
   aiBestTime:  false,
   smartRetry:  { enabled: false, mode: "smart" },

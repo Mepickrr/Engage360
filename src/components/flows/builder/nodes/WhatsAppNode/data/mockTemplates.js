@@ -146,6 +146,7 @@ export const DELIVERY_OUTPUT_OPTIONS = [
   { id: "delivery_failed", label: "Delivery Failed",   isDefault: false },
   { id: "not_read",        label: "Not Read",          isDefault: false },
   { id: "no_response",     label: "No response after", isDefault: false, hasTimeConfig: true },
+  { id: "not_ordered",     label: "Not Ordered",       isDefault: false },
 ];
 
 // Buttons that generate canvas output ports

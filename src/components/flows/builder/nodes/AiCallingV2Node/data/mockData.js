@@ -51,6 +51,7 @@ export const OUTPUT_PORTS_BY_TYPE = {
     { id: "ctpInterested",     label: "CTP Interested",       group: "intent" },
     { id: "ctpNotInterested",  label: "CTP Not Interested",   group: "intent" },
     { id: "codInterested",     label: "COD Interested",       group: "intent" },
+    { id: "notOrdered",        label: "Not Ordered",          group: "intent" },
     { id: "connected",         label: "Connected",            group: "connection" },
     { id: "noResponse",        label: "No Response",          group: "connection" },
     { id: "notConnected",      label: "Not Connected",        group: "connection" },
@@ -60,6 +61,7 @@ export const OUTPUT_PORTS_BY_TYPE = {
     { id: "abcInterestedNoAddress", label: "ABC Interested (No Address)", group: "intent" },
     { id: "abcNotInterested",       label: "ABC Not Interested",          group: "intent" },
     { id: "codEnabled",             label: "COD Enabled",                 group: "intent" },
+    { id: "notOrdered",             label: "Not Ordered",                 group: "intent" },
     { id: "connected",              label: "Connected",                   group: "connection" },
     { id: "noResponse",             label: "No Response",                 group: "connection" },
     { id: "notConnected",           label: "Not Connected",               group: "connection" },
@@ -68,11 +70,13 @@ export const OUTPUT_PORTS_BY_TYPE = {
     { id: "interested",   label: "Interested",    group: "intent" },
     { id: "cutTheCall",   label: "Cut the Call",  group: "intent" },
     { id: "notConnected", label: "Not Connected", group: "intent" },
+    { id: "notOrdered",   label: "Not Ordered",   group: "intent" },
   ],
   nps: [
     { id: "interested",   label: "Interested",    group: "intent" },
     { id: "cutTheCall",   label: "Cut the Call",  group: "intent" },
     { id: "notConnected", label: "Not Connected", group: "intent" },
+    { id: "notOrdered",   label: "Not Ordered",   group: "intent" },
   ],
 };
 
@@ -93,8 +97,9 @@ export const defaultAiCallingV2NodeData = {
   retryAttempt: 1,
   retryGapValue: 5,
   retryGapUnit: "Minute",
+  markAsMarketing: true,
   utm: {
-    enabled: false,
+    enabled: true,
     utm_source: "aicalling",
     utm_medium: "journey",
     utm_campaign: "",

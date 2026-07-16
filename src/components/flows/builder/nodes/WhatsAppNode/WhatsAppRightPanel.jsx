@@ -514,7 +514,7 @@ export function TemplateTab({ data, patch }) {
 function DeliveryTab({ data, patch }) {
   const { markAsMarketing, utm = {}, aiBestTime, smartRetry = {} } = data;
   return (
-    <div style={{ margin: "-16px", padding: 16 }}>
+    <div>
       <Group title="Attribution">
         <Row>
           <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>

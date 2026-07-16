@@ -60,6 +60,7 @@ export const INAPP_DELIVERY_OPTIONS = [
   { id: "cta_clicked",label: "CTA Clicked", isDefault: false },
   { id: "dismissed",  label: "Dismissed",   isDefault: false },
   { id: "timed_out",  label: "Timed Out",   isDefault: false },
+  { id: "not_ordered",label: "Not Ordered", isDefault: false },
 ];
 
 // ── Filter categories for template picker ─────────────────────

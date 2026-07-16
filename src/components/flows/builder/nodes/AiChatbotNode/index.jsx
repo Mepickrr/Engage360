@@ -2,7 +2,7 @@ import React from "react";
 import { Handle, Position } from "reactflow";
 import { BotMessageSquare, Globe } from "lucide-react";
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
-import { CHATBOT_TEAL, CHATBOT_TONES, AGENT_TYPES, SYSTEM_PORT_GOAL, SYSTEM_PORT_TIMEOUT } from "./data/mockData";
+import { CHATBOT_TEAL, CHATBOT_TONES, AGENT_TYPES, SYSTEM_PORT_GOAL, SYSTEM_PORT_TIMEOUT, SYSTEM_PORT_NOT_ORDERED } from "./data/mockData";
 import NodeAnalyticsFooter from "@/components/flows/analytics/NodeAnalyticsFooter";
 
 const BORDER = "#E5E7EB";
@@ -48,8 +48,9 @@ export default function AiChatbotNode({ id, data, selected }) {
 
   const allPorts = [
     ...replyOptions.map((r) => ({ id: r.id, label: r.label, color: CHATBOT_TEAL })),
-    { id: SYSTEM_PORT_GOAL,    label: "Goal achieved", color: "#10B981" },
-    { id: SYSTEM_PORT_TIMEOUT, label: "No response",   color: "#94A3B8" },
+    { id: SYSTEM_PORT_GOAL,        label: "Goal achieved", color: "#10B981" },
+    { id: SYSTEM_PORT_TIMEOUT,     label: "No response",   color: "#94A3B8" },
+    { id: SYSTEM_PORT_NOT_ORDERED, label: "Not Ordered",   color: "#F59E0B" },
   ];
 
   return (

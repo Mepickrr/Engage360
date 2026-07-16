@@ -108,6 +108,7 @@ export const EMAIL_DELIVERY_OPTIONS = [
   { id: "clicked",    label: "Link Clicked",    isDefault: false },
   { id: "bounced",    label: "Bounced",         isDefault: false },
   { id: "unsubscribed", label: "Unsubscribed",  isDefault: false },
+  { id: "not_ordered", label: "Not Ordered",    isDefault: false },
 ];
 
 // Blocks available in the template editor sidebar
@@ -146,6 +147,7 @@ export const defaultEmailNodeData = {
     deliveryOutputs:  [],
     wiredPorts:       [],
   },
+  markAsMarketing: true,
   utm: { enabled: true, utm_source: "email", utm_medium: "journey", utm_campaign: "", utm_content: "", utm_term: "" },
   aiBestTime: false,
   smartRetry: { enabled: false, mode: "smart" },

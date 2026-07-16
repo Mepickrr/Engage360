@@ -14,6 +14,7 @@ import {
   RETRY_GAP_UNITS,
   OUTPUT_PORTS_BY_TYPE,
 } from "./data/mockData";
+import { Group, Row, UTMFields } from "../shared/DeliveryKit";
 
 const INDIGO = "#4F46E5";
 const BORDER = "#E5E7EB";
@@ -375,117 +376,99 @@ function TemplateTab({ data, upd }) {
 
 function DeliveryTab({ data, upd }) {
   const utm = data.utm ?? {};
+  const markAsMarketing = data.markAsMarketing;
 
   return (
-    <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: 0 }}>
-
-      {/* Retry */}
-      <div style={{ marginBottom: 16 }}>
-        <SectionLabel>Retry</SectionLabel>
-        <div style={{ display: "flex", gap: 10 }}>
-          {/* Attempts */}
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Attempts</div>
-            <input
-              type="number"
-              min={1}
-              max={10}
-              value={data.retryAttempt ?? 1}
-              onChange={(e) => {
-                const val = Math.max(1, Math.min(10, parseInt(e.target.value, 10) || 1));
-                upd({ retryAttempt: val });
-              }}
-              style={{
-                width: "100%", padding: "8px 10px", fontSize: 13,
-                border: `1px solid ${BORDER}`, borderRadius: 8,
-                outline: "none", boxSizing: "border-box",
-              }}
-            />
+    <div style={{ padding: 16 }}>
+      <Group title="Attribution">
+        <Row>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+            <input type="checkbox" id="aicalling-marketing" checked={markAsMarketing !== false} onChange={(e) => upd({ markAsMarketing: e.target.checked })} style={{ marginTop: 2, accentColor: INDIGO }} />
+            <div>
+              <label htmlFor="aicalling-marketing" style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", cursor: "pointer", display: "block", marginBottom: 2 }}>Mark as Revenue Attribution</label>
+              <p style={{ fontSize: 11, color: "#64748B", margin: 0, lineHeight: 1.5 }}>Automatically map this communication's performance to revenue, based on your attribution settings.</p>
+            </div>
           </div>
-          {/* Gap */}
-          <div style={{ flex: 2 }}>
-            <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Gap between retries</div>
-            <div style={{ display: "flex", gap: 6 }}>
+        </Row>
+        <Row last>
+          <UTMFields
+            utm={utm}
+            onChange={(v) => upd({ utm: v })}
+            accentColor={INDIGO}
+            defaults={{
+              utm_source: "aicalling",
+              utm_medium: "journey",
+              utm_campaign: "abandoned_cart_reminder",
+              utm_term: "promo",
+              utm_content: "aicalling_script",
+            }}
+          />
+        </Row>
+      </Group>
+
+      <Group title="Send Optimization">
+        <Row last>
+          <SectionLabel>Retry</SectionLabel>
+          <div style={{ display: "flex", gap: 10 }}>
+            {/* Attempts */}
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Attempts</div>
               <input
-                type="text"
-                inputMode="numeric"
-                value={data.retryGapValue ?? 5}
+                type="number"
+                min={1}
+                max={10}
+                value={data.retryAttempt ?? 1}
                 onChange={(e) => {
-                  const raw = e.target.value.replace(/\D/g, "");
-                  const val = raw === "" ? "" : Math.max(1, parseInt(raw, 10));
-                  upd({ retryGapValue: val });
+                  const val = Math.max(1, Math.min(10, parseInt(e.target.value, 10) || 1));
+                  upd({ retryAttempt: val });
                 }}
                 style={{
-                  width: 56, padding: "8px 10px", fontSize: 13, textAlign: "center",
+                  width: "100%", padding: "8px 10px", fontSize: 13,
                   border: `1px solid ${BORDER}`, borderRadius: 8,
                   outline: "none", boxSizing: "border-box",
                 }}
               />
-              <div style={{ position: "relative", flex: 1 }}>
-                <select
-                  value={data.retryGapUnit ?? "Minute"}
-                  onChange={(e) => upd({ retryGapUnit: e.target.value })}
-                  style={{
-                    width: "100%", padding: "8px 28px 8px 10px", fontSize: 13,
-                    border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none",
-                    background: "#fff", appearance: "none", cursor: "pointer",
+            </div>
+            {/* Gap */}
+            <div style={{ flex: 2 }}>
+              <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Gap between retries</div>
+              <div style={{ display: "flex", gap: 6 }}>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={data.retryGapValue ?? 5}
+                  onChange={(e) => {
+                    const raw = e.target.value.replace(/\D/g, "");
+                    const val = raw === "" ? "" : Math.max(1, parseInt(raw, 10));
+                    upd({ retryGapValue: val });
                   }}
-                >
-                  {RETRY_GAP_UNITS.map((u) => (
-                    <option key={u.value} value={u.value}>{u.label}</option>
-                  ))}
-                </select>
-                <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", fontSize: 10, color: MUTED }}>▼</span>
+                  style={{
+                    width: 56, padding: "8px 10px", fontSize: 13, textAlign: "center",
+                    border: `1px solid ${BORDER}`, borderRadius: 8,
+                    outline: "none", boxSizing: "border-box",
+                  }}
+                />
+                <div style={{ position: "relative", flex: 1 }}>
+                  <select
+                    value={data.retryGapUnit ?? "Minute"}
+                    onChange={(e) => upd({ retryGapUnit: e.target.value })}
+                    style={{
+                      width: "100%", padding: "8px 28px 8px 10px", fontSize: 13,
+                      border: `1px solid ${BORDER}`, borderRadius: 8, outline: "none",
+                      background: "#fff", appearance: "none", cursor: "pointer",
+                    }}
+                  >
+                    {RETRY_GAP_UNITS.map((u) => (
+                      <option key={u.value} value={u.value}>{u.label}</option>
+                    ))}
+                  </select>
+                  <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", fontSize: 10, color: MUTED }}>▼</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* UTM Parameters */}
-      <div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <SectionLabel>UTM Parameters</SectionLabel>
-          <Toggle
-            on={!!utm.enabled}
-            onChange={(v) => upd({ utm: { ...utm, enabled: v } })}
-          />
-        </div>
-        {utm.enabled && (
-          <div style={{ border: `1px solid ${BORDER}`, borderRadius: 8, overflow: "hidden" }}>
-            {[
-              ["utm_source",   "Source",   "aicalling"],
-              ["utm_medium",   "Medium",   "journey"],
-              ["utm_campaign", "Campaign", ""],
-              ["utm_content",  "Content",  ""],
-              ["utm_term",     "Term",     ""],
-            ].map(([key, label, placeholder], i, arr) => (
-              <div
-                key={key}
-                style={{
-                  display: "flex", alignItems: "center",
-                  borderBottom: i < arr.length - 1 ? `1px solid ${BORDER}` : "none",
-                }}
-              >
-                <span style={{
-                  fontSize: 11, color: "#64748B", padding: "8px 10px", width: 84,
-                  flexShrink: 0, background: "#F8FAFC", borderRight: `1px solid ${BORDER}`,
-                  fontFamily: "monospace",
-                }}>
-                  {label}
-                </span>
-                <input
-                  type="text"
-                  value={utm[key] || ""}
-                  placeholder={placeholder}
-                  onChange={(e) => upd({ utm: { ...utm, [key]: e.target.value } })}
-                  style={{ flex: 1, padding: "8px 10px", fontSize: 12, border: "none", outline: "none" }}
-                />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+        </Row>
+      </Group>
     </div>
   );
 }

@@ -11,6 +11,7 @@ import {
   TIMEOUT_OPTIONS,
   SYSTEM_PORT_GOAL,
   SYSTEM_PORT_TIMEOUT,
+  SYSTEM_PORT_NOT_ORDERED,
 } from "./data/mockData";
 
 const BORDER = "#E5E7EB";
@@ -228,13 +229,21 @@ function OutputTab({ data, upd }) {
             </div>
           </div>
 
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", border: `1px solid ${BORDER}`, borderRadius: 8, background: "#FFFBEB" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 8, height: 8, borderRadius: "50%", border: `2px solid ${wiredPorts.includes(SYSTEM_PORT_NOT_ORDERED) ? "#F59E0B" : "#FDE68A"}`, background: wiredPorts.includes(SYSTEM_PORT_NOT_ORDERED) ? "#F59E0B" : "transparent" }} />
+              <span style={{ fontSize: 12, fontWeight: 600, color: "#B45309" }}>Not Ordered</span>
+            </div>
+            <Lock size={11} color="#FDE68A" />
+          </div>
+
         </div>
       </div>
 
       {/* Summary */}
       <div style={{ padding: "8px 12px", background: "#F8FAFC", borderRadius: 8, border: `1px solid ${BORDER}`, fontSize: 11, color: MUTED, lineHeight: 1.6 }}>
-        <strong style={{ color: "#1E293B" }}>{replyOptions.length + 2}</strong> output ports total —{" "}
-        {replyOptions.length} {replyOptions.length === 1 ? "reply option" : "reply options"} + goal achieved + no response
+        <strong style={{ color: "#1E293B" }}>{replyOptions.length + 3}</strong> output ports total —{" "}
+        {replyOptions.length} {replyOptions.length === 1 ? "reply option" : "reply options"} + goal achieved + no response + not ordered
       </div>
     </div>
   );

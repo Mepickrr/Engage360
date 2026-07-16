@@ -74,8 +74,9 @@ export const TIMEOUT_OPTIONS = [
   { value: 1440, label: "24 hours" },
 ];
 
-export const SYSTEM_PORT_GOAL    = "__goal_achieved__";
-export const SYSTEM_PORT_TIMEOUT = "__no_response__";
+export const SYSTEM_PORT_GOAL       = "__goal_achieved__";
+export const SYSTEM_PORT_TIMEOUT    = "__no_response__";
+export const SYSTEM_PORT_NOT_ORDERED = "__not_ordered__";
 
 // Per-node defaults (goal, replies, outputs)
 export const defaultAiChatbotNodeData = {

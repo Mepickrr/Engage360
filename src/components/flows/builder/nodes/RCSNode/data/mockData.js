@@ -13,6 +13,7 @@ export const RCS_DELIVERY_OUTPUT_OPTIONS = [
   { id: "read",            label: "Read",              isDefault: false },
   { id: "delivery_failed", label: "Delivery Failed",   isDefault: false },
   { id: "no_response",     label: "No response after", isDefault: false, hasTimeConfig: true },
+  { id: "not_ordered",     label: "Not Ordered",       isDefault: false },
 ];
 
 export const RCS_BUTTON_TYPES = [
@@ -131,6 +132,7 @@ export const defaultRCSNodeData = {
     noResponseUnit: "hours",
     wiredPorts: [],
   },
+  markAsMarketing: true,
   utm: { enabled: true, utm_source: "rcs", utm_medium: "journey", utm_campaign: "", utm_content: "", utm_term: "" },
   aiBestTime: false,
   smartRetry: { enabled: false, mode: "smart" },

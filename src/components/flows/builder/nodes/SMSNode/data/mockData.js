@@ -119,6 +119,7 @@ export const SMS_DELIVERY_OPTIONS = [
   { id: "sent",      label: "Sent",            isDefault: false },
   { id: "delivered", label: "Delivered",       isDefault: false },
   { id: "failed",    label: "Failed",          isDefault: false },
+  { id: "not_ordered", label: "Not Ordered",   isDefault: false },
 ];
 
 export const defaultSMSNodeData = {
@@ -133,6 +134,7 @@ export const defaultSMSNodeData = {
     deliveryOutputs:  [],
     wiredPorts:       [],
   },
+  markAsMarketing: true,
   utm: { enabled: true, utm_source: "sms", utm_medium: "journey", utm_campaign: "", utm_content: "", utm_term: "" },
   aiBestTime:  false,
   smartRetry:  { enabled: false, mode: "smart" },

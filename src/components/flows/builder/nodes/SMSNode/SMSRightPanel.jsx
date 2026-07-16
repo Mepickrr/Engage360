@@ -229,10 +229,19 @@ function TemplateTab({ data, patch }) {
 
 // ── Delivery Tab ────────────────────────────────────────────────
 function DeliveryTab({ data, patch }) {
-  const { utm = {}, aiBestTime, smartRetry = {} } = data;
+  const { markAsMarketing, utm = {}, aiBestTime, smartRetry = {} } = data;
   return (
-    <div style={{ margin: "-16px", padding: 16 }}>
+    <div>
       <Group title="Attribution">
+        <Row>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+            <input type="checkbox" id="sms-marketing" checked={markAsMarketing !== false} onChange={(e) => patch({ markAsMarketing: e.target.checked })} style={{ marginTop: 2, accentColor: SMS_PURPLE }} />
+            <div>
+              <label htmlFor="sms-marketing" style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", cursor: "pointer", display: "block", marginBottom: 2 }}>Mark as Revenue Attribution</label>
+              <p style={{ fontSize: 11, color: "#64748B", margin: 0, lineHeight: 1.5 }}>Automatically map this communication's performance to revenue, based on your attribution settings.</p>
+            </div>
+          </div>
+        </Row>
         <Row last>
           <UTMFields
             utm={utm}
