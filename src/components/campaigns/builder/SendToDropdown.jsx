@@ -4,7 +4,13 @@ import { BROADCAST_MOCK_SEGMENTS, MOCK_HISTORICAL_CSVS } from "@/components/flow
 import CreateSegmentModal from "./CreateSegmentModal";
 import UploadListModal from "./UploadListModal";
 
-export default function SendToDropdown({ config, setConfig }) {
+export default function SendToDropdown({
+  config,
+  setConfig,
+  label = "Send To",
+  testIdPrefix = "send-to",
+  placeholder = "Select Segments or Lists",
+}) {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState("segments");
   const [search, setSearch] = useState("");
@@ -65,10 +71,10 @@ export default function SendToDropdown({ config, setConfig }) {
     <div>
       <div className="flex items-center justify-between mb-1">
         <label className="flex items-center gap-1 text-[12px] font-medium text-text-secondary">
-          Send To
+          {label}
           <Info className="w-3.5 h-3.5 text-text-muted" />
         </label>
-        <div className="flex items-center gap-1.5 text-[12px] text-text-muted" data-testid="send-to-count">
+        <div className="flex items-center gap-1.5 text-[12px] text-text-muted" data-testid={`${testIdPrefix}-count`}>
           <Info className="w-3.5 h-3.5" />
           <Users className="w-3.5 h-3.5" />
           <span className="font-semibold text-text-secondary">{totalUsers.toLocaleString("en-IN")}</span>
@@ -78,25 +84,25 @@ export default function SendToDropdown({ config, setConfig }) {
       <div ref={containerRef} className="relative">
         <button
           type="button"
-          data-testid="send-to-trigger"
+          data-testid={`${testIdPrefix}-trigger`}
           onClick={() => setOpen((v) => !v)}
           className="w-full flex items-center justify-between border border-border rounded-md px-3 py-2 text-sm text-left bg-white"
         >
           <span className={totalSelected ? "text-text-primary" : "text-text-muted"}>
-            {totalSelected ? `${totalSelected} selected` : "Select Segments or Lists"}
+            {totalSelected ? `${totalSelected} selected` : placeholder}
           </span>
           <Search className="w-4 h-4 text-text-muted shrink-0" />
         </button>
 
         {open && (
           <div
-            data-testid="send-to-panel"
+            data-testid={`${testIdPrefix}-panel`}
             className="absolute z-20 mt-2 w-full bg-white border border-border rounded-xl shadow-lg p-3"
           >
             <div className="flex items-center gap-4 mb-3">
               <button
                 type="button"
-                data-testid="create-new-segment-link"
+                data-testid={`${testIdPrefix}-create-new-segment-link`}
                 onClick={() => setCreateSegmentOpen(true)}
                 className="flex items-center gap-1.5 text-[13px] font-medium text-primary"
               >
@@ -105,7 +111,7 @@ export default function SendToDropdown({ config, setConfig }) {
               </button>
               <button
                 type="button"
-                data-testid="upload-new-list-link"
+                data-testid={`${testIdPrefix}-upload-new-list-link`}
                 onClick={() => setUploadListOpen(true)}
                 className="flex items-center gap-1.5 text-[13px] font-medium text-primary"
               >
@@ -117,7 +123,7 @@ export default function SendToDropdown({ config, setConfig }) {
             <div className="flex rounded-lg border border-border overflow-hidden mb-3">
               <button
                 type="button"
-                data-testid="send-to-tab-segments"
+                data-testid={`${testIdPrefix}-tab-segments`}
                 onClick={() => setTab("segments")}
                 className={`flex-1 px-3 py-2 text-[12px] font-medium ${tab === "segments" ? "bg-slate-100 text-text-primary" : "text-text-secondary"}`}
               >
@@ -125,7 +131,7 @@ export default function SendToDropdown({ config, setConfig }) {
               </button>
               <button
                 type="button"
-                data-testid="send-to-tab-lists"
+                data-testid={`${testIdPrefix}-tab-lists`}
                 onClick={() => setTab("lists")}
                 className={`flex-1 px-3 py-2 text-[12px] font-medium ${tab === "lists" ? "bg-slate-100 text-text-primary" : "text-text-secondary"}`}
               >
@@ -155,7 +161,7 @@ export default function SendToDropdown({ config, setConfig }) {
                 ? filteredSegments.map((seg) => (
                     <label
                       key={seg.id}
-                      data-testid={`segment-row-${seg.id}`}
+                      data-testid={`${testIdPrefix}-segment-row-${seg.id}`}
                       className="flex items-center gap-2 px-2 py-2 rounded-md cursor-pointer hover:bg-slate-50"
                     >
                       <span
@@ -178,7 +184,7 @@ export default function SendToDropdown({ config, setConfig }) {
                 : filteredLists.map((list) => (
                     <label
                       key={list.id}
-                      data-testid={`list-row-${list.id}`}
+                      data-testid={`${testIdPrefix}-list-row-${list.id}`}
                       className="flex items-center gap-2 px-2 py-2 rounded-md cursor-pointer hover:bg-slate-50"
                     >
                       <span
@@ -204,11 +210,11 @@ export default function SendToDropdown({ config, setConfig }) {
       </div>
 
       {totalSelected > 0 && (
-        <div className="flex flex-wrap gap-1.5 mt-2" data-testid="send-to-chips">
+        <div className="flex flex-wrap gap-1.5 mt-2" data-testid={`${testIdPrefix}-chips`}>
           {selectedSegments.map((s) => (
             <span key={s.id} className="flex items-center gap-1 bg-primary-tint text-primary text-[12px] font-medium rounded-full pl-2.5 pr-1.5 py-1">
               {s.name}
-              <button type="button" data-testid={`remove-chip-segment-${s.id}`} onClick={() => removeChip("segment", s.id)} className="hover:text-red-600">
+              <button type="button" data-testid={`${testIdPrefix}-remove-chip-segment-${s.id}`} onClick={() => removeChip("segment", s.id)} className="hover:text-red-600">
                 ×
               </button>
             </span>
@@ -216,7 +222,7 @@ export default function SendToDropdown({ config, setConfig }) {
           {selectedLists.map((l) => (
             <span key={l.id} className="flex items-center gap-1 bg-slate-100 text-text-secondary text-[12px] font-medium rounded-full pl-2.5 pr-1.5 py-1">
               {l.name}
-              <button type="button" data-testid={`remove-chip-list-${l.id}`} onClick={() => removeChip("list", l.id)} className="hover:text-red-600">
+              <button type="button" data-testid={`${testIdPrefix}-remove-chip-list-${l.id}`} onClick={() => removeChip("list", l.id)} className="hover:text-red-600">
                 ×
               </button>
             </span>

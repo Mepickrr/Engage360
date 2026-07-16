@@ -36,15 +36,31 @@ describe("WhatsAppBroadcastDetails", () => {
     expect(screen.getByTestId("pricing-view")).not.toHaveTextContent("₹0");
   });
 
-  it("toggles UTM Tracking and edits the fields", () => {
+  it("has UTM Tracking enabled by default and edits the fields", () => {
     useCampaignBuilderStore.getState().addPrimaryStep("whatsapp");
     const { rerender } = render(<WhatsAppBroadcastDetails step={getStep()} />);
+    expect(getStep().channel_config.utm.enabled).toBe(true);
     expect(getStep().channel_config.utm.source).toBe("Engage 360");
+    expect(screen.getByTestId("utm-campaign-field")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByTestId("utm-campaign-field"), { target: { value: "Diwali Blast" } });
+    expect(getStep().channel_config.utm.campaign).toBe("Diwali Blast");
 
     fireEvent.click(screen.getByTestId("utm-enabled-toggle"));
     rerender(<WhatsAppBroadcastDetails step={getStep()} />);
-    fireEvent.change(screen.getByTestId("utm-campaign-field"), { target: { value: "Diwali Blast" } });
-    expect(getStep().channel_config.utm.campaign).toBe("Diwali Blast");
+    expect(screen.queryByTestId("utm-campaign-field")).not.toBeInTheDocument();
+  });
+
+  it("selecting a segment via the Don't Send To dropdown shows a chip", () => {
+    useCampaignBuilderStore.getState().addPrimaryStep("whatsapp");
+    const { rerender } = render(<WhatsAppBroadcastDetails step={getStep()} />);
+
+    fireEvent.click(screen.getByTestId("dont-send-to-trigger"));
+    rerender(<WhatsAppBroadcastDetails step={getStep()} />);
+    fireEvent.click(screen.getAllByRole("checkbox")[0]);
+    rerender(<WhatsAppBroadcastDetails step={getStep()} />);
+
+    expect(screen.getByTestId("dont-send-to-chips")).toBeInTheDocument();
   });
 
   it("Smart Retry toggle reveals a capped retry-window input", () => {

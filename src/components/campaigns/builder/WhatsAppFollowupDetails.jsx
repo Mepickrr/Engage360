@@ -97,6 +97,28 @@ export default function WhatsAppFollowupDetails({ step }) {
                 className="w-full border border-border rounded-md px-3 py-2 text-sm"
               />
             </div>
+            <div>
+              <label className="block text-[11px] text-text-muted mb-1">UTM Term</label>
+              <input
+                type="text"
+                data-testid="utm-term-field"
+                value={cc.utm?.term || ""}
+                onChange={(e) => patch({ utm: { ...cc.utm, term: e.target.value } })}
+                placeholder="UTM Term"
+                className="w-full border border-border rounded-md px-3 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] text-text-muted mb-1">UTM Content</label>
+              <input
+                type="text"
+                data-testid="utm-content-field"
+                value={cc.utm?.content || ""}
+                onChange={(e) => patch({ utm: { ...cc.utm, content: e.target.value } })}
+                placeholder="UTM Content"
+                className="w-full border border-border rounded-md px-3 py-2 text-sm"
+              />
+            </div>
           </div>
         )}
       </div>

@@ -19,8 +19,15 @@ function defaultTriggerCondition(referenceStepId) {
 
 function whatsappCampaignConfigDefaults(broadcastName) {
   return {
-    suppressionList: "wa_default",
-    utm: { enabled: false, source: "Engage 360", medium: "WhatsApp", campaign: broadcastName },
+    suppressionConfig: { selectedSegments: [], selectedHistoricalCsvs: [] },
+    utm: {
+      enabled: true,
+      source: "Engage 360",
+      medium: "WhatsApp",
+      campaign: broadcastName,
+      term: "festive_offer",
+      content: "banner_v1",
+    },
     aiSmartSend: false,
     campaignSmartRetry: { enabled: false, windowHours: 72 },
     internationalAudience: false,

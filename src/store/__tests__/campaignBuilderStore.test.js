@@ -84,8 +84,15 @@ describe("campaignBuilderStore", () => {
   it("addPrimaryStep gives whatsapp steps campaign-specific channel_config defaults", () => {
     getState().addPrimaryStep("whatsapp");
     const cc = getState().sequence[0].channel_config;
-    expect(cc.suppressionList).toBe("wa_default");
-    expect(cc.utm).toEqual({ enabled: false, source: "Engage 360", medium: "WhatsApp", campaign: "Untitled Broadcast 1" });
+    expect(cc.suppressionConfig).toEqual({ selectedSegments: [], selectedHistoricalCsvs: [] });
+    expect(cc.utm).toEqual({
+      enabled: true,
+      source: "Engage 360",
+      medium: "WhatsApp",
+      campaign: "Untitled Broadcast 1",
+      term: "festive_offer",
+      content: "banner_v1",
+    });
     expect(cc.aiSmartSend).toBe(false);
     expect(cc.campaignSmartRetry).toEqual({ enabled: false, windowHours: 72 });
     expect(cc.internationalAudience).toBe(false);

@@ -10,11 +10,6 @@ const WABA_QUALITY_META = {
   waba_3: { quality: "Red", limit: "Paused" },
 };
 
-const SUPPRESSION_LISTS = [
-  { id: "wa_default", label: "WhatsApp suppression list (128)" },
-  { id: "none", label: "None" },
-];
-
 function resolveAudienceCount(config) {
   return (
     (config.selectedSegments || []).reduce((a, s) => a + s.userCount, 0) +
@@ -33,6 +28,12 @@ export default function WhatsAppBroadcastDetails({ step }) {
   const setAudienceConfig = (updater) => {
     const nextConfig = typeof updater === "function" ? updater(audienceConfig) : updater;
     updateStepAudience(step.id, { broadcastSourceConfig: nextConfig });
+  };
+
+  const suppressionConfig = cc.suppressionConfig || {};
+  const setSuppressionConfig = (updater) => {
+    const nextConfig = typeof updater === "function" ? updater(suppressionConfig) : updater;
+    patch({ suppressionConfig: nextConfig });
   };
 
   const resolvedCount = resolveAudienceCount(audienceConfig);
@@ -76,19 +77,13 @@ export default function WhatsAppBroadcastDetails({ step }) {
 
       <SendToDropdown config={audienceConfig} setConfig={setAudienceConfig} />
 
-      <div>
-        <label className="block text-[12px] font-medium text-text-secondary mb-1">Don&apos;t Send To</label>
-        <select
-          data-testid="suppression-list-select"
-          value={cc.suppressionList || "wa_default"}
-          onChange={(e) => patch({ suppressionList: e.target.value })}
-          className="w-full border border-border rounded-md px-3 py-2 text-sm"
-        >
-          {SUPPRESSION_LISTS.map((l) => (
-            <option key={l.id} value={l.id}>{l.label}</option>
-          ))}
-        </select>
-      </div>
+      <SendToDropdown
+        config={suppressionConfig}
+        setConfig={setSuppressionConfig}
+        label="Don't Send To"
+        testIdPrefix="dont-send-to"
+        placeholder="Select Segments or Lists to Exclude"
+      />
 
       <div>
         <label className="flex items-center gap-2 text-[12px] font-medium text-text-secondary mb-2">
@@ -133,6 +128,28 @@ export default function WhatsAppBroadcastDetails({ step }) {
                 value={cc.utm?.campaign || ""}
                 onChange={(e) => patch({ utm: { ...cc.utm, campaign: e.target.value } })}
                 placeholder="UTM Campaign"
+                className="w-full border border-border rounded-md px-3 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] text-text-muted mb-1">UTM Term</label>
+              <input
+                type="text"
+                data-testid="utm-term-field"
+                value={cc.utm?.term || ""}
+                onChange={(e) => patch({ utm: { ...cc.utm, term: e.target.value } })}
+                placeholder="UTM Term"
+                className="w-full border border-border rounded-md px-3 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] text-text-muted mb-1">UTM Content</label>
+              <input
+                type="text"
+                data-testid="utm-content-field"
+                value={cc.utm?.content || ""}
+                onChange={(e) => patch({ utm: { ...cc.utm, content: e.target.value } })}
+                placeholder="UTM Content"
                 className="w-full border border-border rounded-md px-3 py-2 text-sm"
               />
             </div>
