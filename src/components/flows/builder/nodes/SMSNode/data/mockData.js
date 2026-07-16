@@ -133,7 +133,7 @@ export const defaultSMSNodeData = {
     deliveryOutputs:  [],
     wiredPorts:       [],
   },
-  utm: { enabled: false, source: "sms", medium: "journey", campaign: "" },
+  utm: { enabled: true, utm_source: "sms", utm_medium: "journey", utm_campaign: "", utm_content: "", utm_term: "" },
   aiBestTime:  false,
   smartRetry:  { enabled: false, mode: "smart" },
 };

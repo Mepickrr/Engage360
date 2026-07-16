@@ -11,8 +11,6 @@ export default function LeftSequencePanel() {
   const addFollowupStep = useCampaignBuilderStore((s) => s.addFollowupStep);
   const [followupPickerOpen, setFollowupPickerOpen] = useState(false);
 
-  const primaryChannel = sequence.find((s) => s.is_primary)?.channel;
-
   return (
     <div className="w-[280px] shrink-0 border-r border-border bg-white p-3 overflow-y-auto" data-testid="left-sequence-panel">
       {sequence.map((step) => (
@@ -30,7 +28,6 @@ export default function LeftSequencePanel() {
       <ChannelPickerModal
         open={followupPickerOpen}
         title="Add a follow-up channel"
-        excludeChannels={primaryChannel === "whatsapp" ? ["whatsapp"] : []}
         onSelect={(channel) => {
           addFollowupStep(channel);
           setFollowupPickerOpen(false);

@@ -80,7 +80,7 @@ const STATUS_META = {
 
 const AUDIENCE_META = {
   all:       { label: "All Users",              bg: "#F1F5F9", fg: "#475569" },
-  engage360: { label: "Engage360 Identified",   bg: "#EFF6FF", fg: "#3B82F6" },
+  engage360: { label: "Fastrr Identified",   bg: "#EFF6FF", fg: "#3B82F6" },
   known:     { label: "Known Users",            bg: "#F0FDF4", fg: "#16A34A" },
 };
 

@@ -158,7 +158,7 @@ export const defaultWANodeData = {
   wabaNumberId: null,
   templateType: "Marketing",
   markAsMarketing: true,
-  utm: { enabled: false, source: "whatsapp", medium: "journey", campaign: "", content: "", term: "" },
+  utm: { enabled: true, utm_source: "whatsapp", utm_medium: "journey", utm_campaign: "", utm_content: "", utm_term: "" },
   aiBestTime: false,
   smartRetry: { enabled: false, mode: "smart", smartWindow: "72", manualSlots: [] },
   fallback: { enabled: false, template: null },

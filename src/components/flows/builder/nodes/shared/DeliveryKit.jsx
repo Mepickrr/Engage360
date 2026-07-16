@@ -1,40 +1,27 @@
-import React, { useState } from "react";
-import { ChevronRight } from "lucide-react";
+import React from "react";
 
 const BORDER = "#E5E7EB";
 const MUTED = "#94A3B8";
 
-// ── Section — collapsible chevron header + padded content, shared across every channel's Delivery tab ──
-export function Section({ title, children, defaultOpen = true, badge, badgeColor }) {
-  const [open, setOpen] = useState(defaultOpen);
+// ── Group — kicker label + one bordered card holding multiple Rows, replacing a stack of per-setting Sections ──
+export function Group({ title, children }) {
   return (
-    <div style={{ marginBottom: 2 }}>
-      <button
-        onClick={() => setOpen(!open)}
-        style={{
-          width: "100%", display: "flex", alignItems: "center", gap: 6,
-          padding: "10px 16px", background: "#F8FAFC",
-          border: "none", borderBottom: `1px solid ${BORDER}`, cursor: "pointer",
-        }}
-      >
-        <ChevronRight
-          size={13} color={MUTED}
-          style={{ transform: open ? "rotate(90deg)" : "none", transition: "transform 0.15s", flexShrink: 0 }}
-        />
-        <span style={{ fontSize: 11, fontWeight: 700, color: "#374151", flex: 1, textAlign: "left", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-          {title}
-        </span>
-        {badge && (
-          <span style={{ fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 8, background: `${badgeColor || "#EFF6FF"}22`, color: badgeColor || "#3B82F6" }}>
-            {badge}
-          </span>
-        )}
-      </button>
-      {open && (
-        <div style={{ padding: "14px 16px", background: "#fff", borderBottom: `1px solid ${BORDER}` }}>
-          {children}
-        </div>
-      )}
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
+        {title}
+      </div>
+      <div style={{ border: `1px solid ${BORDER}`, borderRadius: 8 }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ── Row — one setting inside a Group; padded, divided from the next row (omit divider via `last`) ──
+export function Row({ children, last = false }) {
+  return (
+    <div style={{ padding: "14px 16px", borderBottom: last ? "none" : `1px solid ${BORDER}` }}>
+      {children}
     </div>
   );
 }

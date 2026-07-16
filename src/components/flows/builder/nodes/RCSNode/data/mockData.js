@@ -131,4 +131,7 @@ export const defaultRCSNodeData = {
     noResponseUnit: "hours",
     wiredPorts: [],
   },
+  utm: { enabled: true, utm_source: "rcs", utm_medium: "journey", utm_campaign: "", utm_content: "", utm_term: "" },
+  aiBestTime: false,
+  smartRetry: { enabled: false, mode: "smart" },
 };

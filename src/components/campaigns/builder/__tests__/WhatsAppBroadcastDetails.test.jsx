@@ -23,18 +23,17 @@ describe("WhatsAppBroadcastDetails", () => {
     expect(screen.getByText("Yellow")).toBeInTheDocument();
   });
 
-  it("shows the audience resolved count once a segment is selected via BroadcastSourceStep1", () => {
+  it("shows the audience resolved count once a segment is selected via the Send To dropdown", () => {
     useCampaignBuilderStore.getState().addPrimaryStep("whatsapp");
     const { rerender } = render(<WhatsAppBroadcastDetails step={getStep()} />);
 
-    fireEvent.click(screen.getByTestId("source-type-segment"));
+    fireEvent.click(screen.getByTestId("send-to-trigger"));
+    rerender(<WhatsAppBroadcastDetails step={getStep()} />);
+    fireEvent.click(screen.getAllByRole("checkbox")[0]);
     rerender(<WhatsAppBroadcastDetails step={getStep()} />);
 
-    // BroadcastSourceStep1's SegmentSourceConfig renders one sr-only checkbox per mock segment.
-    const firstSegmentCheckbox = screen.getAllByRole("checkbox")[0];
-    fireEvent.click(firstSegmentCheckbox);
-    rerender(<WhatsAppBroadcastDetails step={getStep()} />);
-    expect(screen.getByTestId("resolved-audience-count")).toBeInTheDocument();
+    expect(screen.getByTestId("send-to-chips")).toBeInTheDocument();
+    expect(screen.getByTestId("pricing-view")).not.toHaveTextContent("₹0");
   });
 
   it("toggles UTM Tracking and edits the fields", () => {

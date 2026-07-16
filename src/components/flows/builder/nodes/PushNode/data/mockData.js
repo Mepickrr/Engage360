@@ -176,6 +176,7 @@ export const defaultPushNodeData = {
     deliveryOutputs: [],
     wiredPorts:      [],
   },
+  utm: { enabled: true, utm_source: "push", utm_medium: "journey", utm_campaign: "", utm_content: "", utm_term: "" },
   aiBestTime:  false,
   smartRetry:  { enabled: false, mode: "smart" },
 };

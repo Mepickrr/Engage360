@@ -2,6 +2,7 @@ import React from "react";
 import { useCampaignBuilderStore } from "@/store/campaignBuilderStore";
 import TriggerConditionEditor from "./TriggerConditionEditor";
 import WhatsAppBroadcastDetails from "./WhatsAppBroadcastDetails";
+import WhatsAppFollowupDetails from "./WhatsAppFollowupDetails";
 
 export default function CenterConfigPanel({ step }) {
   const meta = useCampaignBuilderStore((s) => s.meta);
@@ -32,7 +33,10 @@ export default function CenterConfigPanel({ step }) {
           {step.channel === "whatsapp" && <WhatsAppBroadcastDetails step={step} />}
         </div>
       ) : (
-        <TriggerConditionEditor step={step} />
+        <>
+          <TriggerConditionEditor step={step} />
+          {step.channel === "whatsapp" && <WhatsAppFollowupDetails step={step} />}
+        </>
       )}
     </div>
   );

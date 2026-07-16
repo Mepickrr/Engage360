@@ -15,13 +15,13 @@ export const MOCK_HISTORICAL_CSVS = [
 
 // TODO: replace with real GET /api/segments?type=broadcast
 export const BROADCAST_MOCK_SEGMENTS = [
-  { id: "bseg_001", name: "VIP Customers",                  userCount: 5430,  type: "dynamic", updatedAt: "2 hours ago"  },
-  { id: "bseg_002", name: "Lapsed Users — 60 Days",         userCount: 8200,  type: "dynamic", updatedAt: "1 day ago"    },
-  { id: "bseg_003", name: "Cart Abandoners — Last 7d",       userCount: 3100,  type: "dynamic", updatedAt: "30 min ago"   },
-  { id: "bseg_004", name: "New Signups — This Month",        userCount: 1840,  type: "dynamic", updatedAt: "1 hour ago"   },
-  { id: "bseg_005", name: "High AOV Buyers — ₹2k+",         userCount:  480,  type: "dynamic", updatedAt: "6 hours ago"  },
-  { id: "bseg_006", name: "Offline Export — April 2026",     userCount: 9999,  type: "static",  updatedAt: "01 Apr 2026"  },
-  { id: "bseg_007", name: "500_Sellers_Cohort_3_30 march 2026", userCount: 500, type: "static", updatedAt: "30 Mar 2026" },
+  { id: "bseg_001", name: "VIP Customers",                  userCount: 5430,  type: "dynamic", updatedAt: "2 hours ago",  source: "Shopify Segment" },
+  { id: "bseg_002", name: "Lapsed Users — 60 Days",         userCount: 8200,  type: "dynamic", updatedAt: "1 day ago",    source: "Shopify Segment" },
+  { id: "bseg_003", name: "Cart Abandoners — Last 7d",       userCount: 3100,  type: "dynamic", updatedAt: "30 min ago",   source: "Shopify Segment" },
+  { id: "bseg_004", name: "New Signups — This Month",        userCount: 1840,  type: "dynamic", updatedAt: "1 hour ago",   source: "Shopify Segment" },
+  { id: "bseg_005", name: "High AOV Buyers — ₹2k+",         userCount:  480,  type: "dynamic", updatedAt: "6 hours ago",  source: "Shopify Segment" },
+  { id: "bseg_006", name: "Offline Export — April 2026",     userCount: 9999,  type: "static",  updatedAt: "01 Apr 2026",  source: "Custom Segment"  },
+  { id: "bseg_007", name: "500_Sellers_Cohort_3_30 march 2026", userCount: 500, type: "static", updatedAt: "30 Mar 2026", source: "Custom Segment"  },
 ];
 
 // TODO: replace with real GET /api/users/count

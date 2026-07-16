@@ -1,7 +1,6 @@
 import React from "react";
 import { WABA_NUMBERS } from "@/components/flows/builder/nodes/WhatsAppNode/data/mockTemplates";
 import { FallbackTemplateSection } from "@/components/flows/builder/nodes/WhatsAppNode/WhatsAppRightPanel";
-import SendToDropdown from "./SendToDropdown";
 import { useCampaignBuilderStore } from "@/store/campaignBuilderStore";
 
 const WABA_QUALITY_META = {
@@ -10,35 +9,13 @@ const WABA_QUALITY_META = {
   waba_3: { quality: "Red", limit: "Paused" },
 };
 
-const SUPPRESSION_LISTS = [
-  { id: "wa_default", label: "WhatsApp suppression list (128)" },
-  { id: "none", label: "None" },
-];
-
-function resolveAudienceCount(config) {
-  return (
-    (config.selectedSegments || []).reduce((a, s) => a + s.userCount, 0) +
-    (config.selectedHistoricalCsvs || []).reduce((a, c) => a + c.rowCount, 0)
-  );
-}
-
-export default function WhatsAppBroadcastDetails({ step }) {
+export default function WhatsAppFollowupDetails({ step }) {
   const updateStepChannelConfig = useCampaignBuilderStore((s) => s.updateStepChannelConfig);
-  const updateStepAudience = useCampaignBuilderStore((s) => s.updateStepAudience);
-
   const cc = step.channel_config || {};
   const patch = (p) => updateStepChannelConfig(step.id, p);
 
-  const audienceConfig = step.audience?.broadcastSourceConfig || {};
-  const setAudienceConfig = (updater) => {
-    const nextConfig = typeof updater === "function" ? updater(audienceConfig) : updater;
-    updateStepAudience(step.id, { broadcastSourceConfig: nextConfig });
-  };
-
-  const resolvedCount = resolveAudienceCount(audienceConfig);
-
   return (
-    <div data-testid="whatsapp-broadcast-details" className="space-y-6">
+    <div data-testid="whatsapp-followup-details" className="space-y-6 mt-6 pt-6 border-t border-border">
       <div>
         <label className="block text-[12px] font-medium text-text-secondary mb-1">Sender Number</label>
         <select
@@ -72,22 +49,6 @@ export default function WhatsAppBroadcastDetails({ step }) {
             <span className="text-amber-700 font-medium">NO TEMPLATE SELECTED — choose from the right panel</span>
           )}
         </div>
-      </div>
-
-      <SendToDropdown config={audienceConfig} setConfig={setAudienceConfig} />
-
-      <div>
-        <label className="block text-[12px] font-medium text-text-secondary mb-1">Don&apos;t Send To</label>
-        <select
-          data-testid="suppression-list-select"
-          value={cc.suppressionList || "wa_default"}
-          onChange={(e) => patch({ suppressionList: e.target.value })}
-          className="w-full border border-border rounded-md px-3 py-2 text-sm"
-        >
-          {SUPPRESSION_LISTS.map((l) => (
-            <option key={l.id} value={l.id}>{l.label}</option>
-          ))}
-        </select>
       </div>
 
       <div>
@@ -220,38 +181,6 @@ export default function WhatsAppBroadcastDetails({ step }) {
         <p className="text-[11px] text-text-muted mt-1">
           Send your campaign on international audience, when disabled only the Indian audience will be attempted.
         </p>
-      </div>
-
-      <div>
-        <label className="flex items-center justify-between text-[13px] font-medium text-text-primary mb-2">
-          Set Validity Window
-          <input
-            type="checkbox"
-            data-testid="validity-window-custom-toggle"
-            checked={!!cc.validityWindow?.custom}
-            onChange={(e) => patch({ validityWindow: { ...cc.validityWindow, custom: e.target.checked } })}
-            className="accent-primary"
-          />
-        </label>
-        {cc.validityWindow?.custom ? (
-          <div className="flex items-center gap-2">
-            <input
-              type="number"
-              min={1}
-              data-testid="validity-window-minutes"
-              value={cc.validityWindow?.minutes ?? 10}
-              onChange={(e) => patch({ validityWindow: { ...cc.validityWindow, minutes: Number(e.target.value) } })}
-              className="w-20 border border-border rounded-md px-2 py-1.5 text-sm"
-            />
-            <span className="text-[12px] text-text-muted">minutes</span>
-          </div>
-        ) : (
-          <p className="text-[12px] text-text-muted">Standard 10-minute WhatsApp message validity period applies.</p>
-        )}
-      </div>
-
-      <div className="text-[12px] text-text-secondary" data-testid="pricing-view">
-        Estimated cost: ₹1.5 × {resolvedCount.toLocaleString("en-IN")} = ₹{(1.5 * resolvedCount).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
       </div>
     </div>
   );

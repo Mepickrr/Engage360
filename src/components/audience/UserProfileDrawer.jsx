@@ -400,7 +400,7 @@ export default function UserProfileDrawer({ user, onClose }) {
                       <span
                         className="text-[10px] font-medium rounded-full px-2 py-0.5"
                         style={
-                          user.audienceType === "Engage360 Identified"
+                          user.audienceType === "Fastrr Identified"
                             ? { backgroundColor: "#EDE9FF", color: "#6C3AE8" }
                             : { backgroundColor: "#DBEAFE", color: "#1D4ED8" }
                         }

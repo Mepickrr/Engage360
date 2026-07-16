@@ -5,9 +5,9 @@ import { Search, Filter } from "lucide-react";
 import UserProfileDrawer from "@/components/audience/UserProfileDrawer";
 
 const KPIS = [
-  { label: "Total users",  value: "45.2K", delta: "+1.2K",  testId: "aud-kpi-total"  },
-  { label: "Identified",   value: "32.1K", delta: "+820",   testId: "aud-kpi-id"     },
-  { label: "Anonymous",    value: "13.1K",                  testId: "aud-kpi-anon"   },
+  { label: "Total targetable users",  value: "45.2K", delta: "+1.2K",  testId: "aud-kpi-total"  },
+  { label: "Known",   value: "32.1K", delta: "+820",   testId: "aud-kpi-id"     },
+  { label: "Fastrr identified",    value: "13.1K",                  testId: "aud-kpi-anon"   },
   { label: "Active 30d",   value: "18.9K", delta: "+6.1%",  testId: "aud-kpi-active" },
 ];
 
@@ -57,7 +57,7 @@ const USERS = [
     firstName: "Aanya",      lastName: "Sharma",
     whatsappUsername: "@aanya.sharma", email: "aanya.s@example.com",
     mobile: "+91 98765 43210", mobileEnc: "****43210",
-    engageId: "ENG-10001", audienceType: "Engage360 Identified",
+    engageId: "ENG-10001", audienceType: "Fastrr Identified",
     gender: "Female", birthDate: "14 Mar 1993", anniversary: "22 Nov 2018",
     lastActive: "2 min ago", totalSessions: "14", ltv: "₹14,820",
     channels: ["whatsapp", "email"],
@@ -99,7 +99,7 @@ const USERS = [
     firstName: "Ishaan",     lastName: "Kapoor",
     whatsappUsername: "@ishaan.kapoor", email: "ishaan@example.com",
     mobile: "+91 76543 21098", mobileEnc: "****21098",
-    engageId: "ENG-10003", audienceType: "Engage360 Identified",
+    engageId: "ENG-10003", audienceType: "Fastrr Identified",
     gender: "Male", birthDate: "29 Oct 1988", anniversary: "05 Feb 2014",
     lastActive: "1 h ago", totalSessions: "22", ltv: "₹9,440",
     channels: ["email", "push"],
@@ -119,7 +119,7 @@ const USERS = [
     firstName: "Sneha",      lastName: "Iyer",
     whatsappUsername: "@sneha.iyer", email: "sneha.i@example.com",
     mobile: "+91 65432 10987", mobileEnc: "****10987",
-    engageId: "ENG-10004", audienceType: "Engage360 Identified",
+    engageId: "ENG-10004", audienceType: "Fastrr Identified",
     gender: "Female", birthDate: "07 Dec 1995", anniversary: "14 Feb 2020",
     lastActive: "Yesterday", totalSessions: "41", ltv: "₹22,110",
     channels: ["whatsapp", "sms"],
@@ -158,7 +158,7 @@ const USERS = [
     firstName: "Meera",      lastName: "Pillai",
     whatsappUsername: "@meera.pillai", email: "meera.p@example.com",
     mobile: "+91 43210 98765", mobileEnc: "****98765",
-    engageId: "ENG-10006", audienceType: "Engage360 Identified",
+    engageId: "ENG-10006", audienceType: "Fastrr Identified",
     gender: "Female", birthDate: "23 Aug 1991", anniversary: "10 Jan 2016",
     lastActive: "8 min ago", totalSessions: "63", ltv: "₹31,290",
     channels: ["whatsapp", "email", "push"],
@@ -198,7 +198,7 @@ const USERS = [
     firstName: "Priyanka",   lastName: "Joshi",
     whatsappUsername: "@priyanka.joshi", email: "priyanka.j@example.com",
     mobile: "+91 21098 76543", mobileEnc: "****76543",
-    engageId: "ENG-10008", audienceType: "Engage360 Identified",
+    engageId: "ENG-10008", audienceType: "Fastrr Identified",
     gender: "Female", birthDate: "30 Sep 1994", anniversary: "08 Mar 2021",
     lastActive: "Just now", totalSessions: "29", ltv: "₹8,940",
     channels: ["whatsapp", "email"],
@@ -237,7 +237,7 @@ const USERS = [
     firstName: "Nikita",     lastName: "Verma",
     whatsappUsername: "@nikita.verma", email: "nikita.v@example.com",
     mobile: "+91 09876 54321", mobileEnc: "****54321",
-    engageId: "ENG-10010", audienceType: "Engage360 Identified",
+    engageId: "ENG-10010", audienceType: "Fastrr Identified",
     gender: "Female", birthDate: "18 Jan 1989", anniversary: "25 Dec 2017",
     lastActive: "2 d ago", totalSessions: "34", ltv: "₹17,300",
     channels: ["email", "whatsapp"],
@@ -362,7 +362,7 @@ export default function AudiencePage() {
                   <span
                     className="text-[10px] font-medium rounded-full px-2 py-0.5 whitespace-nowrap"
                     style={
-                      u.audienceType === "Engage360 Identified"
+                      u.audienceType === "Fastrr Identified"
                         ? { backgroundColor: "#EDE9FF", color: "#6C3AE8" }
                         : { backgroundColor: "#DBEAFE", color: "#1D4ED8" }
                     }

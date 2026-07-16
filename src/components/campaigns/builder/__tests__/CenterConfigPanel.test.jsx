@@ -74,4 +74,31 @@ describe("CenterConfigPanel", () => {
     render(<CenterConfigPanel step={step} />);
     expect(screen.queryByTestId("whatsapp-broadcast-details")).not.toBeInTheDocument();
   });
+
+  it("renders WhatsAppFollowupDetails alongside the trigger condition editor for a WhatsApp follow-up step", () => {
+    useCampaignBuilderStore.getState().addPrimaryStep("whatsapp");
+    useCampaignBuilderStore.getState().addFollowupStep("whatsapp");
+    const step = useCampaignBuilderStore.getState().sequence[1];
+    render(<CenterConfigPanel step={step} />);
+    expect(screen.getByTestId("trigger-condition-editor")).toBeInTheDocument();
+    expect(screen.getByTestId("whatsapp-followup-details")).toBeInTheDocument();
+    expect(screen.getByTestId("sender-number-select")).toBeInTheDocument();
+    expect(screen.getByTestId("template-summary")).toBeInTheDocument();
+    expect(screen.getByTestId("utm-enabled-toggle")).toBeInTheDocument();
+    expect(screen.getByTestId("ai-smart-send-toggle")).toBeInTheDocument();
+    expect(screen.getByTestId("smart-retry-toggle")).toBeInTheDocument();
+    expect(screen.getByTestId("international-audience-toggle")).toBeInTheDocument();
+    expect(screen.queryByTestId("source-type-segment")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("suppression-list-select")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("validity-window-custom-toggle")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("pricing-view")).not.toBeInTheDocument();
+  });
+
+  it("does not render WhatsAppFollowupDetails for a non-WhatsApp follow-up step", () => {
+    useCampaignBuilderStore.getState().addPrimaryStep("whatsapp");
+    useCampaignBuilderStore.getState().addFollowupStep("sms");
+    const step = useCampaignBuilderStore.getState().sequence[1];
+    render(<CenterConfigPanel step={step} />);
+    expect(screen.queryByTestId("whatsapp-followup-details")).not.toBeInTheDocument();
+  });
 });

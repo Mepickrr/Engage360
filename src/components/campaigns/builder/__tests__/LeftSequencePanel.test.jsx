@@ -23,15 +23,15 @@ describe("LeftSequencePanel", () => {
     expect(useCampaignBuilderStore.getState().selectedStepId).toBe(primaryId);
   });
 
-  it("adding a follow-up excludes WhatsApp from the picker when it's already primary", () => {
+  it("allows WhatsApp as a follow-up channel even when it's already primary", () => {
     useCampaignBuilderStore.getState().addPrimaryStep("whatsapp");
     render(<LeftSequencePanel />);
     fireEvent.click(screen.getByTestId("add-followup-btn"));
-    expect(screen.queryByTestId("channel-option-whatsapp")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByTestId("channel-option-sms"));
+    expect(screen.getByTestId("channel-option-whatsapp")).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("channel-option-whatsapp"));
     fireEvent.click(screen.getByTestId("channel-picker-continue"));
     expect(useCampaignBuilderStore.getState().sequence).toHaveLength(2);
-    expect(useCampaignBuilderStore.getState().sequence[1].channel).toBe("sms");
+    expect(useCampaignBuilderStore.getState().sequence[1].channel).toBe("whatsapp");
   });
 
   it("shows a behavior badge on a new follow-up step", () => {

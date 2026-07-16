@@ -146,6 +146,29 @@ function Section({ title, children, defaultOpen = true, badge }) {
   );
 }
 
+// ── Group — kicker label + one bordered card holding multiple Rows, replacing a stack of per-setting Sections ──
+function Group({ title, children }) {
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
+        {title}
+      </div>
+      <div style={{ border: `1px solid ${BORDER}`, borderRadius: 8 }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ── Row — one setting inside a Group; padded, divided from the next row (omit divider via `last`) ──
+function Row({ children, last = false }) {
+  return (
+    <div style={{ padding: "14px 16px", borderBottom: last ? "none" : `1px solid ${BORDER}` }}>
+      {children}
+    </div>
+  );
+}
+
 // ── Mini template preview card ─────────────────────────────────
 function TemplatePreviewCard({ template, subject, previewText, onEdit, onClear }) {
   return (
@@ -509,42 +532,48 @@ export default function EmailRightPanel({ node, updateNodeData, removeNode }) {
           {/* ━━ DELIVERY TAB ━━ */}
           {activeTab === "delivery" && (
             <div>
-              {/* UTM */}
-              <Section title="UTM Parameters" defaultOpen>
-                <UTMFields
-                  utm={data.utm ?? {}}
-                  onChange={(v) => patch({ utm: v })}
-                  accentColor={EMAIL_BLUE}
-                  defaults={{ utm_source: "email", utm_medium: "journey", utm_campaign: "cart-recovery" }}
-                />
-              </Section>
+              <Group title="Attribution">
+                <Row last>
+                  <UTMFields
+                    utm={data.utm ?? {}}
+                    onChange={(v) => patch({ utm: v })}
+                    accentColor={EMAIL_BLUE}
+                    defaults={{
+                      utm_source: "email",
+                      utm_medium: "journey",
+                      utm_campaign: "cart-recovery",
+                      utm_term: "promo",
+                      utm_content: "email_template",
+                    }}
+                  />
+                </Row>
+              </Group>
 
-              {/* AI Best Time */}
-              <Section title="Send Optimization" defaultOpen>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: data.aiBestTime ? 12 : 0 }}>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>AI Best Time</div>
-                    <div style={{ fontSize: 11, color: MUTED }}>Send at the optimal time for each user</div>
+              <Group title="Send Optimization">
+                <Row>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: data.aiBestTime ? 12 : 0 }}>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>AI Best Time</div>
+                      <div style={{ fontSize: 11, color: MUTED }}>Send at the optimal time for each user</div>
+                    </div>
+                    <Toggle on={!!data.aiBestTime} onChange={(v) => patch({ aiBestTime: v })} />
                   </div>
-                  <Toggle on={!!data.aiBestTime} onChange={(v) => patch({ aiBestTime: v })} />
-                </div>
-                {data.aiBestTime && (
-                  <div style={{ padding: "8px 10px", background: "#EFF6FF", borderRadius: 8, border: "1px solid #BFDBFE" }}>
-                    <div style={{ fontSize: 11, color: "#1D4ED8" }}>⚡ AI will deliver within a 24-hour window, optimised per user based on their open history.</div>
-                  </div>
-                )}
-              </Section>
+                  {data.aiBestTime && (
+                    <div style={{ padding: "8px 10px", background: "#EFF6FF", borderRadius: 8, border: "1px solid #BFDBFE" }}>
+                      <div style={{ fontSize: 11, color: "#1D4ED8" }}>⚡ AI will deliver within a 24-hour window, optimised per user based on their open history.</div>
+                    </div>
+                  )}
+                </Row>
+                <Row last>
+                  <RetryFields
+                    smartRetry={data.smartRetry ?? {}}
+                    onChange={(v) => patch({ smartRetry: v })}
+                    accentColor={EMAIL_BLUE}
+                  />
+                </Row>
+              </Group>
 
-              {/* Smart Retry */}
-              <Section title="Smart Retry" defaultOpen>
-                <RetryFields
-                  smartRetry={data.smartRetry ?? {}}
-                  onChange={(v) => patch({ smartRetry: v })}
-                  accentColor={EMAIL_BLUE}
-                />
-              </Section>
-
-              {/* Test Email */}
+              {/* Test Email — kept as its own boxed Section since it's an action, not a config toggle */}
               <Section title="Test Campaign" defaultOpen>
                 <div>
                   <Label>Send test to email address</Label>

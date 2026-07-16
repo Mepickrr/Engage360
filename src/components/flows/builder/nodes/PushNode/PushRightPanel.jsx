@@ -5,7 +5,7 @@ import { getPushTemplateAnalytics, PUSH_ANALYTICS_METRICS } from "./data/mockPus
 import UnifiedTemplateModal from "../WhatsAppNode/UnifiedTemplateModal";
 import PushTemplateForm from "./PushTemplateForm";
 import PushBubblePreview from "./PushBubblePreview";
-import { Section, UTMFields, RetryFields } from "../shared/DeliveryKit";
+import { Group, Row, UTMFields, RetryFields } from "../shared/DeliveryKit";
 
 const AMBER  = "#F59E0B";
 const BORDER = "#E5E7EB";
@@ -121,32 +121,38 @@ function OutputTab({ data, patch }) {
 function DeliveryTab({ data, patch }) {
   const { utm = {}, aiBestTime, smartRetry = {} } = data;
   return (
-    <div style={{ margin: "-16px" }}>
-      {/* UTM Parameters */}
-      <Section title="UTM Parameters" defaultOpen>
-        <UTMFields
-          utm={utm}
-          onChange={(v) => patch({ utm: v })}
-          accentColor={AMBER}
-          defaults={{ utm_source: "push", utm_medium: "journey", utm_campaign: data.template?.name || "" }}
-        />
-      </Section>
+    <div style={{ margin: "-16px", padding: 16 }}>
+      <Group title="Attribution">
+        <Row last>
+          <UTMFields
+            utm={utm}
+            onChange={(v) => patch({ utm: v })}
+            accentColor={AMBER}
+            defaults={{
+              utm_source: "push",
+              utm_medium: "journey",
+              utm_campaign: data.template?.name || "abandoned_cart_reminder",
+              utm_term: "promo",
+              utm_content: data.template?.name || "push_template",
+            }}
+          />
+        </Row>
+      </Group>
 
-      {/* AI Best Sent Time */}
-      <Section title="Send Optimization" defaultOpen>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-          <Toggle on={!!aiBestTime} onChange={(v) => patch({ aiBestTime: v })} />
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>AI Best Sent Time</div>
-            <p style={{ fontSize: 11, color: "#64748B", margin: 0, lineHeight: 1.5 }}>Sends at each user's optimal engagement window.</p>
+      <Group title="Send Optimization">
+        <Row>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+            <Toggle on={!!aiBestTime} onChange={(v) => patch({ aiBestTime: v })} />
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>AI Best Sent Time</div>
+              <p style={{ fontSize: 11, color: "#64748B", margin: 0, lineHeight: 1.5 }}>Sends at each user's optimal engagement window.</p>
+            </div>
           </div>
-        </div>
-      </Section>
-
-      {/* Smart Retry */}
-      <Section title="Smart Retry" defaultOpen>
-        <RetryFields smartRetry={smartRetry} onChange={(v) => patch({ smartRetry: v })} accentColor={AMBER} />
-      </Section>
+        </Row>
+        <Row last>
+          <RetryFields smartRetry={smartRetry} onChange={(v) => patch({ smartRetry: v })} accentColor={AMBER} />
+        </Row>
+      </Group>
     </div>
   );
 }

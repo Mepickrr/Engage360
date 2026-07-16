@@ -213,57 +213,9 @@
           "section": "Shopping behaviour"
         },
         {
-          "name": "Abandoned Product",
-          "description": "When a product is abandoned without purchase",
-          "source": "Shopify",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": true,
-          "audience_qualification_allow": true,
-          "time_attribute_allow": false,
-          "header": "Ecommerce",
-          "section": "Shopping behaviour"
-        },
-        {
-          "name": "Abandoned Cart",
-          "description": "When a cart is abandoned without purchase",
-          "source": "Shopify",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": true,
-          "audience_qualification_allow": true,
-          "time_attribute_allow": false,
-          "header": "Ecommerce",
-          "section": "Shopping behaviour"
-        },
-        {
           "name": "Abandoned Checkout",
           "description": "When a cart checkout is abanoned without purchase",
           "source": "Shiprocket Checkout",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": true,
-          "audience_qualification_allow": true,
-          "time_attribute_allow": false,
-          "header": "Ecommerce",
-          "section": "Shopping behaviour"
-        },
-        {
-          "name": "Abandoned Payment",
-          "description": "When a user abandons the payment step without completing purchase",
-          "source": "Shopify",
           "device_tag": [
             "iOS",
             "Android",
@@ -453,38 +405,6 @@
           ],
           "attribute_allowed": true,
           "advance_evaluate": false,
-          "audience_qualification_allow": true,
-          "time_attribute_allow": false,
-          "header": "ALL",
-          "section": "Shopping behaviour"
-        },
-        {
-          "name": "Abandoned Product",
-          "description": "When a product is abandoned without purchase",
-          "source": "Shopify",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": true,
-          "audience_qualification_allow": true,
-          "time_attribute_allow": false,
-          "header": "ALL",
-          "section": "Shopping behaviour"
-        },
-        {
-          "name": "Abandoned Cart",
-          "description": "When a cart is abandoned without purchase",
-          "source": "Shopify",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": true,
           "audience_qualification_allow": true,
           "time_attribute_allow": false,
           "header": "ALL",
@@ -683,38 +603,6 @@
           "section": "Shopping behaviour"
         },
         {
-          "name": "Abandoned Product",
-          "description": "When a product is abandoned without purchase",
-          "source": "Shopify",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": true,
-          "audience_qualification_allow": true,
-          "time_attribute_allow": false,
-          "header": "ALL",
-          "section": "Shopping behaviour"
-        },
-        {
-          "name": "Abandoned Cart",
-          "description": "When a cart is abandoned without purchase",
-          "source": "Shopify",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": true,
-          "audience_qualification_allow": true,
-          "time_attribute_allow": false,
-          "header": "ALL",
-          "section": "Shopping behaviour"
-        },
-        {
           "name": "Abandoned Checkout",
           "description": "When a cart checkout is abanoned without purchase",
           "source": "Shiprocket Checkout",
@@ -747,57 +635,9 @@
           "section": "Shopping behaviour"
         },
         {
-          "name": "Abandoned Product",
-          "description": "When a product is abandoned without purchase",
-          "source": "Shopify",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": true,
-          "audience_qualification_allow": true,
-          "time_attribute_allow": false,
-          "header": "ALL",
-          "section": "Shopping behaviour"
-        },
-        {
-          "name": "Abandoned Cart",
-          "description": "When a cart is abandoned without purchase",
-          "source": "Shopify",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": true,
-          "audience_qualification_allow": true,
-          "time_attribute_allow": false,
-          "header": "ALL",
-          "section": "Shopping behaviour"
-        },
-        {
           "name": "Abandoned Checkout",
           "description": "When a cart checkout is abanoned without purchase",
           "source": "Shiprocket Checkout",
-          "device_tag": [
-            "iOS",
-            "Android",
-            "Website"
-          ],
-          "attribute_allowed": true,
-          "advance_evaluate": true,
-          "audience_qualification_allow": true,
-          "time_attribute_allow": false,
-          "header": "ALL",
-          "section": "Shopping behaviour"
-        },
-        {
-          "name": "Abandoned Payment",
-          "description": "When a user abandons the payment step without completing purchase",
-          "source": "Shopify",
           "device_tag": [
             "iOS",
             "Android",

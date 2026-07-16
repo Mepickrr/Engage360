@@ -15,7 +15,7 @@ import {
   DELIVERY_OUTPUT_OPTIONS,
 } from "./data/mockTemplates";
 import { useFlowVariant } from "@/components/flows/FlowVariantContext";
-import { Section, UTMFields, RetryFields } from "../shared/DeliveryKit";
+import { Group, Row, UTMFields, RetryFields } from "../shared/DeliveryKit";
 
 const WA_GREEN       = "#25D366";
 const PRIMARY        = "#6C3AE8";
@@ -514,43 +514,47 @@ export function TemplateTab({ data, patch }) {
 function DeliveryTab({ data, patch }) {
   const { markAsMarketing, utm = {}, aiBestTime, smartRetry = {} } = data;
   return (
-    <div style={{ margin: "-16px" }}>
-      {/* Mark as Marketing */}
-      <Section title="Mark as Marketing" defaultOpen>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-          <input type="checkbox" id="wa-marketing" checked={markAsMarketing !== false} onChange={(e) => patch({ markAsMarketing: e.target.checked })} style={{ marginTop: 2, accentColor: WA_GREEN }} />
-          <div>
-            <label htmlFor="wa-marketing" style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", cursor: "pointer", display: "block", marginBottom: 2 }}>Mark as Marketing message</label>
-            <p style={{ fontSize: 11, color: "#64748B", margin: 0, lineHeight: 1.5 }}>Only marketing messages are used for revenue attribution</p>
+    <div style={{ margin: "-16px", padding: 16 }}>
+      <Group title="Attribution">
+        <Row>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+            <input type="checkbox" id="wa-marketing" checked={markAsMarketing !== false} onChange={(e) => patch({ markAsMarketing: e.target.checked })} style={{ marginTop: 2, accentColor: WA_GREEN }} />
+            <div>
+              <label htmlFor="wa-marketing" style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", cursor: "pointer", display: "block", marginBottom: 2 }}>Mark as Revenue Attribution</label>
+              <p style={{ fontSize: 11, color: "#64748B", margin: 0, lineHeight: 1.5 }}>Automatically map this communication's performance to revenue, based on your attribution settings.</p>
+            </div>
           </div>
-        </div>
-      </Section>
+        </Row>
+        <Row last>
+          <UTMFields
+            utm={utm}
+            onChange={(v) => patch({ utm: v })}
+            accentColor={WA_GREEN}
+            defaults={{
+              utm_source: "whatsapp",
+              utm_medium: "journey",
+              utm_campaign: data.template?.name || "abandoned_cart_reminder",
+              utm_term: "promo",
+              utm_content: data.template?.name || "wa_template",
+            }}
+          />
+        </Row>
+      </Group>
 
-      {/* UTM Parameters */}
-      <Section title="UTM Parameters" defaultOpen>
-        <UTMFields
-          utm={utm}
-          onChange={(v) => patch({ utm: v })}
-          accentColor={WA_GREEN}
-          defaults={{ utm_source: "whatsapp", utm_medium: "journey", utm_campaign: data.template?.name || "" }}
-        />
-      </Section>
-
-      {/* AI Best Sent Time */}
-      <Section title="Send Optimization" defaultOpen>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-          <Toggle on={!!aiBestTime} onChange={(v) => patch({ aiBestTime: v })} />
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>AI Best Sent Time</div>
-            <p style={{ fontSize: 11, color: "#64748B", margin: 0, lineHeight: 1.5 }}>Sends at each user's optimal engagement window. Usually within 0–4 hours.</p>
+      <Group title="Send Optimization">
+        <Row>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+            <Toggle on={!!aiBestTime} onChange={(v) => patch({ aiBestTime: v })} />
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>AI Best Sent Time</div>
+              <p style={{ fontSize: 11, color: "#64748B", margin: 0, lineHeight: 1.5 }}>Sends at each user's optimal engagement window. Usually within 0–4 hours.</p>
+            </div>
           </div>
-        </div>
-      </Section>
-
-      {/* Smart Retry */}
-      <Section title="Smart Retry" defaultOpen>
-        <RetryFields smartRetry={smartRetry} onChange={(v) => patch({ smartRetry: v })} accentColor={WA_GREEN} />
-      </Section>
+        </Row>
+        <Row last>
+          <RetryFields smartRetry={smartRetry} onChange={(v) => patch({ smartRetry: v })} accentColor={WA_GREEN} />
+        </Row>
+      </Group>
     </div>
   );
 }

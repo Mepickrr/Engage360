@@ -14,7 +14,7 @@ import { getRCSTemplateAnalytics, RCS_ANALYTICS_METRICS } from "./data/mockRCSAn
 import UnifiedTemplateModal from "../WhatsAppNode/UnifiedTemplateModal";
 import RCSTemplateForm from "./RCSTemplateForm";
 import RCSBubblePreview from "./RCSBubblePreview";
-import { Section, UTMFields, RetryFields } from "../shared/DeliveryKit";
+import { Group, Row, UTMFields, RetryFields } from "../shared/DeliveryKit";
 
 const INDIGO = "#4F46E5";
 const BORDER = "#E5E7EB";
@@ -486,36 +486,42 @@ function DeliveryTab({ data, upd }) {
   const utm = data?.utm ?? {};
 
   return (
-    <div style={{ margin: "-16px" }}>
-      {/* UTM Parameters */}
-      <Section title="UTM Parameters" defaultOpen>
-        <UTMFields
-          utm={utm}
-          onChange={(v) => upd({ utm: v })}
-          accentColor={INDIGO}
-          defaults={{ utm_source: "rcs", utm_medium: "journey", utm_campaign: data.template?.name || "" }}
-        />
-      </Section>
+    <div style={{ margin: "-16px", padding: 16 }}>
+      <Group title="Attribution">
+        <Row last>
+          <UTMFields
+            utm={utm}
+            onChange={(v) => upd({ utm: v })}
+            accentColor={INDIGO}
+            defaults={{
+              utm_source: "rcs",
+              utm_medium: "journey",
+              utm_campaign: data.template?.name || "abandoned_cart_reminder",
+              utm_term: "promo",
+              utm_content: data.template?.name || "rcs_template",
+            }}
+          />
+        </Row>
+      </Group>
 
-      {/* Smart Retry */}
-      <Section title="Smart Retry" defaultOpen>
-        <RetryFields smartRetry={smartRetry} onChange={(v) => upd({ smartRetry: v })} accentColor={INDIGO} />
-      </Section>
-
-      {/* AI Best Time */}
-      <Section title="Send Optimization" defaultOpen>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-          <Toggle on={!!aiBestTime} onChange={(v) => upd({ aiBestTime: v })} />
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>
-              AI Best Sent Time
+      <Group title="Send Optimization">
+        <Row>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+            <Toggle on={!!aiBestTime} onChange={(v) => upd({ aiBestTime: v })} />
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>
+                AI Best Sent Time
+              </div>
+              <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.5 }}>
+                Sends at each user's optimal engagement window. Usually within 0–4 hours.
+              </p>
             </div>
-            <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.5 }}>
-              Sends at each user's optimal engagement window. Usually within 0–4 hours.
-            </p>
           </div>
-        </div>
-      </Section>
+        </Row>
+        <Row last>
+          <RetryFields smartRetry={smartRetry} onChange={(v) => upd({ smartRetry: v })} accentColor={INDIGO} />
+        </Row>
+      </Group>
     </div>
   );
 }
