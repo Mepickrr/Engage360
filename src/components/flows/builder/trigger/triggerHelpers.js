@@ -329,38 +329,6 @@ function summarizeSegmentTab(tab) {
   return { text: `In segment ${list}`, full: `In segment ${list}` };
 }
 
-// Dispatches a single `block` (as used by AudienceFilterBuilder's
-// blockSet.blocks — { type, conditions|segments, combinator }) to the
-// matching summarize*Tab function above. Returns { text, full } or null.
-export function summarizeBlock(block) {
-  if (!block) return null;
-  switch (block.type) {
-    case "property":
-      return summarizePropertyTab(block);
-    case "behavior":
-      return summarizeBehaviorTab(block);
-    case "affinity":
-      return summarizeAffinityTab(block);
-    case "segment":
-      return summarizeSegmentTab(block);
-    default:
-      return null;
-  }
-}
-
-// Plain-English summary of an AudienceFilterBuilder blockSet
-// ({ blocks, blocksCombinator }), one line per block joined by the
-// block-level combinator. Used by the read-only segment detail view.
-export function renderBlockSetSummary(blockSet) {
-  const blocks = blockSet?.blocks || [];
-  const combinator = blockSet?.blocksCombinator || "AND";
-  return blocks
-    .map((b) => summarizeBlock(b))
-    .filter(Boolean)
-    .map((s) => s.text)
-    .join(` ${combinator} `);
-}
-
 // Returns an array of audience summary rows for the TriggerNode card.
 // Each row is { text, full, kind } where kind is "include" | "exclude".
 export function renderAudienceLines(cfg) {

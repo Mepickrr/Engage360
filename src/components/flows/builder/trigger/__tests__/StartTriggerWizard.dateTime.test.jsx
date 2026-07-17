@@ -20,6 +20,7 @@ describe("StartTriggerWizard — Date and time section", () => {
     render(<StartTriggerWizard open initialConfig={null} onClose={() => {}} onComplete={onComplete} />);
     pickDateAndTimeCard("Birthday");
 
+    fireEvent.click(screen.getByTestId("trigger-wizard-next"));
     fireEvent.click(screen.getByTestId("trigger-wizard-finish"));
 
     expect(onComplete).toHaveBeenCalledWith(
@@ -35,6 +36,7 @@ describe("StartTriggerWizard — Date and time section", () => {
     render(<StartTriggerWizard open initialConfig={null} onClose={() => {}} onComplete={onComplete} />);
     pickDateAndTimeCard("Account Created");
 
+    fireEvent.click(screen.getByTestId("trigger-wizard-next"));
     fireEvent.click(screen.getByTestId("trigger-wizard-finish"));
 
     expect(onComplete).toHaveBeenCalledWith(
@@ -50,11 +52,12 @@ describe("StartTriggerWizard — Date and time section", () => {
     expect(screen.getByTestId("event-offset-step1")).toBeInTheDocument();
   });
 
-  it("still shows the Who-enters-the-flow content for Back in Stock, then finishes with kind: event_offset", () => {
+  it("still shows the Who-enters-the-flow step for Back in Stock, then finishes with kind: event_offset", () => {
     const onComplete = jest.fn();
     render(<StartTriggerWizard open initialConfig={null} onClose={() => {}} onComplete={onComplete} />);
     pickDateAndTimeCard("Back in Stock");
 
+    fireEvent.click(screen.getByTestId("trigger-wizard-next"));
     expect(screen.getByTestId("audience-filter-users")).toBeInTheDocument();
     fireEvent.click(screen.getByTestId("trigger-wizard-finish"));
 

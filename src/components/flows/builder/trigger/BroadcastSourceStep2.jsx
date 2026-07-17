@@ -7,6 +7,7 @@ import { emptyConditionBlock } from "./triggerHelpers";
 const TRIGGER_BLOCK_TYPES = [
   { id: "property", label: "User property" },
   { id: "behavior", label: "User behavior" },
+  { id: "affinity", label: "User affinity" },
   { id: "segment", label: "Custom segment" },
 ];
 

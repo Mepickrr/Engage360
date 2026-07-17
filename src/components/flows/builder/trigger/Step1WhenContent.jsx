@@ -181,11 +181,8 @@ export default function Step1WhenContent({
                 </div>
               )}
 
-              {/* EVALUATE block (hidden for Abandoned Product/Cart/Checkout) */}
-              {ev?.advance_evaluate &&
-                !["Abandoned Product", "Abandoned Cart", "Abandoned Checkout"].includes(
-                  group.event,
-                ) && (
+              {/* EVALUATE block (Abandoned* events) */}
+              {ev?.advance_evaluate && (
                 <div className="mt-4 border-t border-dashed border-border pt-3">
                   <div className="text-[11px] uppercase tracking-wide text-text-muted font-semibold mb-2">
                     Evaluate

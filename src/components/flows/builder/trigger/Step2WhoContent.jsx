@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
+import { Loader2 } from "lucide-react";
 import AudienceFilterBuilder from "./audience/AudienceFilterBuilder";
 import { emptyConditionBlock } from "./triggerHelpers";
 
 const TRIGGER_BLOCK_TYPES = [
   { id: "property", label: "User property" },
   { id: "behavior", label: "User behavior" },
+  { id: "affinity", label: "User affinity" },
   { id: "segment", label: "Custom segment" },
 ];
 
@@ -14,14 +16,86 @@ const AUDIENCE_KINDS = [
   { id: "known", label: "Known User" },
 ];
 
-export default function Step2WhoContent({ audience, setAudience }) {
+export default function Step2WhoContent({
+  audience,
+  setAudience,
+  showCount,
+  count,
+  loadingCount,
+}) {
   const setIncludeAll = (all) => setAudience({ ...audience, include_all: all });
-  const filtering = !audience.include_all;
 
   return (
     <div className="space-y-5">
+      {/* Top radio */}
+      <div className="flex items-center gap-5">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            checked={!!audience.include_all}
+            onChange={() => setIncludeAll(true)}
+            data-testid="audience-all-users"
+            className="accent-primary"
+          />
+          <span className="text-sm">All users who match the start trigger</span>
+        </label>
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            checked={!audience.include_all}
+            onChange={() => setIncludeAll(false)}
+            data-testid="audience-filter-users"
+            className="accent-primary"
+          />
+          <span className="text-sm">Filter users by</span>
+        </label>
+      </div>
+
+      {!audience.include_all && (
+        <>
+          {/* Audience kind pills */}
+          <AudienceKindBlock
+            value={audience.audience_kind || "all"}
+            onChange={(v) => setAudience({ ...audience, audience_kind: v })}
+          />
+          <div className="h-px bg-border" />
+
+          {/* Include blocks */}
+          <AudienceFilterBuilder
+            blockSet={audience.include || { blocks: [emptyConditionBlock("property")], blocksCombinator: "AND" }}
+            onChange={(b) => setAudience({ ...audience, include: b })}
+            testIdPrefix="audience-include"
+            blockTypes={TRIGGER_BLOCK_TYPES}
+          />
+        </>
+      )}
+
+      {/* Exclude Users */}
+      <div className="border-t border-border pt-4">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={!!audience.exclude_enabled}
+            onChange={(e) => setAudience({ ...audience, exclude_enabled: e.target.checked })}
+            data-testid="audience-exclude-toggle"
+            className="accent-primary"
+          />
+          <span className="text-sm font-medium text-text-primary">Exclude Users</span>
+        </label>
+        {audience.exclude_enabled && (
+          <div className="mt-3">
+            <AudienceFilterBuilder
+              blockSet={audience.exclude || { blocks: [emptyConditionBlock("behavior")], blocksCombinator: "AND" }}
+              onChange={(b) => setAudience({ ...audience, exclude: b })}
+              testIdPrefix="audience-exclude"
+              blockTypes={TRIGGER_BLOCK_TYPES}
+            />
+          </div>
+        )}
+      </div>
+
       {/* Limit entry frequency */}
-      <div className="pb-4 border-b border-border space-y-3">
+      <div className="border-t border-border pt-4 space-y-3">
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
@@ -70,74 +144,48 @@ export default function Step2WhoContent({ audience, setAudience }) {
             </select>
           </div>
         )}
+        {false && (
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={!!audience.global_control}
+              onChange={(e) => setAudience({ ...audience, global_control: e.target.checked })}
+              className="accent-primary"
+            />
+            <span className="text-sm font-medium">Global control group</span>
+          </label>
+        )}
+        {false && (
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={!!audience.flow_control}
+              onChange={(e) => setAudience({ ...audience, flow_control: e.target.checked })}
+              className="accent-primary"
+            />
+            <span className="text-sm font-medium">Flow control group</span>
+          </label>
+        )}
       </div>
 
-      {/* Main selector */}
-      <div className="flex items-center gap-5">
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            checked={!!audience.include_all}
-            onChange={() => setIncludeAll(true)}
-            data-testid="audience-all-users"
-            className="accent-primary"
-          />
-          <span className="text-sm">All users who match the start trigger</span>
-        </label>
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            checked={!audience.include_all}
-            onChange={() => setIncludeAll(false)}
-            data-testid="audience-filter-users"
-            className="accent-primary"
-          />
-          <span className="text-sm">Filter users by</span>
-        </label>
+      {/* Show count */}
+      <div className="border-t border-border pt-4 flex items-center gap-3">
+        <button
+          type="button"
+          onClick={showCount}
+          disabled={loadingCount}
+          data-testid="audience-show-count"
+          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-primary border border-primary/50 rounded-md hover:bg-primary-tint disabled:opacity-50"
+        >
+          {loadingCount && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+          Show count
+        </button>
+        {count != null && (
+          <span className="text-sm text-text-primary" data-testid="audience-count-value">
+            ≈ <span className="font-semibold">{count.toLocaleString("en-IN")}</span> users will enter
+          </span>
+        )}
       </div>
-
-      {filtering && (
-        <>
-          {/* Audience kind pills */}
-          <AudienceKindBlock
-            value={audience.audience_kind || "all"}
-            onChange={(v) => setAudience({ ...audience, audience_kind: v })}
-          />
-          <div className="h-px bg-border" />
-
-          {/* Include blocks */}
-          <AudienceFilterBuilder
-            blockSet={audience.include || { blocks: [emptyConditionBlock("property")], blocksCombinator: "AND" }}
-            onChange={(b) => setAudience({ ...audience, include: b })}
-            testIdPrefix="audience-include"
-            blockTypes={TRIGGER_BLOCK_TYPES}
-          />
-
-          {/* Exclude Users — only shown while filtering */}
-          <div className="border-t border-border pt-4">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={!!audience.exclude_enabled}
-                onChange={(e) => setAudience({ ...audience, exclude_enabled: e.target.checked })}
-                data-testid="audience-exclude-toggle"
-                className="accent-primary"
-              />
-              <span className="text-sm font-medium text-text-primary">Exclude Users</span>
-            </label>
-            {audience.exclude_enabled && (
-              <div className="mt-3">
-                <AudienceFilterBuilder
-                  blockSet={audience.exclude || { blocks: [emptyConditionBlock("behavior")], blocksCombinator: "AND" }}
-                  onChange={(b) => setAudience({ ...audience, exclude: b })}
-                  testIdPrefix="audience-exclude"
-                  blockTypes={TRIGGER_BLOCK_TYPES}
-                />
-              </div>
-            )}
-          </div>
-        </>
-      )}
     </div>
   );
 }

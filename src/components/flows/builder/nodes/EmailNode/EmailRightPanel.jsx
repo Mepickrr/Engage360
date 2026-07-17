@@ -12,7 +12,7 @@ import {
 } from "./data/mockData";
 import TemplateEditorModal from "./TemplateEditorModal";
 import EmailTemplateGalleryModal from "./EmailTemplateGalleryModal";
-import { UTMFields, RetryFields } from "../shared/DeliveryKit";
+import { Group, Row, UTMFields, RetryFields } from "../shared/DeliveryKit";
 
 const EMAIL_BLUE = "#3B82F6";
 const BORDER     = "#E5E7EB";
@@ -142,29 +142,6 @@ function Section({ title, children, defaultOpen = true, badge }) {
           {children}
         </div>
       )}
-    </div>
-  );
-}
-
-// ── Group — kicker label + one bordered card holding multiple Rows, replacing a stack of per-setting Sections ──
-function Group({ title, children }) {
-  return (
-    <div style={{ marginBottom: 16 }}>
-      <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
-        {title}
-      </div>
-      <div style={{ border: `1px solid ${BORDER}`, borderRadius: 8 }}>
-        {children}
-      </div>
-    </div>
-  );
-}
-
-// ── Row — one setting inside a Group; padded, divided from the next row (omit divider via `last`) ──
-function Row({ children, last = false }) {
-  return (
-    <div style={{ padding: "14px 16px", borderBottom: last ? "none" : `1px solid ${BORDER}` }}>
-      {children}
     </div>
   );
 }
@@ -560,18 +537,15 @@ export default function EmailRightPanel({ node, updateNodeData, removeNode }) {
 
               <Group title="Send Optimization">
                 <Row>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: data.aiBestTime ? 12 : 0 }}>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>AI Best Time</div>
-                      <div style={{ fontSize: 11, color: MUTED }}>Send at the optimal time for each user</div>
-                    </div>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                     <Toggle on={!!data.aiBestTime} onChange={(v) => patch({ aiBestTime: v })} />
-                  </div>
-                  {data.aiBestTime && (
-                    <div style={{ padding: "8px 10px", background: "#EFF6FF", borderRadius: 8, border: "1px solid #BFDBFE" }}>
-                      <div style={{ fontSize: 11, color: "#1D4ED8" }}>⚡ AI will deliver within a 24-hour window, optimised per user based on their open history.</div>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>AI Best Time</div>
+                      <p style={{ fontSize: 11, color: "#64748B", margin: 0, lineHeight: 1.5 }}>
+                        Sends at each user's optimal engagement window, based on their open history.
+                      </p>
                     </div>
-                  )}
+                  </div>
                 </Row>
                 <Row last>
                   <RetryFields
@@ -582,9 +556,8 @@ export default function EmailRightPanel({ node, updateNodeData, removeNode }) {
                 </Row>
               </Group>
 
-              {/* Test Email — kept as its own boxed Section since it's an action, not a config toggle */}
-              <Section title="Test Campaign" defaultOpen>
-                <div>
+              <Group title="Test Campaign">
+                <Row last>
                   <Label>Send test to email address</Label>
                   <div style={{ display: "flex", gap: 6 }}>
                     <input
@@ -601,8 +574,8 @@ export default function EmailRightPanel({ node, updateNodeData, removeNode }) {
                     </button>
                   </div>
                   <div style={{ fontSize: 10, color: MUTED, marginTop: 5 }}>Uses preview data for personalization variables</div>
-                </div>
-              </Section>
+                </Row>
+              </Group>
             </div>
           )}
 
