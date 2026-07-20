@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ChevronRight, RefreshCw, MoreVertical } from "lucide-react";
 import { estimateAudience } from "@/data/segmentsData";
-import { renderBlockSetSummary } from "@/components/flows/builder/trigger/triggerHelpers";
+import { renderBlockSetSummary } from "@/components/flows/builder/triggerV2/triggerHelpers";
 import { previewToast } from "@/components/common/PreviewHeader";
 import SegmentReachabilityPanel from "./SegmentReachabilityPanel";
 

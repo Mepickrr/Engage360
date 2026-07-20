@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PreviewHeader, { KpiTile } from "@/components/common/PreviewHeader";
 import { Plus, Users } from "lucide-react";
 import { listSegments } from "@/data/segmentsData";
-import { renderBlockSetSummary } from "@/components/flows/builder/trigger/triggerHelpers";
+import { renderBlockSetSummary } from "@/components/flows/builder/triggerV2/triggerHelpers";
 
 const OWNER_COLOR = "#8B5CF6"; // Meera
 

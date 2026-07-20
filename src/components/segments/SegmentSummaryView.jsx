@@ -1,5 +1,5 @@
 import React from "react";
-import { renderBlockSetSummary } from "@/components/flows/builder/trigger/triggerHelpers";
+import { renderBlockSetSummary } from "@/components/flows/builder/triggerV2/triggerHelpers";
 
 // Read-only, plain-English rendering of a saved segment's `audience`
 // (include/exclude blockSets), built on triggerHelpers.js's existing

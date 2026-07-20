@@ -3,12 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { ArrowLeft, RefreshCw, Pencil, Download, Megaphone, Users, RotateCcw, BarChart3 } from "lucide-react";
 import { previewToast } from "@/components/common/PreviewHeader";
-import AudienceFilterBuilder from "@/components/flows/builder/trigger/audience/AudienceFilterBuilder";
+import AudienceFilterBuilder from "@/components/flows/builder/triggerV2/audience/AudienceFilterBuilder";
 import SegmentSummaryView from "@/components/segments/SegmentSummaryView";
 import SegmentReachabilityPanel from "@/components/segments/SegmentReachabilityPanel";
 import SampleUsersModal from "@/components/segments/SampleUsersModal";
 import SegmentQueryResults from "@/components/segments/SegmentQueryResults";
-import { renderBlockSetSummary } from "@/components/flows/builder/trigger/triggerHelpers";
+import { renderBlockSetSummary } from "@/components/flows/builder/triggerV2/triggerHelpers";
 import {
   getSegment,
   createSegment,

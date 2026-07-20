@@ -235,13 +235,20 @@ function QualityBadge({ quality, showSource = false }) {
   );
 }
 
-// ─── engagement bar ────────────────────────────────────────────────
-function EngagementBar({ score }) {
-  if (score == null) return <div style={{ width: 40, height: 4, borderRadius: 4, background: "#E2E8F0" }} />;
-  const color = score >= 70 ? "#10B981" : score >= 40 ? "#F59E0B" : "#EF4444";
+// ─── stat chip (sent / delivered / read) ──────────────────────────
+function formatCount(n) {
+  if (n == null) return "–";
+  if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k`;
+  return `${n}`;
+}
+
+function StatChip({ label, value, accent = false }) {
   return (
-    <div style={{ width: 40, height: 4, borderRadius: 4, background: "#E2E8F0", overflow: "hidden" }}>
-      <div style={{ width: `${score}%`, height: "100%", borderRadius: 4, background: color, transition: "width 0.4s ease" }} />
+    <div style={{ display: "flex", alignItems: "baseline", gap: 3, flex: 1, minWidth: 0 }}>
+      <span style={{ fontSize: 9, color: "#94A3B8", fontWeight: 500, whiteSpace: "nowrap" }}>{label}</span>
+      <span style={{ fontSize: 10, fontWeight: 700, color: accent ? "#0F172A" : "#475569", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        {value}
+      </span>
     </div>
   );
 }
@@ -308,23 +315,27 @@ function TemplateCard({ template, onView, onViewAnalytics }) {
       </div>
 
       {/* footer */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px 10px", borderTop: "1px solid #F1F5F9", marginTop: 8 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <QualityBadge quality={template.quality} />
-          <EngagementBar score={template.engagement?.score} />
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {template.engagement?.readRate != null && (
-            <span style={{ fontSize: 10, color: "#64748B" }}>
-              Read <span style={{ fontWeight: 700, color: "#0F172A" }}>{template.engagement.readRate}%</span>
-            </span>
-          )}
+      <div style={{ display: "flex", flexDirection: "column", gap: 4, padding: "8px 12px 10px", borderTop: "1px solid #F1F5F9", marginTop: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <QualityBadge quality={template.quality} />
+            {!template.analytics && (
+              <span style={{ fontSize: 10, color: "#94A3B8", fontStyle: "italic" }}>No data</span>
+            )}
+          </div>
           {template.usedInFlows > 0 && (
             <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 10, background: "#F1F5F9", color: "#64748B", fontWeight: 500 }}>
               {template.usedInFlows} flow{template.usedInFlows !== 1 ? "s" : ""}
             </span>
           )}
         </div>
+        {template.analytics && (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 4 }}>
+            <StatChip label="Sent" value={formatCount(template.analytics.sent)} />
+            <StatChip label="Del" value={`${template.analytics.delivered?.pct}%`} />
+            <StatChip label="Read" value={`${template.analytics.read?.pct}%`} accent />
+          </div>
+        )}
       </div>
 
       {/* hover overlay */}

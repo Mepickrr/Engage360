@@ -24,7 +24,7 @@ jest.mock("@/components/flows/builder/BuilderTopbar", () => (props) => (
   <div data-testid="topbar" data-locked={String(!!props.locked)} />
 ));
 
-jest.mock("@/components/flows/builder/trigger/StartTriggerWizard", () => (props) => (
+jest.mock("@/components/flows/builder/triggerV2/StartTriggerWizard", () => (props) => (
   props.open ? (
     <div data-testid="wizard" data-lockdown={String(!!props.lockdown)}>
       <button data-testid="wizard-save-draft" onClick={props.onSaveDraft}>Save draft</button>

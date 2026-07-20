@@ -15,7 +15,7 @@ import NodePalette from "@/components/flows/builder/NodePalette";
 import Canvas from "@/components/flows/builder/Canvas";
 import RightPanel from "@/components/flows/builder/RightPanel";
 import { toast } from "sonner";
-import StartTriggerWizard from "@/components/flows/builder/trigger/StartTriggerWizard";
+import StartTriggerWizard from "@/components/flows/builder/triggerV2/StartTriggerWizard";
 import AiCallingGlobalWizard from "@/components/flows/builder/nodes/AiCallingNode/AiCallingGlobalWizard";
 import AiChatbotGlobalWizard from "@/components/flows/builder/nodes/AiChatbotNode/AiChatbotGlobalWizard";
 import { FlowVariantContext } from "@/components/flows/FlowVariantContext";
