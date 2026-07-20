@@ -11,7 +11,7 @@ import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import catalogueData from "@/data/eventCatalogue.json";
 import { getPropertiesForEvent } from "@/components/flows/builder/triggerEventProperties";
 import CombinatorPill from "./CombinatorPill";
-import AttributeConditionRow from "../AttributeConditionRow";
+import AttributesSubList from "./AttributesSubList";
 import { TimeRangeRow } from "./UserBehaviorConditions";
 import { FREQUENCY_OPTIONS } from "../triggerHelpers";
 
@@ -223,60 +223,12 @@ export default function EventPropertyConditions({
                 testIdPrefix={`${testIdPrefix}-tr-${i}`}
               />
 
-              <div className="pt-1">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setCondition(i, { ...c, attrs_open: !c.attrs_open })
-                  }
-                  className="inline-flex items-center gap-1 text-xs font-medium text-primary"
-                >
-                  <Plus className="w-3 h-3" />
-                  Attributes ({(c.attributes || []).length})
-                </button>
-                {c.attrs_open && (
-                  <div className="mt-2 space-y-1.5 pl-2 border-l-2 border-border">
-                    {(c.attributes || []).map((a, ai) => (
-                      <AttributeConditionRow
-                        key={ai}
-                        condition={a}
-                        attributesPool={propPool}
-                        onChange={(na) =>
-                          setCondition(i, {
-                            ...c,
-                            attributes: c.attributes.map((x, idx) =>
-                              idx === ai ? na : x,
-                            ),
-                          })
-                        }
-                        onRemove={() =>
-                          setCondition(i, {
-                            ...c,
-                            attributes: c.attributes.filter(
-                              (_, idx) => idx !== ai,
-                            ),
-                          })
-                        }
-                      />
-                    ))}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setCondition(i, {
-                          ...c,
-                          attributes: [
-                            ...(c.attributes || []),
-                            { property: "", operator: "", value: "" },
-                          ],
-                        })
-                      }
-                      className="text-[11px] text-primary hover:text-primary-hover"
-                    >
-                      + Add attribute filter
-                    </button>
-                  </div>
-                )}
-              </div>
+              <AttributesSubList
+                condition={c}
+                onChange={(nc) => setCondition(i, nc)}
+                attributesPool={propPool}
+                testIdPrefix={`${testIdPrefix}-attrs-${i}`}
+              />
             </div>
           </React.Fragment>
         );

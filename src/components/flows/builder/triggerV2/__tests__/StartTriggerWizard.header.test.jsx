@@ -27,12 +27,11 @@ describe("StartTriggerWizard — simplified header and Submit footer", () => {
     expect(screen.getByTestId("trigger-wizard-finish")).toHaveTextContent("Submit");
   });
 
-  it("shows the simple title for broadcast-source, and Submit only on its final screen", () => {
+  it("shows the simple title for broadcast-source as a single combined screen with Submit", () => {
     render(<StartTriggerWizard open initialConfig={null} onClose={() => {}} onComplete={() => {}} />);
     pickCsvBroadcast();
     expect(screen.getByRole("dialog", { name: "Configure Start Trigger" })).toBeInTheDocument();
-    expect(screen.getByTestId("trigger-wizard-next")).toHaveTextContent("Next");
-    fireEvent.click(screen.getByTestId("trigger-wizard-next"));
+    expect(screen.queryByTestId("trigger-wizard-next")).not.toBeInTheDocument();
     expect(screen.getByTestId("trigger-wizard-finish")).toHaveTextContent("Submit");
   });
 });

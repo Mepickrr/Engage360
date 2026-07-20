@@ -373,8 +373,14 @@ function ExitTriggerSection({ exitTrigger, setExitTrigger }) {
                           <React.Fragment key={ci}>
                             {ci > 0 && (
                               <CombinatorPill
-                                value="AND"
-                                onChange={() => {}}
+                                value={row.combinator || "AND"}
+                                onChange={(v) =>
+                                  update({
+                                    events: events.map((x, idx) =>
+                                      idx === i ? { ...x, combinator: v } : x,
+                                    ),
+                                  })
+                                }
                                 testId={`exit-attr-combinator-${i}-${ci}`}
                               />
                             )}

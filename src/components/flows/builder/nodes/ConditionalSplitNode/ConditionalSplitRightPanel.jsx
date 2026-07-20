@@ -9,7 +9,9 @@ import {
 } from "./data/mockData";
 import TwoPanelDropdown from "@/components/flows/builder/trigger/TwoPanelDropdown";
 import ConditionalFilterModal from "./ConditionalFilterModal";
+import ConditionalFilterModalV2 from "./ConditionalFilterModalV2";
 import { summarizeFilterGroup } from "./filterSummary";
+import { useFlowVariant } from "@/components/flows/FlowVariantContext";
 
 // ── Reusable small atoms ──────────────────────────────────────────────────────
 
@@ -43,6 +45,8 @@ function FilterTab({ data, patch }) {
   const groupsCombinator = data.filterGroupsCombinator ?? "AND";
   const hasAnyCondition = useMemo(() => groups.some((g) => summarizeFilterGroup(g)), [groups]);
   const [modalOpen, setModalOpen] = useState(!hasAnyCondition);
+  const { useV2AudienceFilterUI } = useFlowVariant();
+  const FilterModal = useV2AudienceFilterUI ? ConditionalFilterModalV2 : ConditionalFilterModal;
 
   return (
     <div className="space-y-3">
@@ -92,7 +96,7 @@ function FilterTab({ data, patch }) {
         </span>
       </div>
 
-      <ConditionalFilterModal
+      <FilterModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         filterGroups={groups}

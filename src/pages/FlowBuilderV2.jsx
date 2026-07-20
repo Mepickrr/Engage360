@@ -343,6 +343,10 @@ export default function FlowBuilderV2() {
     hiddenCatalogueSections: ["Instagram", "Email", "Agent"],
     // Use the real brand glyphs in the node palette and canvas card.
     brandIcons: { whatsapp: true, email: true },
+    // Redesigned audience-filter chrome for the Conditional Split node's
+    // filter modal. V1 never wraps with FlowVariantContext so it keeps
+    // rendering the original ConditionalFilterModal untouched.
+    useV2AudienceFilterUI: true,
   };
 
   return (

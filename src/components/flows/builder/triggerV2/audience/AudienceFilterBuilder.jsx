@@ -1,11 +1,61 @@
 import React, { useState } from "react";
-import { Plus, Trash2, ChevronDown } from "lucide-react";
+import { Plus, Trash2, ChevronDown, User, Activity, Layers, Sparkles } from "lucide-react";
 import CombinatorPill from "./CombinatorPill";
 import UserPropertyConditions from "./UserPropertyConditions";
 import UserBehaviorConditions from "./UserBehaviorConditions";
 import UserAffinityConditions from "./UserAffinityConditions";
 import EventPropertyConditions from "./EventPropertyConditions";
 import { listSegments } from "@/data/segmentsData";
+
+// Per-lens visual identity: icon, left-rail/tab accent, one-line subtitle.
+const LENS_META = {
+  property: {
+    icon: User,
+    subtitle: "Who are they?",
+    rail: "border-l-primary",
+    tabActive: "text-primary",
+    iconActive: "text-primary",
+  },
+  behavior: {
+    icon: Activity,
+    subtitle: "What did they do?",
+    rail: "border-l-warning",
+    tabActive: "text-warning",
+    iconActive: "text-warning",
+  },
+  affinity: {
+    icon: Sparkles,
+    subtitle: "What do they like?",
+    rail: "border-l-slate-400",
+    tabActive: "text-text-primary",
+    iconActive: "text-slate-500",
+  },
+  segment: {
+    icon: Layers,
+    subtitle: "Reuse a saved segment",
+    rail: "border-l-success",
+    tabActive: "text-success",
+    iconActive: "text-success",
+  },
+};
+const DEFAULT_LENS_META = LENS_META.property;
+
+function lensMeta(type) {
+  return LENS_META[type] || DEFAULT_LENS_META;
+}
+
+function timeAgo(iso) {
+  if (!iso) return "";
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const mins = Math.round(diffMs / 60000);
+  if (mins < 60) return `${Math.max(mins, 0)}m ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.round(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  const weeks = Math.round(days / 7);
+  return `${weeks}w ago`;
+}
 
 function emptyBlock(type = "property") {
   return {
@@ -82,10 +132,11 @@ function ConditionBlock({ block, onUpdate, onRemove, testIdPrefix, blockTypes, e
   const handleTypeChange = (newType) => {
     onUpdate({ type: newType, conditions: [], segments: [], combinator: "AND" });
   };
+  const meta = lensMeta(block.type);
 
   return (
-    <div className="border border-border rounded-lg bg-surface">
-      <div className="flex items-end bg-slate-50 border-b border-border pl-1">
+    <div className={`border border-border border-l-[3px] ${meta.rail} rounded-lg bg-surface shadow-sm overflow-hidden`}>
+      <div className="flex items-center justify-between gap-3 bg-slate-50 border-b border-border px-2 py-1.5">
         <div className="flex-1 overflow-x-auto">
           <BlockTypePicker
             value={block.type}
@@ -97,13 +148,14 @@ function ConditionBlock({ block, onUpdate, onRemove, testIdPrefix, blockTypes, e
           <button
             type="button"
             onClick={onRemove}
-            className="flex-shrink-0 mb-1 mr-1 p-1 text-text-muted hover:text-rose-600 rounded hover:bg-rose-50 transition-colors"
+            className="flex-shrink-0 p-1 text-text-muted hover:text-rose-600 rounded hover:bg-rose-50 transition-colors"
             aria-label="Remove block"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>
         )}
       </div>
+      <p className="px-3 pt-2 text-xs text-text-muted">{meta.subtitle}</p>
 
       <div className="p-3">
         {block.type === "property" && (
@@ -149,21 +201,27 @@ function ConditionBlock({ block, onUpdate, onRemove, testIdPrefix, blockTypes, e
 
 function BlockTypePicker({ value, onChange, blockTypes }) {
   return (
-    <div className="flex">
-      {blockTypes.map((t) => (
-        <button
-          key={t.id}
-          type="button"
-          onClick={() => onChange(t.id)}
-          className={`px-3 py-2 text-[12px] font-medium whitespace-nowrap transition-colors border-b-2 ${
-            t.id === value
-              ? "text-primary border-primary"
-              : "text-text-muted border-transparent hover:text-text-primary"
-          }`}
-        >
-          {t.label}
-        </button>
-      ))}
+    <div className="flex gap-0.5 bg-slate-100 p-0.5 rounded-lg">
+      {blockTypes.map((t) => {
+        const meta = lensMeta(t.id);
+        const Icon = meta.icon;
+        const active = t.id === value;
+        return (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => onChange(t.id)}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[12px] font-medium whitespace-nowrap transition-colors ${
+              active
+                ? `bg-white shadow-sm ${meta.tabActive}`
+                : "text-text-muted hover:text-text-primary"
+            }`}
+          >
+            <Icon className={`w-3.5 h-3.5 ${active ? meta.iconActive : "text-text-muted"}`} />
+            {t.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -171,34 +229,52 @@ function BlockTypePicker({ value, onChange, blockTypes }) {
 function AddBlockMenu({ onAdd, testIdPrefix, blockTypes }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="relative">
+    <div className="relative inline-flex items-stretch">
       <button
         type="button"
-        onClick={() => setOpen((p) => !p)}
+        onClick={() => onAdd(blockTypes[0]?.id)}
         data-testid={`${testIdPrefix}-add-block`}
         className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-hover"
       >
         <Plus className="w-3.5 h-3.5" />
         Add condition block
+      </button>
+      <button
+        type="button"
+        onClick={() => setOpen((p) => !p)}
+        data-testid={`${testIdPrefix}-add-block-menu`}
+        aria-label="Choose condition block type"
+        className="ml-1 p-0.5 text-primary hover:text-primary-hover rounded"
+      >
         <ChevronDown className="w-3 h-3" />
       </button>
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute bottom-full left-0 mb-1 z-20 bg-white border border-border rounded-lg shadow-lg py-1 min-w-[160px]">
-            {blockTypes.map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => {
-                  onAdd(t.id);
-                  setOpen(false);
-                }}
-                className="w-full text-left px-3 py-2 text-sm text-text-primary hover:bg-primary-tint hover:text-primary transition-colors"
-              >
-                {t.label}
-              </button>
-            ))}
+          <div className="absolute bottom-full left-0 mb-1 z-20 bg-white border border-border rounded-lg shadow-lg p-1 min-w-[220px]">
+            {blockTypes.map((t) => {
+              const meta = lensMeta(t.id);
+              const Icon = meta.icon;
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => {
+                    onAdd(t.id);
+                    setOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 text-left px-2 py-2 rounded-md hover:bg-slate-50 transition-colors"
+                >
+                  <span className={`w-8 h-8 rounded-md bg-slate-100 flex items-center justify-center flex-shrink-0 ${meta.iconActive}`}>
+                    <Icon className="w-4 h-4" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[13px] font-medium text-text-primary">{t.label}</span>
+                    <span className="block text-[11px] text-text-muted truncate">{meta.subtitle}</span>
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </>
       )}
@@ -208,9 +284,15 @@ function AddBlockMenu({ onAdd, testIdPrefix, blockTypes }) {
 
 function SegmentList({ block, onChange, testIdPrefix, excludeSegmentName }) {
   const segments = block.segments || [];
-  const options = listSegments()
-    .map((s) => s.name)
-    .filter((name) => name !== excludeSegmentName);
+  const allSegments = React.useMemo(
+    () => listSegments().filter((s) => s.name !== excludeSegmentName),
+    [excludeSegmentName],
+  );
+  const byName = React.useMemo(() => {
+    const m = {};
+    allSegments.forEach((s) => { m[s.name] = s; });
+    return m;
+  }, [allSegments]);
 
   React.useEffect(() => {
     if (segments.length === 0) {
@@ -221,44 +303,61 @@ function SegmentList({ block, onChange, testIdPrefix, excludeSegmentName }) {
 
   return (
     <div className="space-y-2">
-      {segments.map((s, i) => (
-        <div key={i} className="flex items-center gap-2">
-          <select
-            value={s}
-            onChange={(e) =>
-              onChange({
-                ...block,
-                segments: segments.map((x, idx) =>
-                  idx === i ? e.target.value : x,
-                ),
-              })
-            }
-            data-testid={`${testIdPrefix}-${i}`}
-            className="h-9 text-sm flex-1 rounded-md border border-border bg-surface px-2"
+      {segments.map((s, i) => {
+        const meta = byName[s];
+        return (
+          <div
+            key={i}
+            className="flex items-center gap-3 border border-border rounded-lg bg-surface px-3 py-2.5"
           >
-            <option value="">Select a segment</option>
-            {options.map((m) => (
-              <option key={m} value={m}>
-                {m}
-              </option>
-            ))}
-          </select>
-          {segments.length > 1 && (
-            <button
-              type="button"
-              onClick={() =>
-                onChange({
-                  ...block,
-                  segments: segments.filter((_, idx) => idx !== i),
-                })
-              }
-              className="p-1.5 text-text-muted hover:text-rose-600 rounded-md"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          )}
-        </div>
-      ))}
+            <span className="w-8 h-8 rounded-md bg-success-bg text-success flex items-center justify-center flex-shrink-0">
+              <Layers className="w-4 h-4" />
+            </span>
+            <div className="flex-1 min-w-0">
+              <select
+                value={s}
+                onChange={(e) =>
+                  onChange({
+                    ...block,
+                    segments: segments.map((x, idx) =>
+                      idx === i ? e.target.value : x,
+                    ),
+                  })
+                }
+                data-testid={`${testIdPrefix}-${i}`}
+                className="w-full text-[13px] font-semibold text-text-primary bg-transparent focus:outline-none"
+              >
+                <option value="">Select a segment</option>
+                {allSegments.map((m) => (
+                  <option key={m.name} value={m.name}>
+                    {m.name}
+                  </option>
+                ))}
+              </select>
+              {meta && (
+                <p className="text-[11px] text-text-muted truncate">
+                  {meta.userCount?.toLocaleString?.() ?? meta.userCount} people
+                  {meta.updatedAt ? ` · updated ${timeAgo(meta.updatedAt)}` : ""}
+                </p>
+              )}
+            </div>
+            {segments.length > 1 && (
+              <button
+                type="button"
+                onClick={() =>
+                  onChange({
+                    ...block,
+                    segments: segments.filter((_, idx) => idx !== i),
+                  })
+                }
+                className="p-1.5 text-text-muted hover:text-rose-600 rounded-md flex-shrink-0"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        );
+      })}
       <button
         type="button"
         onClick={() => onChange({ ...block, segments: [...segments, ""] })}

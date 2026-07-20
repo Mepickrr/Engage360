@@ -73,7 +73,7 @@ export default function StartTriggerWizard({
   onSaveDraft,
   onDeleteFlow,
 }) {
-  // "picker" | "config" | "broadcast" | "broadcast-source-1" | "broadcast-source-2"
+  // "picker" | "config" | "broadcast" | "broadcast-source"
   const [stage, setStage] = useState("picker");
   const [pickingForGroupIdx, setPickingForGroupIdx] = useState(null);
 
@@ -159,7 +159,7 @@ export default function StartTriggerWizard({
           setBroadcastSourceType(ev.name === "CSV upload" ? "csv" : "segment");
           setBroadcastSourceConfig(initialConfig.broadcastSourceConfig || emptyBroadcastSourceConfig());
           setBroadcastSourceSchedule(initialConfig.broadcastSourceSchedule || emptyBroadcastSourceSchedule());
-          setStage("broadcast-source-1");
+          setStage("broadcast-source");
         } else {
           setStage("broadcast");
         }
@@ -232,7 +232,7 @@ export default function StartTriggerWizard({
           setBroadcastSourceType(card.name === "CSV upload" ? "csv" : "segment");
           setBroadcastSourceConfig(emptyBroadcastSourceConfig());
           setBroadcastSourceSchedule(emptyBroadcastSourceSchedule());
-          setStage("broadcast-source-1");
+          setStage("broadcast-source");
         } else {
           setStage("broadcast");
         }
@@ -408,52 +408,39 @@ export default function StartTriggerWizard({
             {stage === "broadcast" && (
               <BroadcastConfig config={broadcast} setConfig={setBroadcast} />
             )}
-            {stage === "broadcast-source-1" && (
-              <BroadcastSourceStep1
-                sourceType={broadcastSourceType}
-                config={broadcastSourceConfig}
-                setConfig={setBroadcastSourceConfig}
-              />
-            )}
-            {stage === "broadcast-source-2" && (
-              <BroadcastSourceStep2
-                schedule={broadcastSourceSchedule}
-                setSchedule={setBroadcastSourceSchedule}
-                audience={audience}
-                setAudience={setAudience}
-              />
+            {stage === "broadcast-source" && (
+              <>
+                <BroadcastSourceStep1
+                  sourceType={broadcastSourceType}
+                  config={broadcastSourceConfig}
+                  setConfig={setBroadcastSourceConfig}
+                />
+                <div className="border-t border-border pt-5">
+                  <BroadcastSourceStep2
+                    schedule={broadcastSourceSchedule}
+                    setSchedule={setBroadcastSourceSchedule}
+                    audience={audience}
+                    setAudience={setAudience}
+                  />
+                </div>
+              </>
             )}
           </div>
 
           <footer className="px-5 py-3 border-t border-border flex items-center justify-between gap-2 bg-surface">
-            {(stage === "broadcast-source-2" || !lockdown) && (
+            {!lockdown && (
               <button
                 type="button"
-                onClick={() => {
-                  if (stage === "broadcast-source-2") setStage("broadcast-source-1");
-                  else onClose();
-                }}
+                onClick={onClose}
                 className="inline-flex items-center gap-1 px-3 py-2 text-sm text-text-secondary hover:text-text-primary rounded-md hover:bg-slate-100"
                 data-testid="trigger-wizard-back"
               >
                 <ArrowLeft className="w-4 h-4" />
-                {stage === "broadcast-source-2" ? "Back" : "Cancel"}
+                Cancel
               </button>
             )}
             <div className="flex items-center gap-2">
-              {stage === "broadcast-source-1" && (
-                <button
-                  type="button"
-                  onClick={() => setStage("broadcast-source-2")}
-                  data-testid="trigger-wizard-next"
-                  className="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium text-white rounded-md"
-                  style={{ backgroundImage: "linear-gradient(135deg, #6C3AE8 0%, #8B5CF6 100%)" }}
-                >
-                  Next
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              )}
-              {(stage === "config" || stage === "broadcast" || stage === "broadcast-source-2") && (
+              {(stage === "config" || stage === "broadcast" || stage === "broadcast-source") && (
                 <button
                   type="button"
                   onClick={handleFinish}
