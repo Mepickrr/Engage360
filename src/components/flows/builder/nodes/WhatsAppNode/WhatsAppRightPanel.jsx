@@ -314,47 +314,116 @@ function TemplateStylePicker({ onSelect }) {
 }
 
 // ── Fallback Template Section ──────────────────────────────────
-export function FallbackTemplateSection({ data, patch, customTemplates = [], onSaveCustomTemplate }) {
-  const [fallbackModalOpen, setFallbackModalOpen] = useState(false);
-  const { fallback = {} } = data;
+const OPT_OUT_LINE = "Reply STOP to unsubscribe from promotional messages.";
+const DEFAULT_FALLBACK_TRIGGER = { enabled: false, action: "template", template: null };
 
-  const handleFallbackSave = (tpl) => {
+// Normalizes data.fallback into { disabled, categoryChanged } — also migrates the
+// legacy shape ({ enabled, template }) into the "disabled" trigger so existing
+// saved flows keep working.
+export function normalizeFallback(fallback) {
+  if (!fallback) {
+    return { disabled: { ...DEFAULT_FALLBACK_TRIGGER }, categoryChanged: { ...DEFAULT_FALLBACK_TRIGGER } };
+  }
+  if (fallback.disabled || fallback.categoryChanged) {
+    return {
+      disabled: { ...DEFAULT_FALLBACK_TRIGGER, ...fallback.disabled },
+      categoryChanged: { ...DEFAULT_FALLBACK_TRIGGER, ...fallback.categoryChanged },
+    };
+  }
+  return {
+    disabled: { enabled: !!fallback.enabled, action: "template", template: fallback.template ?? null },
+    categoryChanged: { ...DEFAULT_FALLBACK_TRIGGER },
+  };
+}
+
+function RadioRow({ label, checked, onSelect }) {
+  return (
+    <div onClick={onSelect} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+      <div style={{ width: 14, height: 14, borderRadius: "50%", border: `2px solid ${checked ? WA_GREEN : BORDER}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        {checked && <div style={{ width: 6, height: 6, borderRadius: "50%", background: WA_GREEN }} />}
+      </div>
+      <span style={{ fontSize: 12, color: "#334155" }}>{label}</span>
+    </div>
+  );
+}
+
+function FallbackTriggerBlock({ title, config, onChange, onOpenPicker, onRemoveTemplate }) {
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+        <span style={{ fontSize: 12, fontWeight: 600, color: "#0F172A" }}>{title}</span>
+        <Toggle on={!!config.enabled} onChange={(v) => onChange({ ...config, enabled: v })} />
+      </div>
+      {config.enabled && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <RadioRow label="Use a fallback template" checked={config.action === "template"} onSelect={() => onChange({ ...config, action: "template" })} />
+          {config.action === "template" && (
+            !config.template ? (
+              <button onClick={onOpenPicker} style={{ width: "100%", padding: "12px", border: `2px dashed ${BORDER}`, borderRadius: 8, background: "transparent", cursor: "pointer", color: MUTED, fontSize: 12, textAlign: "center" }}>
+                Click to select approved fallback template
+              </button>
+            ) : (
+              <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A" }}>{config.template.name}</span>
+                <button onClick={onRemoveTemplate} style={{ fontSize: 11, color: "#EF4444", background: "none", border: "none", cursor: "pointer" }}>Remove</button>
+              </div>
+            )
+          )}
+          <RadioRow label="Keep existing content + add opt-out line" checked={config.action === "opt_out"} onSelect={() => onChange({ ...config, action: "opt_out" })} />
+          {config.action === "opt_out" && (
+            <div style={{ fontSize: 11, color: MUTED, fontStyle: "italic", padding: "8px 10px", background: "#F8FAFC", border: `1px solid ${BORDER}`, borderRadius: 8 }}>
+              “{OPT_OUT_LINE}”
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function FallbackTemplateSection({ data, patch, customTemplates = [], onSaveCustomTemplate }) {
+  const [openPickerFor, setOpenPickerFor] = useState(null); // null | "disabled" | "categoryChanged"
+  const fallback = normalizeFallback(data.fallback);
+
+  const updateTrigger = (key, next) => patch({ fallback: { ...fallback, [key]: next } });
+
+  const handleSaveTemplate = (tpl) => {
     const withId = tpl.id ? tpl : { ...tpl, id: `tpl_standard_${Date.now()}` };
-    patch({ fallback: { ...fallback, template: withId } });
+    updateTrigger(openPickerFor, { ...fallback[openPickerFor], template: withId });
     if (onSaveCustomTemplate) onSaveCustomTemplate(withId);
-    setFallbackModalOpen(false);
+    setOpenPickerFor(null);
   };
 
   return (
     <>
-      {fallbackModalOpen && (
+      {openPickerFor && (
         <UnifiedTemplateModal
           open
           styleId="standard"
           styleLabel="Template"
           initialTemplate={null}
           customTemplates={customTemplates}
-          onSave={handleFallbackSave}
-          onClose={() => setFallbackModalOpen(false)}
+          onSave={handleSaveTemplate}
+          onClose={() => setOpenPickerFor(null)}
         />
       )}
       <div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <Label>Fallback Template</Label>
-          <Toggle on={!!fallback?.enabled} onChange={(v) => patch({ fallback: { ...fallback, enabled: v } })} />
-        </div>
-        {fallback?.enabled && (
-          !fallback.template ? (
-            <button onClick={() => setFallbackModalOpen(true)} style={{ width: "100%", padding: "12px", border: `2px dashed ${BORDER}`, borderRadius: 8, background: "transparent", cursor: "pointer", color: MUTED, fontSize: 12, textAlign: "center" }}>
-              Click to select approved fallback template
-            </button>
-          ) : (
-            <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A" }}>{fallback.template.name}</span>
-              <button onClick={() => patch({ fallback: { ...fallback, template: null } })} style={{ fontSize: 11, color: "#EF4444", background: "none", border: "none", cursor: "pointer" }}>Remove</button>
-            </div>
-          )
-        )}
+        <Label>Fallback Template</Label>
+        <FallbackTriggerBlock
+          title="When template is disabled or paused by Meta"
+          config={fallback.disabled}
+          onChange={(next) => updateTrigger("disabled", next)}
+          onOpenPicker={() => setOpenPickerFor("disabled")}
+          onRemoveTemplate={() => updateTrigger("disabled", { ...fallback.disabled, template: null })}
+        />
+        <div style={{ borderTop: `1px solid ${BORDER}`, margin: "14px 0" }} />
+        <FallbackTriggerBlock
+          title="When template category changes"
+          config={fallback.categoryChanged}
+          onChange={(next) => updateTrigger("categoryChanged", next)}
+          onOpenPicker={() => setOpenPickerFor("categoryChanged")}
+          onRemoveTemplate={() => updateTrigger("categoryChanged", { ...fallback.categoryChanged, template: null })}
+        />
       </div>
     </>
   );

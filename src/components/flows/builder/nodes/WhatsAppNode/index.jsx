@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Handle, Position } from "reactflow";
 import { DELIVERY_OUTPUT_OPTIONS, isConnectable, WABA_NUMBERS } from "./data/mockTemplates";
-import { resolveStyleInfo } from "./WhatsAppRightPanel";
+import { resolveStyleInfo, normalizeFallback } from "./WhatsAppRightPanel";
 import NodeAnalyticsFooter from "@/components/flows/analytics/NodeAnalyticsFooter";
 import { useFlowVariant } from "@/components/flows/FlowVariantContext";
 import NodeHoverActions from "../shared/NodeHoverActions";
@@ -243,7 +243,7 @@ export default function WhatsAppNode({ id, data, selected }) {
   const smartRetry  = data?.smartRetry  ?? {};
   const utm         = data?.utm         ?? {};
   const aiBestTime  = data?.aiBestTime  ?? false;
-  const fallback    = data?.fallback    ?? {};
+  const fallback    = normalizeFallback(data?.fallback);
   const outputCfg   = data?.outputConfig ?? { deliveryOutputs: ["next_step"], noResponseValue: 5, noResponseUnit: "hours", wiredPorts: [] };
   const wiredPorts  = outputCfg.wiredPorts ?? [];
 
@@ -282,7 +282,9 @@ export default function WhatsAppNode({ id, data, selected }) {
     utm?.enabled        && { label: "UTM", value: utm.campaign ? `UTM: ${utm.campaign}` : "UTM" },
     aiBestTime          && { label: "AI Best Time" },
     smartRetry?.enabled && { label: "Smart Retry" },
-    fallback?.enabled && fallback?.template && { label: "Fallback" },
+    [fallback.disabled, fallback.categoryChanged].some(
+      (t) => t.enabled && (t.action === "opt_out" || t.template)
+    ) && { label: "Fallback" },
   ].filter(Boolean);
 
   const borderColor = isEmpty ? "rgba(37,211,102,0.4)" : template?.status === "In Review" ? "#F59E0B" : WA_GREEN;

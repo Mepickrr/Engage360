@@ -161,7 +161,10 @@ export function defaultDataForPaletteItem(item) {
         utm: { enabled: true, utm_source: "whatsapp", utm_medium: "journey", utm_campaign: "", utm_content: "", utm_term: "" },
         aiBestTime: false,
         smartRetry: { enabled: false, mode: "smart", smartWindow: "72", manualSlots: [] },
-        fallback: { enabled: false, template: null },
+        fallback: {
+          disabled: { enabled: false, action: "template", template: null },
+          categoryChanged: { enabled: false, action: "template", template: null },
+        },
         outputConfig: { mode: "specific", wiredPorts: [] },
       };
     case "trigger":

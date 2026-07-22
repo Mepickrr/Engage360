@@ -91,7 +91,10 @@ export const SEED_FLOWS = [
           utm: { enabled: true, utm_source: "whatsapp", utm_medium: "journey", utm_campaign: "cart_recovery", utm_content: "", utm_term: "" },
           aiBestTime: false,
           smartRetry: { enabled: true, mode: "smart", smartWindow: "72", manualSlots: [] },
-          fallback: { enabled: false, template: null },
+          fallback: {
+            disabled: { enabled: false, action: "template", template: null },
+            categoryChanged: { enabled: false, action: "template", template: null },
+          },
           outputConfig: {
             routingMode: "delivery_branches",
             deliveryOutputs: ["delivery_failed"],
