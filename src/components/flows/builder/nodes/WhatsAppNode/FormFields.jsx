@@ -1,6 +1,7 @@
 import React from "react";
 import { Trash2 } from "lucide-react";
 import { SYSTEM_VARIABLES } from "./data/mockTemplates";
+import FlowCtaField from "./FlowCtaField";
 
 export const PRIMARY = "#6C3AE8";
 export const BORDER = "#E5E7EB";
@@ -10,6 +11,14 @@ export function Label({ children }) {
   return (
     <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 6 }}>
       {children}
+    </div>
+  );
+}
+
+export function Toggle({ on, onChange }) {
+  return (
+    <div onClick={() => onChange(!on)} style={{ width: 40, height: 22, borderRadius: 11, background: on ? PRIMARY : "#E2E8F0", cursor: "pointer", display: "flex", alignItems: "center", padding: 2, flexShrink: 0, transition: "background 0.2s" }}>
+      <div style={{ width: 18, height: 18, borderRadius: "50%", background: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,0.15)", transition: "transform 0.2s", transform: on ? "translateX(18px)" : "translateX(0)" }} />
     </div>
   );
 }
@@ -229,5 +238,6 @@ export function FieldRenderer({ field, draft, onPatch }) {
   if (field.type === "select") return <SelectField field={field} value={value} onChange={onChange} />;
   if (field.type === "header-picker") return <HeaderPickerField field={field} value={value} onChange={onChange} />;
   if (field.type === "buttons-list") return <ButtonsListField field={field} value={value} onChange={onChange} />;
+  if (field.type === "flow-cta") return <FlowCtaField field={field} value={value} onChange={onChange} />;
   return null;
 }

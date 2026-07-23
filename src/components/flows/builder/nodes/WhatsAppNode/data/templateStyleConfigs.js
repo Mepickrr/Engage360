@@ -17,6 +17,8 @@ export const STANDARD_FIELDS = [
 
 export const SESSION_FIELDS = STANDARD_FIELDS.filter((f) => f.key !== "category");
 
+export const FLOW_FORM_FIELDS = [...STANDARD_FIELDS, { key: "flowCta", label: "Call to action", type: "flow-cta" }];
+
 export const AUTH_FIELDS = [
   { key: "name", label: "Template Name", type: "text", placeholder: "e.g. otp_verification_v1" },
   { key: "language", label: "Language", type: "select", options: LANGUAGE_OPTIONS },
@@ -130,8 +132,8 @@ export const TEMPLATE_STYLE_CONFIGS = {
 
   flow_form: {
     previewKind: "standard",
-    fields: STANDARD_FIELDS,
-    defaultDraft: { ...STANDARD_DEFAULT_DRAFT },
+    fields: FLOW_FORM_FIELDS,
+    defaultDraft: { ...STANDARD_DEFAULT_DRAFT, flowCta: { buttonIcon: "default", buttonText: "View Flow", flowFormId: null, flowFormName: null } },
     mockTemplates: [],
   },
 
