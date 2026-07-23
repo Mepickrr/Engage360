@@ -34,7 +34,7 @@ export function createComponent(kind) {
 
 function surveyScreen() {
   const screen = createBlankScreen("Your form");
-  const question = { ...createComponent("multi_choice"), label: "You've found the perfect deal, what do you do next?", options: [
+  const question = { ...createComponent("multi_choice"), label: "Found a deal — what's next?", options: [
     "Buy it right away", "Check reviews before buying", "Share it with friends + family", "Buy multiple, while its cheap", "None of the above",
   ] };
   screen.components = [question];
