@@ -6,13 +6,14 @@ import WhatsAppBubblePreview from "../WhatsAppBubblePreview";
 import WhatsAppNode from "../index";
 import { ReactFlowProvider } from "reactflow";
 import { isConnectable } from "../data/mockTemplates";
+import { V2_ALLOWED_TEMPLATE_STYLES } from "@/pages/flowBuilderV2Constants";
 
-function renderPanel(nodeData) {
+function renderPanel(nodeData, allowedTemplateStyleIds = null) {
   const updateNodeData = jest.fn();
   const removeNode = jest.fn();
   const node = { id: "node_1", data: nodeData };
   render(
-    <FlowVariantContext.Provider value={{ allowedTemplateStyleIds: null }}>
+    <FlowVariantContext.Provider value={{ allowedTemplateStyleIds }}>
       <WhatsAppRightPanel node={node} updateNodeData={updateNodeData} removeNode={removeNode} />
     </FlowVariantContext.Provider>
   );
@@ -20,11 +21,17 @@ function renderPanel(nodeData) {
 }
 
 describe("Flow Form style picker", () => {
-  it("shows Flow Form and hides Audio in the Standard group", () => {
+  it("shows Flow Form and hides Audio in the Standard group (v1 — no allow-list)", () => {
     renderPanel({ wabaNumberId: "waba_1", templateStyle: null, template: null });
 
     expect(screen.getByText("Flow Form")).toBeInTheDocument();
     expect(screen.queryByText("Audio")).not.toBeInTheDocument();
+  });
+
+  it("shows Flow Form under v2's real allow-list (V2_ALLOWED_TEMPLATE_STYLES)", () => {
+    renderPanel({ wabaNumberId: "waba_1", templateStyle: null, template: null }, V2_ALLOWED_TEMPLATE_STYLES);
+
+    expect(screen.getByText("Flow Form")).toBeInTheDocument();
   });
 });
 

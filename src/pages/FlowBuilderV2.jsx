@@ -20,26 +20,9 @@ import AiCallingGlobalWizard from "@/components/flows/builder/nodes/AiCallingNod
 import AiChatbotGlobalWizard from "@/components/flows/builder/nodes/AiChatbotNode/AiChatbotGlobalWizard";
 import { FlowVariantContext } from "@/components/flows/FlowVariantContext";
 import { confirmAndRemoveNode } from "@/components/flows/builder/nodes/shared/nodeActions";
+import { V2_ALLOWED_TEMPLATE_STYLES } from "./flowBuilderV2Constants";
 
 const AUTOSAVE_DEBOUNCE_MS = 1500;
-
-// V2 WhatsApp template style allow-list — full parity with V1's grouped catalogue
-// (Standard, Order, Ask Customer, Catalog, List). To hide a style in V2 only,
-// remove its id here.
-const V2_ALLOWED_TEMPLATE_STYLES = [
-  // Standard
-  "standard", "session", "authentication", "carousel", "location", "audio",
-  // Order
-  "order_payment", "order_confirmation", "complete_checkout", "payment_link",
-  // Ask Customer
-  "ask_name", "ask_phone", "ask_email", "ask_gender", "address", "ask_rating",
-  "ask_location", "ask_order_id", "ask_image", "ask_video", "ask_text",
-  "collect_input", "call_permission",
-  // Catalog
-  "catalog_single", "catalog_multiple", "catalog_view", "catalog_list_bestsellers", "catalog",
-  // List
-  "list", "list_order", "list_bestsellers",
-];
 
 // V2 node allow-list — only these node IDs are visible in the left panel.
 // To re-enable a hidden node, add its ID here (IDs match NodePalette CATEGORIES).
@@ -347,6 +330,10 @@ export default function FlowBuilderV2() {
     // filter modal. V1 never wraps with FlowVariantContext so it keeps
     // rendering the original ConditionalFilterModal untouched.
     useV2AudienceFilterUI: true,
+    // Hide the "Evaluate within..." preview line on the Start Trigger
+    // canvas node card. V1 never wraps with FlowVariantContext so it keeps
+    // showing this line untouched.
+    hideEvaluatePreview: true,
   };
 
   return (
