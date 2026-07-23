@@ -41,6 +41,22 @@ describe("CreateFlowFormModal — screens panel", () => {
     }));
   });
 
+  it("reorders screens via drag and drop and passes the new order to onSave", () => {
+    const onSave = jest.fn();
+    const seed = { flowType: "custom", initialScreens: [createBlankScreen("First"), createBlankScreen("Second")], editingForm: null };
+    render(<CreateFlowFormModal seed={seed} onCancel={jest.fn()} onSave={onSave} />);
+
+    const rows = screen.getAllByTestId("flow-form-screen-row");
+    fireEvent.dragStart(rows[1], { dataTransfer: { effectAllowed: "" } });
+    fireEvent.dragOver(rows[0]);
+    fireEvent.drop(rows[0]);
+
+    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
+
+    const { screens } = onSave.mock.calls[0][0];
+    expect(screens.map((s) => s.title)).toEqual(["Second", "First"]);
+  });
+
   it("calls onCancel on Cancel", () => {
     const onCancel = jest.fn();
     const seed = { flowType: "custom", initialScreens: [createBlankScreen("Your form")], editingForm: null };
