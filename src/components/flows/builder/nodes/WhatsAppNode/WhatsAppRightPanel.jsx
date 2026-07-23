@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   AlertTriangle, Trash2,
-  FileText, MessageCircle, ShieldCheck, GalleryHorizontal, MapPin, Mic,
+  FileText, MessageCircle, ShieldCheck, GalleryHorizontal, MapPin,
   ShoppingCart, PackageCheck, ClipboardCheck, CreditCard,
   UserRound, Phone, Mail, UserCircle2, MapPinned, Star, LocateFixed, Hash,
   Image as ImageIcon, Video, Type, SlidersHorizontal, PhoneCall,
@@ -56,8 +56,8 @@ const TEMPLATE_STYLE_GROUPS = [
         desc: "Horizontal cards with images, text and buttons" },
       { id: "location", label: "Location send", Icon: MapPin,
         desc: "Share a live or static location pin" },
-      { id: "audio", label: "Audio", Icon: Mic,
-        desc: "Share a voice note or audio clip" },
+      { id: "flow_form", label: "Flow Form", Icon: ClipboardList,
+        desc: "Send a form to capture customer interests, appointment requests or run surveys." },
     ],
   },
   {

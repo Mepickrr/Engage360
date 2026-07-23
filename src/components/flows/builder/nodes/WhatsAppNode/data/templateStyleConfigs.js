@@ -128,6 +128,13 @@ export const TEMPLATE_STYLE_CONFIGS = {
     ],
   },
 
+  flow_form: {
+    previewKind: "standard",
+    fields: STANDARD_FIELDS,
+    defaultDraft: { ...STANDARD_DEFAULT_DRAFT },
+    mockTemplates: [],
+  },
+
   audio: {
     previewKind: "audio",
     fields: AUDIO_FIELDS,
