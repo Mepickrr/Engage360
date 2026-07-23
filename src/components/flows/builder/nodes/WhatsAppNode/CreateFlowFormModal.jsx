@@ -4,6 +4,7 @@ import { PRIMARY, BORDER, MUTED, Label } from "./FormFields";
 import { createBlankScreen, FLOW_TYPE_PRESETS } from "./data/mockFlowForms";
 import FlowFormComponentList from "./FlowFormComponentList";
 import ComponentSettingsForm from "./FlowFormComponentForms";
+import FlowFormPreview from "./FlowFormPreview";
 
 const MAX_SCREENS = 8;
 
@@ -160,8 +161,7 @@ export default function CreateFlowFormModal({ seed, onCancel, onSave }) {
           </div>
 
           <div style={{ flex: "0 0 300px", background: "#F8FAFC", padding: 16, overflowY: "auto" }}>
-            {/* Preview panel — filled in by Task 10 */}
-            <div id="flow-form-preview-slot" />
+            <FlowFormPreview screen={activeScreen} />
           </div>
         </div>
 
