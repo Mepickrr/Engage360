@@ -1,7 +1,7 @@
 import React from "react";
 import { Trash2 } from "lucide-react";
 import { SYSTEM_VARIABLES } from "./data/mockTemplates";
-import FlowCtaField from "./FlowCtaField";
+import FlowButtonRow from "./FlowButtonRow";
 
 export const PRIMARY = "#6C3AE8";
 export const BORDER = "#E5E7EB";
@@ -103,18 +103,29 @@ function ButtonsListField({ field, value, onChange }) {
     <div>
       <Label>{field.label}</Label>
       {buttons.map((btn, i) => (
-        <div key={i} style={{ display: "flex", gap: 6, marginBottom: 6, alignItems: "center" }}>
-          <select value={btn.type} onChange={(e) => update(i, { type: e.target.value })}
-            style={{ padding: "6px 8px", fontSize: 11, border: `1px solid ${BORDER}`, borderRadius: 6, background: "#fff", outline: "none", cursor: "pointer", flexShrink: 0 }}>
-            <option value="QUICK_REPLY">Quick Reply</option>
-            <option value="URL">Website URL</option>
-            <option value="PHONE">Phone Number</option>
-          </select>
-          <input value={btn.label} onChange={(e) => update(i, { label: e.target.value })} placeholder="Button label"
-            style={{ flex: 1, padding: "6px 8px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, outline: "none" }} />
-          <button type="button" onClick={() => remove(i)} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 4 }}>
-            <Trash2 size={13} />
-          </button>
+        <div key={i} style={{ marginBottom: 6 }}>
+          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            <select
+              value={btn.type}
+              onChange={(e) => update(i, e.target.value === "FLOW" ? { type: "FLOW", label: btn.label || "View Flow" } : { type: e.target.value })}
+              style={{ padding: "6px 8px", fontSize: 11, border: `1px solid ${BORDER}`, borderRadius: 6, background: "#fff", outline: "none", cursor: "pointer", flexShrink: 0 }}
+            >
+              <option value="QUICK_REPLY">Quick Reply</option>
+              <option value="URL">Website URL</option>
+              <option value="PHONE">Phone Number</option>
+              {field.allowFlow && <option value="FLOW">Complete flow</option>}
+            </select>
+            {btn.type !== "FLOW" && (
+              <input value={btn.label} onChange={(e) => update(i, { label: e.target.value })} placeholder="Button label"
+                style={{ flex: 1, padding: "6px 8px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, outline: "none" }} />
+            )}
+            <button type="button" onClick={() => remove(i)} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 4, flexShrink: 0 }}>
+              <Trash2 size={13} />
+            </button>
+          </div>
+          {btn.type === "FLOW" && (
+            <FlowButtonRow value={btn} onChange={(next) => update(i, next)} />
+          )}
         </div>
       ))}
       {buttons.length < max && (
@@ -238,6 +249,5 @@ export function FieldRenderer({ field, draft, onPatch }) {
   if (field.type === "select") return <SelectField field={field} value={value} onChange={onChange} />;
   if (field.type === "header-picker") return <HeaderPickerField field={field} value={value} onChange={onChange} />;
   if (field.type === "buttons-list") return <ButtonsListField field={field} value={value} onChange={onChange} />;
-  if (field.type === "flow-cta") return <FlowCtaField field={field} value={value} onChange={onChange} />;
   return null;
 }

@@ -35,4 +35,19 @@ describe("FieldRenderer", () => {
     fireEvent.click(screen.getByText("+ Add Button"));
     expect(screen.getByPlaceholderText("Button label")).toBeInTheDocument();
   });
+
+  it("does not offer 'Complete flow' as a button type when allowFlow is not set", () => {
+    render(<Harness field={{ key: "buttons", label: "Buttons", type: "buttons-list", max: 3 }} initialDraft={{ buttons: [{ type: "QUICK_REPLY", label: "" }] }} />);
+    expect(screen.queryByText("Complete flow")).not.toBeInTheDocument();
+  });
+
+  it("offers 'Complete flow' as a button type when allowFlow is set, and switching to it embeds the flow button row", () => {
+    render(<Harness field={{ key: "buttons", label: "Buttons", type: "buttons-list", max: 3, allowFlow: true }} initialDraft={{ buttons: [{ type: "QUICK_REPLY", label: "" }] }} />);
+
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "FLOW" } });
+
+    expect(screen.getByDisplayValue("View Flow")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /\+ create new/i })).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Button label")).not.toBeInTheDocument();
+  });
 });

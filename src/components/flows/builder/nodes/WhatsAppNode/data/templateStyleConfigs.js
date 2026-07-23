@@ -17,7 +17,10 @@ export const STANDARD_FIELDS = [
 
 export const SESSION_FIELDS = STANDARD_FIELDS.filter((f) => f.key !== "category");
 
-export const FLOW_FORM_FIELDS = [...STANDARD_FIELDS, { key: "flowCta", label: "Call to action", type: "flow-cta" }];
+// Same fields as a standard template — the "Complete flow" CTA is just a
+// 4th option in the existing Buttons list's type dropdown (see ButtonsListField
+// in FormFields.jsx), not a separate field.
+export const FLOW_FORM_FIELDS = STANDARD_FIELDS.map((f) => (f.key === "buttons" ? { ...f, allowFlow: true } : f));
 
 export const AUTH_FIELDS = [
   { key: "name", label: "Template Name", type: "text", placeholder: "e.g. otp_verification_v1" },
@@ -133,10 +136,10 @@ export const TEMPLATE_STYLE_CONFIGS = {
   flow_form: {
     previewKind: "standard",
     fields: FLOW_FORM_FIELDS,
-    defaultDraft: { ...STANDARD_DEFAULT_DRAFT, flowCta: { buttonIcon: "default", buttonText: "View Flow", flowFormId: null, flowFormName: null } },
+    defaultDraft: { ...STANDARD_DEFAULT_DRAFT },
     mockTemplates: [
-      { id: "flow_form_1", name: "post_purchase_survey_v1", category: "Marketing", language: "en", status: "Active", header: { type: "none" }, body: "We'd love your feedback on your recent order!", footer: "", buttons: [], flowCta: { buttonIcon: "default", buttonText: "Take Survey", flowFormId: "ff_1", flowFormName: "Post-purchase survey" } },
-      { id: "flow_form_2", name: "event_rsvp_v1", category: "Marketing", language: "en", status: "Draft", header: { type: "none" }, body: "You're invited! Reserve your spot below.", footer: "", buttons: [], flowCta: { buttonIcon: "default", buttonText: "RSVP Now", flowFormId: "ff_2", flowFormName: "Event RSVP" } },
+      { id: "flow_form_1", name: "post_purchase_survey_v1", category: "Marketing", language: "en", status: "Active", header: { type: "none" }, body: "We'd love your feedback on your recent order!", footer: "", buttons: [{ type: "FLOW", label: "Take Survey", flowFormId: "ff_1", flowFormName: "Post-purchase survey" }] },
+      { id: "flow_form_2", name: "event_rsvp_v1", category: "Marketing", language: "en", status: "Draft", header: { type: "none" }, body: "You're invited! Reserve your spot below.", footer: "", buttons: [{ type: "FLOW", label: "RSVP Now", flowFormId: "ff_2", flowFormName: "Event RSVP" }] },
     ],
   },
 

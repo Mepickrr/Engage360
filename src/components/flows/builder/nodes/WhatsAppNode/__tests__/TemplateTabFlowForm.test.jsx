@@ -36,22 +36,28 @@ describe("Flow Form style picker", () => {
 });
 
 describe("Flow Form — bubble preview and canvas port", () => {
-  it("shows a flow button row in the bubble preview when a flow is linked", () => {
+  it("shows a 🔗-prefixed button row in the bubble preview once a flow is linked", () => {
     render(
       <WhatsAppBubblePreview
-        draft={{ body: "Fill this out", buttons: [], flowCta: { buttonIcon: "default", buttonText: "View Flow", flowFormId: "ff_1", flowFormName: "Post-purchase survey" } }}
+        draft={{ body: "Fill this out", buttons: [{ type: "FLOW", label: "View Flow", flowFormId: "ff_1", flowFormName: "Post-purchase survey" }] }}
         previewKind="standard"
       />
     );
     expect(screen.getByText("🔗 View Flow")).toBeInTheDocument();
   });
 
-  it("does not show a flow button row when no flow is linked", () => {
-    render(<WhatsAppBubblePreview draft={{ body: "Fill this out", buttons: [], flowCta: { flowFormId: null } }} previewKind="standard" />);
+  it("shows the flow button row with its label even before a flow is linked", () => {
+    render(<WhatsAppBubblePreview draft={{ body: "Fill this out", buttons: [{ type: "FLOW", label: "View Flow", flowFormId: null, flowFormName: null }] }} previewKind="standard" />);
+    expect(screen.getByText("🔗 View Flow")).toBeInTheDocument();
+  });
+
+  it("does not 🔗-prefix regular button types", () => {
+    render(<WhatsAppBubblePreview draft={{ body: "Fill this out", buttons: [{ type: "QUICK_REPLY", label: "Shop Now" }] }} previewKind="standard" />);
+    expect(screen.getByText("Shop Now")).toBeInTheDocument();
     expect(screen.queryByText(/🔗/)).not.toBeInTheDocument();
   });
 
-  it("exposes a connectable FLOW button for the canvas port", () => {
+  it("exposes a connectable FLOW button for the canvas port once a flow is linked", () => {
     render(
       <ReactFlowProvider>
         <WhatsAppNode
@@ -60,7 +66,24 @@ describe("Flow Form — bubble preview and canvas port", () => {
           data={{
             templateStyle: "flow_form",
             wabaNumberId: "waba_1",
-            template: { name: "flow_tpl", body: "Fill this out", buttons: [], flowCta: { buttonText: "View Flow", flowFormId: "ff_1", flowFormName: "Post-purchase survey" } },
+            template: { name: "flow_tpl", body: "Fill this out", buttons: [{ type: "FLOW", label: "View Flow", flowFormId: "ff_1", flowFormName: "Post-purchase survey" }] },
+          }}
+        />
+      </ReactFlowProvider>
+    );
+    expect(screen.getByText("View Flow")).toBeInTheDocument();
+  });
+
+  it("exposes a connectable FLOW button for the canvas port even before a flow is linked", () => {
+    render(
+      <ReactFlowProvider>
+        <WhatsAppNode
+          id="node_1"
+          selected={false}
+          data={{
+            templateStyle: "flow_form",
+            wabaNumberId: "waba_1",
+            template: { name: "flow_tpl", body: "Fill this out", buttons: [{ type: "FLOW", label: "View Flow", flowFormId: null, flowFormName: null }] },
           }}
         />
       </ReactFlowProvider>
