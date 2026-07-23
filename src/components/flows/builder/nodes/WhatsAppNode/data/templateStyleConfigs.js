@@ -134,7 +134,10 @@ export const TEMPLATE_STYLE_CONFIGS = {
     previewKind: "standard",
     fields: FLOW_FORM_FIELDS,
     defaultDraft: { ...STANDARD_DEFAULT_DRAFT, flowCta: { buttonIcon: "default", buttonText: "View Flow", flowFormId: null, flowFormName: null } },
-    mockTemplates: [],
+    mockTemplates: [
+      { id: "flow_form_1", name: "post_purchase_survey_v1", category: "Marketing", language: "en", status: "Active", header: { type: "none" }, body: "We'd love your feedback on your recent order!", footer: "", buttons: [], flowCta: { buttonIcon: "default", buttonText: "Take Survey", flowFormId: "ff_1", flowFormName: "Post-purchase survey" } },
+      { id: "flow_form_2", name: "event_rsvp_v1", category: "Marketing", language: "en", status: "Draft", header: { type: "none" }, body: "You're invited! Reserve your spot below.", footer: "", buttons: [], flowCta: { buttonIcon: "default", buttonText: "RSVP Now", flowFormId: "ff_2", flowFormName: "Event RSVP" } },
+    ],
   },
 
   audio: {
