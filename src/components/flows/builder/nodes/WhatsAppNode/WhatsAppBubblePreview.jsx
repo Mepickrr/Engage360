@@ -56,6 +56,7 @@ function StandardPreview({ draft }) {
       <div style={{ padding: "8px 12px", fontSize: 12, color: "#111", lineHeight: 1.6 }}>{renderBody(draft.body)}</div>
       {draft.footer && <div style={{ padding: "0 12px 6px", fontSize: 11, color: "#aaa" }}>{draft.footer}</div>}
       {buttons.map((btn, i) => <ButtonRow key={i} label={btn.label || `Button ${i + 1}`} />)}
+      {draft.flowCta?.flowFormId && <ButtonRow label={`🔗 ${draft.flowCta.buttonText}`} />}
     </Bubble>
   );
 }

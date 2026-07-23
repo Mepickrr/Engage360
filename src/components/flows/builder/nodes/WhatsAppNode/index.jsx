@@ -263,7 +263,12 @@ export default function WhatsAppNode({ id, data, selected }) {
     ? (template?.sections ?? []).flatMap((sec) =>
         (sec.rows ?? []).map((row) => ({ label: row.title || row.id, type: "QUICK_REPLY" }))
       )
-    : (template?.buttons ?? []).filter(isConnectable);
+    : [
+        ...(template?.buttons ?? []),
+        ...(data?.templateStyle === "flow_form" && template?.flowCta?.flowFormId
+          ? [{ type: "FLOW", label: template.flowCta.buttonText }]
+          : []),
+      ].filter(isConnectable);
 
   // Phone number display
   const wabaNumber = WABA_NUMBERS.find((w) => w.id === (data?.wabaNumberId ?? "waba_1"));
