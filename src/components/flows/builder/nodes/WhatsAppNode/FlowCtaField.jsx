@@ -43,14 +43,14 @@ export default function FlowCtaField({ field, value, onChange }) {
 
   const [customForms, setCustomForms] = useState([]);
   const [step, setStep] = useState(null); // null | "type" | "builder" | "browse"
-  const [builderSeed, setBuilderSeed] = useState(null); // { flowType, initialScreens, editingForm }
+  const [builderSeed, setBuilderSeed] = useState(null); // { flowType, initialScreens }
   const [previewForm, setPreviewForm] = useState(null);
 
   const allForms = [...MOCK_FLOW_FORMS, ...customForms];
   const linkedForm = allForms.find((f) => f.id === cta.flowFormId) || null;
 
   const handleCreateType = (flowType) => {
-    setBuilderSeed({ flowType, initialScreens: FLOW_TYPE_PRESETS[flowType].seedScreens, editingForm: null });
+    setBuilderSeed({ flowType, initialScreens: FLOW_TYPE_PRESETS[flowType].seedScreens });
     setStep("builder");
   };
 
@@ -70,16 +70,18 @@ export default function FlowCtaField({ field, value, onChange }) {
     <div>
       <Label>Call to action</Label>
       <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, padding: 12, position: "relative" }}>
-        <button
-          type="button"
-          onClick={() => patch({ flowFormId: null, flowFormName: null })}
-          aria-label="Remove call to action link"
-          style={{ position: "absolute", top: 8, right: 8, background: "none", border: "none", cursor: "pointer", color: MUTED }}
-        >
-          <X size={14} />
-        </button>
+        {linked && (
+          <button
+            type="button"
+            onClick={() => patch({ flowFormId: null, flowFormName: null })}
+            aria-label="Remove call to action link"
+            style={{ position: "absolute", top: 8, right: 8, background: "none", border: "none", cursor: "pointer", color: MUTED }}
+          >
+            <X size={14} />
+          </button>
+        )}
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10, paddingRight: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10, paddingRight: linked ? 20 : 0 }}>
           <div>
             <Label>Type of action</Label>
             <select value="complete_flow" onChange={() => {}} style={{ ...fieldWrapperStyle(), background: "#fff", appearance: "none", cursor: "pointer" }}>

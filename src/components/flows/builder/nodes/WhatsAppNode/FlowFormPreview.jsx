@@ -42,7 +42,6 @@ function ComponentPreview({ component }) {
         </div>
       );
     case "multi_choice":
-    case "dropdown":
       return (
         <div>
           <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 6 }}>{component.label || "Label"}</div>
@@ -52,6 +51,16 @@ function ComponentPreview({ component }) {
               <span style={{ fontSize: 12, color: "#334155" }}>{opt || `Option ${i + 1}`}</span>
             </div>
           ))}
+        </div>
+      );
+    case "dropdown":
+      return (
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 6 }}>{component.label || "Label"}</div>
+          <div style={{ border: `1px solid ${BORDER}`, borderRadius: 8, padding: "8px 10px", fontSize: 12, color: "#334155", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span>{(component.options || [])[0] || "Select an option"}</span>
+            <span style={{ color: MUTED, fontSize: 10 }}>▾</span>
+          </div>
         </div>
       );
     case "opt_in":

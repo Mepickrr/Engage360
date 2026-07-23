@@ -86,6 +86,7 @@ const SHORT_ANSWER_INPUT_TYPES = [
 ];
 
 function TextAnswerForm({ component, onChange, showInputType }) {
+  const showParagraphNote = component.kind === "paragraph";
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       {showInputType && (
@@ -130,6 +131,9 @@ function TextAnswerForm({ component, onChange, showInputType }) {
           style={fieldWrapperStyle()}
         />
       </div>
+      {showParagraphNote && (
+        <div style={{ fontSize: 11, color: MUTED, marginTop: -2 }}>Customer input limit: 600 characters</div>
+      )}
       <RequiredRow required={component.required} onChange={(v) => onChange({ required: v })} />
     </div>
   );

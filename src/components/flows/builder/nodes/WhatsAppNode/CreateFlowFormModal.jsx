@@ -87,9 +87,9 @@ function ScreensPanel({ screens, activeScreenId, onSelect, onAdd, onRemove, onRe
 }
 
 export default function CreateFlowFormModal({ seed, onCancel, onSave }) {
-  const [name] = useState(seed.editingForm?.name || FLOW_TYPE_PRESETS[seed.flowType]?.label || "Custom form");
-  const [screens, setScreens] = useState(seed.editingForm?.screens || seed.initialScreens || [createBlankScreen("Your form")]);
-  const [activeScreenId, setActiveScreenId] = useState((seed.editingForm?.screens || seed.initialScreens || [])[0]?.id);
+  const [name] = useState(FLOW_TYPE_PRESETS[seed.flowType]?.label || "Custom form");
+  const [screens, setScreens] = useState(seed.initialScreens || [createBlankScreen("Your form")]);
+  const [activeScreenId, setActiveScreenId] = useState((seed.initialScreens || [])[0]?.id);
 
   const activeScreen = screens.find((s) => s.id === activeScreenId) || screens[0];
 
