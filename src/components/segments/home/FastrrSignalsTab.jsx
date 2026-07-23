@@ -63,7 +63,6 @@ export default function FastrrSignalsTab({ searchQuery }) {
             description={item.description}
             users={item.users}
             footerRight={item.avgRevenuePerUser ? `Average revenue per user : ${item.avgRevenuePerUser}` : undefined}
-            onMenuClick={subTab !== "acquisition" ? () => {} : undefined}
           />
         ))}
       </div>
