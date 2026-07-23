@@ -33,3 +33,25 @@ describe("FlowCtaField — unlinked state", () => {
     expect(screen.getByText((_, el) => el?.textContent === "13/40")).toBeInTheDocument();
   });
 });
+
+describe("FlowCtaField — linked state", () => {
+  const linkedValue = { buttonIcon: "default", buttonText: "View Flow", flowFormId: "ff_1", flowFormName: "Post-purchase survey" };
+
+  it("shows the linked form name with Preview and Change actions instead of Create new/Use existing", () => {
+    render(<FlowCtaField field={{ key: "flowCta" }} value={linkedValue} onChange={jest.fn()} />);
+
+    expect(screen.getByText("Post-purchase survey")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /preview/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /change/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^\+ create new$/i })).not.toBeInTheDocument();
+  });
+
+  it("clears the link when the trailing remove button is clicked", () => {
+    const onChange = jest.fn();
+    render(<FlowCtaField field={{ key: "flowCta" }} value={linkedValue} onChange={onChange} />);
+
+    fireEvent.click(screen.getByLabelText(/remove call to action link/i));
+
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ flowFormId: null, flowFormName: null }));
+  });
+});

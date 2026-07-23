@@ -67,8 +67,18 @@ export default function FlowCtaField({ field, value, onChange }) {
             </button>
           </div>
         ) : (
-          <div style={{ border: `1px solid ${BORDER}`, borderRadius: 8, padding: "8px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: "#0F172A" }}>{cta.flowFormName}</span>
+          <div style={{ border: `1px solid ${BORDER}`, borderRadius: 8, padding: "8px 10px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: "#0F172A", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {cta.flowFormName}
+            </span>
+            <div style={{ display: "flex", gap: 10, flexShrink: 0 }}>
+              <button type="button" style={{ fontSize: 11, color: MUTED, background: "none", border: "none", cursor: "pointer" }}>
+                Preview
+              </button>
+              <button type="button" style={{ fontSize: 11, color: PRIMARY, fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}>
+                Change
+              </button>
+            </div>
           </div>
         )}
       </div>
