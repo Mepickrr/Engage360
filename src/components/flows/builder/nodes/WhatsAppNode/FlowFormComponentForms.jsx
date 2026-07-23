@@ -10,6 +10,18 @@ function CharCounter({ value, max }) {
   return <span style={{ fontSize: 10, color: MUTED }}>{(value || "").length}/{max}</span>;
 }
 
+function RequiredRow({ required, onChange }) {
+  return (
+    <div
+      onClick={() => onChange(!required)}
+      style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8, cursor: "pointer" }}
+    >
+      <span style={{ fontSize: 12, color: "#334155" }}>Required</span>
+      <Toggle on={!!required} onChange={onChange} />
+    </div>
+  );
+}
+
 function TextKindForm({ component, onChange, max }) {
   return (
     <div>
@@ -118,10 +130,7 @@ function TextAnswerForm({ component, onChange, showInputType }) {
           style={fieldWrapperStyle()}
         />
       </div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8 }}>
-        <span onClick={() => onChange({ required: !component.required })} style={{ fontSize: 12, color: "#334155", cursor: "pointer" }}>Required</span>
-        <Toggle on={!!component.required} onChange={(v) => onChange({ required: v })} />
-      </div>
+      <RequiredRow required={component.required} onChange={(v) => onChange({ required: v })} />
     </div>
   );
 }
@@ -168,10 +177,7 @@ function OptionsForm({ component, onChange, min, max }) {
           + Add option
         </button>
       )}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8 }}>
-        <span style={{ fontSize: 12, color: "#334155" }}>Required</span>
-        <Toggle on={!!component.required} onChange={(v) => onChange({ required: v })} />
-      </div>
+      <RequiredRow required={component.required} onChange={(v) => onChange({ required: v })} />
     </div>
   );
 }
@@ -259,10 +265,7 @@ function OptInForm({ component, onChange }) {
           Edit content
         </button>
       )}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8 }}>
-        <span style={{ fontSize: 12, color: "#334155" }}>Required</span>
-        <Toggle on={!!component.required} onChange={(v) => onChange({ required: v })} />
-      </div>
+      <RequiredRow required={component.required} onChange={(v) => onChange({ required: v })} />
     </div>
   );
 }
