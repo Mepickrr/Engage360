@@ -55,3 +55,40 @@ describe("FlowCtaField — linked state", () => {
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ flowFormId: null, flowFormName: null }));
   });
 });
+
+describe("FlowCtaField — full create/use-existing flow", () => {
+  it("creates a new flow form end-to-end and links it", () => {
+    const onChange = jest.fn();
+    render(<FlowCtaField field={{ key: "flowCta" }} value={null} onChange={onChange} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /\+ create new/i }));
+    // Step 1: type wizard, default "Send a survey" selected
+    fireEvent.click(screen.getByRole("button", { name: /^create$/i }));
+    // Step 2: builder opens with a seeded screen
+    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
+
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({
+      flowFormId: expect.stringMatching(/^ff_/),
+      flowFormName: "Send a survey",
+    }));
+  });
+
+  it("links an existing mock flow form via Use existing", () => {
+    const onChange = jest.fn();
+    render(<FlowCtaField field={{ key: "flowCta" }} value={null} onChange={onChange} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /use existing/i }));
+    fireEvent.click(screen.getAllByRole("button", { name: /^select$/i })[0]);
+
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ flowFormId: "ff_1", flowFormName: "Post-purchase survey" }));
+  });
+
+  it("opens a preview overlay from the linked chip's Preview button", () => {
+    const linkedValue = { buttonIcon: "default", buttonText: "View Flow", flowFormId: "ff_1", flowFormName: "Post-purchase survey" };
+    render(<FlowCtaField field={{ key: "flowCta" }} value={linkedValue} onChange={jest.fn()} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /^preview$/i }));
+
+    expect(screen.getByText(/your form/i)).toBeInTheDocument();
+  });
+});
