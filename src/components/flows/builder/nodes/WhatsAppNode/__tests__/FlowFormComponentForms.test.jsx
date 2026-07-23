@@ -27,3 +27,32 @@ describe("ComponentSettingsForm — text & media kinds", () => {
     expect(onChange).toHaveBeenCalledWith({ height: "500" });
   });
 });
+
+describe("ComponentSettingsForm — text answer kinds", () => {
+  it("renders input type, label, instructions, and required toggle for short_answer", () => {
+    const onChange = jest.fn();
+    render(<ComponentSettingsForm
+      component={{ id: "c1", kind: "short_answer", inputType: "text", label: "", instructions: "", required: true }}
+      onChange={onChange}
+    />);
+
+    fireEvent.change(screen.getByLabelText(/input type/i), { target: { value: "email" } });
+    expect(onChange).toHaveBeenCalledWith({ inputType: "email" });
+
+    fireEvent.change(screen.getByLabelText(/^label$/i), { target: { value: "Email" } });
+    expect(onChange).toHaveBeenCalledWith({ label: "Email" });
+    expect(screen.getByLabelText(/^label$/i)).toHaveAttribute("maxLength", "20");
+
+    fireEvent.click(screen.getByText(/required/i));
+    expect(onChange).toHaveBeenCalledWith({ required: false });
+  });
+
+  it("renders label/instructions/required for paragraph and date_picker without an input type select", () => {
+    render(<ComponentSettingsForm component={{ id: "c2", kind: "paragraph", label: "", instructions: "", required: true }} onChange={jest.fn()} />);
+    expect(screen.queryByLabelText(/input type/i)).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/^label$/i)).toBeInTheDocument();
+
+    render(<ComponentSettingsForm component={{ id: "c3", kind: "date_picker", label: "", instructions: "", required: true }} onChange={jest.fn()} />);
+    expect(screen.getAllByLabelText(/^label$/i).length).toBeGreaterThan(0);
+  });
+});

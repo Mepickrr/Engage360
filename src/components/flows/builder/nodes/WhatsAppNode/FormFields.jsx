@@ -7,11 +7,11 @@ export const PRIMARY = "#6C3AE8";
 export const BORDER = "#E5E7EB";
 export const MUTED = "#94A3B8";
 
-export function Label({ children }) {
+export function Label({ children, htmlFor }) {
   return (
-    <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 6 }}>
+    <label htmlFor={htmlFor} style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 6, display: "block" }}>
       {children}
-    </div>
+    </label>
   );
 }
 

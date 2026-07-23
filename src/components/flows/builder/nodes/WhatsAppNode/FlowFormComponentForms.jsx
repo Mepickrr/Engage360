@@ -65,6 +65,67 @@ function ImageForm({ component, onChange }) {
   );
 }
 
+const SHORT_ANSWER_INPUT_TYPES = [
+  { value: "text", label: "Text" },
+  { value: "email", label: "Email" },
+  { value: "phone", label: "Phone Number" },
+  { value: "password", label: "Password" },
+  { value: "number", label: "Number" },
+];
+
+function TextAnswerForm({ component, onChange, showInputType }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      {showInputType && (
+        <div>
+          <Label htmlFor="flow-form-input-type">Input type</Label>
+          <select
+            id="flow-form-input-type"
+            aria-label="Input type"
+            value={component.inputType}
+            onChange={(e) => onChange({ inputType: e.target.value })}
+            style={{ ...fieldWrapperStyle(), background: "#fff", appearance: "none", cursor: "pointer" }}
+          >
+            {SHORT_ANSWER_INPUT_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+          </select>
+        </div>
+      )}
+      <div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+          <Label htmlFor="flow-form-label">Label</Label>
+          <CharCounter value={component.label} max={20} />
+        </div>
+        <input
+          id="flow-form-label"
+          aria-label="Label"
+          value={component.label}
+          maxLength={20}
+          onChange={(e) => onChange({ label: e.target.value })}
+          style={fieldWrapperStyle()}
+        />
+      </div>
+      <div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+          <Label htmlFor="flow-form-instructions">Instructions · Optional</Label>
+          <CharCounter value={component.instructions} max={80} />
+        </div>
+        <input
+          id="flow-form-instructions"
+          aria-label="Instructions"
+          value={component.instructions}
+          maxLength={80}
+          onChange={(e) => onChange({ instructions: e.target.value })}
+          style={fieldWrapperStyle()}
+        />
+      </div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8 }}>
+        <span onClick={() => onChange({ required: !component.required })} style={{ fontSize: 12, color: "#334155", cursor: "pointer" }}>Required</span>
+        <Toggle on={!!component.required} onChange={(v) => onChange({ required: v })} />
+      </div>
+    </div>
+  );
+}
+
 export default function ComponentSettingsForm({ component, onChange }) {
   switch (component.kind) {
     case "large_heading":
@@ -75,6 +136,11 @@ export default function ComponentSettingsForm({ component, onChange }) {
       return <TextKindForm component={component} onChange={onChange} max={4096} />;
     case "image":
       return <ImageForm component={component} onChange={onChange} />;
+    case "short_answer":
+      return <TextAnswerForm component={component} onChange={onChange} showInputType />;
+    case "paragraph":
+    case "date_picker":
+      return <TextAnswerForm component={component} onChange={onChange} showInputType={false} />;
     default:
       return null;
   }
