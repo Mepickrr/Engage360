@@ -23,7 +23,6 @@ export default function SuppressionAssetsTab({ searchQuery }) {
             updated={item.updated}
             description={item.description}
             users={item.users}
-            onMenuClick={() => {}}
           />
         ))}
       </div>

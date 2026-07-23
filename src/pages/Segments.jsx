@@ -16,6 +16,7 @@ import SuppressionAssetsTab from "@/components/segments/home/SuppressionAssetsTa
 export default function SegmentsPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("all");
+  const [customSubTab, setCustomSubTab] = useState("filter");
   const [searchQuery, setSearchQuery] = useState("");
   const [showNewSegmentModal, setShowNewSegmentModal] = useState(false);
   const [showCsvModal, setShowCsvModal] = useState(false);
@@ -96,7 +97,7 @@ export default function SegmentsPage() {
           <FastrrSignalsTab searchQuery={searchQuery} />
         </TabsContent>
         <TabsContent value="custom">
-          <CustomSegmentsTab searchQuery={searchQuery} />
+          <CustomSegmentsTab searchQuery={searchQuery} subTab={customSubTab} onSubTabChange={setCustomSubTab} />
         </TabsContent>
         <TabsContent value="shopify">
           <ShopifySegmentsTab searchQuery={searchQuery} />
@@ -122,7 +123,10 @@ export default function SegmentsPage() {
       <ImportSegmentCsvModal
         open={showCsvModal}
         onClose={() => setShowCsvModal(false)}
-        onCreated={() => setActiveTab("custom")}
+        onCreated={() => {
+          setActiveTab("custom");
+          setCustomSubTab("csv");
+        }}
       />
     </div>
   );

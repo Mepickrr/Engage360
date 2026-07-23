@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import SegmentCard from "./SegmentCard";
 import SegmentedToggle from "./SegmentedToggle";
 import { listSegments } from "@/data/segmentsData";
@@ -17,13 +17,15 @@ function filterByQuery(items, query) {
   return items.filter((item) => item.name.toLowerCase().includes(q));
 }
 
-export default function CustomSegmentsTab({ searchQuery }) {
-  const [subTab, setSubTab] = useState("filter");
+export default function CustomSegmentsTab({ searchQuery, subTab, onSubTabChange }) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-  const handleSubTabChange = (value) => {
-    setSubTab(value);
+  useEffect(() => {
     setVisibleCount(PAGE_SIZE);
+  }, [subTab]);
+
+  const handleSubTabChange = (value) => {
+    onSubTabChange(value);
   };
 
   const bySubTab = useMemo(

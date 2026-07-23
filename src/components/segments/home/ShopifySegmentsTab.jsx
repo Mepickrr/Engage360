@@ -42,7 +42,6 @@ export default function ShopifySegmentsTab({ searchQuery }) {
             updated={item.updated}
             description={item.rule}
             badge="New"
-            onMenuClick={() => {}}
           />
         ))}
       </div>

@@ -92,7 +92,7 @@ export default function AllSegmentsTab({ searchQuery }) {
       <h2 className="mb-3 text-base font-semibold text-text-primary">All segments</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {visible.map((item) => (
-          <SegmentCard key={item.id} testId={`all-card-${item.id}`} {...item} onMenuClick={() => {}} />
+          <SegmentCard key={item.id} testId={`all-card-${item.id}`} {...item} />
         ))}
       </div>
       <div className="mt-4 text-center text-[13px] text-text-muted">

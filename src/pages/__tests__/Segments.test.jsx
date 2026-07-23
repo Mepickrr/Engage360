@@ -58,6 +58,22 @@ describe("SegmentsPage", () => {
     expect(screen.getByTestId("import-csv-modal")).toBeInTheDocument();
   });
 
+  test("creating a CSV segment lands on Custom segments with the CSV Upload sub-tab active", () => {
+    render(<SegmentsPage />);
+    fireEvent.click(screen.getByTestId("segments-new-btn"));
+    fireEvent.click(screen.getByTestId("new-segment-option-csv"));
+
+    fireEvent.change(screen.getByTestId("import-csv-name-input"), { target: { value: "Diwali giftees" } });
+    const file = new File(["a,b\n1,2"], "customers.csv", { type: "text/csv" });
+    fireEvent.change(screen.getByTestId("import-csv-file-input"), { target: { files: [file] } });
+    fireEvent.click(screen.getByTestId("import-csv-create-btn"));
+
+    expect(screen.queryByTestId("import-csv-modal")).not.toBeInTheDocument();
+    expect(screen.getByTestId("custom-segments-tab")).toBeInTheDocument();
+    expect(screen.getByTestId("custom-toggle-csv")).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByText("Diwali giftees")).toBeInTheDocument();
+  });
+
   test("search box filters the active tab's cards", () => {
     render(<SegmentsPage />);
     fireEvent.change(screen.getByTestId("segments-search-input"), { target: { value: "champions" } });
