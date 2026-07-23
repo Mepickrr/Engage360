@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { FlowVariantContext } from "../../../../FlowVariantContext";
 import WhatsAppRightPanel from "../WhatsAppRightPanel";
 import WhatsAppBubblePreview from "../WhatsAppBubblePreview";
@@ -89,5 +89,27 @@ describe("Flow Form — bubble preview and canvas port", () => {
       </ReactFlowProvider>
     );
     expect(screen.getByText("View Flow")).toBeInTheDocument();
+  });
+});
+
+describe("Flow Form — Complete flow button preselected on Create New", () => {
+  it("pre-selects Complete flow as the button type when creating a brand-new Flow Form template", () => {
+    renderPanel({ wabaNumberId: "waba_1", templateStyle: "flow_form", template: null });
+
+    // Empty state -> "Create New" dashed box opens UnifiedTemplateModal in browse mode.
+    fireEvent.click(screen.getByRole("button", { name: /create new/i }));
+    // Browse view's own "+ Create new" opens a blank edit-mode draft. Queried via
+    // textContent (not getByRole/getByText) because this environment's dev-tooling
+    // instrumentation (@emergentbase/visual-edits, active under NODE_ENV=test) can
+    // render duplicate accessible-name nodes for the same visible button.
+    const createNewInBrowse = Array.from(document.querySelectorAll("button")).find((b) => /^\+ create new$/i.test(b.textContent.trim()));
+    fireEvent.click(createNewInBrowse);
+
+    const buttonTypeSelect = Array.from(document.querySelectorAll("select")).find((s) =>
+      Array.from(s.options).some((o) => o.value === "FLOW")
+    );
+    expect(buttonTypeSelect).toBeTruthy();
+    expect(buttonTypeSelect.value).toBe("FLOW");
+    expect(screen.getByDisplayValue("View Flow")).toBeInTheDocument();
   });
 });

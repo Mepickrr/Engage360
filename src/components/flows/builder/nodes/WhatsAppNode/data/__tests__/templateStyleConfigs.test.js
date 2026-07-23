@@ -55,6 +55,17 @@ describe("TEMPLATE_STYLE_CONFIGS", () => {
     });
   });
 
+  it("flow_form's default draft pre-seeds a Complete flow button, not an empty buttons list", () => {
+    expect(TEMPLATE_STYLE_CONFIGS.flow_form.defaultDraft.buttons).toEqual([
+      { type: "FLOW", label: "View Flow", flowFormId: null, flowFormName: null },
+    ]);
+  });
+
+  it("flow_form's buttons field allows the Complete flow button type", () => {
+    const buttonsField = TEMPLATE_STYLE_CONFIGS.flow_form.fields.find((f) => f.key === "buttons");
+    expect(buttonsField.allowFlow).toBe(true);
+  });
+
   it("exposes a question preset for every ask_* input type shortcut", () => {
     ["text", "phone", "email", "number", "location", "image", "video", "document"].forEach((type) => {
       expect(COLLECT_INPUT_PRESETS[type]).toBeDefined();
