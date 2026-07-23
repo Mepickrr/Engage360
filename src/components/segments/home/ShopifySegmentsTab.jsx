@@ -22,7 +22,7 @@ export default function ShopifySegmentsTab({ searchQuery }) {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-base font-semibold text-text-primary">Your Shopify segments</h2>
         <div className="flex items-center gap-3 text-[12px] text-text-muted">
-          <span>Last synced on: {SHOPIFY_LAST_SYNCED}</span>
+          <span>{`Last synced on: ${SHOPIFY_LAST_SYNCED}`}</span>
           <button
             type="button"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-text-secondary hover:bg-slate-50"
@@ -48,7 +48,7 @@ export default function ShopifySegmentsTab({ searchQuery }) {
       </div>
 
       <div className="mt-4 text-center text-[13px] text-text-muted">
-        Showing {visible.length} out of {filtered.length} results
+        {`Showing ${visible.length} out of ${filtered.length} results`}
         {hasMore && (
           <>
             {" "}
