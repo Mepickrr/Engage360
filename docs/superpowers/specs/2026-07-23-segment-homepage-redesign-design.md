@@ -141,7 +141,97 @@ Each entry renders via the shared `SegmentCard`. Initial page size 9 (matches "S
 
 ---
 
-## 13. Testing
+## 13. Appendix: exact wireframe mock data
+
+All mock content in `segmentsHomeData.js` (and the `creationMethod`-tagged seeds in `segmentsData.js`) must reproduce these values verbatim — no invented substitutes — so the built page visually matches the wireframes. Where a name embeds "Bik", it's renamed per the Fastrr rule (e.g. `orderedInLast7DaysInBik` → `orderedInLast7DaysInFastrr`).
+
+**Opportunity cards** (shown identically above every tab; 3rd card's "Boost sales" is disabled/muted):
+| Headline | Description | Estimated gain | Boost sales |
+|---|---|---|---|
+| 89.87K Hibernating customers can be recovered | These long-inactive have a good chance of responding | ₹58,69,329 | enabled |
+| 42.62K high-value customers are active | Few Big Spenders are showing signs of buying again | ₹13,21,726 | enabled |
+| 11.80K Dormant customers show small signals | Long-lost customers. A few are can become active again | ₹3,78,925 | disabled |
+
+**Fastrr Signals → Retention segments** (10 total, "Showing all 10 results", no Show more):
+| Card | Icon | Updated | Description | Users | Avg revenue/user |
+|---|---|---|---|---|---|
+| Champions | Trophy | 11:25 PM, 22nd Jul | Your top fans - they buy often, spend the most, and purchased recently. Treat them like VIPs. | 1,63,073 | ₹3,733 |
+| Loyal customers | Diamond | 11:30 PM, 22nd Jul | Repeat buyers who come back regularly. Not as frequent as Champions, but very reliable. | 69,540 | ₹2,940 |
+| Potential loyalists | Rocket | 12:19 AM, 23rd Jul | Bought recently and showing early signs of becoming Loyalists, they just need a little nudge. | 5,12,566 | ₹663 |
+| New customers | Person+ | 12:25 AM, 23rd Jul | Made their first purchase recently but haven't come back yet. The goal is to get them to order again. | 1,14,121 | — |
+| Promising | Star | 12:52 AM, 23rd Jul | Bought a few times but inconsistently. They like you, they just haven't made it a habit yet. | 3,42,560 | ₹1,007 |
+| Need attention | Warning triangle | 1:03 AM, 23rd Jul | Used to buy regularly but have slowed down. They're starting to re-engage, a good time to reach out. | 1,83,591 | ₹1,270 |
+| At risk | Clock | 1:36 AM, 23rd Jul | Were frequent buyers but have gone quiet. | 3,97,251 | ₹1,328 |
+| Can't lose them | Anchor | 1:46 AM, 23rd Jul | High spenders who are at risk of leaving your brand. They don't buy often, but when they do, it's big. | 1,79,723 | ₹1,949 |
+| Hibernating | "zZ" | 2:08 AM, 23rd Jul | Haven't bought in a long time and weren't very active. A re-introduction campaign may wake them up. | 3,60,385 | ₹642 |
+| Lost customers | Person-x | 2:11 AM, 23rd Jul | Customers who purchased long ago and haven't returned | 47,302 | — |
+
+Info banner: "Customers who have purchased from you. Keep them engaged, prevent churn, and grow their value."
+
+**Fastrr Signals → Acquisition segments** (4 total, "Showing 3 out of 4 results", Show more reveals the 4th):
+| Card | Icon | Updated | Description | Users |
+|---|---|---|---|---|
+| Hot Leads | Flame | 2:16 AM, 23rd Jul | Leads who took high-intent actions in the last 7 days (like add to cart or replied) | 59,607 |
+| Warm Leads | Coffee cup | 2:43 AM, 23rd Jul | Leads who showed interest recently (like clicks or product views) | 3,81,173 |
+| Cold Leads | Snowflake | 3:26 AM, 23rd Jul | Leads with only light or older activity (like message delivered or profile created) | 5,82,784 |
+| Nurture Leads | Seedling/leaf | 3:40 AM, 23rd Jul | Leads who've gone quiet after early interest — a nudge campaign can re-engage them. | 2,14,300 |
+
+Info banner: "Potential customers who haven't purchased yet. Convert them with targeted campaigns based on their intent."
+
+**Fastrr Signals → Segment library** (21 total, "Showing 8 out of 21 results" as the sub-tab's own page size — the last screenshot shows a 9th, "All SMS subscribers", visible when this content is aggregated into the "All segments" tab's 9-per-page grid):
+| Card | Updated | Description | Users |
+|---|---|---|---|
+| promising Customer | 4:59 PM, 11th Mar | Customers who have made frequent purchases and spent a lot but haven't engaged recently. | 2,63,037 |
+| Repeat buyers | 10:18 PM, 7th Mar | Customers who have purchased more than twice from your store. | 1,33,873 |
+| Engaged customers | 5:20 PM, 13th Dec | Customers who have either clicked on or replied to your messages at least three times in the last 60 days. | 87,409 |
+| Subscribers who never purchased | 6:21 PM, 1st Dec | All customers who are reachable on at least one messaging channel but have never placed an order. | 11,75,823 |
+| All WhatsApp subscribers | 5:51 PM, 16th Aug | All customers who are reachable on WhatsApp. | 15,08,035 |
+| All email subscribers | 1:07 PM, 7th Feb | All customers who are reachable on email. | 0 |
+| All subscribers | 1:07 PM, 7th Feb | All customers who are reachable on at least one messaging channel. | 0 |
+| New subscribers (30 days) | 1:07 PM, 7th Feb | New reachable customers acquired in the last 30 days. | 0 |
+| All SMS subscribers | 1:07 PM, 7th Feb | All customers who are reachable on SMS. | 0 |
+
+The remaining 12 (to reach 21 total, revealed via Show more) are net-new filler entries in the same style (name, timestamp, one-line description, user count) — not shown in any wireframe, so invented consistently with this table's tone.
+
+**Custom segments — Filter-based** (1319 total, "Showing 9 out of 1319 results"; all carry a "Filters" badge):
+| Card | Updated | Description | Users |
+|---|---|---|---|
+| orderedInLast7DaysInFastrr | 4:00 AM, 23rd Jul | Customers who have placed an order in the last 7 days | 28,484 |
+| Drip AH_WA_LOD61-90DA... | 7:46 PM, 19th Jul | Segment for Drip Broadcast Drip AH_WA_LOD61-90DAYS_REFILL_JULY18 - Drip Campaign whatsapp 1 | 13,677 |
+| Drip AH_WA_LOD31-45DA... | 7:31 PM, 19th Jul | Segment for Drip Broadcast Drip AH_WA_LOD31-45DAYS_REFILL_JULY18 - Drip Campaign whatsapp 1 | 12,316 |
+| Drip AH_WA_FAKE_RTO_L... | 7:30 PM, 19th Jul | Segment for Drip Broadcast Drip AH_WA_FAKE_RTO_L7D_JULY18 - Drip Campaign whatsapp 1 | 1,329 |
+| Drip AH_WA_LOD15-30DA... | 7:16 PM, 19th Jul | Segment for Drip Broadcast Drip AH_WA_LOD15-30DAYS_CS_WATER_SOFTENER_JULY18 - Drip Campaign whatsa... | 19,194 |
+| Drip AH_WA_LOD91-120D... | 7:16 PM, 19th Jul | Segment for Drip Broadcast Drip AH_WA_LOD91-120DAYS_REFILL_JULY18 - Drip Campaign whatsapp 1 | 10,935 |
+| Drip AH_WA_LOD46-60D... | 7:16 PM, 19th Jul | Segment for Drip Broadcast Drip AH_WA_LOD46-60DAYS_REFILL_JULY18 - Drip Campaign whatsapp 1 | 8,891 |
+| Drip AH_WA_ABANDONED... | 7:15 PM, 19th Jul | Segment for Drip Broadcast Drip AH_WA_ABANDONED_CKT_L7D_JULY18 - Drip Campaign whatsap... | 4,843 |
+| Drip AH_WA_L7D_NITRO_... | 7:15 PM, 19th Jul | Segment for Drip Broadcast Drip AH_WA_L7D_NITRO_HIGH_INTENT_CART_EXIST_JULY18 - Drip... | 675 |
+
+These 9 are seeded with `creationMethod: "filter"`. Per §9, 2-3 additional new mock rows are seeded with `creationMethod: "csv"` for the CSV Upload sub-tab (not shown in any wireframe — invent 2-3 plausible names, e.g. "Diwali excel import", "Store loyalty list Q2").
+
+**Shopify segments** (61 total, "Showing 9 out of 61 results"; header: "Last synced on: 23 Jul 2026 at 6:08 PM" + Sync button; every card has a "New" badge + refresh icon):
+| Card | Updated | Rule |
+|---|---|---|
+| Last 30 days | 6:08 PM, 23rd Jul | last_order_date > -30d |
+| Customers Who Purchase... | 3:52 PM, 8th Jul | products_purchased MATCHES ( id = 7698145706200, date >= -30d ) |
+| Customers Who Purchase... | 11:51 AM, 8th Jul | products_purchased MATCHES ( id = 8164014194904, date >= -30d ) |
+| Customers Who Purchase... | 11:50 AM, 8th Jul | products_purchased MATCHES (id IN (7968704037080, 9180697002200, 9180692185304, 9092271603928), date >= -30d) |
+| Customers Who Purchase... | 11:43 AM, 8th Jul | products_purchased MATCHES (id IN (8174008369368, 7698045665496), date >= -30d) |
+| Customers Who Purchase... | 6:21 PM, 7th Jul | products_purchased MATCHES (id IN (7698126242008, 8377127502040, 7971095871704, 8852681064664,...) |
+| Customers Who Purchase... | 6:19 PM, 7th Jul | products_purchased MATCHES (id IN (7698126242008, 8377127502040, 7971095871704, 8852681064664,...) |
+| Customers who purchase... | 5:57 PM, 7th Jul | products_purchased MATCHES ( id = 7698126242008 ) |
+| Customers Who Have Pur... | 10:56 AM, 1st Jul | number_of_orders >= 3 |
+
+The remaining 52 (toward 61 total, Show more) are net-new filler entries in the same style — not shown in any wireframe.
+
+**Suppression assets** (2 total, no Show more):
+| Card | Updated | Description | Users |
+|---|---|---|---|
+| Email suppressed by Fastrr | 6:24 AM, 20th Jul | Fastrr-generated list of customers who shouldn't be targeted in campaigns, such as opted-out or invalid email or marked emails as spam. | 1 |
+| WhatsApp suppressed by Fastrr | 5:22 AM, 20th Jul | Fastrr-generated list of customers who shouldn't be targeted in campaigns, such as opted-out or invalid phone numbers | 4,81,734 |
+
+---
+
+## 14. Testing
 
 - New `__tests__/SegmentsHomepage.test.jsx`: renders all 5 tabs, confirms tab switching shows the right sections; confirms "Fastrr Signals" and "SStore" strings are used (and "BIK"/"Avimee" are absent) in rendered output; confirms `+ New Segment` opens `NewSegmentModal`; confirms selecting "Create Segment via filters" navigates to `/segments/builder/new`; confirms selecting "Upload CSV" opens `ImportSegmentCsvModal`, and that its Create button stays disabled until both name and file are set.
 - Existing segment builder tests (`SegmentBuilderPage`, `AudienceFilterBuilder`, etc.) are unaffected since those routes/components aren't touched.
