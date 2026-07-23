@@ -56,3 +56,34 @@ describe("ComponentSettingsForm — text answer kinds", () => {
     expect(screen.getAllByLabelText(/^label$/i).length).toBeGreaterThan(0);
   });
 });
+
+describe("ComponentSettingsForm — selection kinds", () => {
+  it("lets you add/remove options for single_choice within the 2-10 bound", () => {
+    const onChange = jest.fn();
+    render(<ComponentSettingsForm component={{ id: "c1", kind: "single_choice", label: "", options: ["", ""], required: true }} onChange={onChange} />);
+
+    expect(screen.getAllByPlaceholderText(/option/i)).toHaveLength(2);
+    expect(screen.queryByLabelText(/remove option/i)).not.toBeInTheDocument(); // can't go below 2
+
+    fireEvent.click(screen.getByRole("button", { name: /\+ add option/i }));
+    expect(onChange).toHaveBeenCalledWith({ options: ["", "", ""] });
+  });
+
+  it("caps multi_choice/dropdown options at 10", () => {
+    const tenOptions = Array.from({ length: 10 }, () => "");
+    render(<ComponentSettingsForm component={{ id: "c2", kind: "multi_choice", label: "", options: tenOptions, required: true }} onChange={jest.fn()} />);
+    expect(screen.queryByRole("button", { name: /\+ add option/i })).not.toBeInTheDocument();
+  });
+
+  it("renders consent label, read more url, and an Edit content button for opt_in", () => {
+    const onChange = jest.fn();
+    render(<ComponentSettingsForm
+      component={{ id: "c3", kind: "opt_in", consentLabel: "", readMoreUrl: "", required: true, editContent: { title: "", largeHeading: "", smallHeading: "", caption: "", body: "", imageUrl: "" } }}
+      onChange={onChange}
+    />);
+
+    expect(screen.getByLabelText(/consent label/i)).toHaveAttribute("maxLength", "300");
+    fireEvent.click(screen.getByRole("button", { name: /edit content/i }));
+    expect(screen.getByText(/screen title/i)).toBeInTheDocument();
+  });
+});

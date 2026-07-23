@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { PRIMARY, BORDER, MUTED, Label, Toggle } from "./FormFields";
 
@@ -126,6 +126,147 @@ function TextAnswerForm({ component, onChange, showInputType }) {
   );
 }
 
+function OptionsForm({ component, onChange, min, max }) {
+  const options = component.options || [];
+  const updateOption = (i, v) => onChange({ options: options.map((o, idx) => (idx === i ? v : o)) });
+  const removeOption = (i) => onChange({ options: options.filter((_, idx) => idx !== i) });
+  const addOption = () => onChange({ options: [...options, ""] });
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <div>
+        <Label htmlFor="flow-form-selection-label">Label</Label>
+        <input
+          id="flow-form-selection-label"
+          aria-label="Label"
+          value={component.label}
+          maxLength={30}
+          onChange={(e) => onChange({ label: e.target.value })}
+          style={fieldWrapperStyle()}
+        />
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {options.map((opt, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <input
+              placeholder={`Option ${i + 1}`}
+              value={opt}
+              maxLength={30}
+              onChange={(e) => updateOption(i, e.target.value)}
+              style={{ ...fieldWrapperStyle(), flex: 1 }}
+            />
+            {options.length > min && (
+              <button type="button" aria-label="Remove option" onClick={() => removeOption(i)} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED }}>
+                <Trash2 size={14} />
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+      {options.length < max && (
+        <button type="button" onClick={addOption} style={{ fontSize: 12, color: PRIMARY, fontWeight: 500, background: "none", border: "none", cursor: "pointer", textAlign: "left" }}>
+          + Add option
+        </button>
+      )}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8 }}>
+        <span style={{ fontSize: 12, color: "#334155" }}>Required</span>
+        <Toggle on={!!component.required} onChange={(v) => onChange({ required: v })} />
+      </div>
+    </div>
+  );
+}
+
+function OptInEditContentPage({ editContent, onChange, onClose }) {
+  const patch = (p) => onChange({ ...editContent, ...p });
+  return (
+    <div style={{ border: `1px solid ${BORDER}`, borderRadius: 8, padding: 10, background: "#F8FAFC" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#0F172A" }}>Edit content</span>
+        <button type="button" onClick={onClose} style={{ fontSize: 11, color: PRIMARY, background: "none", border: "none", cursor: "pointer" }}>Done</button>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div>
+          <Label>Screen title</Label>
+          <input value={editContent.title} onChange={(e) => patch({ title: e.target.value })} style={fieldWrapperStyle()} />
+        </div>
+        <div>
+          <Label>Large heading</Label>
+          <input value={editContent.largeHeading} maxLength={80} onChange={(e) => patch({ largeHeading: e.target.value })} style={fieldWrapperStyle()} />
+        </div>
+        <div>
+          <Label>Small heading</Label>
+          <input value={editContent.smallHeading} maxLength={80} onChange={(e) => patch({ smallHeading: e.target.value })} style={fieldWrapperStyle()} />
+        </div>
+        <div>
+          <Label>Caption</Label>
+          <input value={editContent.caption} maxLength={4096} onChange={(e) => patch({ caption: e.target.value })} style={fieldWrapperStyle()} />
+        </div>
+        <div>
+          <Label>Body</Label>
+          <textarea value={editContent.body} maxLength={4096} rows={3} onChange={(e) => patch({ body: e.target.value })} style={{ ...fieldWrapperStyle(), resize: "none" }} />
+        </div>
+        <div>
+          <Label>Image</Label>
+          <div
+            onClick={() => patch({ imageUrl: editContent.imageUrl || "https://placehold.co/400x300?text=Image" })}
+            style={{ border: `2px dashed ${BORDER}`, borderRadius: 8, padding: 12, textAlign: "center", cursor: "pointer", background: "#fff", fontSize: 11, color: MUTED }}
+          >
+            {editContent.imageUrl ? "Image selected — click to replace" : "Click to attach an image"}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OptInForm({ component, onChange }) {
+  const [editing, setEditing] = useState(false);
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+          <Label htmlFor="flow-form-consent-label">Consent label</Label>
+          <CharCounter value={component.consentLabel} max={300} />
+        </div>
+        <textarea
+          id="flow-form-consent-label"
+          aria-label="Consent label"
+          value={component.consentLabel}
+          maxLength={300}
+          rows={3}
+          onChange={(e) => onChange({ consentLabel: e.target.value })}
+          style={{ ...fieldWrapperStyle(), resize: "none" }}
+        />
+      </div>
+      <div>
+        <Label htmlFor="flow-form-read-more">Read More link</Label>
+        <input
+          id="flow-form-read-more"
+          aria-label="Read More link"
+          value={component.readMoreUrl}
+          onChange={(e) => onChange({ readMoreUrl: e.target.value })}
+          style={fieldWrapperStyle()}
+        />
+      </div>
+      {editing ? (
+        <OptInEditContentPage
+          editContent={component.editContent}
+          onChange={(editContent) => onChange({ editContent })}
+          onClose={() => setEditing(false)}
+        />
+      ) : (
+        <button type="button" onClick={() => setEditing(true)} style={{ padding: "8px", border: `1px solid ${BORDER}`, borderRadius: 8, background: "#fff", fontSize: 12, fontWeight: 500, cursor: "pointer" }}>
+          Edit content
+        </button>
+      )}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8 }}>
+        <span style={{ fontSize: 12, color: "#334155" }}>Required</span>
+        <Toggle on={!!component.required} onChange={(v) => onChange({ required: v })} />
+      </div>
+    </div>
+  );
+}
+
 export default function ComponentSettingsForm({ component, onChange }) {
   switch (component.kind) {
     case "large_heading":
@@ -141,6 +282,13 @@ export default function ComponentSettingsForm({ component, onChange }) {
     case "paragraph":
     case "date_picker":
       return <TextAnswerForm component={component} onChange={onChange} showInputType={false} />;
+    case "single_choice":
+      return <OptionsForm component={component} onChange={onChange} min={2} max={10} />;
+    case "multi_choice":
+    case "dropdown":
+      return <OptionsForm component={component} onChange={onChange} min={1} max={10} />;
+    case "opt_in":
+      return <OptInForm component={component} onChange={onChange} />;
     default:
       return null;
   }
