@@ -1,6 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import FlowCtaField from "../FlowCtaField";
+
+function StatefulFlowCtaField({ initialValue = null }) {
+  const [value, setValue] = useState(initialValue);
+  return <FlowCtaField field={{ key: "flowCta" }} value={value} onChange={setValue} />;
+}
 
 describe("FlowCtaField — unlinked state", () => {
   it("renders Type of action, Button icon, Button text, and Create new/Use existing actions", () => {
@@ -15,14 +20,11 @@ describe("FlowCtaField — unlinked state", () => {
   });
 
   it("patches buttonText as the seller types, respecting the 40 char counter", () => {
-    const onChange = jest.fn();
-    render(<FlowCtaField field={{ key: "flowCta" }} value={null} onChange={onChange} />);
+    render(<StatefulFlowCtaField />);
 
     fireEvent.change(screen.getByDisplayValue("View Flow"), { target: { value: "Fill the form" } });
 
-    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ buttonText: "Fill the form" }));
-    // NOTE: brief specified "14/40" here, but "Fill the form".length === 13.
-    // Corrected to match the actual string used in this same test (see deviation note in task-3-report.md).
+    expect(screen.getByDisplayValue("Fill the form")).toBeInTheDocument();
     // Uses a text-matcher function (RTL's own recommended fallback) because this
     // dev environment's visual-edits babel instrumentation wraps the dynamic
     // {length} expression in its own <span>, splitting "13" and "/40" across

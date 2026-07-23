@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { X } from "lucide-react";
 import { PRIMARY, BORDER, MUTED, Label } from "./FormFields";
 
@@ -9,15 +9,9 @@ function fieldWrapperStyle() {
 }
 
 export default function FlowCtaField({ field, value, onChange }) {
-  // Local fallback mirrors DEFAULT_CTA so this field still reflects edits when
-  // rendered without a controlling parent (e.g. value stays null in isolation).
-  // When a real `value` is supplied it always wins, matching HeaderPickerField's
-  // controlled convention.
-  const [fallback, setFallback] = useState(DEFAULT_CTA);
-  const cta = value || fallback;
+  const cta = value || DEFAULT_CTA;
   const patch = (next) => {
     const merged = { ...cta, ...next };
-    if (!value) setFallback(merged);
     onChange(merged);
   };
   const linked = !!cta.flowFormId;
