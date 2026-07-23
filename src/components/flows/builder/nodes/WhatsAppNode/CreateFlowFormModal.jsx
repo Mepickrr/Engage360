@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { GripVertical, X, Plus } from "lucide-react";
 import { PRIMARY, BORDER, MUTED, Label } from "./FormFields";
 import { createBlankScreen, FLOW_TYPE_PRESETS } from "./data/mockFlowForms";
+import FlowFormComponentList from "./FlowFormComponentList";
 
 const MAX_SCREENS = 8;
 
@@ -139,7 +140,10 @@ export default function CreateFlowFormModal({ seed, onCancel, onSave }) {
             </div>
 
             {/* Component list — filled in by Task 7 */}
-            <div id="flow-form-component-list-slot" />
+            <FlowFormComponentList
+              components={activeScreen?.components || []}
+              onChange={(components) => updateScreen(activeScreen.id, { components })}
+            />
 
             <div style={{ marginTop: 14 }}>
               <Label>Continue button label</Label>
