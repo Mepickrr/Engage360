@@ -140,14 +140,14 @@ New component `FlowCtaField.jsx`, registered in `FormFields.jsx`'s `FieldRendere
 Three-panel layout, `position: fixed` full-viewport modal like `UnifiedTemplateModal`:
 
 **Screens panel (left):**
-- List of screens (name + drag icon, replaced with ↑/↓ move buttons per the reordering decision below), click to select/edit.
+- List of screens, each row draggable via a leading `GripVertical` icon (see §6.4), click to select/edit.
 - "+ Add new" — inline text input + confirm (wireframe 6), appends a blank screen (max 8, button disabled/hidden past the cap with a note).
 - Per-screen ✕ to delete (only when more than 1 screen remains).
 
 **Edit content panel (center):**
 - "Screen title" field, always first, required.
 - Ordered list of the screen's components, each row collapsible (expand/collapse chevron), with:
-  - Move up / move down buttons (see §6.4 — no drag library) instead of a literal drag handle.
+  - A leading `GripVertical` drag handle for reordering (see §6.4).
   - Delete (trash) icon.
   - A per-kind settings form (see §6.3).
 - "+ Add content" split-button with a nested category flyout: **Text** (Large heading / Small heading / Caption / Body) → **Media** (Image) → **Text answer** (Short answer / Paragraph / Date picker) → **Selection** (Single choice / Multi choice / Dropdown / Opt-in). Disabled/hidden once 8 components are already on the screen.
@@ -179,7 +179,11 @@ All of these reuse the existing `Label`/input/toggle visual primitives already i
 
 ### 6.4 Reordering
 
-Move-up/move-down icon buttons per row (disabled at the top/bottom edge), not a drag-and-drop library. Simpler, no new dependency, fully click/keyboard accessible — visually two small chevrons replacing the wireframe's `⠿` grip icon.
+Real drag-and-drop, matching the wireframe's `⠿` grip icon literally. No new dependency needed — the codebase already has a working native-HTML5 drag-to-reorder pattern in `NextBestActionRightPanel.jsx`'s `ChannelList` (`draggable` + `onDragStart`/`onDragOver`/`onDrop`, tracking a `dragIndex` in local state, splicing the array on drop), rendered with lucide's `GripVertical` icon. Reuse this exact pattern for:
+- Screens panel: dragging a screen row reorders `screens` within the form.
+- Edit content panel: dragging a component row reorders `components` within the selected screen.
+
+Each draggable row gets `cursor: "grab"` and a leading `<GripVertical size={13} />`, consistent with the existing implementation's visual treatment.
 
 ### 6.5 `SelectFlowFormModal.jsx` ("Use existing")
 
@@ -203,7 +207,6 @@ Centered dialog (visually consistent with `UnifiedTemplateModal`'s `BrowseView`,
 
 - No backend/Meta submission — this mirrors every other template style in this codebase (mock data, local state only).
 - No conditional screen branching, no dynamic option-loading, no pre-filling from customer data (matches the "Not Supported in v1" list in the earlier, unrelated Templates-page spec — same constraints apply here for consistency).
-- No real drag-and-drop library — move up/down buttons only.
 - Editing a Flow Form after it's linked to a saved-and-used template: the spec's disclaimer text is shown but not enforced as a hard lock (no state machine for "template already created" in this mock environment) — consistent with not over-building enforcement logic that has no real backend to check against.
 
 ---
