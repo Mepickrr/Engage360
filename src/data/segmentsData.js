@@ -46,6 +46,7 @@ let segments = [
     updatedAt: "2026-07-10T08:55:00.000Z",
     owner: "meera",
     status: "active",
+    creationMethod: "filter",
   },
   {
     id: "seg_2",
@@ -71,6 +72,7 @@ let segments = [
     updatedAt: "2026-07-10T07:45:00.000Z",
     owner: "meera",
     status: "active",
+    creationMethod: "filter",
   },
   {
     id: "seg_3",
@@ -99,6 +101,7 @@ let segments = [
     updatedAt: "2026-07-10T08:38:00.000Z",
     owner: null,
     status: "active",
+    creationMethod: "filter",
   },
   {
     id: "seg_4",
@@ -126,6 +129,7 @@ let segments = [
     updatedAt: "2026-07-10T08:30:00.000Z",
     owner: "meera",
     status: "active",
+    creationMethod: "filter",
   },
   {
     id: "seg_5",
@@ -151,6 +155,7 @@ let segments = [
     updatedAt: "2026-07-10T07:30:00.000Z",
     owner: null,
     status: "active",
+    creationMethod: "filter",
   },
   {
     id: "seg_6",
@@ -185,6 +190,37 @@ let segments = [
     updatedAt: "2026-07-07T09:00:00.000Z",
     owner: null,
     status: "stale",
+    creationMethod: "filter",
+  },
+  {
+    id: "seg_7",
+    name: "Diwali excel import",
+    description: "",
+    audience: {
+      include: { blocksCombinator: "AND", blocks: [] },
+      exclude_enabled: false,
+      exclude: emptyBlockSet(),
+    },
+    createdAt: "2026-07-15T09:00:00.000Z",
+    updatedAt: "2026-07-15T09:00:00.000Z",
+    owner: null,
+    status: "active",
+    creationMethod: "csv",
+  },
+  {
+    id: "seg_8",
+    name: "Store loyalty list Q2",
+    description: "",
+    audience: {
+      include: { blocksCombinator: "AND", blocks: [] },
+      exclude_enabled: false,
+      exclude: emptyBlockSet(),
+    },
+    createdAt: "2026-07-18T09:00:00.000Z",
+    updatedAt: "2026-07-18T09:00:00.000Z",
+    owner: null,
+    status: "active",
+    creationMethod: "csv",
   },
 ];
 
@@ -266,7 +302,7 @@ export function getSegment(id) {
   return segments.find((s) => s.id === id) || null;
 }
 
-export function createSegment({ name, description = "", audience }) {
+export function createSegment({ name, description = "", audience, creationMethod = "filter" }) {
   const estimate = estimateAudience(audience);
   const segment = {
     id: `seg_${nextSegmentSeq++}`,
@@ -279,6 +315,7 @@ export function createSegment({ name, description = "", audience }) {
     updatedAt: nowIso(),
     owner: "meera",
     status: "active",
+    creationMethod,
   };
   segments = [segment, ...segments];
   return segment;
