@@ -3,6 +3,7 @@ import { GripVertical, X, Plus } from "lucide-react";
 import { PRIMARY, BORDER, MUTED, Label } from "./FormFields";
 import { createBlankScreen, FLOW_TYPE_PRESETS } from "./data/mockFlowForms";
 import FlowFormComponentList from "./FlowFormComponentList";
+import ComponentSettingsForm from "./FlowFormComponentForms";
 
 const MAX_SCREENS = 8;
 
@@ -143,6 +144,9 @@ export default function CreateFlowFormModal({ seed, onCancel, onSave }) {
             <FlowFormComponentList
               components={activeScreen?.components || []}
               onChange={(components) => updateScreen(activeScreen.id, { components })}
+              renderSettings={(component, onChangeComponent) => (
+                <ComponentSettingsForm component={component} onChange={onChangeComponent} />
+              )}
             />
 
             <div style={{ marginTop: 14 }}>
