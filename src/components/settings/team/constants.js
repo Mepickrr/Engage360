@@ -21,7 +21,7 @@ function blankPermissionFor(value) {
   return { view: value, createManage: value, publish: value };
 }
 
-function allPermissions(value) {
+export function allPermissions(value) {
   return PERMISSION_COMPONENTS.reduce((acc, { key }) => {
     acc[key] = blankPermissionFor(value);
     return acc;

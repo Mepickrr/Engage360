@@ -36,6 +36,29 @@ describe("TeamManagementPanel", () => {
     expect(screen.getByTestId("role-perm-manager-revenueConfig-createManage")).toBeChecked();
   });
 
+  it("renaming a custom role updates the sidebar nav button", () => {
+    render(<TeamManagementPanel />);
+    fireEvent.mouseDown(screen.getByTestId("team-tab-roles"));
+    fireEvent.click(screen.getByTestId("role-create-btn"));
+    fireEvent.change(screen.getByTestId("role-new-name-input"), { target: { value: "Growth" } });
+    fireEvent.click(screen.getByTestId("role-new-confirm"));
+
+    fireEvent.change(screen.getByTestId("role-name-input-custom-growth"), { target: { value: "Growth Team" } });
+
+    expect(screen.getByTestId("role-nav-custom-growth")).toHaveTextContent("Growth Team");
+  });
+
+  it("re-inviting an existing member's email does not overwrite their role", () => {
+    render(<TeamManagementPanel />);
+    fireEvent.click(screen.getByTestId("team-invite-btn"));
+    fireEvent.change(screen.getByTestId("invite-modal-bulk-role"), { target: { value: "developer" } });
+    const emailInput = screen.getByTestId("invite-modal-emails-input");
+    fireEvent.change(emailInput, { target: { value: "riya@tspkarix.com" } });
+    fireEvent.keyDown(emailInput, { key: "Enter" });
+    fireEvent.click(screen.getByTestId("invite-modal-submit"));
+    expect(screen.getByTestId("team-member-role-select-riya@tspkarix.com")).toHaveValue("manager");
+  });
+
   it("deleting a custom role reassigns its members to No role", () => {
     render(<TeamManagementPanel />);
     fireEvent.mouseDown(screen.getByTestId("team-tab-roles"));

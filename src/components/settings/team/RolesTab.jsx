@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Plus, Trash2, Lock } from "lucide-react";
 import { PERMISSION_COMPONENTS, PERMISSION_LEVELS, slugifyRoleName } from "./constants";
 
-export default function RolesTab({ roles, onTogglePermission, onCreateRole, onDeleteRole }) {
+export default function RolesTab({ roles, onTogglePermission, onCreateRole, onDeleteRole, onRenameRole }) {
   const [selectedId, setSelectedId] = useState(roles[0]?.id);
   const [newRoleName, setNewRoleName] = useState("");
   const [creating, setCreating] = useState(false);
@@ -102,7 +102,17 @@ export default function RolesTab({ roles, onTogglePermission, onCreateRole, onDe
       {selected && (
         <div className="flex-1 bg-surface border border-border rounded-lg p-4">
           <div className="flex items-center gap-2 mb-4">
-            <h3 className="text-sm font-semibold text-text-primary">{selected.name}</h3>
+            {selected.type === "custom" ? (
+              <input
+                type="text"
+                data-testid={`role-name-input-${selected.id}`}
+                value={selected.name}
+                onChange={(e) => onRenameRole(selected.id, e.target.value)}
+                className="text-sm font-semibold text-text-primary border border-border rounded-md px-2 py-1"
+              />
+            ) : (
+              <h3 className="text-sm font-semibold text-text-primary">{selected.name}</h3>
+            )}
             <span className="px-2 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wide bg-slate-100 text-text-muted">
               {selected.type}
             </span>

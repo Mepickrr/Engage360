@@ -2,14 +2,7 @@ import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import MembersTab from "./MembersTab";
 import RolesTab from "./RolesTab";
-import { DEFAULT_MEMBERS, DEFAULT_ROLES, PERMISSION_COMPONENTS, UNASSIGNED_ROLE_ID } from "./constants";
-
-function blankPermissions() {
-  return PERMISSION_COMPONENTS.reduce((acc, { key }) => {
-    acc[key] = { view: false, createManage: false, publish: false };
-    return acc;
-  }, {});
-}
+import { DEFAULT_MEMBERS, DEFAULT_ROLES, UNASSIGNED_ROLE_ID, allPermissions } from "./constants";
 
 export default function TeamManagementPanel() {
   const [members, setMembers] = useState(DEFAULT_MEMBERS);
@@ -17,9 +10,9 @@ export default function TeamManagementPanel() {
 
   function handleAddMembers(newMembers) {
     setMembers((prev) => {
-      const byId = new Map(prev.map((m) => [m.id, m]));
-      newMembers.forEach((m) => byId.set(m.id, m));
-      return Array.from(byId.values());
+      const existingIds = new Set(prev.map((m) => m.id));
+      const genuinelyNew = newMembers.filter((m) => !existingIds.has(m.id));
+      return [...prev, ...genuinelyNew];
     });
   }
 
@@ -41,8 +34,12 @@ export default function TeamManagementPanel() {
     );
   }
 
+  function handleRenameRole(roleId, name) {
+    setRoles((prev) => prev.map((r) => (r.id === roleId ? { ...r, name } : r)));
+  }
+
   function handleCreateRole({ id, name }) {
-    setRoles((prev) => [...prev, { id, name, type: "custom", locked: false, permissions: blankPermissions() }]);
+    setRoles((prev) => [...prev, { id, name, type: "custom", locked: false, permissions: allPermissions(false) }]);
   }
 
   function handleDeleteRole(roleId) {
@@ -73,6 +70,7 @@ export default function TeamManagementPanel() {
             onTogglePermission={handleTogglePermission}
             onCreateRole={handleCreateRole}
             onDeleteRole={handleDeleteRole}
+            onRenameRole={handleRenameRole}
           />
         </TabsContent>
       </Tabs>
