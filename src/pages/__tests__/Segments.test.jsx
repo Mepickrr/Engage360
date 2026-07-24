@@ -13,15 +13,15 @@ describe("SegmentsPage", () => {
     mockNavigate.mockClear();
   });
 
-  test("renders the top bar, KPI strip, opportunity carousel, and defaults to All segments tab", () => {
+  test("renders the top bar, KPI strip, and defaults to All segments tab (no opportunity carousel there)", () => {
     render(<SegmentsPage />);
     expect(screen.getByText("Segment management")).toBeInTheDocument();
     expect(screen.getByTestId("segments-new-btn")).toBeInTheDocument();
-    expect(screen.getByTestId("opportunity-carousel")).toBeInTheDocument();
     expect(screen.getByTestId("all-segments-tab")).toBeInTheDocument();
+    expect(screen.queryByTestId("opportunity-carousel")).not.toBeInTheDocument();
   });
 
-  test("switching tabs renders the corresponding tab body", () => {
+  test("switching tabs renders the corresponding tab body, opportunity carousel only under Fastrr Signals", () => {
     render(<SegmentsPage />);
     // Radix's TabsTrigger activates on mousedown (not click), so a real user
     // click — which always fires mousedown before click — is simulated with
@@ -29,15 +29,19 @@ describe("SegmentsPage", () => {
     // synthetic mousedown/focus path and the tab would never switch.
     fireEvent.mouseDown(screen.getByRole("tab", { name: /Fastrr Signals/ }));
     expect(screen.getByTestId("fastrr-signals-tab")).toBeInTheDocument();
+    expect(screen.getByTestId("opportunity-carousel")).toBeInTheDocument();
 
     fireEvent.mouseDown(screen.getByRole("tab", { name: /Custom segments/ }));
     expect(screen.getByTestId("custom-segments-tab")).toBeInTheDocument();
+    expect(screen.queryByTestId("opportunity-carousel")).not.toBeInTheDocument();
 
     fireEvent.mouseDown(screen.getByRole("tab", { name: /Shopify segments/ }));
     expect(screen.getByTestId("shopify-segments-tab")).toBeInTheDocument();
+    expect(screen.queryByTestId("opportunity-carousel")).not.toBeInTheDocument();
 
     fireEvent.mouseDown(screen.getByRole("tab", { name: /Suppression assets/ }));
     expect(screen.getByTestId("suppression-assets-tab")).toBeInTheDocument();
+    expect(screen.queryByTestId("opportunity-carousel")).not.toBeInTheDocument();
   });
 
   test("+ New Segment opens NewSegmentModal, and 'Create Segment via filters' navigates to the builder", () => {

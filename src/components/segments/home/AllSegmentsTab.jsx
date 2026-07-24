@@ -53,59 +53,65 @@ function filterByQuery(items, query) {
   return items.filter((item) => item.name.toLowerCase().includes(q));
 }
 
-// Round-robin merge so every source is represented early in the grid instead
-// of one large source (e.g. the 10-item RETENTION_SEGMENTS) monopolizing the
-// first page before pagination/search ever reach the other sources.
-function interleave(groups) {
-  const maxLength = Math.max(...groups.map((group) => group.length));
-  const result = [];
-  for (let i = 0; i < maxLength; i += 1) {
-    for (const group of groups) {
-      if (i < group.length) result.push(group[i]);
-    }
-  }
-  return result;
-}
-
-export default function AllSegmentsTab({ searchQuery }) {
+function Section({ testId, title, items }) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-  const allCards = useMemo(
-    () =>
-      interleave([
-        RETENTION_SEGMENTS.map(normalizeSignalCard),
-        ACQUISITION_SEGMENTS.map(normalizeSignalCard),
-        SEGMENT_LIBRARY.map(normalizeLibraryCard),
-        listSegments().map(normalizeCustomSegment),
-        SHOPIFY_SEGMENTS.map(normalizeShopifyCard),
-        SUPPRESSION_ASSETS.map(normalizeSuppressionCard),
-      ]),
-    [],
-  );
+  if (items.length === 0) return null;
 
-  const filtered = useMemo(() => filterByQuery(allCards, searchQuery), [allCards, searchQuery]);
-  const visible = filtered.slice(0, visibleCount);
-  const hasMore = visibleCount < filtered.length;
+  const visible = items.slice(0, visibleCount);
+  const hasMore = visibleCount < items.length;
 
   return (
-    <div data-testid="all-segments-tab">
-      <h2 className="mb-3 text-base font-semibold text-text-primary">All segments</h2>
+    <section className="mb-8" data-testid={testId}>
+      <h3 className="mb-3 text-sm font-semibold text-text-primary">{title}</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {visible.map((item) => (
           <SegmentCard key={item.id} testId={`all-card-${item.id}`} {...item} />
         ))}
       </div>
       <div className="mt-4 text-center text-[13px] text-text-muted">
-        {`Showing ${visible.length} out of ${filtered.length} results`}
+        {`Showing ${visible.length} out of ${items.length} results`}
         {hasMore && (
           <>
             {" "}
-            <button type="button" className="text-primary font-medium" onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}>
+            <button
+              type="button"
+              className="text-primary font-medium"
+              onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+            >
               Show more
             </button>
           </>
         )}
       </div>
+    </section>
+  );
+}
+
+export default function AllSegmentsTab({ searchQuery }) {
+  const fastrrCards = useMemo(
+    () => [
+      ...RETENTION_SEGMENTS.map(normalizeSignalCard),
+      ...ACQUISITION_SEGMENTS.map(normalizeSignalCard),
+      ...SEGMENT_LIBRARY.map(normalizeLibraryCard),
+    ],
+    [],
+  );
+  const customCards = useMemo(() => listSegments().map(normalizeCustomSegment), []);
+  const shopifyCards = useMemo(() => SHOPIFY_SEGMENTS.map(normalizeShopifyCard), []);
+  const suppressionCards = useMemo(() => SUPPRESSION_ASSETS.map(normalizeSuppressionCard), []);
+
+  const filteredFastrr = useMemo(() => filterByQuery(fastrrCards, searchQuery), [fastrrCards, searchQuery]);
+  const filteredCustom = useMemo(() => filterByQuery(customCards, searchQuery), [customCards, searchQuery]);
+  const filteredShopify = useMemo(() => filterByQuery(shopifyCards, searchQuery), [shopifyCards, searchQuery]);
+  const filteredSuppression = useMemo(() => filterByQuery(suppressionCards, searchQuery), [suppressionCards, searchQuery]);
+
+  return (
+    <div data-testid="all-segments-tab">
+      <Section testId="all-section-fastrr" title="Fastrr Signals" items={filteredFastrr} />
+      <Section testId="all-section-custom" title="Custom segments" items={filteredCustom} />
+      <Section testId="all-section-shopify" title="Shopify segments" items={filteredShopify} />
+      <Section testId="all-section-suppression" title="Suppression assets" items={filteredSuppression} />
     </div>
   );
 }

@@ -88,12 +88,11 @@ export default function SegmentsPage() {
           ))}
         </div>
 
-        <OpportunityCarousel />
-
         <TabsContent value="all">
           <AllSegmentsTab searchQuery={searchQuery} />
         </TabsContent>
         <TabsContent value="fastrr">
+          <OpportunityCarousel />
           <FastrrSignalsTab searchQuery={searchQuery} />
         </TabsContent>
         <TabsContent value="custom">

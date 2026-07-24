@@ -1,31 +1,52 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import AllSegmentsTab from "../AllSegmentsTab";
 
 describe("AllSegmentsTab", () => {
-  test("aggregates cards from every source and paginates at 9", () => {
+  test("renders one section per source, each paginated at 9", () => {
     render(<AllSegmentsTab searchQuery="" />);
-    // Fastrr Signals (retention) card present
-    expect(screen.getByText("Champions")).toBeInTheDocument();
-    // Custom (real) segment present
-    expect(screen.getByText("Cart Abandoners 48h")).toBeInTheDocument();
-    // Shopify mock present
-    expect(screen.getByText("Last 30 days")).toBeInTheDocument();
-    // Suppression mock present or not, depending on page size — check pagination text instead
-    expect(screen.getByText(/Showing 9 out of/)).toBeInTheDocument();
+
+    const fastrr = screen.getByTestId("all-section-fastrr");
+    expect(within(fastrr).getByText("Fastrr Signals")).toBeInTheDocument();
+    expect(within(fastrr).getByText("Champions")).toBeInTheDocument();
+    expect(within(fastrr).getByText(/Showing 9 out of 35 results/)).toBeInTheDocument();
+
+    const custom = screen.getByTestId("all-section-custom");
+    expect(within(custom).getByText("Custom segments")).toBeInTheDocument();
+    expect(within(custom).getByText("Cart Abandoners 48h")).toBeInTheDocument();
+
+    const shopify = screen.getByTestId("all-section-shopify");
+    expect(within(shopify).getByText("Shopify segments")).toBeInTheDocument();
+    expect(within(shopify).getByText("Last 30 days")).toBeInTheDocument();
+
+    const suppression = screen.getByTestId("all-section-suppression");
+    expect(within(suppression).getByText("Suppression assets")).toBeInTheDocument();
+    expect(within(suppression).getByText("Email suppressed by Fastrr")).toBeInTheDocument();
+    // Suppression only has 2 total entries — no Show more needed.
+    expect(within(suppression).queryByText("Show more")).not.toBeInTheDocument();
   });
 
-  test("Show more reveals additional aggregated cards", () => {
+  test("each section's Show more only reveals more cards within that section", () => {
     render(<AllSegmentsTab searchQuery="" />);
-    const before = screen.getAllByTestId(/^all-card-/).length;
-    fireEvent.click(screen.getByText("Show more"));
-    const after = screen.getAllByTestId(/^all-card-/).length;
+
+    const fastrr = screen.getByTestId("all-section-fastrr");
+    const before = within(fastrr).getAllByTestId(/^all-card-/).length;
+    fireEvent.click(within(fastrr).getByText("Show more"));
+    const after = within(fastrr).getAllByTestId(/^all-card-/).length;
     expect(after).toBeGreaterThan(before);
+
+    // Other sections are unaffected by clicking Fastrr Signals' Show more.
+    const custom = screen.getByTestId("all-section-custom");
+    expect(within(custom).getByText(/Showing \d+ out of \d+ results/)).toBeInTheDocument();
   });
 
-  test("search filters across all aggregated sources", () => {
+  test("search filters each section independently by name", () => {
     render(<AllSegmentsTab searchQuery="champions" />);
     expect(screen.getByText("Champions")).toBeInTheDocument();
     expect(screen.queryByText("Cart Abandoners 48h")).not.toBeInTheDocument();
+    // Sections with no matches are hidden entirely rather than shown empty.
+    expect(screen.queryByTestId("all-section-custom")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("all-section-shopify")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("all-section-suppression")).not.toBeInTheDocument();
   });
 });
