@@ -10,6 +10,7 @@ import {
   Pencil, Clock, Link2, Table,
 } from "lucide-react";
 import { summariseTriggerConfig } from "../triggerNodeUtils";
+import { useFlowVariant } from "@/components/flows/FlowVariantContext";
 
 const PRIMARY = "#6C3AE8";
 
@@ -228,7 +229,7 @@ function ExitConditionTree({ conditions, combinator }) {
 }
 
 // ── One trigger group ─────────────────────────────────────────
-function TriggerGroupRow({ group }) {
+function TriggerGroupRow({ group, hideEvaluatePreview }) {
   const firstEventId = group.events[0]?.toLowerCase().replace(/[\s-]/g, "_") || "default";
   const Icon = getEventIcon(firstEventId);
   const evLabel = group.events.join(" · ") + (group.eventExtra > 0 ? ` +${group.eventExtra} more` : "");
@@ -263,7 +264,7 @@ function TriggerGroupRow({ group }) {
         />
       )}
       {/* Evaluate time range */}
-      {group.evaluateLine && (
+      {!hideEvaluatePreview && group.evaluateLine && (
         <div className="mt-1.5 flex items-center gap-1.5">
           <Clock className="w-3 h-3 text-text-muted flex-shrink-0" />
           <span className="text-[10px] text-text-muted">{group.evaluateLine}</span>
@@ -283,6 +284,7 @@ function getAudiencePillStyle(pill) {
 
 // ── Main node ─────────────────────────────────────────────────
 export default function StartTriggerNode({ data, selected }) {
+  const { hideEvaluatePreview } = useFlowVariant();
   const config        = data?.config;
   const onEdit        = data?.onEdit;
   const summary       = summariseTriggerConfig(config);
@@ -362,7 +364,7 @@ export default function StartTriggerNode({ data, selected }) {
             {summary.triggerGroups.map((group, idx) => (
               <React.Fragment key={idx}>
                 {idx > 0 && <GroupCombinator label={summary.groupCombinator} />}
-                <TriggerGroupRow group={group} />
+                <TriggerGroupRow group={group} hideEvaluatePreview={hideEvaluatePreview} />
               </React.Fragment>
             ))}
             {summary.extraGroupCount > 0 && (

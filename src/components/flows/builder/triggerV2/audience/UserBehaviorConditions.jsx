@@ -76,7 +76,7 @@ export function TimeRangeRow({ value, onChange, testIdPrefix }) {
         }
       >
         <SelectTrigger
-          className="h-9 text-sm min-w-[150px]"
+          className="h-9 text-sm w-[140px] shrink-0"
           data-testid={`${testIdPrefix}-trigger`}
         >
           <SelectValue />
@@ -96,12 +96,12 @@ export function TimeRangeRow({ value, onChange, testIdPrefix }) {
             min={1}
             value={value?.n || ""}
             onChange={(e) => onChange({ ...value, n: e.target.value })}
-            className="w-20 px-2 py-1.5 text-sm rounded-md border border-border bg-surface"
+            className="w-16 shrink-0 px-2 py-1.5 text-sm rounded-md border border-border bg-surface"
           />
           <select
             value={value?.unit || "days"}
             onChange={(e) => onChange({ ...value, unit: e.target.value })}
-            className="h-9 text-sm rounded-md border border-border bg-surface px-2"
+            className="h-9 text-sm rounded-md border border-border bg-surface px-2 shrink-0"
           >
             <option value="days">days</option>
             <option value="weeks">weeks</option>
@@ -210,76 +210,82 @@ export default function UserBehaviorConditions({
               className="border border-border rounded-lg p-3 bg-surface space-y-2"
               data-testid={`${testIdPrefix}-row-${i}`}
             >
-              <div className="flex flex-wrap items-center gap-1.5">
-                <Select
-                  value={c.qualifier}
-                  onValueChange={(v) => setCondition(i, { ...c, qualifier: v })}
-                >
-                  <SelectTrigger className="h-9 text-sm min-w-[160px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {EXEC_QUALIFIERS.map((q) => (
-                      <SelectItem key={q.id} value={q.id}>
-                        {q.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <TwoPanelDropdown
-                  value={c.event}
-                  onChange={(v) =>
-                    setCondition(i, { ...c, event: v, attributes: [] })
-                  }
-                  groups={eventGroups}
-                  placeholder="Select an event"
-                  testId={`${testIdPrefix}-evt-${i}`}
-                />
-                <Select
-                  value={c.frequency}
-                  onValueChange={(v) => setCondition(i, { ...c, frequency: v })}
-                >
-                  <SelectTrigger className="h-9 text-sm min-w-[120px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {FREQUENCY_OPTIONS.map((f) => (
-                      <SelectItem key={f.id} value={f.id}>
-                        {f.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {freqMeta?.needsCount && (
-                  <>
-                    <input
-                      type="number"
-                      min={1}
-                      value={c.count || 1}
-                      onChange={(e) =>
-                        setCondition(i, { ...c, count: Number(e.target.value) })
+              <div className="flex items-start gap-1.5">
+                <div className="flex-1 min-w-0 space-y-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <Select
+                      value={c.qualifier}
+                      onValueChange={(v) => setCondition(i, { ...c, qualifier: v })}
+                    >
+                      <SelectTrigger className="h-9 text-sm w-[150px] shrink-0">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {EXEC_QUALIFIERS.map((q) => (
+                          <SelectItem key={q.id} value={q.id}>
+                            {q.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <TwoPanelDropdown
+                      value={c.event}
+                      onChange={(v) =>
+                        setCondition(i, { ...c, event: v, attributes: [] })
                       }
-                      className="w-16 px-2 py-1.5 text-sm rounded-md border border-border bg-surface"
+                      groups={eventGroups}
+                      placeholder="Select an event"
+                      testId={`${testIdPrefix}-evt-${i}`}
+                      buttonClassName="flex-1 min-w-0"
                     />
-                    <span className="text-xs text-text-muted">times</span>
-                  </>
-                )}
-                <div className="ml-auto">
-                  <button
-                    type="button"
-                    onClick={() => removeCondition(i)}
-                    className="p-1.5 text-text-muted hover:text-rose-600 rounded-md hover:bg-rose-50"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
+                  </div>
 
-              <TimeRangeRow
-                value={c.time_range}
-                onChange={(tr) => setCondition(i, { ...c, time_range: tr })}
-                testIdPrefix={`${testIdPrefix}-tr-${i}`}
-              />
+                  <div className="flex items-center gap-1.5">
+                    <Select
+                      value={c.frequency}
+                      onValueChange={(v) => setCondition(i, { ...c, frequency: v })}
+                    >
+                      <SelectTrigger className="h-9 text-sm w-[130px] shrink-0">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {FREQUENCY_OPTIONS.map((f) => (
+                          <SelectItem key={f.id} value={f.id}>
+                            {f.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {freqMeta?.needsCount && (
+                      <>
+                        <input
+                          type="number"
+                          min={1}
+                          value={c.count || 1}
+                          onChange={(e) =>
+                            setCondition(i, { ...c, count: Number(e.target.value) })
+                          }
+                          className="w-16 shrink-0 px-2 py-1.5 text-sm rounded-md border border-border bg-surface"
+                        />
+                        <span className="text-xs text-text-muted shrink-0">times</span>
+                      </>
+                    )}
+                  </div>
+
+                  <TimeRangeRow
+                    value={c.time_range}
+                    onChange={(tr) => setCondition(i, { ...c, time_range: tr })}
+                    testIdPrefix={`${testIdPrefix}-tr-${i}`}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeCondition(i)}
+                  className="flex-shrink-0 p-1.5 text-text-muted hover:text-rose-600 rounded-md hover:bg-rose-50"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
 
               <AttributesSubList
                 condition={c}

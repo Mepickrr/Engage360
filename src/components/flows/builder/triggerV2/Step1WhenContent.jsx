@@ -31,7 +31,7 @@ function getAttrPool(eventName) {
   return adaptTEPAttrs(getPropertiesForEvent(eventName));
 }
 
-const MAX_TRIGGER_GROUPS = 5;
+const MAX_TRIGGER_GROUPS = 1;
 
 function emptyCondition() {
   return { property: "", operator: "", value: "" };

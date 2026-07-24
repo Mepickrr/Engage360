@@ -155,7 +155,7 @@ function ConditionBlock({ block, onUpdate, onRemove, testIdPrefix, blockTypes, e
           </button>
         )}
       </div>
-      <p className="px-3 pt-2 text-xs text-text-muted">{meta.subtitle}</p>
+      <p className={`px-3 pt-2 text-[13px] font-semibold ${meta.tabActive}`}>{meta.subtitle}</p>
 
       <div className="p-3">
         {block.type === "property" && (
@@ -188,8 +188,8 @@ function ConditionBlock({ block, onUpdate, onRemove, testIdPrefix, blockTypes, e
         )}
         {block.type === "segment" && (
           <SegmentList
-            block={{ segments: block.segments || [] }}
-            onChange={(b) => onUpdate({ segments: b.segments })}
+            block={{ segments: block.segments || [], combinator: block.combinator || "AND" }}
+            onChange={(b) => onUpdate({ segments: b.segments, combinator: b.combinator })}
             testIdPrefix={`${testIdPrefix}-segment`}
             excludeSegmentName={excludeSegmentName}
           />
@@ -284,6 +284,7 @@ function AddBlockMenu({ onAdd, testIdPrefix, blockTypes }) {
 
 function SegmentList({ block, onChange, testIdPrefix, excludeSegmentName }) {
   const segments = block.segments || [];
+  const combinator = block.combinator || "AND";
   const allSegments = React.useMemo(
     () => listSegments().filter((s) => s.name !== excludeSegmentName),
     [excludeSegmentName],
@@ -306,8 +307,15 @@ function SegmentList({ block, onChange, testIdPrefix, excludeSegmentName }) {
       {segments.map((s, i) => {
         const meta = byName[s];
         return (
+          <React.Fragment key={i}>
+          {i > 0 && (
+            <CombinatorPill
+              value={combinator}
+              onChange={(v) => onChange({ ...block, combinator: v })}
+              testId={`${testIdPrefix}-combinator`}
+            />
+          )}
           <div
-            key={i}
             className="flex items-center gap-3 border border-border rounded-lg bg-surface px-3 py-2.5"
           >
             <span className="w-8 h-8 rounded-md bg-success-bg text-success flex items-center justify-center flex-shrink-0">
@@ -356,6 +364,7 @@ function SegmentList({ block, onChange, testIdPrefix, excludeSegmentName }) {
               </button>
             )}
           </div>
+          </React.Fragment>
         );
       })}
       <button
