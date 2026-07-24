@@ -49,12 +49,18 @@ export default function Step1WhenContent({
   return (
     <div className="space-y-4">
       {triggerGroups.map((group, gi) => {
+        const evMatches = catalogueData.catalogue
+          ? Object.values(catalogueData.catalogue)
+              .flatMap((sec) => Object.values(sec))
+              .flat()
+              .filter((c) => c.name === group.event)
+          : [];
+        // The catalogue's "ALL" bucket re-lists every event with header
+        // hardcoded to "ALL" for cross-category browsing. Prefer a match
+        // carrying the event's real header so the trigger label reflects
+        // where it actually lives, even when it was picked from "All".
         const ev =
-          catalogueData.catalogue &&
-          Object.values(catalogueData.catalogue)
-            .flatMap((sec) => Object.values(sec))
-            .flat()
-            .find((c) => c.name === group.event);
+          evMatches.find((c) => c.header !== "ALL") || evMatches[0];
         const attrPool =
           catalogueData.attributes_by_event[group.event] || [];
         const propPool = attrPool.filter((a) => !a.is_evaluate);
