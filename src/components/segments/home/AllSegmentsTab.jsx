@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import SegmentCard from "./SegmentCard";
+import OpportunityCarousel from "./OpportunityCarousel";
 import { listSegments } from "@/data/segmentsData";
 import { renderBlockSetSummary } from "@/components/flows/builder/triggerV2/triggerHelpers";
 import {
@@ -108,6 +109,7 @@ export default function AllSegmentsTab({ searchQuery }) {
 
   return (
     <div data-testid="all-segments-tab">
+      <OpportunityCarousel />
       <Section testId="all-section-fastrr" title="Fastrr Signals" items={filteredFastrr} />
       <Section testId="all-section-custom" title="Custom segments" items={filteredCustom} />
       <Section testId="all-section-shopify" title="Shopify segments" items={filteredShopify} />

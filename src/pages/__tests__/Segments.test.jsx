@@ -13,15 +13,15 @@ describe("SegmentsPage", () => {
     mockNavigate.mockClear();
   });
 
-  test("renders the top bar, KPI strip, and defaults to All segments tab (no opportunity carousel there)", () => {
+  test("renders the top bar, KPI strip, and defaults to All segments tab (opportunity carousel shown there too, above Fastrr Signals)", () => {
     render(<SegmentsPage />);
     expect(screen.getByText("Segment management")).toBeInTheDocument();
     expect(screen.getByTestId("segments-new-btn")).toBeInTheDocument();
     expect(screen.getByTestId("all-segments-tab")).toBeInTheDocument();
-    expect(screen.queryByTestId("opportunity-carousel")).not.toBeInTheDocument();
+    expect(screen.getByTestId("opportunity-carousel")).toBeInTheDocument();
   });
 
-  test("switching tabs renders the corresponding tab body, opportunity carousel only under Fastrr Signals", () => {
+  test("switching tabs renders the corresponding tab body, opportunity carousel shown under All and Fastrr Signals only", () => {
     render(<SegmentsPage />);
     // Radix's TabsTrigger activates on mousedown (not click), so a real user
     // click — which always fires mousedown before click — is simulated with
@@ -42,6 +42,10 @@ describe("SegmentsPage", () => {
     fireEvent.mouseDown(screen.getByRole("tab", { name: /Suppression assets/ }));
     expect(screen.getByTestId("suppression-assets-tab")).toBeInTheDocument();
     expect(screen.queryByTestId("opportunity-carousel")).not.toBeInTheDocument();
+
+    fireEvent.mouseDown(screen.getByRole("tab", { name: /All segments/ }));
+    expect(screen.getByTestId("all-segments-tab")).toBeInTheDocument();
+    expect(screen.getByTestId("opportunity-carousel")).toBeInTheDocument();
   });
 
   test("+ New Segment opens NewSegmentModal, and 'Create Segment via filters' navigates to the builder", () => {

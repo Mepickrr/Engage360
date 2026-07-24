@@ -49,4 +49,12 @@ describe("AllSegmentsTab", () => {
     expect(screen.queryByTestId("all-section-shopify")).not.toBeInTheDocument();
     expect(screen.queryByTestId("all-section-suppression")).not.toBeInTheDocument();
   });
+
+  test("renders the Opportunities to grow revenue carousel above the Fastrr Signals section", () => {
+    render(<AllSegmentsTab searchQuery="" />);
+
+    const carousel = screen.getByTestId("opportunity-carousel");
+    const fastrr = screen.getByTestId("all-section-fastrr");
+    expect(carousel.compareDocumentPosition(fastrr) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
 });

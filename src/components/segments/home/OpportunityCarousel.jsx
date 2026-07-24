@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { TrendingUp, ChevronLeft, ChevronRight, Info } from "lucide-react";
 import { OPPORTUNITY_CARDS } from "@/data/segmentsHomeData";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const PAGE_SIZE = 3;
 
@@ -14,7 +15,16 @@ export default function OpportunityCarousel() {
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-base font-semibold text-text-primary flex items-center gap-1.5">
           Opportunities to grow revenue
-          <Info className="w-3.5 h-3.5 text-text-muted" />
+          <TooltipProvider delayDuration={120}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="w-3.5 h-3.5 text-text-muted cursor-pointer" />
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-[220px]">
+                Revenue based on past customer behavior and typical conversion rates. Results may vary.
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </h2>
         <div className="flex items-center gap-1.5">
           <button
