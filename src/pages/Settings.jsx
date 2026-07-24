@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import PreviewHeader, { previewToast } from "@/components/common/PreviewHeader";
+import TeamManagementPanel from "@/components/settings/team/TeamManagementPanel";
 import {
   User,
   Plug,
@@ -188,62 +189,6 @@ function BillingPanel() {
   );
 }
 
-const TEAMMATES = [
-  { id: "t1", name: "Himanshu Kumar", email: "himanshu@tspkarix.com", role: "Owner", initials: "HK", color: "#6C3AE8" },
-  { id: "t2", name: "Riya Sharma", email: "riya@tspkarix.com", role: "Admin", initials: "RS", color: "#EC4899" },
-  { id: "t3", name: "Arjun Patel", email: "arjun@tspkarix.com", role: "Editor", initials: "AP", color: "#10B981" },
-];
-
-function TeamPanel() {
-  return (
-    <div data-testid="settings-team">
-      <h2 className="text-base font-semibold text-text-primary mb-3">Team</h2>
-      <div className="bg-surface border border-border rounded-lg overflow-hidden">
-        <table className="w-full text-left">
-          <thead className="bg-slate-50 text-[11px] uppercase tracking-wide text-text-muted">
-            <tr>
-              <th className="px-4 py-2 font-medium">Teammate</th>
-              <th className="px-4 py-2 font-medium">Email</th>
-              <th className="px-4 py-2 font-medium">Role</th>
-            </tr>
-          </thead>
-          <tbody>
-            {TEAMMATES.map((t) => (
-              <tr key={t.id} className="border-t border-border" data-testid={`settings-team-${t.id}`}>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2.5">
-                    <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[11px] font-semibold"
-                      style={{ backgroundColor: t.color }}
-                    >
-                      {t.initials}
-                    </div>
-                    <span className="font-semibold text-text-primary text-[13px]">{t.name}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-[12px] text-text-secondary">{t.email}</td>
-                <td className="px-4 py-3">
-                  <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary-tint text-primary">
-                    {t.role}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <button
-        type="button"
-        onClick={() => previewToast()}
-        data-testid="settings-invite-teammate"
-        className="mt-3 px-3 py-2 rounded-md bg-primary hover:bg-primary-hover text-white text-sm font-medium"
-      >
-        Invite teammate
-      </button>
-    </div>
-  );
-}
-
 function NotificationsPanel() {
   const items = [
     { id: "n1", label: "Daily digest email", value: true },
@@ -324,7 +269,7 @@ const PANELS = {
   account: AccountPanel,
   channels: ChannelsPanel,
   billing: BillingPanel,
-  team: TeamPanel,
+  team: TeamManagementPanel,
   notifications: NotificationsPanel,
   api: ApiPanel,
 };
