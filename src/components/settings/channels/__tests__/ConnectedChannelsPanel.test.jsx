@@ -33,7 +33,8 @@ describe("ConnectedChannelsPanel — list view", () => {
 describe("ConnectedChannelsPanel — navigation to detail views", () => {
   it("opens ShopifyDetail on click and returns to the list on back", () => {
     render(<ConnectedChannelsPanel />);
-    fireEvent.click(screen.getByText("Herbal Roots").closest('[role="button"]'));
+    const shopify = screen.getByTestId("channel-group-shopify");
+    fireEvent.click(within(shopify).getByText("Herbal Roots").closest('[role="button"]'));
     expect(screen.getByTestId("shopify-detail")).toBeInTheDocument();
     fireEvent.click(screen.getByTestId("shopify-detail-back"));
     expect(screen.getByTestId("channel-group-shopify")).toBeInTheDocument();

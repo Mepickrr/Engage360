@@ -40,28 +40,6 @@ function rowSubtitle(groupKey, item) {
   return null;
 }
 
-// Some mock items across different channel groups share the exact same
-// display name (e.g. the Shopify store and its Facebook/Instagram pages are
-// all "Herbal Roots"). Disambiguate every occurrence after the first so row
-// titles stay unique in the DOM, without touching titles that are already
-// unique (e.g. "Herbal Roots Hair").
-function computeDisplayTitles(groups) {
-  const seen = new Set();
-  const titlesById = new Map();
-  groups.forEach((g) => {
-    g.items.forEach((item) => {
-      const raw = rowTitle(g.key, item);
-      if (seen.has(raw)) {
-        titlesById.set(item.id, `${raw} (${g.label})`);
-      } else {
-        seen.add(raw);
-        titlesById.set(item.id, raw);
-      }
-    });
-  });
-  return titlesById;
-}
-
 function rowMetadata(groupKey, item) {
   if (groupKey === "shopify") return <span className="text-[12px] text-text-muted">{item.domain}</span>;
   if (groupKey === "whatsapp") {
@@ -151,8 +129,6 @@ export default function ConnectedChannelsPanel() {
     { key: "rcs", label: "RCS", items: simpleChannels.rcs },
   ];
 
-  const displayTitles = computeDisplayTitles(groups);
-
   if (view.type === "shopify") {
     return <ShopifyDetail store={shopify} onBack={backToList} onUpdate={(patch) => setShopify((prev) => ({ ...prev, ...patch }))} />;
   }
@@ -216,7 +192,7 @@ export default function ConnectedChannelsPanel() {
             {g.items.map((item) => (
               <ChannelRow
                 key={item.id}
-                title={displayTitles.get(item.id)}
+                title={rowTitle(g.key, item)}
                 subtitle={rowSubtitle(g.key, item)}
                 metadata={rowMetadata(g.key, item)}
                 onClick={() => openDetail(g.key, item.id)}
