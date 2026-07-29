@@ -34,3 +34,35 @@ describe("ConnectChannelModal — picker step", () => {
     expect(screen.queryByText("Business messaging")).not.toBeInTheDocument();
   });
 });
+
+describe("ConnectChannelModal — form step", () => {
+  it("renders the field for the selected type with its placeholder", () => {
+    render(<ConnectChannelModal open onClose={jest.fn()} onConnect={jest.fn()} />);
+    fireEvent.click(screen.getByTestId("connect-type-whatsapp-btn"));
+    expect(screen.getByPlaceholderText("+91 98765 43210")).toBeInTheDocument();
+  });
+
+  it("disables Connect until the field has a value, then calls onConnect and closes", () => {
+    const onConnect = jest.fn();
+    const onClose = jest.fn();
+    render(<ConnectChannelModal open onClose={onClose} onConnect={onConnect} />);
+    fireEvent.click(screen.getByTestId("connect-type-whatsapp-btn"));
+
+    const submitBtn = screen.getByTestId("connect-form-submit");
+    expect(submitBtn).toBeDisabled();
+
+    fireEvent.change(screen.getByTestId("connect-form-input"), { target: { value: "+91 90000 00000" } });
+    expect(submitBtn).not.toBeDisabled();
+
+    fireEvent.click(submitBtn);
+    expect(onConnect).toHaveBeenCalledWith("whatsapp", { number: "+91 90000 00000" });
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("goes back to the picker step from the form", () => {
+    render(<ConnectChannelModal open onClose={jest.fn()} onConnect={jest.fn()} />);
+    fireEvent.click(screen.getByTestId("connect-type-instagram-btn"));
+    fireEvent.click(screen.getByTestId("connect-form-back"));
+    expect(screen.getByText("Business messaging")).toBeInTheDocument();
+  });
+});

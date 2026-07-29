@@ -62,15 +62,53 @@ export default function ConnectChannelModal({ open, onClose, onConnect }) {
             </div>
           </>
         ) : (
-          <>
-            <DialogHeader>
-              <button type="button" onClick={() => setStep({ type: "picker" })} data-testid="connect-form-back" className="text-[12px] text-text-secondary mb-1 text-left">← Back</button>
-              <DialogTitle>Connect {CHANNEL_TYPES[selectedType.id].label}</DialogTitle>
-            </DialogHeader>
-            <button type="button" onClick={handleClose} className="px-3 py-2 text-sm rounded-md border border-border text-text-secondary w-fit">Cancel</button>
-          </>
+          <ConnectForm
+            type={selectedType}
+            onBack={() => setStep({ type: "picker" })}
+            onConnect={(values) => { onConnect(step.typeId, values); handleClose(); }}
+            onCancel={handleClose}
+          />
         )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+function ConnectForm({ type, onBack, onConnect, onCancel }) {
+  const [value, setValue] = useState("");
+  const meta = CHANNEL_TYPES[type.id];
+
+  return (
+    <>
+      <DialogHeader>
+        <button type="button" onClick={onBack} data-testid="connect-form-back" className="text-[12px] text-text-secondary mb-1 text-left">← Back</button>
+        <DialogTitle>Connect {meta.label}</DialogTitle>
+      </DialogHeader>
+      <div className="space-y-3 max-w-sm">
+        <label className="block">
+          <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium">{type.formField.label}</span>
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder={type.formField.placeholder}
+            data-testid="connect-form-input"
+            className="mt-1 w-full px-3 py-2 text-sm border border-border rounded-md text-text-primary"
+          />
+        </label>
+        <div className="flex gap-2 pt-2">
+          <button type="button" onClick={onCancel} data-testid="connect-form-cancel" className="px-3 py-2 text-sm rounded-md border border-border text-text-secondary">Cancel</button>
+          <button
+            type="button"
+            disabled={!value.trim()}
+            onClick={() => onConnect({ [type.formField.key]: value.trim() })}
+            data-testid="connect-form-submit"
+            className="px-3 py-2 text-sm rounded-md bg-primary text-white disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Connect
+          </button>
+        </div>
+      </div>
+    </>
   );
 }
