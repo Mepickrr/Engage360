@@ -203,8 +203,8 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
             <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
               <span className="text-[13px] font-semibold text-text-primary">WhatsApp Account Overview</span>
               <div className="flex items-center gap-4 text-[12px]">
-                <span className="text-text-secondary">WhatsApp TSP Onboarding Status - <button type="button" onClick={() => previewToast()} className="text-primary font-medium">View Details</button></span>
-                <span className="text-text-secondary">WhatsApp A/B Testing - <button type="button" onClick={() => previewToast()} className="text-primary font-medium">Test Now</button></span>
+                <span className="text-text-secondary">WhatsApp TSP Onboarding Status - <button type="button" onClick={() => previewToast()} className="text-primary font-medium" data-testid="whatsapp-tsp-view-details">View Details</button></span>
+                <span className="text-text-secondary">WhatsApp A/B Testing - <button type="button" onClick={() => previewToast()} className="text-primary font-medium" data-testid="whatsapp-ab-test-now">Test Now</button></span>
               </div>
             </div>
 
@@ -235,7 +235,7 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
                 <div key={f.label} className="flex items-end gap-2">
                   <label className="block flex-1">
                     <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium">{f.label}</span>
-                    <input type="text" defaultValue={f.value} disabled data-testid={`whatsapp-field-${f.label}`}
+                    <input type="text" defaultValue={f.value} disabled data-testid={`whatsapp-field-${f.label.toLowerCase().replace(/\s+/g, "-")}`}
                       className="mt-1 w-full px-3 py-2 text-sm border border-border rounded-md bg-slate-50 text-text-primary disabled:cursor-not-allowed" />
                   </label>
                   <span className="mb-2 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700">Available</span>
@@ -282,7 +282,7 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
                 <span className="text-[13px] font-semibold text-text-primary">Catalog Id:</span>
                 <span className="text-[13px] text-text-primary">{number.catalogId}</span>
               </div>
-              <a href="https://business.facebook.com/commerce/catalogs" target="_blank" rel="noreferrer" className="text-[12px] text-primary font-medium">Manage ↗</a>
+              <a href="https://business.facebook.com/commerce/catalogs" target="_blank" rel="noreferrer" className="text-[12px] text-primary font-medium" data-testid="whatsapp-catalog-manage">Manage ↗</a>
             </div>
             <label className="flex items-center gap-2 mb-3">
               <input
@@ -290,6 +290,7 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
                 checked={catalogAllowAccess}
                 onChange={(e) => setCatalogAllowAccess(e.target.checked)}
                 aria-label="Allow customer to access catalog"
+                data-testid="whatsapp-catalog-allow-access"
                 className="w-4 h-4"
               />
               <span className="text-[12px] text-text-secondary">Allow your customer to access above connected catalog anytime on WhatsApp</span>
@@ -299,6 +300,8 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
                 type="checkbox"
                 checked={removeOutOfStock}
                 onChange={(e) => setRemoveOutOfStock(e.target.checked)}
+                aria-label="Remove Out of Stock products from the catalog"
+                data-testid="whatsapp-catalog-remove-oos"
                 className="w-4 h-4"
               />
               <span className="text-[12px] text-text-secondary">Remove Out of Stock products from the catalog</span>
