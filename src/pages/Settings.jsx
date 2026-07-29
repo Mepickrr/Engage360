@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import PreviewHeader, { previewToast } from "@/components/common/PreviewHeader";
 import TeamManagementPanel from "@/components/settings/team/TeamManagementPanel";
+import ConnectedChannelsPanel from "@/components/settings/channels/ConnectedChannelsPanel";
 import {
   User,
   Plug,
@@ -8,17 +9,11 @@ import {
   UsersRound,
   BellRing,
   KeyRound,
-  Mail,
-  MessageCircle,
-  MessageSquare,
-  Bell,
-  Smartphone,
-  ShoppingBag,
 } from "lucide-react";
 
 const SUB_NAV = [
   { id: "account", label: "Account", Icon: User },
-  { id: "channels", label: "Channels", Icon: Plug },
+  { id: "channels", label: "Connected channels", Icon: Plug },
   { id: "billing", label: "Billing", Icon: CreditCard },
   { id: "team", label: "Team", Icon: UsersRound },
   { id: "notifications", label: "Notifications", Icon: BellRing },
@@ -61,62 +56,6 @@ function AccountPanel() {
         >
           Save changes
         </button>
-      </div>
-    </div>
-  );
-}
-
-const CHANNELS = [
-  { id: "whatsapp", name: "WhatsApp Business", Icon: MessageCircle, color: "#10B981", status: "Connected" },
-  { id: "email", name: "Email (SendGrid)", Icon: Mail, color: "#3B82F6", status: "Connected" },
-  { id: "sms", name: "SMS (Twilio)", Icon: MessageSquare, color: "#8B5CF6", status: "Connected" },
-  { id: "push", name: "Mobile Push (FCM)", Icon: Bell, color: "#F59E0B", status: "Not connected" },
-  { id: "inapp", name: "In-app", Icon: Smartphone, color: "#14B8A6", status: "Connected" },
-  { id: "shopify", name: "Shopify", Icon: ShoppingBag, color: "#6366F1", status: "Connected" },
-];
-
-function ChannelsPanel() {
-  return (
-    <div data-testid="settings-channels">
-      <h2 className="text-base font-semibold text-text-primary mb-3">Channels</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {CHANNELS.map((c) => {
-          const Icon = c.Icon;
-          const connected = c.status === "Connected";
-          return (
-            <div
-              key={c.id}
-              data-testid={`settings-channel-${c.id}`}
-              className="bg-surface border border-border rounded-lg p-4 flex items-center gap-3"
-            >
-              <div
-                className="w-10 h-10 rounded-md flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: `${c.color}15` }}
-              >
-                <Icon className="w-5 h-5" style={{ color: c.color }} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="text-[13px] font-semibold text-text-primary truncate">{c.name}</div>
-                <div className={`text-[11px] mt-0.5 inline-flex items-center gap-1 ${connected ? "text-emerald-700" : "text-text-muted"}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-emerald-500" : "bg-slate-300"}`} />
-                  {c.status}
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => previewToast()}
-                data-testid={`settings-channel-${c.id}-btn`}
-                className={`px-2.5 py-1 text-[11px] font-medium rounded-md ${
-                  connected
-                    ? "border border-border text-text-secondary hover:bg-slate-50"
-                    : "bg-primary text-white hover:bg-primary-hover"
-                }`}
-              >
-                {connected ? "Manage" : "Connect"}
-              </button>
-            </div>
-          );
-        })}
       </div>
     </div>
   );
@@ -267,7 +206,7 @@ function ApiPanel() {
 
 const PANELS = {
   account: AccountPanel,
-  channels: ChannelsPanel,
+  channels: ConnectedChannelsPanel,
   billing: BillingPanel,
   team: TeamManagementPanel,
   notifications: NotificationsPanel,
