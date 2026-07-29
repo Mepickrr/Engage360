@@ -183,7 +183,7 @@ export default function ConnectedChannelsPanel() {
           <div className="flex items-center justify-between mb-2">
             <span className="text-[13px] font-semibold text-text-primary">{g.label}</span>
             {g.key === "whatsapp" && (
-              <a href="https://business.facebook.com/commerce/catalogs" target="_blank" rel="noreferrer" className="text-[12px] text-primary font-medium inline-flex items-center gap-1">
+              <a href="https://business.facebook.com/commerce/catalogs" target="_blank" rel="noreferrer" data-testid="channel-whatsapp-facebook-catalog-link" className="text-[12px] text-primary font-medium inline-flex items-center gap-1">
                 Facebook Catalog <ExternalLink className="w-3 h-3" />
               </a>
             )}

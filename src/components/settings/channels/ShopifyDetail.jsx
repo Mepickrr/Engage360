@@ -71,7 +71,7 @@ export default function ShopifyDetail({ store, onBack, onUpdate }) {
                 </div>
                 <div>
                   <div className="text-[15px] font-semibold text-text-primary">{store.name}</div>
-                  <a href={store.domain} target="_blank" rel="noreferrer" className="text-[12px] text-primary">{store.domain}</a>
+                  <a href={store.domain} target="_blank" rel="noreferrer" data-testid="shopify-domain-link" className="text-[12px] text-primary">{store.domain}</a>
                 </div>
               </div>
               <div className="flex items-center justify-between py-3">
@@ -132,7 +132,7 @@ export default function ShopifyDetail({ store, onBack, onUpdate }) {
                 <span className="text-[13px] font-semibold text-text-primary">Enable/Disable website events tracker</span>
                 <p className="text-[11px] text-text-muted mt-1">
                   Your website events tracker permissions can also be tied with cookie consent settings. Please{" "}
-                  <button type="button" onClick={() => previewToast()} className="text-primary underline">contact support</button> for more on this.
+                  <button type="button" onClick={() => previewToast()} data-testid="shopify-contact-support" className="text-primary underline">contact support</button> for more on this.
                 </p>
               </div>
               <ToggleSwitch on={trackerEnabled} onChange={handleTrackerToggle} label="Enable website events tracker" />
