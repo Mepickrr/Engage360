@@ -141,7 +141,7 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
               </div>
               <p className="text-[11px] text-text-muted mt-1">Connect with customers instantly via WhatsApp voice calls in the Helpdesk.</p>
             </div>
-            <button type="button" onClick={() => previewToast()} className="text-[13px] text-primary font-medium flex-shrink-0">Setup</button>
+            <button type="button" onClick={() => previewToast()} data-testid="whatsapp-voice-call-setup" className="text-[13px] text-primary font-medium flex-shrink-0">Setup</button>
           </div>
 
           <EditableRow
