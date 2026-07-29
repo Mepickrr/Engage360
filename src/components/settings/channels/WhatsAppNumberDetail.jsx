@@ -1,8 +1,9 @@
 // src/components/settings/channels/WhatsAppNumberDetail.jsx
 import React, { useState } from "react";
-import { ArrowLeft, Copy, Pencil, Trash2, Plus, RefreshCw, UserRound } from "lucide-react";
+import { ArrowLeft, Copy, Pencil, Trash2, Plus, RefreshCw, UserRound, HelpCircle } from "lucide-react";
 import Badge from "./Badge";
 import { previewToast } from "@/components/common/PreviewHeader";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 function qualityTone(quality) {
   if (quality === "High") return "emerald";
@@ -77,6 +78,8 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
   const [businessWebsite, setBusinessWebsite] = useState(number.businessWebsite || "");
   const [messagesConsumed, setMessagesConsumed] = useState(number.messagesConsumed);
   const [messagingLimit, setMessagingLimit] = useState(number.messagingLimit);
+  const [catalogAllowAccess, setCatalogAllowAccess] = useState(number.catalogAllowAccess);
+  const [removeOutOfStock, setRemoveOutOfStock] = useState(number.removeOutOfStock);
 
   const refreshMessagesConsumed = () => setMessagesConsumed(Math.floor(Math.random() * 500));
   const refreshMessagingLimit = () => {
@@ -196,7 +199,114 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
             testId="whatsapp-website" emptyLabel="Add website"
           />
 
-          {/* Account overview + Facebook Catalog card added in a later task */}
+          <div className="pt-6">
+            <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
+              <span className="text-[13px] font-semibold text-text-primary">WhatsApp Account Overview</span>
+              <div className="flex items-center gap-4 text-[12px]">
+                <span className="text-text-secondary">WhatsApp TSP Onboarding Status - <button type="button" onClick={() => previewToast()} className="text-primary font-medium">View Details</button></span>
+                <span className="text-text-secondary">WhatsApp A/B Testing - <button type="button" onClick={() => previewToast()} className="text-primary font-medium">Test Now</button></span>
+              </div>
+            </div>
+
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-[12px] text-amber-800 mb-3">
+              Meta enforces daily WhatsApp Business messaging limits for quality, compliance, and tier-based improvements.
+            </div>
+
+            <div className="bg-gradient-to-r from-emerald-50 to-violet-50 border border-emerald-200 rounded-lg p-3 text-[12px] text-emerald-800 mb-4 flex items-center gap-2">
+              Your account is powered by MM Lite API. <span className="text-emerald-600">✓</span>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3">
+              <label className="block">
+                <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium">Display Name</span>
+                <input type="text" defaultValue={number.brandName || number.number} disabled data-testid="whatsapp-display-name"
+                  className="mt-1 w-full px-3 py-2 text-sm border border-border rounded-md bg-slate-50 text-text-primary disabled:cursor-not-allowed" />
+              </label>
+              <label className="block">
+                <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium">Messaging Limit</span>
+                <input type="text" defaultValue={`${messagingLimit}`} disabled data-testid="whatsapp-overview-limit"
+                  className="mt-1 w-full px-3 py-2 text-sm border border-border rounded-md bg-slate-50 text-text-primary disabled:cursor-not-allowed" />
+              </label>
+              {[
+                { label: "WABA ID", value: number.wabaId },
+                { label: "Phone Number", value: number.number.replace(/\D/g, "") },
+                { label: "Business Portfolio ID", value: number.businessPortfolioId },
+              ].map((f) => (
+                <div key={f.label} className="flex items-end gap-2">
+                  <label className="block flex-1">
+                    <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium">{f.label}</span>
+                    <input type="text" defaultValue={f.value} disabled data-testid={`whatsapp-field-${f.label}`}
+                      className="mt-1 w-full px-3 py-2 text-sm border border-border rounded-md bg-slate-50 text-text-primary disabled:cursor-not-allowed" />
+                  </label>
+                  <span className="mb-2 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700">Available</span>
+                </div>
+              ))}
+              <label className="block">
+                <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium">WABA Provider</span>
+                <input type="text" defaultValue={number.wabaProvider} disabled data-testid="whatsapp-waba-provider"
+                  className="mt-1 w-full px-3 py-2 text-sm border border-border rounded-md bg-slate-50 text-text-primary disabled:cursor-not-allowed" />
+              </label>
+            </div>
+
+            <p className="text-[13px] font-semibold text-text-primary mt-5 mb-3">Following details will be displayed on your WhatsApp Business Account profile.</p>
+
+            <div className="space-y-3">
+              <label className="block">
+                <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium inline-flex items-center gap-1">
+                  Brand Name
+                  <TooltipProvider delayDuration={120}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="w-3 h-3 cursor-pointer" />
+                      </TooltipTrigger>
+                      <TooltipContent side="top">The name shown to customers on your WhatsApp Business profile.</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </span>
+                <input type="text" defaultValue={number.brandName} data-testid="whatsapp-brand-name"
+                  className="mt-1 w-full px-3 py-2 text-sm border border-border rounded-md text-text-primary" />
+              </label>
+              <div>
+                <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium">Brand Logo</span>
+                <div className="mt-1 w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+                  <UserRound className="w-5 h-5 text-slate-400" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 bg-surface border border-border rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px]">f</div>
+                <span className="text-[13px] font-semibold text-text-primary">Catalog Id:</span>
+                <span className="text-[13px] text-text-primary">{number.catalogId}</span>
+              </div>
+              <a href="https://business.facebook.com/commerce/catalogs" target="_blank" rel="noreferrer" className="text-[12px] text-primary font-medium">Manage ↗</a>
+            </div>
+            <label className="flex items-center gap-2 mb-3">
+              <input
+                type="checkbox"
+                checked={catalogAllowAccess}
+                onChange={(e) => setCatalogAllowAccess(e.target.checked)}
+                aria-label="Allow customer to access catalog"
+                className="w-4 h-4"
+              />
+              <span className="text-[12px] text-text-secondary">Allow your customer to access above connected catalog anytime on WhatsApp</span>
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={removeOutOfStock}
+                onChange={(e) => setRemoveOutOfStock(e.target.checked)}
+                className="w-4 h-4"
+              />
+              <span className="text-[12px] text-text-secondary">Remove Out of Stock products from the catalog</span>
+            </label>
+            <div className="mt-3 bg-violet-50 border border-violet-100 rounded-md p-2 text-[11px] text-violet-700">
+              Catalog will be synced regularly at an interval of 24 hours. Any changes made in the catalog will be reflected here after some time.
+            </div>
+          </div>
         </div>
 
         <div className="w-64 flex-shrink-0">

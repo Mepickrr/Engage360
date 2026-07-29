@@ -91,3 +91,27 @@ describe("WhatsAppNumberDetail — editable rows and live preview", () => {
     expect(screen.queryByTestId("whatsapp-preview-address")).not.toBeInTheDocument();
   });
 });
+
+describe("WhatsAppNumberDetail — account overview and Facebook Catalog", () => {
+  it("renders the TSP onboarding and A/B testing links, and the MM Lite banner", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    expect(screen.getByText(/view details/i)).toBeInTheDocument();
+    expect(screen.getByText(/test now/i)).toBeInTheDocument();
+    expect(screen.getByText(/powered by mm lite api/i)).toBeInTheDocument();
+  });
+
+  it("renders WABA ID, Business Portfolio ID, and WABA Provider with Available pills", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    expect(screen.getByDisplayValue("328175003703387")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("1379257819643222")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("TSPENGAGE")).toBeInTheDocument();
+    expect(screen.getAllByText("Available").length).toBe(3);
+  });
+
+  it("renders the Facebook Catalog card with catalog id and access toggle", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    expect(screen.getByText("1175317264111343")).toBeInTheDocument();
+    expect(screen.getByLabelText(/allow customer to access catalog/i)).toBeInTheDocument();
+    expect(screen.getByText(/remove out of stock products/i)).toBeInTheDocument();
+  });
+});
