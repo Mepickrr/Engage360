@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import PreviewHeader, { previewToast } from "@/components/common/PreviewHeader";
 import TeamManagementPanel from "@/components/settings/team/TeamManagementPanel";
 import ConnectedChannelsPanel from "@/components/settings/channels/ConnectedChannelsPanel";
+import RevenueAttributionTab from "@/components/settings/RevenueAttributionTab";
+import DeliveryControlsPanel from "@/components/settings/deliveryControls/DeliveryControlsPanel";
 import {
   User,
   Plug,
@@ -9,6 +11,8 @@ import {
   UsersRound,
   BellRing,
   KeyRound,
+  IndianRupee,
+  SlidersHorizontal,
 } from "lucide-react";
 
 const SUB_NAV = [
@@ -16,6 +20,8 @@ const SUB_NAV = [
   { id: "channels", label: "Connected channels", Icon: Plug },
   { id: "billing", label: "Billing", Icon: CreditCard },
   { id: "team", label: "Team", Icon: UsersRound },
+  { id: "revenueAttribution", label: "Revenue Attribution", Icon: IndianRupee },
+  { id: "deliveryControls", label: "Delivery Controls", Icon: SlidersHorizontal },
   { id: "notifications", label: "Notifications", Icon: BellRing },
   { id: "api", label: "API Keys", Icon: KeyRound },
 ];
@@ -209,6 +215,8 @@ const PANELS = {
   channels: ConnectedChannelsPanel,
   billing: BillingPanel,
   team: TeamManagementPanel,
+  revenueAttribution: RevenueAttributionTab,
+  deliveryControls: DeliveryControlsPanel,
   notifications: NotificationsPanel,
   api: ApiPanel,
 };

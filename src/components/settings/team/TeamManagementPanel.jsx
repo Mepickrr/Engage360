@@ -2,11 +2,20 @@ import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import MembersTab from "./MembersTab";
 import RolesTab from "./RolesTab";
+import SecurityTab from "./SecurityTab";
+import TestModeTab from "./TestModeTab";
 import { DEFAULT_MEMBERS, DEFAULT_ROLES, UNASSIGNED_ROLE_ID, allPermissions } from "./constants";
 
 export default function TeamManagementPanel() {
   const [members, setMembers] = useState(DEFAULT_MEMBERS);
   const [roles, setRoles] = useState(DEFAULT_ROLES);
+  const [activeTab, setActiveTab] = useState("members");
+  const [roleFilter, setRoleFilter] = useState("");
+
+  function handleViewRoleMembers(roleId) {
+    setRoleFilter(roleId);
+    setActiveTab("members");
+  }
 
   function handleAddMembers(newMembers) {
     setMembers((prev) => {
@@ -16,8 +25,8 @@ export default function TeamManagementPanel() {
     });
   }
 
-  function handleChangeMemberRole(memberId, roleId) {
-    setMembers((prev) => prev.map((m) => (m.id === memberId ? { ...m, roleId } : m)));
+  function handleUpdateMember(memberId, patch) {
+    setMembers((prev) => prev.map((m) => (m.id === memberId ? { ...m, ...patch } : m)));
   }
 
   function handleDeleteMember(memberId) {
@@ -50,28 +59,40 @@ export default function TeamManagementPanel() {
   return (
     <div data-testid="settings-team">
       <h2 className="text-base font-semibold text-text-primary mb-3">Team</h2>
-      <Tabs defaultValue="members">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-4">
           <TabsTrigger value="members" data-testid="team-tab-members">Team Members</TabsTrigger>
           <TabsTrigger value="roles" data-testid="team-tab-roles">Role Management</TabsTrigger>
+          <TabsTrigger value="security" data-testid="team-tab-security">Security</TabsTrigger>
+          <TabsTrigger value="testmode" data-testid="team-tab-testmode">Test Mode</TabsTrigger>
         </TabsList>
         <TabsContent value="members">
           <MembersTab
             members={members}
             roles={roles}
             onAddMembers={handleAddMembers}
-            onChangeMemberRole={handleChangeMemberRole}
+            onUpdateMember={handleUpdateMember}
             onDeleteMember={handleDeleteMember}
+            roleFilter={roleFilter}
+            onRoleFilterChange={setRoleFilter}
           />
         </TabsContent>
         <TabsContent value="roles">
           <RolesTab
             roles={roles}
+            members={members}
             onTogglePermission={handleTogglePermission}
             onCreateRole={handleCreateRole}
             onDeleteRole={handleDeleteRole}
             onRenameRole={handleRenameRole}
+            onViewRoleMembers={handleViewRoleMembers}
           />
+        </TabsContent>
+        <TabsContent value="security">
+          <SecurityTab />
+        </TabsContent>
+        <TabsContent value="testmode">
+          <TestModeTab members={members} />
         </TabsContent>
       </Tabs>
     </div>

@@ -94,10 +94,14 @@ export const DEFAULT_ROLES = [
 ];
 
 export const DEFAULT_MEMBERS = [
-  { id: "himanshu@tspkarix.com", name: "Himanshu Kumar", email: "himanshu@tspkarix.com", initials: "HK", color: "#6C3AE8", roleId: "admin" },
-  { id: "riya@tspkarix.com", name: "Riya Sharma", email: "riya@tspkarix.com", initials: "RS", color: "#EC4899", roleId: "manager" },
-  { id: "arjun@tspkarix.com", name: "Arjun Patel", email: "arjun@tspkarix.com", initials: "AP", color: "#10B981", roleId: "analyst" },
+  { id: "himanshu@tspkarix.com", name: "Himanshu Kumar", email: "himanshu@tspkarix.com", initials: "HK", color: "#6C3AE8", roleId: "admin", lastActive: "2026-07-28", phone: "+91 98765 43210", instagram: "@himanshu.kumar", isTestUser: false },
+  { id: "riya@tspkarix.com", name: "Riya Sharma", email: "riya@tspkarix.com", initials: "RS", color: "#EC4899", roleId: "manager", lastActive: "2026-07-27", phone: "+91 90000 11111", instagram: null, isTestUser: true },
+  { id: "arjun@tspkarix.com", name: "Arjun Patel", email: "arjun@tspkarix.com", initials: "AP", color: "#10B981", roleId: "analyst", lastActive: "2026-07-14", phone: null, instagram: "@arjun.patel", isTestUser: false },
 ];
+
+export const DEFAULT_TEST_PHONE_NUMBERS = ["+917381669794", "+919975124268", "+917056138252", "+918849618439"];
+export const DEFAULT_TEST_INSTAGRAM_HANDLES = ["_vidushichoudhary_", "swastik_rp", "jaswanth_vungarala"];
+export const DEFAULT_TEST_EMAILS = [];
 
 const AVATAR_COLORS = ["#6C3AE8", "#EC4899", "#10B981", "#3B82F6", "#F59E0B", "#14B8A6", "#8B5CF6", "#EF4444"];
 

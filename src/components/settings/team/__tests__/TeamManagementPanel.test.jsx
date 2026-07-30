@@ -14,6 +14,12 @@ describe("TeamManagementPanel", () => {
     expect(screen.getByTestId("team-roles-tab")).toBeInTheDocument();
   });
 
+  it("switches to the Test Mode tab", () => {
+    render(<TeamManagementPanel />);
+    fireEvent.mouseDown(screen.getByTestId("team-tab-testmode"));
+    expect(screen.getByTestId("test-mode-tab")).toBeInTheDocument();
+  });
+
   it("an invited member appears in the Team Members table", () => {
     render(<TeamManagementPanel />);
     fireEvent.click(screen.getByTestId("team-invite-btn"));
@@ -51,12 +57,12 @@ describe("TeamManagementPanel", () => {
   it("re-inviting an existing member's email does not overwrite their role", () => {
     render(<TeamManagementPanel />);
     fireEvent.click(screen.getByTestId("team-invite-btn"));
-    fireEvent.change(screen.getByTestId("invite-modal-bulk-role"), { target: { value: "developer" } });
     const emailInput = screen.getByTestId("invite-modal-emails-input");
     fireEvent.change(emailInput, { target: { value: "riya@tspkarix.com" } });
     fireEvent.keyDown(emailInput, { key: "Enter" });
+    fireEvent.change(screen.getByTestId("invite-modal-row-role-riya@tspkarix.com"), { target: { value: "developer" } });
     fireEvent.click(screen.getByTestId("invite-modal-submit"));
-    expect(screen.getByTestId("team-member-role-select-riya@tspkarix.com")).toHaveValue("manager");
+    expect(screen.getByTestId("team-member-role-badge-riya@tspkarix.com")).toHaveTextContent("Manager");
   });
 
   it("deleting a custom role reassigns its members to No role", () => {
@@ -67,7 +73,9 @@ describe("TeamManagementPanel", () => {
     fireEvent.click(screen.getByTestId("role-new-confirm"));
 
     fireEvent.mouseDown(screen.getByTestId("team-tab-members"));
-    fireEvent.change(screen.getByTestId("team-member-role-select-riya@tspkarix.com"), { target: { value: "custom-growth" } });
+    fireEvent.click(screen.getByTestId("team-member-edit-riya@tspkarix.com"));
+    fireEvent.change(screen.getByTestId("edit-member-role-select"), { target: { value: "custom-growth" } });
+    fireEvent.click(screen.getByTestId("invite-modal-save"));
 
     fireEvent.mouseDown(screen.getByTestId("team-tab-roles"));
     jest.spyOn(window, "confirm").mockReturnValue(true);
@@ -75,6 +83,18 @@ describe("TeamManagementPanel", () => {
     window.confirm.mockRestore();
 
     fireEvent.mouseDown(screen.getByTestId("team-tab-members"));
-    expect(screen.getByTestId("team-member-role-select-riya@tspkarix.com")).toHaveValue("unassigned");
+    expect(screen.getByTestId("team-member-role-badge-riya@tspkarix.com")).toHaveTextContent("No role");
+  });
+
+  it("clicking a role's user count jumps to Team Members filtered to that role", () => {
+    render(<TeamManagementPanel />);
+    fireEvent.mouseDown(screen.getByTestId("team-tab-roles"));
+    fireEvent.click(screen.getByTestId("role-nav-manager"));
+    fireEvent.click(screen.getByTestId("role-user-count-manager"));
+
+    expect(screen.getByTestId("team-members-tab")).toBeInTheDocument();
+    expect(screen.getByTestId("team-members-role-filter")).toHaveValue("manager");
+    expect(screen.getByTestId("team-member-row-riya@tspkarix.com")).toBeInTheDocument();
+    expect(screen.queryByTestId("team-member-row-arjun@tspkarix.com")).not.toBeInTheDocument();
   });
 });

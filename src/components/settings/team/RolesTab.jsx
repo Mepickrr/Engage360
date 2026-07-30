@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Plus, Trash2, Lock } from "lucide-react";
+import { Plus, Trash2, Lock, Users } from "lucide-react";
 import { PERMISSION_COMPONENTS, PERMISSION_LEVELS, slugifyRoleName } from "./constants";
 
-export default function RolesTab({ roles, onTogglePermission, onCreateRole, onDeleteRole, onRenameRole }) {
+export default function RolesTab({ roles, members, onTogglePermission, onCreateRole, onDeleteRole, onRenameRole, onViewRoleMembers }) {
   const [selectedId, setSelectedId] = useState(roles[0]?.id);
   const [newRoleName, setNewRoleName] = useState("");
   const [creating, setCreating] = useState(false);
@@ -118,6 +118,17 @@ export default function RolesTab({ roles, onTogglePermission, onCreateRole, onDe
             </span>
             {selected.locked && <Lock className="w-3.5 h-3.5 text-text-muted" />}
           </div>
+
+          <button
+            type="button"
+            data-testid={`role-user-count-${selected.id}`}
+            onClick={() => onViewRoleMembers?.(selected.id)}
+            className="inline-flex items-center gap-1.5 mb-4 text-[12px] text-text-secondary hover:text-primary hover:underline"
+          >
+            <Users className="w-3.5 h-3.5" />
+            {members.filter((m) => m.roleId === selected.id).length} user
+            {members.filter((m) => m.roleId === selected.id).length === 1 ? "" : "s"} with this role
+          </button>
 
           <table className="w-full text-left">
             <thead className="text-[11px] uppercase tracking-wide text-text-muted">

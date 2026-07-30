@@ -1,15 +1,17 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import RolesTab from "../RolesTab";
-import { DEFAULT_ROLES } from "../constants";
+import { DEFAULT_ROLES, DEFAULT_MEMBERS } from "../constants";
 
 function renderTab(roles = DEFAULT_ROLES, overrides = {}) {
   const props = {
     roles,
+    members: DEFAULT_MEMBERS,
     onTogglePermission: jest.fn(),
     onCreateRole: jest.fn(),
     onDeleteRole: jest.fn(),
     onRenameRole: jest.fn(),
+    onViewRoleMembers: jest.fn(),
     ...overrides,
   };
   render(<RolesTab {...props} />);
@@ -63,6 +65,21 @@ describe("RolesTab", () => {
     expect(screen.queryByTestId("role-name-input-manager")).not.toBeInTheDocument();
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent("Manager");
+  });
+
+  it("shows the number of users assigned to the selected role", () => {
+    renderTab();
+    expect(screen.getByTestId("role-user-count-admin")).toHaveTextContent("1 user with this role");
+    fireEvent.click(screen.getByTestId("role-nav-manager"));
+    expect(screen.getByTestId("role-user-count-manager")).toHaveTextContent("1 user with this role");
+  });
+
+  it("calls onViewRoleMembers with the role id when the user count is clicked", () => {
+    const onViewRoleMembers = jest.fn();
+    renderTab(DEFAULT_ROLES, { onViewRoleMembers });
+    fireEvent.click(screen.getByTestId("role-nav-manager"));
+    fireEvent.click(screen.getByTestId("role-user-count-manager"));
+    expect(onViewRoleMembers).toHaveBeenCalledWith("manager");
   });
 
   it("deletes a custom role after confirmation", () => {

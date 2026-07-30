@@ -1,0 +1,96 @@
+
+
+
+
+Describe what you are looking for
+
+
+
+
+
+
+Home
+1
+
+DMs
+2
+
+5
+Activity
+3
+
+Files
+4
+
+Later
+5
+
+More
+0
+
+Shiprocket Team
+
+
+Find a conversation…
+
+Unread mentions
+
+
+
+
+
+
+
+Messages
+
+CanvasListFolder
+Madhav Mishra
+  6:12 PM
+Untitled
+ 
+{
+  "_index": "fluentbit-webhook-handler-2026.07.27",
+  "_id": "S742o58BG03kh3qONNmx",
+  "_version": 1,
+  "_ignored": [
+    "log.keyword"
+  ],
+  "_source": {
+    "@timestamp": "2026-07-27T10:54:24.678Z",
+    "stream": "stdout",
+    "k8s_namespace": "wigzo-production",
+    "k8s_container": "webhook-handler",
+    "k8s_pod": "webhook-handler-578bd487f7-qt6kq",
+    "k8s_node": "gke-wigzo-apps-delhi-wigzo-production-42b21ffd-9qml",
+    "logtag": "F",
+    "log": "2026-07-27T10:54:24.677Z  INFO 1 --- [webhook-handler] [nio-8080-exec-1] c.w.w.service.WebhookServiceImpl         : [Start][WebhookServiceImpl][produceKafkaEvent] CustomKafkaPayload(payload={id=16981203190129, admin_graphql_api_id=gid://shopify/Order/16981203190129, app_id=277234515969, browser_ip=null, buyer_accepts_marketing=true, cancel_reason=null, cancelled_at=null, cart_token=null, checkout_id=null, checkout_token=null, client_details=null, closed_at=null, company=null, confirmation_number=H4NVMKTLP, confirmed=true, contact_email=mohitpro2005@gmail.com, created_at=2026-07-27T16:24:20+05:30, currency=INR, current_shipping_price_set={shop_money={amount=99.00, currency_code=INR}, presentment_money={amount=99.00, currency_code=INR}}, current_subtotal_price=999.00, current_subtotal_price_set={shop_money={amount=999.00, currency_code=INR}, presentment_money={amount=999.00, currency_code=INR}}, current_total_additional_fees_set=null, current_total_discounts=0.00, current_total_discounts_set={shop_money={amount=0.00, currency_code=INR}, presentment_money={amount=0.00, currency_code=INR}}, current_total_duties_set=null, current_total_price=1098.00, current_total_price_set={shop_money={amount=1098.00, currency_code=INR}, presentment_money={amount=1098.00, currency_code=INR}}, current_total_tax=161.54, current_total_tax_set={shop_money={amount=161.54, currency_code=INR}, presentment_money={amount=161.54, currency_code=INR}}, customer_locale=null, device_id=null, discount_codes=[], duties_included=false, email=mohitpro2005@gmail.com, estimated_taxes=false, financial_status=partially_paid, fulfillment_status=null, landing_site=null, landing_site_ref=null, location_id=null, merchant_business_entity_id=5201035633, merchant_of_record_app_id=null, name=16032, note=null, note_attributes=[{name=additional_charge, value=0.0}, {name=user_agent, value=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36}, {name=utm_source, value=facebook}, {name=utm_medium, value=paid}, {name=utm_campaign, value=120253344919710581}, {name=utm_term, value=120253344919690581}, {name=utm_content, value=120253344919700581}, {name=PayU_txn_id, value=29777101368}, {name=landing_page_url, value=https://demoda.in/collections/harry-potter?utm_medium=paid&utm_id=120253344919690581_v2_s11_e7711&utm_content=120253344919700581&utm_term=120253344919690581&utm_campaign=120253344919710581&fbclid=PAZXh0bgNhZW0BMABhZGlkAas5x8PMvuVzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAacxA12P96xXA_Zyx2Pnfoyd9c89V7h6SOF861BaNbgUXmicwZRtL287xBf7nA_aem_8FQZ7ypQ9rXn1Oh2Oruk3A&utm_source=facebook&campaign_id=120253344919710581&ad_id=120253344919700581}, {name=ipv4_address, value=47.15.26.165}, {name=shopifyCartToken, value=hWNExXi5AjOmaXmVsAuDsSCC?key=8d26e14dfbd96eed85085c5af9848e34}], number=15032, order_number=16032, order_status_url=https://demoda.in/93447684465/orders/7d4bf4ca8727e817437d15847480d85d/authenticate?key=97d92e9ea36c15e24a77967ecd1689dd, original_total_additional_fees_set=null, original_total_duties_set=null, payment_gateway_names=[Cash on Delivery (COD), PayU], phone=+918920156883, po_number=null, presentment_currency=INR, processed_at=2026-07-27T16:24:20+05:30, reference=null, referring_site=null, source_identifier=6a6738b1eea10a209f0d232d, source_name=277234515969, source_url=null, subtotal_price=999.00, subtotal_price_set={shop_money={amount=999.00, currency_code=INR}, presentment_money={amount=999.00, currency_code=INR}}, tags=fastrr, low, PPCOD, SR_STANDARD, Standard, tax_exempt=false, tax_lines=[{price=161.54, rate=0.18, title=IGST, price_set={shop_money={amount=161.54, currency_code=INR}, presentment_money={amount=161.54, currency_code=INR}}, channel_liable=false}], taxes_included=true, test=false, token=7d4bf4ca8727e817437d15847480d85d, total_cash_rounding_payment_adjustment_set={shop_money={amount=0.00, currency_code=INR}, presentment_money={amount=0.00, currency_code=INR}}, total_cash_rounding_refund_adjustment_set={shop_money={amount=0.00, currency_code=INR}, presentment_money={amount=0.00, currency_code=INR}}, total_discounts=0.00, total_discounts_set={shop_money={amount=0.00, currency_code=INR}, presentment_money={amount=0.00, currency_code=INR}}, total_line_items_price=999.00, total_line_items_price_set={shop_money={amount=999.00, currency_code=INR}, presentment_money={amount=999.00, currency_code=INR}}, total_outstanding=999.00, total_price=1098.00, total_price_set={shop_money={amount=1098.00, currency_code=INR}, presentment_money={amount=1098.00, currency_code=INR}}, total_shipping_price_set={shop_money={amount=99.00, currency_code=INR}, presentment_money={amount=99.00, currency_code=INR}}, total_tax=161.54, total_tax_set={shop_money={amount=161.54, currency_code=INR}, presentment_money={amount=161.54, currency_code=INR}}, total_tip_received=0.00, total_weight=0, updated_at=2026-07-27T16:24:21+05:30, user_id=null, billing_address={first_name=Mohit, address1=Village Dohki , bhiwani , haryana, phone=8920156883, city=Bhiwani, zip=127021, province=Haryana, country=India, last_name=Sangwan, address2=Near bus stand, company=null, latitude=28.7974684, longitude=76.1322058, name=Mohit Sangwan, country_code=IN, province_code=HR}, customer={id=27832393302385, created_at=2026-07-27T16:24:20+05:30, updated_at=2026-07-27T16:24:20+05:30, first_name=Mohit, last_name=Sangwan, state=disabled, note=null, verified_email=true, multipass_identifier=null, tax_exempt=false, email=mohitpro2005@gmail.com, phone=+918920156883, currency=INR, tax_exemptions=[], admin_graphql_api_id=gid://shopify/Customer/27832393302385, default_address={id=38050786541937, customer_id=27832393302385, first_name=Mohit, last_name=Sangwan, company=null, address1=Village Dohki , bhiwani , haryana, address2=Near bus stand, city=Bhiwani, province=Haryana, country=India, zip=127021, phone=8920156883, name=Mohit Sangwan, province_code=HR, country_code=IN, country_name=India, default=true}}, discount_applications=[], fulfillments=[], line_items=[{id=45646898332017, admin_graphql_api_id=gid://shopify/LineItem/45646898332017, attributed_staffs=[], current_quantity=1, fulfillable_quantity=1, fulfillment_service=manual, fulfillment_status=null, gift_card=false, grams=0, name=Wizard Harry potter Lock Secret House Diary - Hogwards - Black, price=999.00, price_set={shop_money={amount=999.00, currency_code=INR}, presentment_money={amount=999.00, currency_code=INR}}, product_exists=true, product_id=15294478713201, properties=[], quantity=1, requires_shipping=true, sales_line_item_group_id=null, sku=null, taxable=true, title=Wizard Harry potter Lock Secret House Diary, total_discount=0.00, total_discount_set={shop_money={amount=0.00, currency_code=INR}, presentment_money={amount=0.00, currency_code=INR}}, variant_id=64068756472177, variant_inventory_management=shopify, variant_title=Hogwards - Black, vendor=Demoda, tax_lines=[{channel_liable=false, price=152.39, price_set={shop_money={amount=152.39, currency_code=INR}, presentment_money={amount=152.39, currency_code=INR}}, rate=0.18, title=IGST}], duties=[], discount_allocations=[]}], payment_terms=null, refunds=[], shipping_address={first_name=Mohit, address1=Village Dohki , bhiwani , haryana, phone=8920156883, city=Bhiwani, zip=127021, province=Haryana, country=India, last_name=Sangwan, address2=Near bus stand, company=null, latitude=28.7974684, longitude=76.1322058, name=Mohit Sangwan, country_code=IN, province_code=HR}, shipping_lines=[{id=16364490981745, carrier_identifier=null, code=SR_STANDARD, current_discounted_price_set={shop_money={amount=99.00, currency_code=INR}, presentment_money={amount=99.00, currency_code=INR}}, discounted_price=99.00, discounted_price_set={shop_money={amount=99.00, currency_code=INR}, presentment_money={amount=99.00, currency_code=INR}}, is_removed=false, phone=null, price=99.00, price_set={shop_money={amount=99.00, currency_code=INR}, presentment_money={amount=99.00, currency_code=INR}}, requested_fulfillment_service_id=null, source=null, title=Standard (COD), tax_lines=[{channel_liable=false, price=9.15, price_set={shop_money={amount=9.15, currency_code=INR}, presentment_money={amount=9.15, currency_code=INR}}, rate=0.18, title=IGST}], discount_allocations=[]}], returns=[], line_item_groups=[]}, orgId=78254, type=ORDER, channel=shopify, isUpdateEvent=false, extraData=null),shopify-webhook-order-topic,7bf7275e-153c-4aff-8c9d-8163c578426b",
+    "kubernetes": {
+      "container_name": "webhook-handler",
+      "container_hash": "asia-docker.pkg.dev/data-storage-242311/asia.gcr.io/webhook-handler@sha256:9e99fb6d8fc5166e41486d3f93a50ef1456f3505c6130542f7d6722c0321b601",
+      "pod_name": "webhook-handler-578bd487f7-qt6kq",
+      "host": "gke-wigzo-apps-delhi-wigzo-production-42b21ffd-9qml",
+      "labels": {},
+      "namespace_name": "wigzo-production"
+    },
+    "es_index": "fluentbit-webhook-handler",
+    "k8s_app": "webhook-handler"
+  },
+  "fields": {
+    "k8s_namespace": [
+      "wigzo-production"
+    ],
+    "k8s_namespace.keyword": [
+      "wigzo-production"
+    ],
+    "k8s_app": [
+      "webhook-handler"
+    ],
+    "stream.keyword": [
+      "stdout"
+    ],
+    "log": [
+      "2026-07-27T10:54:24.677Z  INFO 1 --- [webhook-handler] [nio-8080-exec-1] c.w.w.service.WebhookServiceImpl         : [Start][WebhookServiceImpl][produceKafkaEvent] CustomKafkaPayload(payload={id=16981203190129, admin_graphql_api_id=gid://shopify/Order/16981203190129, app_id=277234515969, browser_ip=null, buyer_accepts_marketing=true, cancel_reason=null, cancelled_at=null, cart_token=null, checkout_id=null, checkout_token=null, client_details=null, closed_at=null, company=null, confirmation_number=H4NVMKTLP, confirmed=true, contact_email=mohitpro2005@gmail.com, created_at=2026-07-27T16:24:20+05:30, currency=INR, current_shipping_price_set={shop_money={amount=99.00, currency_code=INR}, presentment_money={amount=99.00, currency_code=INR}}, current_subtotal_price=999.00, current_subtotal_price_set={shop_money={amount=999.00, currency_code=INR}, presentment_money={amount=999.00, currency_code=INR}}, current_total_additional_fees_set=null, current_total_discounts=0.00, current_total_discounts_set={shop_money={amount=0.00, currency_code=INR}, presentment_money={amount=0.00, currency_code=INR}}, current_total_duties_set=null, current_total_price=1098.00, current_total_price_set={shop_money={amount=1098.00, currency_code=INR}, presentment_money={amount=1098.00, currency_code=INR}}, current_total_tax=161.54, current_total_tax_set={shop_money={amount=161.54, currency_code=INR}, presentment_money={amount=161.54, currency_code=INR}}, customer_locale=null, device_id=null, discount_codes=[], duties_included=false, email=mohitpro2005@gmail.com, estimated_taxes=false, financial_status=partially_paid, fulfillment_status=null, landing_site=null, landing_site_ref=null, location_id=null, merchant_business_entity_id=5201035633, merchant_of_record_app_id=null, name=16032, note=null, note_attributes=[{name=additional_charge, value=0.0}, {name=user_agent, value=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36}, {name=utm_source, value=facebook}, {name=utm_medium, value=paid}, {name=utm_campaign, value=120253344919710581}, {name=utm_term, value=120253344919690581}, {name=utm_content, value=120253344919700581}, {name=PayU_txn_id, value=29777101368}, {name=landing_page_url, value=https://demoda.in/collections/harry-potter?utm_medium=paid&utm_id=120253344919690581_v2_s11_e7711&utm_content=120253344919700581&utm_term=120253344919690581&utm_campaign=120253344919710581&fbclid=PAZXh0bgNhZW0BMABhZGlkAas5x8PMvuVzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAacxA12P96xXA_Zyx2Pnfoyd9c89V7h6SOF861...
+Show less
+
+
+=
