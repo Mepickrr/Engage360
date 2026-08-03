@@ -6,21 +6,25 @@ import {
   RETENTION_SEGMENTS,
   ACQUISITION_SEGMENTS,
   SEGMENT_LIBRARY,
+  SHIPROCKET_SEGMENTS,
   RETENTION_INFO_BANNER,
   ACQUISITION_INFO_BANNER,
   SEGMENT_LIBRARY_INFO_BANNER,
+  SHIPROCKET_INFO_BANNER,
 } from "@/data/segmentsHomeData";
 
 const SUB_TABS = [
   { value: "retention", label: "Retention segments" },
   { value: "acquisition", label: "Acquisition segments" },
   { value: "library", label: "Segment library" },
+  { value: "shiprocket", label: "Shiprocket Signals", badge: "New" },
 ];
 
 const SOURCE = {
   retention: { data: RETENTION_SEGMENTS, banner: RETENTION_INFO_BANNER, pageSize: RETENTION_SEGMENTS.length },
   acquisition: { data: ACQUISITION_SEGMENTS, banner: ACQUISITION_INFO_BANNER, pageSize: 3 },
   library: { data: SEGMENT_LIBRARY, banner: SEGMENT_LIBRARY_INFO_BANNER, pageSize: 8 },
+  shiprocket: { data: SHIPROCKET_SEGMENTS, banner: SHIPROCKET_INFO_BANNER, pageSize: SHIPROCKET_SEGMENTS.length },
 };
 
 function filterByQuery(items, query) {

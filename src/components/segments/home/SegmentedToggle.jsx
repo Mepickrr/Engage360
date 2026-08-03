@@ -19,6 +19,11 @@ export default function SegmentedToggle({ options, value, onChange, testIdPrefix
             }`}
           >
             {opt.label}
+            {opt.badge && (
+              <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-semibold">
+                {opt.badge}
+              </span>
+            )}
           </button>
         );
       })}

@@ -29,6 +29,21 @@ describe("FastrrSignalsTab", () => {
     expect(screen.getByText("promising Customer")).toBeInTheDocument();
   });
 
+  test("switching to Shiprocket Signals shows all 3 cards with no Show more", () => {
+    render(<FastrrSignalsTab searchQuery="" />);
+    fireEvent.click(screen.getByTestId("fastrr-toggle-shiprocket"));
+    expect(screen.getByText("Low RTO- Loyal Customers")).toBeInTheDocument();
+    expect(screen.getByText("High AOV- Promising")).toBeInTheDocument();
+    expect(screen.getByText("High AOV & Low RTO- New Customers")).toBeInTheDocument();
+    expect(screen.getByText("Showing 3 out of 3 results")).toBeInTheDocument();
+    expect(screen.queryByText(/Show more/)).not.toBeInTheDocument();
+  });
+
+  test("Shiprocket Signals sub-tab is labeled with a New badge", () => {
+    render(<FastrrSignalsTab searchQuery="" />);
+    expect(screen.getByTestId("fastrr-toggle-shiprocket")).toHaveTextContent("New");
+  });
+
   test("search filters cards by name within the active sub-tab", () => {
     render(<FastrrSignalsTab searchQuery="champ" />);
     expect(screen.getByText("Champions")).toBeInTheDocument();

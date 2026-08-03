@@ -17,6 +17,9 @@ import {
   Coffee,
   Snowflake,
   Sprout,
+  ShieldCheck,
+  TrendingUp,
+  Sparkles,
 } from "lucide-react";
 
 export const OPPORTUNITY_CARDS = [
@@ -68,6 +71,36 @@ export const ACQUISITION_SEGMENTS = [
 
 export const ACQUISITION_INFO_BANNER =
   "Potential customers who haven't purchased yet. Convert them with targeted campaigns based on their intent.";
+
+export const SHIPROCKET_SEGMENTS = [
+  {
+    id: "shp_1",
+    name: "Low RTO- Loyal Customers",
+    Icon: ShieldCheck,
+    updated: "9:45 AM, 1st Aug",
+    description: "Repeat buyers who come back regularly and have a low RTO trait in the Shiprocket universe.",
+    users: "72,410",
+  },
+  {
+    id: "shp_2",
+    name: "High AOV- Promising",
+    Icon: TrendingUp,
+    updated: "10:12 AM, 1st Aug",
+    description: "Bought a few times but inconsistently in your store, yet have a high AOV in your industry. They like you, they just haven't made it a habit yet.",
+    users: "1,08,264",
+  },
+  {
+    id: "shp_3",
+    name: "High AOV & Low RTO- New Customers",
+    Icon: Sparkles,
+    updated: "10:30 AM, 1st Aug",
+    description: "Made their first purchase but haven't come back yet — they show strong purchase intent and a low RTO trait in your industry. The goal is to get them to order again.",
+    users: "38,950",
+  },
+];
+
+export const SHIPROCKET_INFO_BANNER =
+  "Segments powered by Shiprocket delivery signals — RTO risk and order value — layered on top of your store data.";
 
 const SEGMENT_LIBRARY_BASE = [
   { id: "lib_1", name: "promising Customer", updated: "4:59 PM, 11th Mar", description: "Customers who have made frequent purchases and spent a lot but haven't engaged recently.", users: "2,63,037" },

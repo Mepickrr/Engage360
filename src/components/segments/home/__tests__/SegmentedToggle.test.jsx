@@ -21,4 +21,14 @@ describe("SegmentedToggle", () => {
     fireEvent.click(screen.getByTestId("fastrr-toggle-acquisition"));
     expect(onChange).toHaveBeenCalledWith("acquisition");
   });
+
+  test("renders a badge when an option specifies one, and omits it otherwise", () => {
+    const withBadge = [
+      { value: "retention", label: "Retention segments" },
+      { value: "shiprocket", label: "Shiprocket Signals", badge: "New" },
+    ];
+    render(<SegmentedToggle testIdPrefix="fastrr" options={withBadge} value="retention" onChange={jest.fn()} />);
+    expect(screen.getByText("New")).toBeInTheDocument();
+    expect(screen.getByTestId("fastrr-toggle-retention")).not.toHaveTextContent("New");
+  });
 });
