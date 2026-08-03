@@ -60,23 +60,37 @@ function summarizeAffinityCondition(c) {
   return parts.filter(Boolean).join(" ");
 }
 
+function summarizeEventPropertyBlock(block) {
+  const conditions = block.conditions || [];
+  if (!conditions.length) return "";
+  const eventName = conditions.find((c) => c.event)?.event || "";
+  const combinator = block.combinator || "AND";
+  const parts = conditions.map(summarizePropertyCondition).filter(Boolean);
+  if (!parts.length) return eventName;
+  return eventName
+    ? `${eventName} where ${parts.join(` ${combinator} `)}`
+    : parts.join(` ${combinator} `);
+}
+
 function summarizeBlock(block) {
   const combinator = block.combinator || "AND";
-  let parts;
 
   if (block.type === "segment") {
     const segs = (block.segments || []).filter(Boolean);
     return segs.length ? `Segment: ${segs.join(" or ")}` : "";
   }
 
+  if (block.type === "event_property") {
+    return summarizeEventPropertyBlock(block);
+  }
+
   const summarizer = {
     property: summarizePropertyCondition,
     behavior: summarizeExecutionCondition,
-    event_property: summarizeExecutionCondition,
     affinity: summarizeAffinityCondition,
   }[block.type];
 
-  parts = (block.conditions || []).map(summarizer || (() => "")).filter(Boolean);
+  const parts = (block.conditions || []).map(summarizer || (() => "")).filter(Boolean);
   return parts.join(` ${combinator} `);
 }
 
