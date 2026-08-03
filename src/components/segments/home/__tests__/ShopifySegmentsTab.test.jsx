@@ -19,4 +19,20 @@ describe("ShopifySegmentsTab", () => {
     // After clicking, the text should update to show 18 results
     expect(screen.getByText("Showing 18 out of 61 results")).toBeInTheDocument();
   });
+
+  test("renders a Retention Segment section below the main grid with all 10 cards and no Show more", () => {
+    render(<ShopifySegmentsTab searchQuery="" />);
+    const retention = screen.getByTestId("shopify-section-retention");
+    expect(within(retention).getByText("Retention Segment")).toBeInTheDocument();
+    expect(within(retention).getByText("Champions")).toBeInTheDocument();
+    expect(within(retention).getByText("Lost customers")).toBeInTheDocument();
+    expect(within(retention).getByText(/Showing 10 out of 10 results/)).toBeInTheDocument();
+    expect(within(retention).queryByText("Show more")).not.toBeInTheDocument();
+  });
+
+  test("search filters the Retention Segment section independently from the main Shopify grid", () => {
+    render(<ShopifySegmentsTab searchQuery="champ" />);
+    expect(screen.getByText("Champions")).toBeInTheDocument();
+    expect(screen.queryByText("Last 30 days")).not.toBeInTheDocument();
+  });
 });

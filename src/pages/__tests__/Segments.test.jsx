@@ -13,7 +13,7 @@ describe("SegmentsPage", () => {
     mockNavigate.mockClear();
   });
 
-  test("renders the top bar, KPI strip, and defaults to All segments tab (opportunity carousel shown there too, above Fastrr Signals)", () => {
+  test("renders the top bar, KPI strip, and defaults to All segments tab (opportunity carousel shown there too, above Opportunity tab)", () => {
     render(<SegmentsPage />);
     expect(screen.getByText("Segment management")).toBeInTheDocument();
     expect(screen.getByTestId("segments-new-btn")).toBeInTheDocument();
@@ -21,13 +21,13 @@ describe("SegmentsPage", () => {
     expect(screen.getByTestId("opportunity-carousel")).toBeInTheDocument();
   });
 
-  test("switching tabs renders the corresponding tab body, opportunity carousel shown under All and Fastrr Signals only", () => {
+  test("switching tabs renders the corresponding tab body, opportunity carousel shown under All and Opportunity only", () => {
     render(<SegmentsPage />);
     // Radix's TabsTrigger activates on mousedown (not click), so a real user
     // click — which always fires mousedown before click — is simulated with
     // fireEvent.mouseDown here; fireEvent.click alone never reaches jsdom's
     // synthetic mousedown/focus path and the tab would never switch.
-    fireEvent.mouseDown(screen.getByRole("tab", { name: /Fastrr Signals/ }));
+    fireEvent.mouseDown(screen.getByRole("tab", { name: /Opportunity/ }));
     expect(screen.getByTestId("fastrr-signals-tab")).toBeInTheDocument();
     expect(screen.getByTestId("opportunity-carousel")).toBeInTheDocument();
 

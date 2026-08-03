@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
-import SegmentCard from "./SegmentCard";
+import React, { useMemo } from "react";
 import OpportunityCarousel from "./OpportunityCarousel";
+import Section from "./Section";
 import { listSegments } from "@/data/segmentsData";
 import { renderBlockSetSummary } from "@/components/flows/builder/triggerV2/triggerHelpers";
 import {
@@ -10,8 +10,6 @@ import {
   SHOPIFY_SEGMENTS,
   SUPPRESSION_ASSETS,
 } from "@/data/segmentsHomeData";
-
-const PAGE_SIZE = 9;
 
 function normalizeSignalCard(item) {
   return {
@@ -54,52 +52,22 @@ function filterByQuery(items, query) {
   return items.filter((item) => item.name.toLowerCase().includes(q));
 }
 
-function Section({ testId, title, items }) {
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-
-  if (items.length === 0) return null;
-
-  const visible = items.slice(0, visibleCount);
-  const hasMore = visibleCount < items.length;
-
-  return (
-    <section className="mb-8" data-testid={testId}>
-      <h3 className="mb-3 text-sm font-semibold text-text-primary">{title}</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {visible.map((item) => (
-          <SegmentCard key={item.id} testId={`all-card-${item.id}`} {...item} />
-        ))}
-      </div>
-      <div className="mt-4 text-center text-[13px] text-text-muted">
-        {`Showing ${visible.length} out of ${items.length} results`}
-        {hasMore && (
-          <>
-            {" "}
-            <button
-              type="button"
-              className="text-primary font-medium"
-              onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-            >
-              Show more
-            </button>
-          </>
-        )}
-      </div>
-    </section>
-  );
-}
-
 export default function AllSegmentsTab({ searchQuery }) {
   const fastrrCards = useMemo(
     () => [
-      ...RETENTION_SEGMENTS.map(normalizeSignalCard),
       ...ACQUISITION_SEGMENTS.map(normalizeSignalCard),
       ...SEGMENT_LIBRARY.map(normalizeLibraryCard),
     ],
     [],
   );
   const customCards = useMemo(() => listSegments().map(normalizeCustomSegment), []);
-  const shopifyCards = useMemo(() => SHOPIFY_SEGMENTS.map(normalizeShopifyCard), []);
+  const shopifyCards = useMemo(
+    () => [
+      ...RETENTION_SEGMENTS.map(normalizeSignalCard),
+      ...SHOPIFY_SEGMENTS.map(normalizeShopifyCard),
+    ],
+    [],
+  );
   const suppressionCards = useMemo(() => SUPPRESSION_ASSETS.map(normalizeSuppressionCard), []);
 
   const filteredFastrr = useMemo(() => filterByQuery(fastrrCards, searchQuery), [fastrrCards, searchQuery]);

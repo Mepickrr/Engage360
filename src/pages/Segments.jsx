@@ -72,7 +72,7 @@ export default function SegmentsPage() {
         <TabsList className="mb-4">
           <TabsTrigger value="all">All segments</TabsTrigger>
           <TabsTrigger value="fastrr">
-            Fastrr Signals{" "}
+            Opportunity{" "}
             <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-semibold">
               New
             </span>

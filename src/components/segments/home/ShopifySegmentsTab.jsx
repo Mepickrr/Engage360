@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import SegmentCard from "./SegmentCard";
-import { SHOPIFY_SEGMENTS, SHOPIFY_LAST_SYNCED } from "@/data/segmentsHomeData";
+import Section from "./Section";
+import { SHOPIFY_SEGMENTS, SHOPIFY_LAST_SYNCED, RETENTION_SEGMENTS, RETENTION_INFO_BANNER } from "@/data/segmentsHomeData";
 
 const PAGE_SIZE = 9;
 
@@ -11,11 +12,26 @@ function filterByQuery(items, query) {
   return items.filter((item) => item.name.toLowerCase().includes(q));
 }
 
+function normalizeRetentionCard(item) {
+  return {
+    id: `retention-${item.id}`,
+    name: item.name,
+    Icon: item.Icon,
+    updated: item.updated,
+    description: item.description,
+    users: item.users,
+    footerRight: item.avgRevenuePerUser ? `Average revenue per user : ${item.avgRevenuePerUser}` : undefined,
+  };
+}
+
 export default function ShopifySegmentsTab({ searchQuery }) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const filtered = useMemo(() => filterByQuery(SHOPIFY_SEGMENTS, searchQuery), [searchQuery]);
   const visible = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
+
+  const retentionCards = useMemo(() => RETENTION_SEGMENTS.map(normalizeRetentionCard), []);
+  const filteredRetention = useMemo(() => filterByQuery(retentionCards, searchQuery), [retentionCards, searchQuery]);
 
   return (
     <div data-testid="shopify-segments-tab">
@@ -56,6 +72,17 @@ export default function ShopifySegmentsTab({ searchQuery }) {
             </button>
           </>
         )}
+      </div>
+
+      <div className="mt-8">
+        <Section
+          testId="shopify-section-retention"
+          title="Retention Segment"
+          items={filteredRetention}
+          banner={RETENTION_INFO_BANNER}
+          pageSize={RETENTION_SEGMENTS.length}
+          cardTestIdPrefix="shopify-retention-card"
+        />
       </div>
     </div>
   );

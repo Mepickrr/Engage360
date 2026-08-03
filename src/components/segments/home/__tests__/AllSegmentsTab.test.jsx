@@ -8,8 +8,9 @@ describe("AllSegmentsTab", () => {
 
     const fastrr = screen.getByTestId("all-section-fastrr");
     expect(within(fastrr).getByText("Fastrr Signals")).toBeInTheDocument();
-    expect(within(fastrr).getByText("Champions")).toBeInTheDocument();
-    expect(within(fastrr).getByText(/Showing 9 out of 35 results/)).toBeInTheDocument();
+    expect(within(fastrr).getByText("Hot Leads")).toBeInTheDocument();
+    expect(within(fastrr).queryByText("Champions")).not.toBeInTheDocument();
+    expect(within(fastrr).getByText(/Showing 9 out of 25 results/)).toBeInTheDocument();
 
     const custom = screen.getByTestId("all-section-custom");
     expect(within(custom).getByText("Custom segments")).toBeInTheDocument();
@@ -17,6 +18,11 @@ describe("AllSegmentsTab", () => {
 
     const shopify = screen.getByTestId("all-section-shopify");
     expect(within(shopify).getByText("Shopify segments")).toBeInTheDocument();
+    // Retention cards (e.g. Champions) are listed first, so they're on the
+    // first page; the original Shopify cards (e.g. "Last 30 days") follow.
+    expect(within(shopify).getByText("Champions")).toBeInTheDocument();
+    expect(within(shopify).getByText(/Showing 9 out of 71 results/)).toBeInTheDocument();
+    fireEvent.click(within(shopify).getByText("Show more"));
     expect(within(shopify).getByText("Last 30 days")).toBeInTheDocument();
 
     const suppression = screen.getByTestId("all-section-suppression");
@@ -41,12 +47,16 @@ describe("AllSegmentsTab", () => {
   });
 
   test("search filters each section independently by name", () => {
+    // Champions now lives in the Shopify segments section (Retention Segment
+    // cards moved there), so searching for it should surface only that
+    // section, not Fastrr Signals, Custom, or Suppression.
     render(<AllSegmentsTab searchQuery="champions" />);
     expect(screen.getByText("Champions")).toBeInTheDocument();
     expect(screen.queryByText("Cart Abandoners 48h")).not.toBeInTheDocument();
     // Sections with no matches are hidden entirely rather than shown empty.
+    expect(screen.queryByTestId("all-section-fastrr")).not.toBeInTheDocument();
     expect(screen.queryByTestId("all-section-custom")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("all-section-shopify")).not.toBeInTheDocument();
+    expect(screen.getByTestId("all-section-shopify")).toBeInTheDocument();
     expect(screen.queryByTestId("all-section-suppression")).not.toBeInTheDocument();
   });
 
