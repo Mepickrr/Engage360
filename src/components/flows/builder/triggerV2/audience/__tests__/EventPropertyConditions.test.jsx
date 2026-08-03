@@ -103,78 +103,58 @@ describe("EventPropertyConditions (v2)", () => {
   });
 
   it("re-stamps event field when row onChange is triggered", () => {
-    // This test exercises the onChange wrapper at line 131:
+    // Tests that the onChange wrapper at line 131 re-stamps event:
     // onChange={(nc) => setCondition(i, { ...nc, event: triggerEvent })}
-    // which re-stamps the trigger event onto condition updates from AttributeConditionRow.
+    //
+    // The seed condition deliberately omits `event` so the wrapper is the only source.
+    // This prevents the assertion from passing due to event riding along from the seed.
 
     setTriggerEvent("Product Viewed");
     const onChange = jest.fn();
 
-    // Render with one empty condition
-    const { container, rerender } = render(
+    // Seed with a condition that has property and operator but NO event field.
+    // The product's value input will render since operator ">" doesn't hide value.
+    render(
       <EventPropertyConditions
-        block={{ combinator: "AND", conditions: [{ event: "Product Viewed", property: "", operator: "", value: "" }] }}
+        block={{
+          combinator: "AND",
+          conditions: [{ property: "Product Price", operator: ">", value: "" }]
+        }}
         onChange={onChange}
         testIdPrefix="ep"
       />,
     );
 
-    // Add a second condition to have a row we can test
-    fireEvent.click(screen.getByTestId("ep-add-cond"));
-    const blockWithTwoConditions = onChange.mock.calls[0][0];
-
-    // Rerender and clear the mock
     onChange.mockClear();
-    rerender(
-      <EventPropertyConditions
-        block={blockWithTwoConditions}
-        onChange={onChange}
-        testIdPrefix="ep"
-      />,
-    );
 
-    // Get the first row
+    // Find the value input — it's a plain HTML input, not a Radix Select.
+    // For numeric property with ">" operator, it will be a number or text input
+    // with placeholder "Enter value" (see AttributeConditionRow.jsx ValueInput default case)
     const row = screen.getByTestId("ep-row-0");
+    const valueInput = row.querySelector('input[placeholder="Enter value"]');
 
-    // Try to find and interact with any input or select in the row.
-    // This exercises the onChange wrapper when the row calls its onChange callback.
-    const selectTriggers = row.querySelectorAll('[role="combobox"]');
-    const inputs = row.querySelectorAll('input');
+    // Must find the input; if not, the test setup is invalid
+    expect(valueInput).toBeTruthy();
 
-    let interactionAttempted = false;
+    // Change the value input. This calls AttributeConditionRow's onChange with
+    // { ...condition, value: "100" } where condition has no event field
+    fireEvent.change(valueInput, { target: { value: "100" } });
 
-    // Try to interact with a Select if available
-    if (selectTriggers.length > 0) {
-      fireEvent.click(selectTriggers[0]);
-      const options = container.querySelectorAll('[role="option"]');
-      if (options.length > 0) {
-        fireEvent.click(options[0]);
-        interactionAttempted = true;
-      }
-    }
+    // The onChange callback must have been called
+    expect(onChange.mock.calls.length).toBeGreaterThan(0);
 
-    // If no Select interaction worked, try input fields
-    if (!interactionAttempted && inputs.length > 0) {
-      fireEvent.change(inputs[0], { target: { value: "test" } });
-      interactionAttempted = true;
-    }
+    // Get the condition passed to the last onChange call
+    const lastCall = onChange.mock.calls[onChange.mock.calls.length - 1];
+    const updatedBlock = lastCall[0];
+    const updatedCondition = updatedBlock.conditions[0];
 
-    // If any interaction triggered onChange, verify event is preserved
-    if (interactionAttempted && onChange.mock.calls.length > 0) {
-      const lastCall = onChange.mock.calls[onChange.mock.calls.length - 1];
-      const updatedCondition = lastCall[0].conditions[0];
-
-      // The critical assertion: even though AttributeConditionRow's onChange
-      // doesn't include event in its payload, the parent wrapper must re-stamp it
-      expect(updatedCondition.event).toBe("Product Viewed");
-    } else {
-      // If we couldn't interact with the row, at least verify the structure is correct
-      // This ensures the component is rendered and the test setup is valid
-      expect(blockWithTwoConditions.conditions).toHaveLength(2);
-      blockWithTwoConditions.conditions.forEach((cond) => {
-        expect(cond.event).toBe("Product Viewed");
-      });
-    }
+    // CRITICAL ASSERTION: The wrapper MUST have added event, even though neither
+    // the seed nor the row's onChange payload included it. If the wrapper line
+    // setCondition(i, { ...nc, event: triggerEvent }) were removed, this fails.
+    expect(updatedCondition.event).toBe("Product Viewed");
+    expect(updatedCondition.value).toBe("100");
+    expect(updatedCondition.property).toBe("Product Price");
+    expect(updatedCondition.operator).toBe(">");
   });
 
   it("resets conditions to a single flat empty condition when the trigger event changes", () => {
