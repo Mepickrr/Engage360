@@ -1,24 +1,10 @@
 import React, { useEffect, useRef } from "react";
-import { Trash2, Plus } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Plus } from "lucide-react";
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import catalogueData from "@/data/eventCatalogue.json";
 import { getPropertiesForEvent } from "@/components/flows/builder/triggerEventProperties";
 import CombinatorPill from "./CombinatorPill";
-import AttributesSubList from "./AttributesSubList";
-import { TimeRangeRow } from "./UserBehaviorConditions";
-import { FREQUENCY_OPTIONS } from "../triggerHelpers";
-
-const EXEC_QUALIFIERS = [
-  { id: "has_executed",     label: "Has Executed" },
-  { id: "has_not_executed", label: "Has Not Executed" },
-];
+import AttributeConditionRow from "../AttributeConditionRow";
 
 function adaptTEPAttrs(props) {
   if (!props || props === "special") return [];
@@ -46,15 +32,7 @@ function getAttrPool(eventName) {
 }
 
 function defaultCondition(eventName) {
-  return {
-    qualifier: "has_executed",
-    event: eventName,
-    frequency: "at_least",
-    count: 1,
-    time_range: { op: "in_last", n: 30, unit: "days" },
-    attributes: [],
-    attrs_open: false,
-  };
+  return { event: eventName, property: "", operator: "", value: "" };
 }
 
 export default function EventPropertyConditions({
@@ -87,9 +65,7 @@ export default function EventPropertyConditions({
   const setCondition = (i, c) =>
     update({ conditions: conditions.map((x, idx) => (idx === i ? c : x)) });
   const addCondition = () =>
-    update({
-      conditions: [...conditions, defaultCondition(triggerEvent)],
-    });
+    update({ conditions: [...conditions, defaultCondition(triggerEvent)] });
   const removeCondition = (i) =>
     update({ conditions: conditions.filter((_, idx) => idx !== i) });
 
@@ -131,7 +107,7 @@ export default function EventPropertyConditions({
   const propPool = attrPool.filter((a) => !a.is_evaluate);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Locked event badge */}
       <div className="flex items-center gap-2 text-sm text-text-secondary">
         <span>Trigger event:</span>
@@ -140,99 +116,24 @@ export default function EventPropertyConditions({
         </span>
       </div>
 
-      {conditions.map((c, i) => {
-        const freqMeta = FREQUENCY_OPTIONS.find((f) => f.id === c.frequency);
-        return (
-          <React.Fragment key={i}>
-            {i > 0 && (
-              <CombinatorPill
-                value={combinator}
-                onChange={(v) => update({ combinator: v })}
-                testId={`${testIdPrefix}-combinator`}
-              />
-            )}
-            <div
-              className="border border-border rounded-lg p-3 bg-surface space-y-2"
-              data-testid={`${testIdPrefix}-row-${i}`}
-            >
-              <div className="flex flex-wrap items-center gap-1.5">
-                <Select
-                  value={c.qualifier}
-                  onValueChange={(v) => setCondition(i, { ...c, qualifier: v })}
-                >
-                  <SelectTrigger className="h-9 text-sm min-w-[160px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {EXEC_QUALIFIERS.map((q) => (
-                      <SelectItem key={q.id} value={q.id}>
-                        {q.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select
-                  value={c.frequency}
-                  onValueChange={(v) => setCondition(i, { ...c, frequency: v })}
-                >
-                  <SelectTrigger className="h-9 text-sm min-w-[120px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {FREQUENCY_OPTIONS.map((f) => (
-                      <SelectItem key={f.id} value={f.id}>
-                        {f.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                {freqMeta?.needsCount && (
-                  <>
-                    <input
-                      type="number"
-                      min={1}
-                      value={c.count || 1}
-                      onChange={(e) =>
-                        setCondition(i, {
-                          ...c,
-                          count: Number(e.target.value),
-                        })
-                      }
-                      className="w-16 px-2 py-1.5 text-sm rounded-md border border-border bg-surface"
-                    />
-                    <span className="text-xs text-text-muted">times</span>
-                  </>
-                )}
-
-                <div className="ml-auto">
-                  <button
-                    type="button"
-                    onClick={() => removeCondition(i)}
-                    className="p-1.5 text-text-muted hover:text-rose-600 rounded-md hover:bg-rose-50"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              <TimeRangeRow
-                value={c.time_range}
-                onChange={(tr) => setCondition(i, { ...c, time_range: tr })}
-                testIdPrefix={`${testIdPrefix}-tr-${i}`}
-              />
-
-              <AttributesSubList
-                condition={c}
-                onChange={(nc) => setCondition(i, nc)}
-                attributesPool={propPool}
-                testIdPrefix={`${testIdPrefix}-attrs-${i}`}
-              />
-            </div>
-          </React.Fragment>
-        );
-      })}
+      {conditions.map((c, i) => (
+        <React.Fragment key={i}>
+          {i > 0 && (
+            <CombinatorPill
+              value={combinator}
+              onChange={(v) => update({ combinator: v })}
+              testId={`${testIdPrefix}-combinator`}
+            />
+          )}
+          <AttributeConditionRow
+            condition={c}
+            attributesPool={propPool}
+            onChange={(nc) => setCondition(i, { ...nc, event: triggerEvent })}
+            onRemove={() => removeCondition(i)}
+            testId={`${testIdPrefix}-row-${i}`}
+          />
+        </React.Fragment>
+      ))}
 
       <button
         type="button"
