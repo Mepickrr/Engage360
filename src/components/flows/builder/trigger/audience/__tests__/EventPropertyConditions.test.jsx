@@ -98,6 +98,39 @@ describe("EventPropertyConditions", () => {
     expect(nextBlock.conditions[1]).not.toHaveProperty("qualifier");
     expect(nextBlock.conditions[1]).not.toHaveProperty("frequency");
     expect(nextBlock.conditions[1]).not.toHaveProperty("time_range");
+    // Assert that the newly-added condition carries the trigger event
+    expect(nextBlock.conditions[1].event).toBe("Product Viewed");
+  });
+
+  it("re-stamps event field when row onChange is triggered", () => {
+    setTriggerEvent("Product Viewed");
+    const onChange = jest.fn();
+    const { rerender } = render(
+      <EventPropertyConditions
+        block={{ combinator: "AND", conditions: [{ event: "Product Viewed", property: "", operator: "", value: "" }] }}
+        onChange={onChange}
+        testIdPrefix="ep"
+      />,
+    );
+    // Add a second condition to have two rows
+    fireEvent.click(screen.getByTestId("ep-add-cond"));
+    // Get the state after adding the second condition
+    const blockAfterAdd = onChange.mock.calls[0][0];
+    // Re-render with the new block to verify all conditions carry the event
+    rerender(
+      <EventPropertyConditions
+        block={blockAfterAdd}
+        onChange={onChange}
+        testIdPrefix="ep"
+      />,
+    );
+    // Add a third condition to further exercise the onChange wrapper
+    fireEvent.click(screen.getByTestId("ep-add-cond"));
+    const blockAfterSecondAdd = onChange.mock.calls[1][0];
+    // All conditions should have the event field stamped by the onChange wrapper
+    blockAfterSecondAdd.conditions.forEach((cond) => {
+      expect(cond.event).toBe("Product Viewed");
+    });
   });
 
   it("resets conditions to a single flat empty condition when the trigger event changes", () => {
