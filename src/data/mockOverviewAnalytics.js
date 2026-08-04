@@ -178,7 +178,7 @@ const OVERVIEW_ANALYTICS = {
   this_month: {
     revenue: {
       overall: { value: 90000000, deltaPct: 12, deltaAbs: 9642857 },
-      fastrr: { value: 15400000, deltaPct: 6, deltaAbs: 871698, pctOfOverall: 1.7 },
+      fastrr: { value: 15400000, deltaPct: 6, deltaAbs: 871698, pctOfOverall: 17.1 },
     },
     orders: {
       overall: { value: 105200, deltaPct: 11, deltaAbs: 10425 },
@@ -229,7 +229,7 @@ const OVERVIEW_ANALYTICS = {
   last_month: {
     revenue: {
       overall: { value: 80400000, deltaPct: 4, deltaAbs: 3092308 },
-      fastrr: { value: 14530000, deltaPct: 2, deltaAbs: 284902, pctOfOverall: 1.8 },
+      fastrr: { value: 14530000, deltaPct: 2, deltaAbs: 284902, pctOfOverall: 18.1 },
     },
     orders: {
       overall: { value: 94800, deltaPct: 3, deltaAbs: 2761 },
