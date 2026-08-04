@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 
@@ -77,7 +77,8 @@ function App() {
             <Route path="/segments/builder/:id" element={<SegmentBuilderPage />} />
             <Route path="/audience" element={<AudiencePage />} />
             <Route path="/templates" element={<TemplatesPage />} />
-            <Route path="/analytics" element={<AnalyticsPage />} />
+            <Route path="/analytics" element={<Navigate to="/analytics/overview" replace />} />
+            <Route path="/analytics/:tab" element={<AnalyticsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
