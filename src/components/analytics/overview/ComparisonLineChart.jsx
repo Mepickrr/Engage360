@@ -3,9 +3,10 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 
 const TICK = { fontSize: 10 };
 
-export default function ComparisonLineChart({ testId, data, seriesLabels, valueFormatter }) {
+export default function ComparisonLineChart({ testId, title, data, seriesLabels, valueFormatter }) {
   return (
     <div className="bg-surface border border-border rounded-lg p-4" data-testid={testId}>
+      {title && <h3 className="text-[13px] font-semibold text-text-primary mb-3">{title}</h3>}
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: -10 }}>

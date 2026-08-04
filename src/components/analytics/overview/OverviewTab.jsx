@@ -16,72 +16,66 @@ export default function OverviewTab({ timeRange }) {
   const ordersFastrrDelta = formatDelta(data.orders.fastrr.deltaPct, data.orders.fastrr.deltaAbs, formatCompactNumber);
 
   return (
-    <div data-testid="overview-tab" className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <div className="space-y-4">
-        <div>
-          <h2 className="text-[13px] font-semibold text-text-primary mb-2">Revenue</h2>
-          <div className="grid grid-cols-2 gap-3">
-            <MetricCard
-              testId="metric-revenue-overall"
-              label="Overall Revenue"
-              value={formatCompactCurrency(data.revenue.overall.value)}
-              delta={revenueOverallDelta}
-            />
-            <MetricCard
-              testId="metric-revenue-fastrr"
-              label="Fastrr Revenue"
-              value={formatCompactCurrency(data.revenue.fastrr.value)}
-              delta={revenueFastrrDelta}
-              subBadge={`${data.revenue.fastrr.pctOfOverall.toFixed(1)} %`}
-            />
+    <div data-testid="overview-tab" className="space-y-5">
+      {/* Row 1: Revenue + Orders metrics, paired with ROI */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+        <div className="space-y-4">
+          <div>
+            <h2 className="text-[13px] font-semibold text-text-primary mb-2">Revenue</h2>
+            <div className="grid grid-cols-2 gap-3">
+              <MetricCard
+                testId="metric-revenue-overall"
+                label="Overall Revenue"
+                value={formatCompactCurrency(data.revenue.overall.value)}
+                delta={revenueOverallDelta}
+              />
+              <MetricCard
+                testId="metric-revenue-fastrr"
+                label="Fastrr Revenue"
+                value={formatCompactCurrency(data.revenue.fastrr.value)}
+                delta={revenueFastrrDelta}
+                subBadge={`${data.revenue.fastrr.pctOfOverall.toFixed(1)} %`}
+              />
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-[13px] font-semibold text-text-primary mb-2">Orders</h2>
+            <div className="grid grid-cols-2 gap-3">
+              <MetricCard
+                testId="metric-orders-overall"
+                label="Overall Orders"
+                value={formatCompactNumber(data.orders.overall.value)}
+                delta={ordersOverallDelta}
+              />
+              <MetricCard
+                testId="metric-orders-fastrr"
+                label="Fastrr Orders"
+                value={formatCompactNumber(data.orders.fastrr.value)}
+                delta={ordersFastrrDelta}
+                subBadge={`${data.orders.fastrr.pctOfOverall.toFixed(1)} %`}
+              />
+            </div>
           </div>
         </div>
 
-        <div>
-          <h2 className="text-[13px] font-semibold text-text-primary mb-2">Orders</h2>
-          <div className="grid grid-cols-2 gap-3">
-            <MetricCard
-              testId="metric-orders-overall"
-              label="Overall Orders"
-              value={formatCompactNumber(data.orders.overall.value)}
-              delta={ordersOverallDelta}
-            />
-            <MetricCard
-              testId="metric-orders-fastrr"
-              label="Fastrr Orders"
-              value={formatCompactNumber(data.orders.fastrr.value)}
-              delta={ordersFastrrDelta}
-              subBadge={`${data.orders.fastrr.pctOfOverall.toFixed(1)} %`}
-            />
-          </div>
-        </div>
-
-        <SplitBarChart
-          testId="split-revenue"
-          title="Fastrr Revenue split by"
-          byService={data.revenueSplit.byService}
-          byChannel={data.revenueSplit.byChannel}
-          valueFormatter={formatCompactCurrency}
-        />
-
-        <ComparisonLineChart
-          testId="trend-revenue"
-          data={data.revenueTrend}
-          seriesLabels={{ overall: "Overall Revenue", fastrr: "Fastrr Revenue" }}
-          valueFormatter={formatCompactCurrency}
-        />
-
-        <h2 className="text-[13px] font-semibold text-text-primary">Customers Acquired</h2>
-        <CustomersAcquiredSection testId="customers-acquired-section" data={data.customersAcquired} trend={data.customersTrend} />
-      </div>
-
-      <div className="space-y-4">
         <RoiCard
           testId="roi-card"
           value={data.roi.value}
           totalRevenue={data.roi.totalRevenue}
           totalCost={data.roi.totalCost}
           byChannel={data.roi.byChannel}
+        />
+      </div>
+
+      {/* Row 2: Revenue split vs Orders split */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+        <SplitBarChart
+          testId="split-revenue"
+          title="Fastrr Revenue split by"
+          byService={data.revenueSplit.byService}
+          byChannel={data.revenueSplit.byChannel}
+          valueFormatter={formatCompactCurrency}
         />
 
         <SplitBarChart
@@ -91,13 +85,31 @@ export default function OverviewTab({ timeRange }) {
           byChannel={data.ordersSplit.byChannel}
           valueFormatter={formatCompactNumber}
         />
+      </div>
+
+      {/* Row 3: Revenue trend vs Orders trend */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+        <ComparisonLineChart
+          testId="trend-revenue"
+          title="Overall Revenue vs Fastrr Revenue"
+          data={data.revenueTrend}
+          seriesLabels={{ overall: "Overall Revenue", fastrr: "Fastrr Revenue" }}
+          valueFormatter={formatCompactCurrency}
+        />
 
         <ComparisonLineChart
           testId="trend-orders"
+          title="Overall Orders vs Fastrr Orders"
           data={data.ordersTrend}
           seriesLabels={{ overall: "Overall Orders", fastrr: "Fastrr Orders" }}
           valueFormatter={formatCompactNumber}
         />
+      </div>
+
+      {/* Row 4: Customers Acquired, full width */}
+      <div>
+        <h2 className="text-[13px] font-semibold text-text-primary mb-2">Customers Acquired</h2>
+        <CustomersAcquiredSection testId="customers-acquired-section" data={data.customersAcquired} trend={data.customersTrend} />
       </div>
     </div>
   );
