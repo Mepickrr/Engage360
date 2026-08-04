@@ -12,12 +12,12 @@ const SERVICE_LABELS = ["Broadcast", "Journey"];
 const OVERVIEW_ANALYTICS = {
   last_7_days: {
     revenue: {
-      overall: { value: 210000000, deltaPct: 8, deltaAbs: 1535000 },
-      fastrr: { value: 3610000, deltaPct: 3, deltaAbs: 89150, pctOfOverall: 17.0 },
+      overall: { value: 210000000, deltaPct: 8, deltaAbs: 15555556 },
+      fastrr: { value: 3610000, deltaPct: 3, deltaAbs: 105146, pctOfOverall: 17.0 },
     },
     orders: {
-      overall: { value: 24550, deltaPct: 9, deltaAbs: 2050 },
-      fastrr: { value: 3750, deltaPct: 5, deltaAbs: 162, pctOfOverall: 15.2 },
+      overall: { value: 24550, deltaPct: 9, deltaAbs: 2026 },
+      fastrr: { value: 3750, deltaPct: 5, deltaAbs: 179, pctOfOverall: 15.2 },
     },
     roi: {
       value: 10.85,
@@ -65,13 +65,13 @@ const OVERVIEW_ANALYTICS = {
     },
     revenueTrend: trend(
       DAY_LABELS_7,
-      [0, 3000000, 3050000, 3080000, 3200000, 4000000, 3800000, 1500000],
-      [10000, 155000, 130000, 145000, 190000, 380000, 250000, 195000]
+      [30000000, 30000000, 30500000, 30800000, 32000000, 40000000, 38000000, 15000000],
+      [500000, 500000, 500000, 500000, 500000, 680000, 650000, 250000]
     ),
     ordersTrend: trend(
       DAY_LABELS_7,
-      [0, 3480, 3520, 3550, 3620, 4520, 3480, 1520],
-      [120, 480, 470, 380, 490, 850, 520, 460]
+      [3000, 3400, 3600, 3200, 3100, 4500, 3400, 1500],
+      [450, 510, 540, 480, 465, 675, 510, 150]
     ),
     customersAcquired: {
       overall: { value: 32600, deltaPct: 3, deltaAbs: 1050 },
@@ -91,12 +91,12 @@ const OVERVIEW_ANALYTICS = {
 
   today: {
     revenue: {
-      overall: { value: 3200000, deltaPct: 6, deltaAbs: 181000 },
+      overall: { value: 3200000, deltaPct: 6, deltaAbs: 181132 },
       fastrr: { value: 520000, deltaPct: 4, deltaAbs: 20000, pctOfOverall: 16.3 },
     },
     orders: {
-      overall: { value: 3500, deltaPct: 7, deltaAbs: 230 },
-      fastrr: { value: 540, deltaPct: 4, deltaAbs: 20, pctOfOverall: 15.4 },
+      overall: { value: 3500, deltaPct: 7, deltaAbs: 228 },
+      fastrr: { value: 540, deltaPct: 4, deltaAbs: 21, pctOfOverall: 15.4 },
     },
     roi: {
       value: 9.6,
@@ -134,8 +134,8 @@ const OVERVIEW_ANALYTICS = {
 
   yesterday: {
     revenue: {
-      overall: { value: 2950000, deltaPct: -3, deltaAbs: -91000 },
-      fastrr: { value: 480000, deltaPct: -2, deltaAbs: -9800, pctOfOverall: 16.3 },
+      overall: { value: 2950000, deltaPct: -3, deltaAbs: -91237 },
+      fastrr: { value: 480000, deltaPct: -2, deltaAbs: -9796, pctOfOverall: 16.3 },
     },
     orders: {
       overall: { value: 3250, deltaPct: -4, deltaAbs: -135 },
@@ -177,12 +177,12 @@ const OVERVIEW_ANALYTICS = {
 
   this_month: {
     revenue: {
-      overall: { value: 900000000, deltaPct: 12, deltaAbs: 96000000 },
-      fastrr: { value: 15400000, deltaPct: 6, deltaAbs: 870000, pctOfOverall: 17.1 },
+      overall: { value: 900000000, deltaPct: 12, deltaAbs: 96428571 },
+      fastrr: { value: 15400000, deltaPct: 6, deltaAbs: 871698, pctOfOverall: 1.7 },
     },
     orders: {
-      overall: { value: 105200, deltaPct: 11, deltaAbs: 10400 },
-      fastrr: { value: 16100, deltaPct: 7, deltaAbs: 1050, pctOfOverall: 15.3 },
+      overall: { value: 105200, deltaPct: 11, deltaAbs: 10425 },
+      fastrr: { value: 16100, deltaPct: 7, deltaAbs: 1053, pctOfOverall: 15.3 },
     },
     roi: {
       value: 11.4,
@@ -228,11 +228,11 @@ const OVERVIEW_ANALYTICS = {
 
   last_month: {
     revenue: {
-      overall: { value: 804000000, deltaPct: 4, deltaAbs: 31000000 },
-      fastrr: { value: 14530000, deltaPct: 2, deltaAbs: 285000, pctOfOverall: 18.1 },
+      overall: { value: 804000000, deltaPct: 4, deltaAbs: 30923077 },
+      fastrr: { value: 14530000, deltaPct: 2, deltaAbs: 284902, pctOfOverall: 1.8 },
     },
     orders: {
-      overall: { value: 94800, deltaPct: 3, deltaAbs: 2760 },
+      overall: { value: 94800, deltaPct: 3, deltaAbs: 2761 },
       fastrr: { value: 15050, deltaPct: 2, deltaAbs: 295, pctOfOverall: 15.9 },
     },
     roi: {
