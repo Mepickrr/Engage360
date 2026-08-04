@@ -131,4 +131,9 @@ describe("AnalyticsPage", () => {
     expect(container.textContent).not.toMatch(/\bBIK\b/i);
     expect(container.textContent).not.toMatch(/Avimee/i);
   });
+
+  test("an unknown tab value falls back to rendering Overview", () => {
+    renderAtTab("bogus");
+    expect(screen.getByTestId("overview-tab")).toBeInTheDocument();
+  });
 });

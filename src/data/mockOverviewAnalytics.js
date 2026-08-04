@@ -35,7 +35,7 @@ const OVERVIEW_ANALYTICS = {
     },
     revenueSplit: {
       byService: [
-        { label: "Broadcast", value: 2060000 },
+        { label: "Broadcast", value: 2065000 },
         { label: "Journey", value: 1545000 },
       ],
       byChannel: [
@@ -50,7 +50,7 @@ const OVERVIEW_ANALYTICS = {
     },
     ordersSplit: {
       byService: [
-        { label: "Broadcast", value: 2050 },
+        { label: "Broadcast", value: 2100 },
         { label: "Journey", value: 1650 },
       ],
       byChannel: [
@@ -65,8 +65,8 @@ const OVERVIEW_ANALYTICS = {
     },
     revenueTrend: trend(
       DAY_LABELS_7,
-      [3000000, 3000000, 3050000, 3080000, 3200000, 4000000, 3800000, 1500000],
-      [500000, 500000, 500000, 500000, 500000, 680000, 650000, 250000]
+      [2560000, 2560000, 2600000, 2630000, 2730000, 3410000, 3240000, 1270000],
+      [442000, 442000, 442000, 442000, 442000, 602000, 575000, 223000]
     ),
     ordersTrend: trend(
       DAY_LABELS_7,
@@ -152,7 +152,7 @@ const OVERVIEW_ANALYTICS = {
         { label: "Broadcast", value: 280000 },
         { label: "Journey", value: 200000 },
       ],
-      byChannel: CHANNEL_LABELS.map((label, i) => ({ label, value: [440000, 17000, 8000, 5500, 3500, 1800, 900][i] })),
+      byChannel: CHANNEL_LABELS.map((label, i) => ({ label, value: [443300, 17000, 8000, 5500, 3500, 1800, 900][i] })),
     },
     ordersSplit: {
       byService: [
@@ -162,7 +162,7 @@ const OVERVIEW_ANALYTICS = {
       byChannel: CHANNEL_LABELS.map((label, i) => ({ label, value: [450, 24, 11, 6, 3, 1, 0][i] })),
     },
     revenueTrend: trend(["06:00", "09:00", "12:00", "15:00", "18:00", "21:00"], [190000, 560000, 850000, 660000, 470000, 280000], [10000, 82000, 130000, 100000, 92000, 62000]),
-    ordersTrend: trend(["06:00", "09:00", "12:00", "15:00", "18:00", "21:00"], [200, 600, 920, 710, 500, 320], [28, 100, 150, 112, 92, 38]),
+    ordersTrend: trend(["06:00", "09:00", "12:00", "15:00", "18:00", "21:00"], [200, 600, 920, 710, 500, 320], [28, 100, 125, 112, 92, 38]),
     customersAcquired: {
       overall: { value: 4300, deltaPct: -1, deltaAbs: -40 },
       fastrr: { value: 4300, deltaPct: -1, deltaAbs: -40 },
@@ -246,14 +246,14 @@ const OVERVIEW_ANALYTICS = {
         { label: "Broadcast", value: 8300000 },
         { label: "Journey", value: 6230000 },
       ],
-      byChannel: CHANNEL_LABELS.map((label, i) => ({ label, value: [13500000, 470000, 240000, 160000, 100000, 40000, 12000][i] })),
+      byChannel: CHANNEL_LABELS.map((label, i) => ({ label, value: [13508000, 470000, 240000, 160000, 100000, 40000, 12000][i] })),
     },
     ordersSplit: {
       byService: [
         { label: "Broadcast", value: 8250 },
         { label: "Journey", value: 6800 },
       ],
-      byChannel: CHANNEL_LABELS.map((label, i) => ({ label, value: [13800, 720, 350, 190, 80, 22, 13][i] })),
+      byChannel: CHANNEL_LABELS.map((label, i) => ({ label, value: [13675, 720, 350, 190, 80, 22, 13][i] })),
     },
     revenueTrend: trend(
       ["Wk 1", "Wk 2", "Wk 3", "Wk 4"],
