@@ -31,4 +31,18 @@ describe("MetricCard", () => {
     );
     expect(screen.queryByTestId("metric-revenue-overall-badge")).not.toBeInTheDocument();
   });
+
+  test("renders negative-tone delta with rose styling", () => {
+    render(
+      <MetricCard
+        testId="metric-orders-overall"
+        label="Overall Orders"
+        value="1.2K"
+        delta={{ text: "↓ 5% (-60)", tone: "negative" }}
+      />
+    );
+    const card = screen.getByTestId("metric-orders-overall");
+    expect(card).toHaveTextContent("↓ 5% (-60)");
+    expect(card).toHaveTextContent("vs last period");
+  });
 });
