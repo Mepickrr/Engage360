@@ -2,7 +2,7 @@ import { formatCompactCurrency, formatCompactNumber, formatDelta } from "../anal
 
 describe("formatCompactCurrency", () => {
   test("formats crores", () => {
-    expect(formatCompactCurrency(210000000)).toBe("₹2.1C");
+    expect(formatCompactCurrency(21000000)).toBe("₹2.1C");
   });
   test("formats lakhs", () => {
     expect(formatCompactCurrency(3610000)).toBe("₹36.1L");

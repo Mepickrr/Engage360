@@ -3,7 +3,7 @@ import { getOverviewAnalytics } from "../mockOverviewAnalytics";
 describe("getOverviewAnalytics", () => {
   test("returns the last_7_days entry with wireframe-matching top-line numbers", () => {
     const data = getOverviewAnalytics("last_7_days");
-    expect(data.revenue.overall.value).toBe(210000000);
+    expect(data.revenue.overall.value).toBe(21000000);
     expect(data.revenue.fastrr.value).toBe(3610000);
     expect(data.revenue.fastrr.pctOfOverall).toBeCloseTo(17.0, 1);
     expect(data.orders.overall.value).toBe(24550);

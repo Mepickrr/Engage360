@@ -1,7 +1,7 @@
 export function formatCompactCurrency(value) {
   const abs = Math.abs(value);
   const sign = value < 0 ? "-" : "";
-  if (abs >= 1e8) return `${sign}₹${(abs / 1e8).toFixed(1)}C`;
+  if (abs >= 1e7) return `${sign}₹${(abs / 1e7).toFixed(1)}C`;
   if (abs >= 1e5) return `${sign}₹${(abs / 1e5).toFixed(2).replace(/\.?0+$/, '')}L`;
   if (abs >= 1e3) return `${sign}₹${(abs / 1e3).toFixed(1)}K`;
   return `${sign}₹${abs.toLocaleString("en-IN")}`;
