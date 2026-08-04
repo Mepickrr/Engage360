@@ -80,6 +80,15 @@ A helper `getOverviewAnalytics(timeRange)` returns the entry for a preset, falli
 
 All charts use Recharts (already a project dependency, consistent with `FlowAnalytics.jsx` / current `Analytics.jsx`).
 
+## Visual style
+
+The wireframe dictates **structure** (which sections exist, their grid arrangement, card contents, chart types) — not visual styling. Implementation follows the app's existing design system, not the wireframe's raw mockup look:
+
+- Card surfaces: `bg-surface border border-border rounded-lg` (as used throughout `Analytics.jsx`, `FlowAnalytics.jsx`, `PreviewHeader.jsx`), not the wireframe's flat grey panels.
+- Typography scale/colors: `text-text-primary` / `text-text-muted` / `text-[11px]` uppercase labels, matching `KpiTile`/`PreviewHeader` conventions.
+- Chart colors: use the app's existing primary/purple (`#6C3AE8`, already used in `Analytics.jsx`'s Recharts config) for the "Fastrr" series, with a neutral grey/slate for "Overall" — same two-tone comparison look as the wireframe, using our palette.
+- Layout: 2-column grid on wide viewports (`lg:grid-cols-2`), stacking to 1 column on narrow — consistent with existing `grid grid-cols-1 lg:grid-cols-5`-style patterns already in `Analytics.jsx`.
+
 ## Formatting
 
 - Currency values formatted Indian-style with suffixes: `₹2.1C`, `₹36.1L`, `₹95,518` etc.
