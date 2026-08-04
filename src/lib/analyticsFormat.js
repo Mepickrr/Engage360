@@ -11,8 +11,7 @@ export function formatCompactNumber(value) {
   const abs = Math.abs(value);
   const sign = value < 0 ? "-" : "";
   if (abs >= 1e3) {
-    const scaled = abs / 1e3;
-    const rounded = Math.round(scaled * 100) / 100;
+    const rounded = (Math.round((abs * 100) / 1e3) / 100).toFixed(2).replace(/\.?0+$/, '');
     return `${sign}${rounded}K`;
   }
   return `${sign}${abs}`;

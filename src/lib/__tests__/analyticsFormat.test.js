@@ -22,6 +22,9 @@ describe("formatCompactNumber", () => {
   test("formats sub-thousand values as-is", () => {
     expect(formatCompactNumber(155)).toBe("155");
   });
+  test("does not lose precision on floating-point-unfriendly values", () => {
+    expect(formatCompactNumber(1005)).toBe("1.01K");
+  });
 });
 
 describe("formatDelta", () => {
