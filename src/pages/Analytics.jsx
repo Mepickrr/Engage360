@@ -4,12 +4,14 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TimeRangeFilter from "@/components/analytics/TimeRangeFilter";
 import ComingSoonPanel from "@/components/analytics/ComingSoonPanel";
 import OverviewTab from "@/components/analytics/overview/OverviewTab";
+import CommunicationLogsTab from "@/components/analytics/logs/CommunicationLogsTab";
 
 const TABS = [
   { value: "overview", label: "Overview" },
   { value: "campaign", label: "Campaign" },
   { value: "journey", label: "Journey" },
   { value: "reports", label: "Reports" },
+  { value: "logs", label: "Communication Logs" },
 ];
 
 export default function AnalyticsPage() {
@@ -40,6 +42,7 @@ export default function AnalyticsPage() {
       {activeTab === "campaign" && <ComingSoonPanel tabName="Campaign" testId="analytics-tab-campaign" />}
       {activeTab === "journey" && <ComingSoonPanel tabName="Journey" testId="analytics-tab-journey" />}
       {activeTab === "reports" && <ComingSoonPanel tabName="Reports" testId="analytics-tab-reports" />}
+      {activeTab === "logs" && <CommunicationLogsTab />}
     </div>
   );
 }
