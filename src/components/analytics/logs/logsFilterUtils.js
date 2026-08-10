@@ -42,7 +42,15 @@ const PRESET_RANGES = {
 export function resolveDateRange(preset, customRange, anchor) {
   if (preset === "custom") {
     if (!customRange?.from) return null;
-    return { from: startOfDayUTC(customRange.from), to: endOfDayUTC(customRange.to || customRange.from) };
+    // customRange.from/to come from react-day-picker as local-timezone Date
+    // objects. Re-derive the calendar day from their LOCAL components (not
+    // the UTC accessors) before building the UTC day boundary, so the
+    // selected day isn't shifted by the viewer's UTC offset.
+    const localFrom = customRange.from;
+    const localTo = customRange.to || customRange.from;
+    const fromUTC = new Date(Date.UTC(localFrom.getFullYear(), localFrom.getMonth(), localFrom.getDate()));
+    const toUTC = new Date(Date.UTC(localTo.getFullYear(), localTo.getMonth(), localTo.getDate()));
+    return { from: startOfDayUTC(fromUTC), to: endOfDayUTC(toUTC) };
   }
   const resolver = PRESET_RANGES[preset];
   return resolver ? resolver(anchor) : null;
@@ -102,5 +110,6 @@ export function formatLogTimestamp(isoString) {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "UTC",
   });
 }

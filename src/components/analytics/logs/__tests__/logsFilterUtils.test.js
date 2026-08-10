@@ -41,6 +41,19 @@ describe("resolveDateRange", () => {
   test("custom with no from returns null", () => {
     expect(resolveDateRange("custom", null, ANCHOR)).toBeNull();
   });
+
+  test("custom anchors to the LOCAL calendar day of from/to, regardless of the runner's timezone", () => {
+    // new Date(year, month, day) is a local-time constructor: whatever timezone
+    // the test runs in, reading its year/month/day back gives the same numbers
+    // used to build it. So the expected UTC boundary below is a fixed instant
+    // that does not depend on the runner's timezone — only a fix that re-derives
+    // the day from LOCAL components (not UTC accessors) can match it.
+    const from = new Date(2026, 6, 1); // local midnight, July 1st
+    const to = new Date(2026, 6, 3); // local midnight, July 3rd
+    const range = resolveDateRange("custom", { from, to }, ANCHOR);
+    expect(range.from.getTime()).toBe(Date.UTC(2026, 6, 1, 0, 0, 0, 0));
+    expect(range.to.getTime()).toBe(Date.UTC(2026, 6, 3, 23, 59, 59, 999));
+  });
 });
 
 describe("filterLogs", () => {
@@ -95,5 +108,11 @@ describe("formatLogTimestamp", () => {
 
   test("formats an ISO string into a readable date/time", () => {
     expect(formatLogTimestamp("2026-08-10T08:00:00Z")).toMatch(/2026/);
+  });
+
+  test("renders in UTC regardless of the runner's local timezone", () => {
+    // 23:30 UTC on Aug 10th would roll over to Aug 11th in any UTC+ timezone
+    // if the function used local time instead of an explicit UTC timeZone.
+    expect(formatLogTimestamp("2026-08-10T23:30:00Z")).toMatch(/^10 Aug/);
   });
 });
