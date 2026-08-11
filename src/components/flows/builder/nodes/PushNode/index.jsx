@@ -144,8 +144,8 @@ export default function PushNode({ id, data, selected }) {
       >
       <Handle
         type="target"
-        position={Position.Top}
-        style={{ background: AMBER, width: 10, height: 10, top: -5 }}
+        position={Position.Left}
+        style={{ background: AMBER, width: 10, height: 10, left: -5 }}
       />
 
       {isEmpty ? (

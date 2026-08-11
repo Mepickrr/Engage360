@@ -61,7 +61,7 @@ export default function EventActionRow({
         onValueChange={(v) => onChange({ ...value, qualifier: v })}
       >
         <SelectTrigger
-          className="h-9 text-sm min-w-[150px]"
+          className="h-9 w-[168px] shrink-0 text-sm"
           data-testid={`${testId}-qualifier`}
         >
           <SelectValue />
@@ -80,6 +80,7 @@ export default function EventActionRow({
         groups={groups}
         placeholder="Select event"
         testId={`${testId}-event`}
+        buttonClassName="flex-1 min-w-0"
       />
       {onRemove && (
         <button

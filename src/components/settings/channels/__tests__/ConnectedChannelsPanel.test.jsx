@@ -8,9 +8,6 @@ describe("ConnectedChannelsPanel — list view", () => {
     expect(screen.getByText("Connected channels")).toBeInTheDocument();
     expect(screen.getByTestId("connect-channel-btn")).toBeInTheDocument();
 
-    const shopify = screen.getByTestId("channel-group-shopify");
-    expect(within(shopify).getByText("Herbal Roots")).toBeInTheDocument();
-
     const whatsapp = screen.getByTestId("channel-group-whatsapp");
     expect(within(whatsapp).getAllByText("+91 74360 36062").length).toBeGreaterThan(0);
     expect(within(whatsapp).getByText("Default for Campaigns")).toBeInTheDocument();
@@ -31,15 +28,6 @@ describe("ConnectedChannelsPanel — list view", () => {
 });
 
 describe("ConnectedChannelsPanel — navigation to detail views", () => {
-  it("opens ShopifyDetail on click and returns to the list on back", () => {
-    render(<ConnectedChannelsPanel />);
-    const shopify = screen.getByTestId("channel-group-shopify");
-    fireEvent.click(within(shopify).getByText("Herbal Roots").closest('[role="button"]'));
-    expect(screen.getByTestId("shopify-detail")).toBeInTheDocument();
-    fireEvent.click(screen.getByTestId("shopify-detail-back"));
-    expect(screen.getByTestId("channel-group-shopify")).toBeInTheDocument();
-  });
-
   it("opens WhatsAppNumberDetail for the clicked number", () => {
     render(<ConnectedChannelsPanel />);
     fireEvent.click(screen.getAllByText("+91 74360 36065")[0].closest('[role="button"]'));

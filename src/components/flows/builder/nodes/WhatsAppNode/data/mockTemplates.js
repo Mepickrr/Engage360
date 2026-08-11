@@ -144,7 +144,8 @@ export const DELIVERY_OUTPUT_OPTIONS = [
   { id: "delivered",       label: "Delivered",         isDefault: false },
   { id: "read",            label: "Read",              isDefault: false },
   { id: "delivery_failed", label: "Delivery Failed",   isDefault: false },
-  { id: "not_read",        label: "Not Read",          isDefault: false },
+  { id: "not_read",        label: "Not Read",          isDefault: false, hasTimeConfig: true },
+  { id: "not_clicked",     label: "Not Clicked",       isDefault: false, hasTimeConfig: true },
   { id: "no_response",     label: "No response after", isDefault: false, hasTimeConfig: true },
   { id: "not_ordered",     label: "Not Ordered",       isDefault: false },
 ];

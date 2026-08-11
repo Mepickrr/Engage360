@@ -115,8 +115,8 @@ export default function SMSNode({ id, data, selected }) {
       >
       <Handle
         type="target"
-        position={Position.Top}
-        style={{ background: SMS_PURPLE, width: 10, height: 10, top: -5 }}
+        position={Position.Left}
+        style={{ background: SMS_PURPLE, width: 10, height: 10, left: -5 }}
       />
 
       {isEmpty ? (

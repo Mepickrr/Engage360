@@ -102,8 +102,8 @@ export default function EmailNode({ id, data, selected }) {
       >
       <Handle
         type="target"
-        position={Position.Top}
-        style={{ background: EMAIL_BLUE, width: 10, height: 10, top: -5 }}
+        position={Position.Left}
+        style={{ background: EMAIL_BLUE, width: 10, height: 10, left: -5 }}
       />
 
       {isEmpty ? (

@@ -94,8 +94,8 @@ export default function StartFlowNode({ id, data, selected }) {
       {/* Input handle only — terminal node, no output */}
       <Handle
         type="target"
-        position={Position.Top}
-        style={{ background: ROSE, width: 10, height: 10, top: -5 }}
+        position={Position.Left}
+        style={{ background: ROSE, width: 10, height: 10, left: -5 }}
       />
 
       {isEmpty ? (

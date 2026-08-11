@@ -86,6 +86,11 @@ export function UTMFields({ utm = {}, onChange, accentColor, defaults = {} }) {
   );
 }
 
+// Hides the Smart/Manual mode selector in RetryFields below — sellers only
+// get Smart Retry for now. Left as a flag (not removed) in case manual retry
+// configuration comes back later.
+const SHOW_RETRY_MODE_SELECTOR = false;
+
 // ── RetryFields — enable toggle + Smart/Manual selector + (when Manual) retry count & interval config ──
 export function RetryFields({ smartRetry = {}, onChange, accentColor }) {
   const mode = smartRetry.mode ?? "smart";
@@ -101,16 +106,18 @@ export function RetryFields({ smartRetry = {}, onChange, accentColor }) {
 
       {smartRetry.enabled && (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <div style={{ display: "flex", gap: 8 }}>
-            {[["smart", "Smart Retry (Recommended)"], ["manual", "Manual Retry"]].map(([m, label]) => (
-              <button key={m} type="button" onClick={() => onChange({ ...smartRetry, mode: m })} style={{
-                flex: 1, padding: "10px 8px", borderRadius: 8, cursor: "pointer", fontSize: 11, fontWeight: 500,
-                border: `2px solid ${mode === m ? accentColor : BORDER}`,
-                background: mode === m ? `${accentColor}14` : "#fff",
-                color: mode === m ? accentColor : "#64748B",
-              }}>{label}</button>
-            ))}
-          </div>
+          {SHOW_RETRY_MODE_SELECTOR && (
+            <div style={{ display: "flex", gap: 8 }}>
+              {[["smart", "Smart Retry (Recommended)"], ["manual", "Manual Retry"]].map(([m, label]) => (
+                <button key={m} type="button" onClick={() => onChange({ ...smartRetry, mode: m })} style={{
+                  flex: 1, padding: "10px 8px", borderRadius: 8, cursor: "pointer", fontSize: 11, fontWeight: 500,
+                  border: `2px solid ${mode === m ? accentColor : BORDER}`,
+                  background: mode === m ? `${accentColor}14` : "#fff",
+                  color: mode === m ? accentColor : "#64748B",
+                }}>{label}</button>
+              ))}
+            </div>
+          )}
 
           {mode === "manual" && (
             <div style={{ display: "flex", gap: 8 }}>

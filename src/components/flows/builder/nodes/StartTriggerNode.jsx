@@ -308,7 +308,7 @@ export default function StartTriggerNode({ data, selected }) {
             <div className="text-[10px] text-text-muted mt-0.5">Click to configure</div>
           </div>
         </div>
-        <Handle type="source" position={Position.Bottom} style={{ background: PRIMARY, width: 8, height: 8 }} />
+        <Handle type="source" position={Position.Right} style={{ background: PRIMARY, width: 8, height: 8 }} />
       </div>
     );
   }
@@ -436,7 +436,7 @@ export default function StartTriggerNode({ data, selected }) {
 
       <Handle
         type="source"
-        position={Position.Bottom}
+        position={Position.Right}
         style={{ background: PRIMARY, width: 8, height: 8 }}
       />
       <NodeAnalyticsFooter type="start-trigger" analyticsData={analyticsData} borderRadius="0 0 12px 12px" />

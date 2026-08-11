@@ -16,7 +16,7 @@ export default function ExitNode({ data, type, selected }) {
     >
       <Handle
         type="target"
-        position={Position.Top}
+        position={Position.Left}
         style={{ background: color, width: 8, height: 8 }}
       />
       <div className="flex items-center gap-2 px-3 py-2.5">

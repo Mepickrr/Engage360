@@ -334,6 +334,9 @@ export default function FlowBuilderV2() {
     // canvas node card. V1 never wraps with FlowVariantContext so it keeps
     // showing this line untouched.
     hideEvaluatePreview: true,
+    // Hide the Delay node's "Event" tab (Phase 2, not ready for V2 yet).
+    // V1 never wraps with FlowVariantContext so it keeps showing all 3 tabs.
+    hideDelayEventTab: true,
   };
 
   return (

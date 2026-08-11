@@ -71,8 +71,8 @@ export default function AiCallingNode({ id, data, selected }) {
       {/* Input handle */}
       <Handle
         type="target"
-        position={Position.Top}
-        style={{ background: INDIGO, width: 10, height: 10, top: -5 }}
+        position={Position.Left}
+        style={{ background: INDIGO, width: 10, height: 10, left: -5 }}
       />
 
       {isEmpty ? (

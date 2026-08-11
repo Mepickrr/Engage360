@@ -64,7 +64,7 @@ export default function AiChatbotNode({ id, data, selected }) {
         width: 280, position: "relative", overflow: "visible",
       }}
     >
-      <Handle type="target" position={Position.Top} style={{ background: CHATBOT_TEAL, width: 10, height: 10, top: -5 }} />
+      <Handle type="target" position={Position.Left} style={{ background: CHATBOT_TEAL, width: 10, height: 10, left: -5 }} />
 
       {isEmpty ? (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px 16px", gap: 8 }}>

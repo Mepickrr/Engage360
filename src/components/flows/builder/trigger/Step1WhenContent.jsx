@@ -343,6 +343,14 @@ function ExitTriggerSection({ exitTrigger, setExitTrigger }) {
                 : [];
               return (
                 <div key={i}>
+                  {i > 0 && (
+                    <div className="flex items-center gap-2 my-2" data-testid={`exit-row-combinator-${i}`}>
+                      <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded tracking-wide bg-sky-100 text-sky-700">
+                        OR
+                      </span>
+                      <span className="flex-1 h-px bg-border" />
+                    </div>
+                  )}
                   <EventActionRow
                     value={row}
                     onChange={(v) =>
@@ -361,7 +369,7 @@ function ExitTriggerSection({ exitTrigger, setExitTrigger }) {
                     testId={`exit-row-${i}`}
                   />
                   {row.event && (
-                    <div className="mt-2 ml-2 pl-3 border-l border-border">
+                    <div className="mt-2">
                       <div className="text-[11px] uppercase tracking-wide text-text-muted font-semibold mb-2">
                         With attribute
                       </div>
@@ -443,7 +451,7 @@ function ExitTriggerSection({ exitTrigger, setExitTrigger }) {
             data-testid="exit-add-row"
           >
             <Plus className="w-3.5 h-3.5" />
-            Add condition
+            Add exit event
           </button>
         </div>
       )}

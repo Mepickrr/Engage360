@@ -4,6 +4,7 @@ import TeamManagementPanel from "@/components/settings/team/TeamManagementPanel"
 import ConnectedChannelsPanel from "@/components/settings/channels/ConnectedChannelsPanel";
 import RevenueAttributionTab from "@/components/settings/RevenueAttributionTab";
 import DeliveryControlsPanel from "@/components/settings/deliveryControls/DeliveryControlsPanel";
+import IntegrationsPanel from "@/components/settings/integrations/IntegrationsPanel";
 import {
   User,
   Plug,
@@ -13,11 +14,13 @@ import {
   KeyRound,
   IndianRupee,
   SlidersHorizontal,
+  Puzzle,
 } from "lucide-react";
 
 const SUB_NAV = [
   { id: "account", label: "Account", Icon: User },
   { id: "channels", label: "Connected channels", Icon: Plug },
+  { id: "integrations", label: "Integrations", Icon: Puzzle },
   { id: "billing", label: "Billing", Icon: CreditCard },
   { id: "team", label: "Team", Icon: UsersRound },
   { id: "revenueAttribution", label: "Revenue Attribution", Icon: IndianRupee },
@@ -213,6 +216,7 @@ function ApiPanel() {
 const PANELS = {
   account: AccountPanel,
   channels: ConnectedChannelsPanel,
+  integrations: IntegrationsPanel,
   billing: BillingPanel,
   team: TeamManagementPanel,
   revenueAttribution: RevenueAttributionTab,

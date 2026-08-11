@@ -43,7 +43,7 @@ export default function TriggerNode({ data, selected }) {
       </div>
       <Handle
         type="source"
-        position={Position.Bottom}
+        position={Position.Right}
         style={{ background: "#6C3AE8", width: 8, height: 8 }}
       />
     </div>

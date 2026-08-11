@@ -71,8 +71,8 @@ export default function WebhookNode({ id, data, selected }) {
     >
       <Handle
         type="target"
-        position={Position.Top}
-        style={{ background: WEBHOOK_BLUE, width: 10, height: 10, top: -5 }}
+        position={Position.Left}
+        style={{ background: WEBHOOK_BLUE, width: 10, height: 10, left: -5 }}
       />
 
       {isEmpty ? (

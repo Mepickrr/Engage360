@@ -74,16 +74,30 @@ describe("FallbackTemplateSection", () => {
     const patch = jest.fn();
     const fallback = { ...emptyFallback, disabled: { enabled: true, action: "template", template: null } };
     render(<FallbackTemplateSection data={{ fallback }} patch={patch} />);
-    fireEvent.click(screen.getByText("Keep existing content + add opt-out line"));
+    fireEvent.click(screen.getByText("Keep existing content + add opt-out quick reply and footer line"));
     expect(patch).toHaveBeenCalledWith({
       fallback: { ...fallback, disabled: { ...fallback.disabled, action: "opt_out" } },
     });
   });
 
   it("renders the fixed opt-out line read-only when action is opt_out", () => {
-    const fallback = { ...emptyFallback, categoryChanged: { enabled: true, action: "opt_out", template: null } };
+    const fallback = { ...emptyFallback, disabled: { enabled: true, action: "opt_out", template: null } };
     render(<FallbackTemplateSection data={{ fallback }} patch={jest.fn()} />);
     expect(screen.getByText(/Reply STOP to unsubscribe from promotional messages\./)).toBeInTheDocument();
+  });
+
+  it("does not offer the opt-out action for the category-changed trigger — only a fallback template", () => {
+    const fallback = { ...emptyFallback, categoryChanged: { enabled: true, action: "template", template: null } };
+    render(<FallbackTemplateSection data={{ fallback }} patch={jest.fn()} />);
+    expect(screen.queryByText("Keep existing content + add opt-out quick reply and footer line")).not.toBeInTheDocument();
+    expect(screen.getByText("Click to select approved fallback template")).toBeInTheDocument();
+  });
+
+  it("still shows the fallback template picker for category-changed even if legacy data has action set to opt_out", () => {
+    const fallback = { ...emptyFallback, categoryChanged: { enabled: true, action: "opt_out", template: null } };
+    render(<FallbackTemplateSection data={{ fallback }} patch={jest.fn()} />);
+    expect(screen.queryByText(/Reply STOP to unsubscribe from promotional messages\./)).not.toBeInTheDocument();
+    expect(screen.getByText("Click to select approved fallback template")).toBeInTheDocument();
   });
 
   it("calls onSaveCustomTemplate with the saved template when a new fallback template is created for the disabled trigger", () => {

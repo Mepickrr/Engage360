@@ -1,17 +1,4 @@
 // src/components/settings/channels/data/mockChannels.js
-export const SHOPIFY_STORE = {
-  id: "shopify_1",
-  name: "Herbal Roots",
-  domain: "https://herbalroots.com",
-  webhookStatus: "Live",
-  customers: 921681,
-  orders: 858226,
-  products: 111,
-  shortCode: "",
-  websiteEventsScopeGranted: true,
-  websiteEventsTrackerEnabled: true,
-};
-
 export const EMAIL_MARKETING_CHANNEL = { id: "em_mkt_1", name: "Email marketing" };
 export const WEB_PUSH_CHANNEL = { id: "wp_1", name: "Web push notification" };
 

@@ -126,6 +126,10 @@ export default function StickyNoteNode({ id, data, selected }) {
           style={{
             padding: "4px 12px 12px", fontSize: sizes.body, color: palette.text,
             lineHeight: 1.5, outline: "none", minHeight: 40, wordBreak: "break-word",
+            // React Flow's .react-flow__node wrapper sets user-select: none (so dragging a node
+            // doesn't trigger text selection). Unlike <input>, a contentEditable div isn't exempt
+            // from that, so clicking it couldn't place a caret at all — override it back here.
+            userSelect: "text", WebkitUserSelect: "text",
           }}
         />
       </div>

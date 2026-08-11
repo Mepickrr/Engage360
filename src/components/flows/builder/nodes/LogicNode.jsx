@@ -83,7 +83,7 @@ export default function LogicNode({ id, data, type, selected }) {
     >
       <Handle
         type="target"
-        position={Position.Top}
+        position={Position.Left}
         style={{ background: meta.color, width: 8, height: 8 }}
       />
       <div className="flex items-center gap-2 px-3 py-2.5">
@@ -114,24 +114,24 @@ export default function LogicNode({ id, data, type, selected }) {
       </div>
 
       {hasTwoOutputs ? (
-        <div className="relative h-3">
+        <>
           <Handle
             id="yes"
             type="source"
-            position={Position.Bottom}
-            style={{ left: "30%", background: "#10B981", width: 8, height: 8 }}
+            position={Position.Right}
+            style={{ top: "30%", background: "#10B981", width: 8, height: 8 }}
           />
           <Handle
             id="no"
             type="source"
-            position={Position.Bottom}
-            style={{ left: "70%", background: "#EF4444", width: 8, height: 8 }}
+            position={Position.Right}
+            style={{ top: "70%", background: "#EF4444", width: 8, height: 8 }}
           />
-        </div>
+        </>
       ) : (
         <Handle
           type="source"
-          position={Position.Bottom}
+          position={Position.Right}
           style={{ background: meta.color, width: 8, height: 8 }}
         />
       )}

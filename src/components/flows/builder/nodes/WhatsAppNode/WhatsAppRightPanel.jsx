@@ -314,8 +314,16 @@ function TemplateStylePicker({ onSelect }) {
 }
 
 // ── Fallback Template Section ──────────────────────────────────
-const OPT_OUT_LINE = "Reply STOP to unsubscribe from promotional messages.";
+export const OPT_OUT_LINE = "Reply STOP to unsubscribe from promotional messages.";
+export const OPT_OUT_QUICK_REPLY_LABEL = "Stop";
 const DEFAULT_FALLBACK_TRIGGER = { enabled: false, action: "template", template: null };
+
+// The opt-out action keeps the original template's content and appends the
+// opt-out footer + quick reply — that duplicate is named after the original
+// with a "_fallback" suffix so it's identifiable wherever it's referenced.
+export function deriveFallbackName(originalName) {
+  return `${originalName || "template"}_fallback`;
+}
 
 // Normalizes data.fallback into { disabled, categoryChanged } — also migrates the
 // legacy shape ({ enabled, template }) into the "disabled" trigger so existing
@@ -347,7 +355,12 @@ function RadioRow({ label, checked, onSelect }) {
   );
 }
 
-function FallbackTriggerBlock({ title, config, onChange, onOpenPicker, onRemoveTemplate }) {
+function FallbackTriggerBlock({ title, config, onChange, onOpenPicker, onRemoveTemplate, originalTemplateName, allowOptOut = true }) {
+  // Category-changed doesn't offer the opt-out action — it's a Meta
+  // reclassification, not a compliance/unsubscribe scenario, so a fallback
+  // template is the only supported option there.
+  const showTemplatePicker = config.action === "template" || !allowOptOut;
+
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
@@ -356,8 +369,10 @@ function FallbackTriggerBlock({ title, config, onChange, onOpenPicker, onRemoveT
       </div>
       {config.enabled && (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <RadioRow label="Use a fallback template" checked={config.action === "template"} onSelect={() => onChange({ ...config, action: "template" })} />
-          {config.action === "template" && (
+          {allowOptOut && (
+            <RadioRow label="Use a fallback template" checked={config.action === "template"} onSelect={() => onChange({ ...config, action: "template" })} />
+          )}
+          {showTemplatePicker && (
             !config.template ? (
               <button onClick={onOpenPicker} style={{ width: "100%", padding: "12px", border: `2px dashed ${BORDER}`, borderRadius: 8, background: "transparent", cursor: "pointer", color: MUTED, fontSize: 12, textAlign: "center" }}>
                 Click to select approved fallback template
@@ -369,10 +384,22 @@ function FallbackTriggerBlock({ title, config, onChange, onOpenPicker, onRemoveT
               </div>
             )
           )}
-          <RadioRow label="Keep existing content + add opt-out line" checked={config.action === "opt_out"} onSelect={() => onChange({ ...config, action: "opt_out" })} />
-          {config.action === "opt_out" && (
-            <div style={{ fontSize: 11, color: MUTED, fontStyle: "italic", padding: "8px 10px", background: "#F8FAFC", border: `1px solid ${BORDER}`, borderRadius: 8 }}>
-              “{OPT_OUT_LINE}”
+          {allowOptOut && (
+            <RadioRow label="Keep existing content + add opt-out quick reply and footer line" checked={config.action === "opt_out"} onSelect={() => onChange({ ...config, action: "opt_out" })} />
+          )}
+          {allowOptOut && config.action === "opt_out" && (
+            <div>
+              <div style={{ fontSize: 10, color: MUTED, marginBottom: 4 }}>
+                Auto-generated as <strong style={{ color: "#0F172A" }}>{deriveFallbackName(originalTemplateName)}</strong>
+              </div>
+              <div style={{ border: `1px solid ${BORDER}`, borderRadius: 8, overflow: "hidden" }}>
+                <div style={{ fontSize: 11, color: MUTED, fontStyle: "italic", padding: "8px 10px", background: "#F8FAFC" }}>
+                  "{OPT_OUT_LINE}"
+                </div>
+                <div style={{ fontSize: 12, color: "#0a8fc4", fontWeight: 500, textAlign: "center", padding: "8px 10px", borderTop: `1px solid ${BORDER}`, background: "#fff" }}>
+                  {OPT_OUT_QUICK_REPLY_LABEL}
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -415,6 +442,7 @@ export function FallbackTemplateSection({ data, patch, customTemplates = [], onS
           onChange={(next) => updateTrigger("disabled", next)}
           onOpenPicker={() => setOpenPickerFor("disabled")}
           onRemoveTemplate={() => updateTrigger("disabled", { ...fallback.disabled, template: null })}
+          originalTemplateName={data.template?.name}
         />
         <div style={{ borderTop: `1px solid ${BORDER}`, margin: "14px 0" }} />
         <FallbackTriggerBlock
@@ -423,6 +451,8 @@ export function FallbackTemplateSection({ data, patch, customTemplates = [], onS
           onChange={(next) => updateTrigger("categoryChanged", next)}
           onOpenPicker={() => setOpenPickerFor("categoryChanged")}
           onRemoveTemplate={() => updateTrigger("categoryChanged", { ...fallback.categoryChanged, template: null })}
+          originalTemplateName={data.template?.name}
+          allowOptOut={false}
         />
       </div>
     </>
@@ -631,6 +661,19 @@ function DeliveryTab({ data, patch }) {
 // ── Output Tab ──────────────────────────────────────────────────
 const BRANCH_OPTIONS = DELIVERY_OUTPUT_OPTIONS.filter((o) => o.id !== "next_step");
 
+// Each hasTimeConfig branch (Not Read, Not Clicked, No response after, ...) keeps its
+// own value/unit under outputConfig.timeConfig[branchId], so several can be selected
+// at once without stomping each other. "no_response" falls back to the legacy flat
+// noResponseValue/noResponseUnit fields for flows saved before timeConfig existed.
+function getBranchTimeConfig(outputCfg, branchId) {
+  const stored = outputCfg.timeConfig?.[branchId];
+  if (stored) return stored;
+  if (branchId === "no_response") {
+    return { value: outputCfg.noResponseValue ?? 5, unit: outputCfg.noResponseUnit ?? "hours" };
+  }
+  return { value: 5, unit: "hours" };
+}
+
 function OutputTab({ data, patch }) {
   const template        = data?.template;
   const outputCfg       = data?.outputConfig ?? { routingMode: "next_step", deliveryOutputs: [], noResponseValue: 5, noResponseUnit: "hours", wiredPorts: [] };
@@ -711,20 +754,24 @@ function OutputTab({ data, patch }) {
                 }} onClick={() => toggleBranch(opt.id)}>
                   <input type="checkbox" readOnly checked={selected} style={{ accentColor: WA_GREEN, width: 14, height: 14, cursor: "pointer" }} />
                   <span style={{ fontSize: 13, color: "#0F172A", flex: 1 }}>{opt.label}</span>
-                  {opt.hasTimeConfig && selected && (
-                    <div style={{ display: "flex", gap: 6, alignItems: "center" }} onClick={(e) => e.stopPropagation()}>
-                      <input type="number" min={1} value={outputCfg.noResponseValue ?? 5}
-                        onChange={(e) => patch({ outputConfig: { ...outputCfg, noResponseValue: parseInt(e.target.value) || 1 } })}
-                        style={{ width: 44, padding: "3px 6px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, outline: "none" }} />
-                      <select value={outputCfg.noResponseUnit ?? "hours"}
-                        onChange={(e) => patch({ outputConfig: { ...outputCfg, noResponseUnit: e.target.value } })}
-                        style={{ padding: "3px 6px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, background: "#fff", outline: "none", cursor: "pointer" }}>
-                        <option value="minutes">Minutes</option>
-                        <option value="hours">Hours</option>
-                        <option value="days">Days</option>
-                      </select>
-                    </div>
-                  )}
+                  {opt.hasTimeConfig && selected && (() => {
+                    const branchTime = getBranchTimeConfig(outputCfg, opt.id);
+                    const updateBranchTime = (next) => patch({ outputConfig: { ...outputCfg, timeConfig: { ...outputCfg.timeConfig, [opt.id]: { ...branchTime, ...next } } } });
+                    return (
+                      <div style={{ display: "flex", gap: 6, alignItems: "center" }} onClick={(e) => e.stopPropagation()}>
+                        <input type="number" min={1} value={branchTime.value}
+                          onChange={(e) => updateBranchTime({ value: parseInt(e.target.value) || 1 })}
+                          style={{ width: 44, padding: "3px 6px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, outline: "none" }} />
+                        <select value={branchTime.unit}
+                          onChange={(e) => updateBranchTime({ unit: e.target.value })}
+                          style={{ padding: "3px 6px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 6, background: "#fff", outline: "none", cursor: "pointer" }}>
+                          <option value="minutes">Minutes</option>
+                          <option value="hours">Hours</option>
+                          <option value="days">Days</option>
+                        </select>
+                      </div>
+                    );
+                  })()}
                 </div>
               );
             })}

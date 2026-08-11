@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import FrequencyCappingTab from "./FrequencyCappingTab";
+import JourneyEntryCappingTab from "./JourneyEntryCappingTab";
+import CampaignThrottlingTab from "./CampaignThrottlingTab";
 import DndTab from "./DndTab";
 import UnsubscribeTab from "./UnsubscribeTab";
 
@@ -18,6 +20,12 @@ export default function DeliveryControlsPanel() {
           <TabsTrigger value="frequencyCapping" data-testid="delivery-tab-frequency-capping">
             Frequency Capping
           </TabsTrigger>
+          <TabsTrigger value="journeyEntryCapping" data-testid="delivery-tab-journey-entry-capping">
+            Journey Entry Capping
+          </TabsTrigger>
+          <TabsTrigger value="campaignThrottling" data-testid="delivery-tab-campaign-throttling">
+            Campaign Throttling
+          </TabsTrigger>
           <TabsTrigger value="dnd" data-testid="delivery-tab-dnd">
             DND (Quiet Hours)
           </TabsTrigger>
@@ -27,6 +35,12 @@ export default function DeliveryControlsPanel() {
         </TabsList>
         <TabsContent value="frequencyCapping">
           <FrequencyCappingTab />
+        </TabsContent>
+        <TabsContent value="journeyEntryCapping">
+          <JourneyEntryCappingTab />
+        </TabsContent>
+        <TabsContent value="campaignThrottling">
+          <CampaignThrottlingTab />
         </TabsContent>
         <TabsContent value="dnd">
           <DndTab />

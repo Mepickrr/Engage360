@@ -32,6 +32,16 @@ export default function FrequencyCappingTab() {
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
   }
 
+  function patchConfig(id, type, patch) {
+    setRows((prev) =>
+      prev.map((r) =>
+        r.id === id
+          ? { ...r, configByType: { ...r.configByType, [type]: { ...r.configByType[type], ...patch } } }
+          : r
+      )
+    );
+  }
+
   function handleDiscard() {
     setRows(baseline);
   }
@@ -45,7 +55,7 @@ export default function FrequencyCappingTab() {
     <div data-testid="delivery-frequency-capping">
       <SaveBar
         title="Channel Frequency Capping"
-        subtitle="Configure message limits and time gaps for global and channel specific settings."
+        subtitle="Configure user level message limits and time gaps for global and channel specific settings."
         dirty={dirty}
         onDiscard={handleDiscard}
         onSave={handleSave}
@@ -57,7 +67,7 @@ export default function FrequencyCappingTab() {
         <div className="text-[12px] text-text-secondary space-y-1">
           <p className="font-semibold text-text-primary">How to Configure Frequency Capping</p>
           <ul className="list-disc list-inside space-y-0.5">
-            <li>Set message limits and time gaps for global (all channels) or individual channels. Message limits reset daily at 12 AM.</li>
+            <li>Set user level message limits and time gaps for global (all channels) or individual channels. Message limits reset daily at 12 AM.</li>
             <li>Messages blocked by FC are dropped. For automations, dropped messages also cause the user to exit the flow.</li>
             <li>All Channels doesn’t include Email and Mobile Push campaigns. Please configure Frequency limits for Email channel individually.</li>
           </ul>
@@ -65,85 +75,114 @@ export default function FrequencyCappingTab() {
       </div>
 
       <div className="bg-surface border border-border rounded-lg overflow-x-auto">
-        <table className="w-full text-left min-w-[820px]">
+        <table className="w-full text-left min-w-[880px]">
           <thead className="bg-slate-50 text-[11px] uppercase tracking-wide text-text-muted">
             <tr>
               <th className="px-4 py-2 font-medium">Channel</th>
-              <th className="px-4 py-2 font-medium">Message Limit</th>
+              <th className="px-4 py-2 font-medium">Type</th>
+              <th className="px-4 py-2 font-medium">User Message Limit</th>
               <th className="px-4 py-2 font-medium">Time Gap</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
-              <tr key={row.id} className="border-t border-border" data-testid={`fc-row-${row.id}`}>
-                <td className="px-4 py-3 align-top">
-                  <div className="text-sm font-medium text-text-primary">{row.channel}</div>
-                  <div className="text-[11px] text-text-muted">{row.type}</div>
-                </td>
-                <td className="px-4 py-3 align-top">
-                  <div className="flex items-center gap-2">
-                    <ToggleSwitch
-                      checked={row.enabled}
-                      onChange={(v) => patchRow(row.id, { enabled: v })}
-                      testId={`fc-row-${row.id}-enabled`}
-                    />
-                    <input
-                      type="number"
-                      min={0}
-                      disabled={!row.enabled}
-                      value={row.limit}
-                      onChange={(e) => patchRow(row.id, { limit: e.target.value === "" ? "" : Math.max(0, Number(e.target.value)) })}
-                      data-testid={`fc-row-${row.id}-limit`}
-                      className="w-24 px-2 py-1.5 border border-border rounded-md text-sm bg-slate-50 disabled:cursor-not-allowed disabled:text-text-muted"
-                    />
-                    <select
-                      disabled={!row.enabled}
-                      value={row.limitPeriod}
-                      onChange={(e) => patchRow(row.id, { limitPeriod: e.target.value })}
-                      data-testid={`fc-row-${row.id}-limit-period`}
-                      className="px-2 py-1.5 border border-border rounded-md text-sm bg-slate-50 disabled:cursor-not-allowed disabled:text-text-muted"
-                    >
-                      {PERIOD_OPTIONS.map((p) => (
-                        <option key={p} value={p}>
-                          {p}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </td>
-                <td className="px-4 py-3 align-top">
-                  <div className="flex items-center gap-2">
-                    <ToggleSwitch
-                      checked={row.gapEnabled}
-                      onChange={(v) => patchRow(row.id, { gapEnabled: v })}
-                      testId={`fc-row-${row.id}-gap-enabled`}
-                    />
-                    <input
-                      type="number"
-                      min={0}
-                      disabled={!row.gapEnabled}
-                      value={row.gap}
-                      onChange={(e) => patchRow(row.id, { gap: e.target.value === "" ? "" : Math.max(0, Number(e.target.value)) })}
-                      data-testid={`fc-row-${row.id}-gap`}
-                      className="w-24 px-2 py-1.5 border border-border rounded-md text-sm bg-slate-50 disabled:cursor-not-allowed disabled:text-text-muted"
-                    />
-                    <select
-                      disabled={!row.gapEnabled}
-                      value={row.gapUnit}
-                      onChange={(e) => patchRow(row.id, { gapUnit: e.target.value })}
-                      data-testid={`fc-row-${row.id}-gap-unit`}
-                      className="px-2 py-1.5 border border-border rounded-md text-sm bg-slate-50 disabled:cursor-not-allowed disabled:text-text-muted"
-                    >
-                      {GAP_UNIT_OPTIONS.map((u) => (
-                        <option key={u} value={u}>
-                          {u}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {rows.map((row) => {
+              const config = row.configByType[row.selectedType];
+              return (
+                <tr key={row.id} className="border-t border-border" data-testid={`fc-row-${row.id}`}>
+                  <td className="px-4 py-3 align-top">
+                    <div className="text-sm font-medium text-text-primary">{row.channel}</div>
+                  </td>
+                  <td className="px-4 py-3 align-top">
+                    {row.types.length > 1 ? (
+                      <select
+                        value={row.selectedType}
+                        onChange={(e) => patchRow(row.id, { selectedType: e.target.value })}
+                        data-testid={`fc-row-${row.id}-type`}
+                        className="px-2 py-1.5 border border-border rounded-md text-sm bg-white"
+                      >
+                        {row.types.map((t) => (
+                          <option key={t} value={t}>
+                            {t}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <span className="text-[13px] text-text-muted">{row.types[0]}</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 align-top">
+                    <div className="flex items-center gap-2">
+                      <ToggleSwitch
+                        checked={config.enabled}
+                        onChange={(v) => patchConfig(row.id, row.selectedType, { enabled: v })}
+                        testId={`fc-row-${row.id}-enabled`}
+                      />
+                      <input
+                        type="number"
+                        min={0}
+                        disabled={!config.enabled}
+                        value={config.limit}
+                        onChange={(e) =>
+                          patchConfig(row.id, row.selectedType, {
+                            limit: e.target.value === "" ? "" : Math.max(0, Number(e.target.value)),
+                          })
+                        }
+                        data-testid={`fc-row-${row.id}-limit`}
+                        className="w-24 px-2 py-1.5 border border-border rounded-md text-sm bg-slate-50 disabled:cursor-not-allowed disabled:text-text-muted"
+                      />
+                      <select
+                        disabled={!config.enabled}
+                        value={config.limitPeriod}
+                        onChange={(e) => patchConfig(row.id, row.selectedType, { limitPeriod: e.target.value })}
+                        data-testid={`fc-row-${row.id}-limit-period`}
+                        className="px-2 py-1.5 border border-border rounded-md text-sm bg-slate-50 disabled:cursor-not-allowed disabled:text-text-muted"
+                      >
+                        {PERIOD_OPTIONS.map((p) => (
+                          <option key={p} value={p}>
+                            {p}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 align-top">
+                    <div className="flex items-center gap-2">
+                      <ToggleSwitch
+                        checked={config.gapEnabled}
+                        onChange={(v) => patchConfig(row.id, row.selectedType, { gapEnabled: v })}
+                        testId={`fc-row-${row.id}-gap-enabled`}
+                      />
+                      <input
+                        type="number"
+                        min={0}
+                        disabled={!config.gapEnabled}
+                        value={config.gap}
+                        onChange={(e) =>
+                          patchConfig(row.id, row.selectedType, {
+                            gap: e.target.value === "" ? "" : Math.max(0, Number(e.target.value)),
+                          })
+                        }
+                        data-testid={`fc-row-${row.id}-gap`}
+                        className="w-24 px-2 py-1.5 border border-border rounded-md text-sm bg-slate-50 disabled:cursor-not-allowed disabled:text-text-muted"
+                      />
+                      <select
+                        disabled={!config.gapEnabled}
+                        value={config.gapUnit}
+                        onChange={(e) => patchConfig(row.id, row.selectedType, { gapUnit: e.target.value })}
+                        data-testid={`fc-row-${row.id}-gap-unit`}
+                        className="px-2 py-1.5 border border-border rounded-md text-sm bg-slate-50 disabled:cursor-not-allowed disabled:text-text-muted"
+                      >
+                        {GAP_UNIT_OPTIONS.map((u) => (
+                          <option key={u} value={u}>
+                            {u}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

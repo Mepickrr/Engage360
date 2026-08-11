@@ -32,7 +32,9 @@
       { "name": "LTV", "data_type": "decimal", "description": "Lifetime revenue attributed to this user." },
       { "name": "No. of Conversions", "data_type": "integer", "description": "Total conversion events recorded." },
       { "name": "No. of Sessions", "data_type": "integer", "description": "Total sessions recorded." },
-      { "name": "User Creation Source", "data_type": "enum", "description": "How this profile was created.", "allowed_values": ["Shopify", "API import", "SDK signup", "Manual upload", "CSV"] }
+      { "name": "User Creation Source", "data_type": "enum", "description": "How this profile was created.", "allowed_values": ["Shopify", "API import", "SDK signup", "Manual upload", "CSV"] },
+      { "name": "Account Created Tag", "data_type": "boolean", "description": "Determines if the user is a new user on the website." },
+      { "name": "First Time User", "data_type": "boolean", "description": "Determines if the user is a first time user on the website." }
     ],
     "Acquisition": [
       { "name": "Template name", "data_type": "string", "description": "Template via which the user was acquired." },

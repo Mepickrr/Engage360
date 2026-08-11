@@ -62,8 +62,8 @@ export default function NextBestActionNode({ id, data, selected }) {
     >
       <Handle
         type="target"
-        position={Position.Top}
-        style={{ background: NBA_GREEN, width: 10, height: 10, top: -5 }}
+        position={Position.Left}
+        style={{ background: NBA_GREEN, width: 10, height: 10, left: -5 }}
       />
 
       {isEmpty ? (

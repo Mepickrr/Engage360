@@ -33,6 +33,7 @@ import {
   Clock, TimerReset, CalendarClock, ChevronDown,
   Search, Plus, Trash2, AlertTriangle, Info,
 } from "lucide-react";
+import { useFlowVariant } from "@/components/flows/FlowVariantContext";
 
 // ── tokens ──────────────────────────────────────────────────────
 const P      = "#6C3AE8";
@@ -528,9 +529,13 @@ const TABS = [
 ];
 
 export default function DelayConfig({ data, patch, label, onLabelChange, onDelete }) {
+  const { hideDelayEventTab } = useFlowVariant();
+  const tabs = hideDelayEventTab ? TABS.filter((t) => t.id !== "event") : TABS;
+
   // Migrate old delayMode shape
   const rawTab = data?.delayTab;
-  const activeTab = rawTab ?? (data?.delayMode === "till" ? "schedule" : "duration");
+  let activeTab = rawTab ?? (data?.delayMode === "till" ? "schedule" : "duration");
+  if (hideDelayEventTab && activeTab === "event") activeTab = "duration";
 
   const preview = buildPreviewLabel({ ...data, delayTab: activeTab });
 
@@ -582,8 +587,8 @@ export default function DelayConfig({ data, patch, label, onLabelChange, onDelet
       </div>
 
       {/* Tab strip */}
-      <div style={{ display: "flex", borderBottom: `1px solid ${BORDER}` }}>
-        {TABS.map(({ id, label, Icon }) => {
+      <div style={{ display: "flex", justifyContent: tabs.length === 2 ? "center" : undefined, gap: tabs.length === 2 ? 32 : 0, borderBottom: `1px solid ${BORDER}` }}>
+        {tabs.map(({ id, label, Icon }) => {
           const active = activeTab === id;
           return (
             <button
@@ -591,7 +596,7 @@ export default function DelayConfig({ data, patch, label, onLabelChange, onDelet
               type="button"
               onClick={() => patch({ delayTab: id })}
               style={{
-                flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
+                flex: tabs.length === 2 ? "0 1 160px" : 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
                 padding: "10px 4px 8px",
                 border: "none", borderBottom: `2px solid ${active ? P : "transparent"}`,
                 background: active ? "#F5F3FF" : "transparent",

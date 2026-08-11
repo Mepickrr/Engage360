@@ -4,11 +4,10 @@ import { CHANNEL_TYPES } from "./channelIcons";
 import Badge from "./Badge";
 import ChannelRow from "./ChannelRow";
 import ConnectChannelModal from "./ConnectChannelModal";
-import ShopifyDetail from "./ShopifyDetail";
 import WhatsAppNumberDetail from "./WhatsAppNumberDetail";
 import SimpleChannelDetail from "./SimpleChannelDetail";
 import {
-  SHOPIFY_STORE, WHATSAPP_NUMBERS, FACEBOOK_PAGES, INSTAGRAM_ACCOUNTS,
+  WHATSAPP_NUMBERS, FACEBOOK_PAGES, INSTAGRAM_ACCOUNTS,
   EMAIL_ADDRESSES, WEB_PUSH_CHANNEL, EMAIL_MARKETING_CHANNEL,
 } from "./data/mockChannels";
 
@@ -29,7 +28,6 @@ const SIMPLE_IDENTIFIER_CONFIG = {
 };
 
 function rowTitle(groupKey, item) {
-  if (groupKey === "shopify") return item.name;
   if (groupKey === "whatsapp") return item.number;
   if (groupKey === "emails") return item.address;
   return item.name;
@@ -41,7 +39,6 @@ function rowSubtitle(groupKey, item) {
 }
 
 function rowMetadata(groupKey, item) {
-  if (groupKey === "shopify") return <span className="text-[12px] text-text-muted">{item.domain}</span>;
   if (groupKey === "whatsapp") {
     return (
       <>
@@ -59,7 +56,6 @@ function rowMetadata(groupKey, item) {
 }
 
 export default function ConnectedChannelsPanel() {
-  const [shopify, setShopify] = useState(SHOPIFY_STORE);
   const [whatsappNumbers, setWhatsappNumbers] = useState(WHATSAPP_NUMBERS);
   const [simpleChannels, setSimpleChannels] = useState({
     facebook: FACEBOOK_PAGES,
@@ -110,15 +106,13 @@ export default function ConnectedChannelsPanel() {
   };
 
   const openDetail = (groupKey, id) => {
-    if (groupKey === "shopify") setView({ type: "shopify" });
-    else if (groupKey === "whatsapp") setView({ type: "whatsapp", id });
+    if (groupKey === "whatsapp") setView({ type: "whatsapp", id });
     else setView({ type: "simple", groupKey, id });
   };
 
   const backToList = () => setView({ type: "list" });
 
   const groups = [
-    { key: "shopify", label: "Shopify", items: [shopify] },
     { key: "emailmarketing", label: "Email", items: simpleChannels.emailmarketing },
     { key: "webpush", label: "Web push", items: simpleChannels.webpush },
     { key: "whatsapp", label: "Whatsapp", items: whatsappNumbers },
@@ -128,10 +122,6 @@ export default function ConnectedChannelsPanel() {
     { key: "livechat", label: "Live Chat", items: simpleChannels.livechat },
     { key: "rcs", label: "RCS", items: simpleChannels.rcs },
   ];
-
-  if (view.type === "shopify") {
-    return <ShopifyDetail store={shopify} onBack={backToList} onUpdate={(patch) => setShopify((prev) => ({ ...prev, ...patch }))} />;
-  }
 
   if (view.type === "whatsapp") {
     return (

@@ -90,8 +90,8 @@ export default function AiCallingV2Node({ id, data, selected }) {
       {/* Input handle */}
       <Handle
         type="target"
-        position={Position.Top}
-        style={{ background: INDIGO, width: 10, height: 10, top: -5 }}
+        position={Position.Left}
+        style={{ background: INDIGO, width: 10, height: 10, left: -5 }}
       />
 
       {isEmpty ? (
@@ -171,12 +171,12 @@ export default function AiCallingV2Node({ id, data, selected }) {
         </>
       )}
 
-      {/* Single bottom source handle (next mode) */}
+      {/* Single right source handle (next mode) */}
       {(outputMode === "next" || !agentType) && (
         <Handle
           type="source"
-          position={Position.Bottom}
-          style={{ background: INDIGO, width: 10, height: 10, bottom: -5 }}
+          position={Position.Right}
+          style={{ background: INDIGO, width: 10, height: 10, right: -5 }}
         />
       )}
     </div>

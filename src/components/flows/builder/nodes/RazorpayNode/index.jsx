@@ -31,8 +31,8 @@ export default function RazorpayNode({ id, data, selected }) {
     >
       <Handle
         type="target"
-        position={Position.Top}
-        style={{ background: BLUE, width: 10, height: 10, top: -5 }}
+        position={Position.Left}
+        style={{ background: BLUE, width: 10, height: 10, left: -5 }}
       />
 
       {isEmpty ? (
@@ -101,8 +101,8 @@ export default function RazorpayNode({ id, data, selected }) {
 
       <Handle
         type="source"
-        position={Position.Bottom}
-        style={{ background: BLUE, width: 10, height: 10, bottom: -5 }}
+        position={Position.Right}
+        style={{ background: BLUE, width: 10, height: 10, right: -5 }}
       />
     </div>
   );
