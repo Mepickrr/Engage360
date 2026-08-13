@@ -101,24 +101,36 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
 
       <div className="flex gap-6">
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
-                <UserRound className="w-5 h-5 text-slate-400" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[17px] font-semibold text-text-primary">{number.number}</span>
-                  <button type="button" onClick={() => navigator.clipboard?.writeText(number.number)} data-testid="whatsapp-copy-number" className="text-text-muted hover:text-text-primary">
-                    <Copy className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-                {number.username && <span className="text-[13px] text-text-muted">{`@${number.username}`}</span>}
-              </div>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
+              <UserRound className="w-5 h-5 text-slate-400" />
             </div>
-            <div className="flex items-center gap-2 flex-wrap justify-end">
-              <Badge tone="slate">Provider: {number.provider}</Badge>
-              <Badge tone={qualityTone(number.quality)}>Quality: {number.quality}</Badge>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[17px] font-semibold text-text-primary">{number.number}</span>
+                <button type="button" onClick={() => navigator.clipboard?.writeText(number.number)} data-testid="whatsapp-copy-number" className="text-text-muted hover:text-text-primary">
+                  <Copy className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              {number.username && <span className="text-[13px] text-text-muted">{`@${number.username}`}</span>}
+            </div>
+          </div>
+
+          <div className="py-3 border-b border-border flex items-center gap-2 flex-wrap" data-testid="whatsapp-summary-row-1">
+            <Badge tone="slate">Provider: {number.provider}</Badge>
+            <Badge tone={qualityTone(number.quality)}>Quality: {number.quality}</Badge>
+            <Badge tone="slate">WABA ID: {number.wabaId}</Badge>
+          </div>
+
+          <div className="py-3 border-b border-border mb-4 flex items-center gap-2 flex-wrap justify-between" data-testid="whatsapp-summary-row-2">
+            <div className="flex items-center gap-2">
+              <span className="text-[13px] text-text-primary" data-testid="whatsapp-messaging-limit-value">{messagingLimit}</span>
+              <span className="text-[12px] text-text-muted">messages per day</span>
+              <button type="button" onClick={refreshMessagingLimit} data-testid="whatsapp-messaging-limit-refresh" className="text-text-muted hover:text-text-primary">
+                <RefreshCw className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
               {number.isDefaultForCampaigns ? (
                 <>
                   <Badge tone="emerald">Default for Campaigns</Badge>
@@ -159,17 +171,6 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
               <span className="text-[13px] text-text-primary" data-testid="whatsapp-messages-consumed-value">{messagesConsumed}</span>
               <span className="text-[12px] text-text-muted">messages consumed</span>
               <button type="button" onClick={refreshMessagesConsumed} data-testid="whatsapp-messages-consumed-refresh" className="text-text-muted hover:text-text-primary">
-                <RefreshCw className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-
-          <div className="py-4 border-b border-border flex items-center justify-between" data-testid="whatsapp-messaging-limit">
-            <span className="text-[13px] font-semibold text-text-primary">Messaging limit</span>
-            <div className="flex items-center gap-2">
-              <span className="text-[13px] text-text-primary" data-testid="whatsapp-messaging-limit-value">{messagingLimit}</span>
-              <span className="text-[12px] text-text-muted">messages per day</span>
-              <button type="button" onClick={refreshMessagingLimit} data-testid="whatsapp-messaging-limit-refresh" className="text-text-muted hover:text-text-primary">
                 <RefreshCw className="w-3.5 h-3.5" />
               </button>
             </div>

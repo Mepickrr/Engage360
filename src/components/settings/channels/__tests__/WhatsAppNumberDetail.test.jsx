@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import WhatsAppNumberDetail from "../WhatsAppNumberDetail";
 
 const NUMBER = {
@@ -48,6 +48,32 @@ describe("WhatsAppNumberDetail — header and badges", () => {
     render(<WhatsAppNumberDetail number={NUMBER} onBack={onBack} onMakeDefault={jest.fn()} />);
     fireEvent.click(screen.getByTestId("whatsapp-detail-back"));
     expect(onBack).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("WhatsAppNumberDetail — metadata summary bar", () => {
+  it("shows Provider, Quality, and WABA ID on the first summary row", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    const row1 = screen.getByTestId("whatsapp-summary-row-1");
+    expect(row1).toHaveTextContent("Provider: TSP Karix");
+    expect(row1).toHaveTextContent("Quality: High");
+    expect(row1).toHaveTextContent("WABA ID: 328175003703387");
+  });
+
+  it("shows Messaging limit, Default badge, and Migrate provider on the second summary row when default", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    const row2 = screen.getByTestId("whatsapp-summary-row-2");
+    expect(row2).toHaveTextContent("100000");
+    expect(row2).toHaveTextContent("Default for Campaigns");
+    expect(within(row2).getByRole("button", { name: /migrate provider/i })).toBeInTheDocument();
+  });
+
+  it("shows a Make Default for Campaigns button on the second row when not default", () => {
+    const onMakeDefault = jest.fn();
+    render(<WhatsAppNumberDetail number={NON_DEFAULT_NUMBER} onBack={jest.fn()} onMakeDefault={onMakeDefault} />);
+    const row2 = screen.getByTestId("whatsapp-summary-row-2");
+    fireEvent.click(within(row2).getByRole("button", { name: /make default for campaigns/i }));
+    expect(onMakeDefault).toHaveBeenCalledWith("wa_2");
   });
 });
 
