@@ -159,12 +159,6 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
             <button type="button" onClick={() => previewToast()} data-testid="whatsapp-voice-call-setup" className="text-[13px] text-primary font-medium flex-shrink-0">Setup</button>
           </div>
 
-          <EditableRow
-            label="Business description" description="Edit your WhatsApp Business account description."
-            value={businessDescription} onSave={setBusinessDescription} onDelete={() => setBusinessDescription("")}
-            testId="whatsapp-business-description" emptyLabel="Add description"
-          />
-
           <div className="py-4 border-b border-border flex items-center justify-between" data-testid="whatsapp-messages-consumed">
             <span className="text-[13px] font-semibold text-text-primary">Message consumed</span>
             <div className="flex items-center gap-2">
@@ -175,6 +169,51 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
               </button>
             </div>
           </div>
+
+          <div className="py-4 border-b border-border">
+            <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
+              <span className="text-[13px] font-semibold text-text-primary">Account overview</span>
+              <div className="flex items-center gap-4 text-[12px]">
+                <span className="text-text-secondary">WhatsApp TSP Onboarding Status - <button type="button" onClick={() => previewToast()} className="text-primary font-medium" data-testid="whatsapp-tsp-view-details">View Details</button></span>
+                <span className="text-text-secondary">WhatsApp A/B Testing - <button type="button" onClick={() => previewToast()} className="text-primary font-medium" data-testid="whatsapp-ab-test-now">Test Now</button></span>
+              </div>
+            </div>
+
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-[12px] text-amber-800 mb-3">
+              Meta enforces daily WhatsApp Business messaging limits for quality, compliance, and tier-based improvements.
+            </div>
+
+            <div className="bg-gradient-to-r from-emerald-50 to-violet-50 border border-emerald-200 rounded-lg p-3 text-[12px] text-emerald-800 mb-4 flex items-center gap-2">
+              Your account is powered by MM Lite API. <span className="text-emerald-600">✓</span>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3">
+              {[
+                { label: "Business Portfolio ID", value: number.businessPortfolioId },
+                { label: "Phone Number", value: number.number.replace(/\D/g, "") },
+              ].map((f) => (
+                <div key={f.label} className="flex items-end gap-2">
+                  <label className="block flex-1">
+                    <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium">{f.label}</span>
+                    <input type="text" defaultValue={f.value} disabled data-testid={`whatsapp-field-${f.label.toLowerCase().replace(/\s+/g, "-")}`}
+                      className="mt-1 w-full px-3 py-2 text-sm border border-border rounded-md bg-slate-50 text-text-primary disabled:cursor-not-allowed" />
+                  </label>
+                  <span className="mb-2 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700">Available</span>
+                </div>
+              ))}
+              <label className="block">
+                <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium">WABA Provider</span>
+                <input type="text" defaultValue={number.wabaProvider} disabled data-testid="whatsapp-waba-provider"
+                  className="mt-1 w-full px-3 py-2 text-sm border border-border rounded-md bg-slate-50 text-text-primary disabled:cursor-not-allowed" />
+              </label>
+            </div>
+          </div>
+
+          <EditableRow
+            label="Business description" description="Edit your WhatsApp Business account description."
+            value={businessDescription} onSave={setBusinessDescription} onDelete={() => setBusinessDescription("")}
+            testId="whatsapp-business-description" emptyLabel="Add description"
+          />
 
           <EditableRow
             label="About" description="Add your about section to be displayed on your whatsapp business profile."
@@ -201,54 +240,6 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
           />
 
           <div className="pt-6">
-            <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
-              <span className="text-[13px] font-semibold text-text-primary">WhatsApp Account Overview</span>
-              <div className="flex items-center gap-4 text-[12px]">
-                <span className="text-text-secondary">WhatsApp TSP Onboarding Status - <button type="button" onClick={() => previewToast()} className="text-primary font-medium" data-testid="whatsapp-tsp-view-details">View Details</button></span>
-                <span className="text-text-secondary">WhatsApp A/B Testing - <button type="button" onClick={() => previewToast()} className="text-primary font-medium" data-testid="whatsapp-ab-test-now">Test Now</button></span>
-              </div>
-            </div>
-
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-[12px] text-amber-800 mb-3">
-              Meta enforces daily WhatsApp Business messaging limits for quality, compliance, and tier-based improvements.
-            </div>
-
-            <div className="bg-gradient-to-r from-emerald-50 to-violet-50 border border-emerald-200 rounded-lg p-3 text-[12px] text-emerald-800 mb-4 flex items-center gap-2">
-              Your account is powered by MM Lite API. <span className="text-emerald-600">✓</span>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3">
-              <label className="block">
-                <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium">Display Name</span>
-                <input type="text" defaultValue={number.brandName || number.number} disabled data-testid="whatsapp-display-name"
-                  className="mt-1 w-full px-3 py-2 text-sm border border-border rounded-md bg-slate-50 text-text-primary disabled:cursor-not-allowed" />
-              </label>
-              <label className="block">
-                <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium">Messaging Limit</span>
-                <input type="text" defaultValue={`${messagingLimit}`} disabled data-testid="whatsapp-overview-limit"
-                  className="mt-1 w-full px-3 py-2 text-sm border border-border rounded-md bg-slate-50 text-text-primary disabled:cursor-not-allowed" />
-              </label>
-              {[
-                { label: "WABA ID", value: number.wabaId },
-                { label: "Phone Number", value: number.number.replace(/\D/g, "") },
-                { label: "Business Portfolio ID", value: number.businessPortfolioId },
-              ].map((f) => (
-                <div key={f.label} className="flex items-end gap-2">
-                  <label className="block flex-1">
-                    <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium">{f.label}</span>
-                    <input type="text" defaultValue={f.value} disabled data-testid={`whatsapp-field-${f.label.toLowerCase().replace(/\s+/g, "-")}`}
-                      className="mt-1 w-full px-3 py-2 text-sm border border-border rounded-md bg-slate-50 text-text-primary disabled:cursor-not-allowed" />
-                  </label>
-                  <span className="mb-2 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700">Available</span>
-                </div>
-              ))}
-              <label className="block">
-                <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium">WABA Provider</span>
-                <input type="text" defaultValue={number.wabaProvider} disabled data-testid="whatsapp-waba-provider"
-                  className="mt-1 w-full px-3 py-2 text-sm border border-border rounded-md bg-slate-50 text-text-primary disabled:cursor-not-allowed" />
-              </label>
-            </div>
-
             <p className="text-[13px] font-semibold text-text-primary mt-5 mb-3">Following details will be displayed on your WhatsApp Business Account profile.</p>
 
             <div className="space-y-3">

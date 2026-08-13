@@ -126,12 +126,12 @@ describe("WhatsAppNumberDetail — account overview and Facebook Catalog", () =>
     expect(screen.getByText(/powered by mm lite api/i)).toBeInTheDocument();
   });
 
-  it("renders WABA ID, Business Portfolio ID, and WABA Provider with Available pills", () => {
+  it("renders Business Portfolio ID and WABA Provider with Available pills, and does not duplicate WABA ID here", () => {
     render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
-    expect(screen.getByDisplayValue("328175003703387")).toBeInTheDocument();
     expect(screen.getByDisplayValue("1379257819643222")).toBeInTheDocument();
     expect(screen.getByDisplayValue("TSPENGAGE")).toBeInTheDocument();
-    expect(screen.getAllByText("Available").length).toBe(3);
+    expect(screen.queryByDisplayValue("328175003703387")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Available").length).toBe(2);
   });
 
   it("renders the Facebook Catalog card with catalog id and access toggle", () => {
