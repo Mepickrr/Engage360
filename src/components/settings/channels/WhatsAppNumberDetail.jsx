@@ -64,12 +64,12 @@ function EditableRow({ label, description, value, onSave, onDelete, testId, empt
   );
 }
 
-function InlineEditableField({ value, onSave, testId, placeholder, as = "text", className = "", inputClassName = "" }) {
+function InlineEditableField({ value, onSave, testId, placeholder, as = "text", className = "", inputClassName = "", ariaLabel }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value || "");
 
   const commit = () => { onSave(draft.trim()); setEditing(false); };
-  const cancel = () => { setDraft(value || ""); setEditing(false); };
+  const cancel = () => { setDraft((value || "").trim()); setEditing(false); };
 
   if (editing) {
     if (as === "textarea") {
@@ -77,6 +77,7 @@ function InlineEditableField({ value, onSave, testId, placeholder, as = "text", 
         <textarea
           autoFocus value={draft} onChange={(e) => setDraft(e.target.value)} onBlur={commit}
           onKeyDown={(e) => { if (e.key === "Escape") cancel(); }}
+          rows={2}
           data-testid={`${testId}-input`} className={inputClassName}
         />
       );
@@ -91,7 +92,10 @@ function InlineEditableField({ value, onSave, testId, placeholder, as = "text", 
   }
 
   return (
-    <button type="button" onClick={() => { setDraft(value || ""); setEditing(true); }} data-testid={testId} className={className}>
+    <button
+      type="button" onClick={() => { setDraft(value || ""); setEditing(true); }} data-testid={testId}
+      aria-label={ariaLabel} className={`${className} cursor-text hover:bg-slate-50 transition-colors`}
+    >
       {value || placeholder}
     </button>
   );
@@ -152,6 +156,7 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
 
         <div className="py-3 border-b border-border mb-4 flex items-center gap-2 flex-wrap justify-between" data-testid="whatsapp-summary-row-2">
           <div className="flex items-center gap-2">
+            <span className="text-[13px] font-semibold text-text-primary">Messaging limit:</span>
             <span className="text-[13px] text-text-primary" data-testid="whatsapp-messaging-limit-value">{messagingLimit}</span>
             <span className="text-[12px] text-text-muted">messages per day</span>
             <button type="button" onClick={refreshMessagingLimit} data-testid="whatsapp-messaging-limit-refresh" className="text-text-muted hover:text-text-primary">
@@ -288,18 +293,21 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
               value={brandName} onSave={setBrandName} testId="whatsapp-preview-brand-name"
               placeholder={number.number} className="mt-3 block w-full text-[17px] font-semibold text-text-primary"
               inputClassName="mt-3 block w-full text-[17px] font-semibold text-text-primary text-center border border-border rounded-md px-2 py-1"
+              ariaLabel="Edit brand name"
             />
             <div className="text-[11px] text-text-muted mt-1">Official business account</div>
             <InlineEditableField
               value={about} onSave={setAbout} testId="whatsapp-preview-about"
               placeholder="Hey there! I am using WhatsApp." className="mt-3 block w-full text-[12px] text-text-secondary"
               inputClassName="mt-3 block w-full text-[12px] text-text-secondary text-center border border-border rounded-md px-2 py-1"
+              ariaLabel="Edit about"
             />
             <InlineEditableField
               value={businessDescription} onSave={setBusinessDescription} as="textarea"
               testId="whatsapp-preview-description" placeholder="Add a business description"
               className="mt-3 block w-full text-[11px] text-text-muted"
-              inputClassName="mt-3 block w-full text-[11px] text-text-muted border border-border rounded-md px-2 py-1"
+              inputClassName="mt-3 block w-full text-[11px] text-text-muted text-center border border-border rounded-md px-2 py-1"
+              ariaLabel="Edit business description"
             />
           </div>
         </div>

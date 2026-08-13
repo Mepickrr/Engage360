@@ -1,6 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import WhatsAppNumberDetail from "../WhatsAppNumberDetail";
+import * as PreviewHeaderModule from "@/components/common/PreviewHeader";
 
 const NUMBER = {
   id: "wa_1", number: "+91 74360 36062", username: "herbalroots",
@@ -18,7 +19,7 @@ const NUMBER = {
 const NON_DEFAULT_NUMBER = { ...NUMBER, id: "wa_2", isDefaultForCampaigns: false, quality: "Medium" };
 
 describe("WhatsAppNumberDetail — header and badges", () => {
-  it("shows the number, username, provider, and quality badges", () => {
+  it("shows the number and username in the header, and the relocated provider/quality badges in the summary row", () => {
     render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
     expect(screen.getByText("+91 74360 36062")).toBeInTheDocument();
     expect(screen.getByText("@herbalroots")).toBeInTheDocument();
@@ -165,9 +166,23 @@ describe("WhatsAppNumberDetail — big editable preview", () => {
     expect(screen.getByTestId("whatsapp-preview-about")).toHaveTextContent("New about text");
   });
 
-  it("shows a photo edit affordance that triggers the placeholder stub", () => {
+  it("cancels an in-progress edit back to the last saved value when Escape is pressed", () => {
     render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
-    expect(screen.getByTestId("whatsapp-preview-photo-edit")).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("whatsapp-preview-about"));
+    fireEvent.change(screen.getByTestId("whatsapp-preview-about-input"), { target: { value: "Unsaved draft text" } });
+    fireEvent.keyDown(screen.getByTestId("whatsapp-preview-about-input"), { key: "Escape" });
+    expect(screen.getByTestId("whatsapp-preview-about")).toHaveTextContent("Hey, there! I am using WhatsApp.");
+    expect(screen.queryByTestId("whatsapp-preview-about-input")).not.toBeInTheDocument();
+  });
+
+  it("shows a photo edit affordance that triggers the placeholder stub", () => {
+    const toastSpy = jest.spyOn(PreviewHeaderModule, "previewToast").mockImplementation(() => {});
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    const photoEditButton = screen.getByTestId("whatsapp-preview-photo-edit");
+    expect(photoEditButton).toBeInTheDocument();
+    fireEvent.click(photoEditButton);
+    expect(toastSpy).toHaveBeenCalledTimes(1);
+    toastSpy.mockRestore();
   });
 });
 
@@ -178,6 +193,17 @@ describe("WhatsAppNumberDetail — description, category, and edit-in-place list
     fireEvent.change(screen.getByTestId("whatsapp-preview-description-input"), { target: { value: "New description" } });
     fireEvent.blur(screen.getByTestId("whatsapp-preview-description-input"));
     expect(screen.getByTestId("whatsapp-preview-description")).toHaveTextContent("New description");
+  });
+
+  it("inserts a newline instead of committing when Enter is pressed in the description textarea", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    fireEvent.click(screen.getByTestId("whatsapp-preview-description"));
+    const textarea = screen.getByTestId("whatsapp-preview-description-input");
+    fireEvent.change(textarea, { target: { value: "Line one" } });
+    fireEvent.keyDown(textarea, { key: "Enter" });
+    // Enter has no special handling on the textarea — it should not commit/close the editor.
+    expect(screen.getByTestId("whatsapp-preview-description-input")).toBeInTheDocument();
+    expect(screen.queryByTestId("whatsapp-preview-description")).not.toBeInTheDocument();
   });
 
   it("defaults Category to Shopping and Retail and allows editing it as an EditableRow", () => {
