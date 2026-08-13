@@ -104,6 +104,7 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
   const [businessAddress, setBusinessAddress] = useState(number.businessAddress || "");
   const [businessEmail, setBusinessEmail] = useState(number.businessEmail || "");
   const [businessWebsite, setBusinessWebsite] = useState(number.businessWebsite || "");
+  const [category, setCategory] = useState(number.category || "Shopping and Retail");
   const [messagesConsumed, setMessagesConsumed] = useState(number.messagesConsumed);
   const [messagingLimit, setMessagingLimit] = useState(number.messagingLimit);
   const [catalogAllowAccess, setCatalogAllowAccess] = useState(number.catalogAllowAccess);
@@ -273,30 +274,6 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
             </div>
           </div>
 
-          <EditableRow
-            label="Business description" description="Edit your WhatsApp Business account description."
-            value={businessDescription} onSave={setBusinessDescription} onDelete={() => setBusinessDescription("")}
-            testId="whatsapp-business-description" emptyLabel="Add description"
-          />
-
-          <EditableRow
-            label="Business address" description="Edit your business's physical address."
-            value={businessAddress} onSave={setBusinessAddress} onDelete={() => setBusinessAddress("")}
-            testId="whatsapp-address" emptyLabel="Add address"
-          />
-
-          <EditableRow
-            label="Email for business contact" description="Edit your business email as an additional point of contact for you customers."
-            value={businessEmail} onSave={setBusinessEmail} onDelete={() => setBusinessEmail("")}
-            testId="whatsapp-email" emptyLabel="Add email"
-          />
-
-          <EditableRow
-            label="Business website" description="Edit your business website. You must include the http:// or https:// portion of the URL."
-            value={businessWebsite} onSave={setBusinessWebsite} onDelete={() => setBusinessWebsite("")}
-            testId="whatsapp-website" emptyLabel="Add website"
-          />
-
           <div className="mt-6 max-w-md mx-auto border-4 border-slate-900 rounded-[2rem] overflow-hidden bg-white" data-testid="whatsapp-big-preview">
             <div className="p-6 text-center">
               <div className="relative w-20 h-20 mx-auto">
@@ -319,7 +296,36 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
                 placeholder="Hey there! I am using WhatsApp." className="mt-3 block w-full text-[12px] text-text-secondary"
                 inputClassName="mt-3 block w-full text-[12px] text-text-secondary text-center border border-border rounded-md px-2 py-1"
               />
+              <InlineEditableField
+                value={businessDescription} onSave={setBusinessDescription} as="textarea"
+                testId="whatsapp-preview-description" placeholder="Add a business description"
+                className="mt-3 block w-full text-[11px] text-text-muted"
+                inputClassName="mt-3 block w-full text-[11px] text-text-muted border border-border rounded-md px-2 py-1"
+              />
             </div>
+          </div>
+
+          <div className="mt-6">
+            <EditableRow
+              label="Category" description="The business category shown on your WhatsApp Business profile."
+              value={category} onSave={setCategory} onDelete={() => setCategory("")}
+              testId="whatsapp-category" emptyLabel="Add category"
+            />
+            <EditableRow
+              label="Business address" description="Edit your business's physical address."
+              value={businessAddress} onSave={setBusinessAddress} onDelete={() => setBusinessAddress("")}
+              testId="whatsapp-address" emptyLabel="Add address"
+            />
+            <EditableRow
+              label="Email for business contact" description="Edit your business email as an additional point of contact for you customers."
+              value={businessEmail} onSave={setBusinessEmail} onDelete={() => setBusinessEmail("")}
+              testId="whatsapp-email" emptyLabel="Add email"
+            />
+            <EditableRow
+              label="Business website" description="Edit your business website. You must include the http:// or https:// portion of the URL."
+              value={businessWebsite} onSave={setBusinessWebsite} onDelete={() => setBusinessWebsite("")}
+              testId="whatsapp-website" emptyLabel="Add website"
+            />
           </div>
         </div>
       </div>

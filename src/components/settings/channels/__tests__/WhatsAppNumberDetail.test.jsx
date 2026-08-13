@@ -170,3 +170,35 @@ describe("WhatsAppNumberDetail — big editable preview", () => {
     expect(screen.getByTestId("whatsapp-preview-photo-edit")).toBeInTheDocument();
   });
 });
+
+describe("WhatsAppNumberDetail — description, category, and edit-in-place list", () => {
+  it("edits Business description inline inside the big preview", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    fireEvent.click(screen.getByTestId("whatsapp-preview-description"));
+    fireEvent.change(screen.getByTestId("whatsapp-preview-description-input"), { target: { value: "New description" } });
+    fireEvent.blur(screen.getByTestId("whatsapp-preview-description-input"));
+    expect(screen.getByTestId("whatsapp-preview-description")).toHaveTextContent("New description");
+  });
+
+  it("defaults Category to Shopping and Retail and allows editing it as an EditableRow", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    expect(screen.getByTestId("whatsapp-category")).toHaveTextContent("Shopping and Retail");
+    fireEvent.click(screen.getByTestId("whatsapp-category-edit"));
+    fireEvent.change(screen.getByTestId("whatsapp-category-input"), { target: { value: "Health and Beauty" } });
+    fireEvent.click(screen.getByTestId("whatsapp-category-save"));
+    expect(screen.getByTestId("whatsapp-category")).toHaveTextContent("Health and Beauty");
+  });
+
+  it("renders Business address, Email, and Website as edit-in-place rows below the preview, positioned after the big preview", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    const preview = screen.getByTestId("whatsapp-big-preview");
+    const address = screen.getByTestId("whatsapp-address");
+    const email = screen.getByTestId("whatsapp-email");
+    const website = screen.getByTestId("whatsapp-website");
+    expect(preview.compareDocumentPosition(address) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByText("support@herbalroots.com")).toBeInTheDocument();
+    expect(screen.getByText("https://herbalroots.com/")).toBeInTheDocument();
+    expect(email).toBeInTheDocument();
+    expect(website).toBeInTheDocument();
+  });
+});
