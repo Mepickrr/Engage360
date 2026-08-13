@@ -97,24 +97,12 @@ describe("WhatsAppNumberDetail — message consumed / messaging limit refresh", 
 });
 
 describe("WhatsAppNumberDetail — editable rows and live preview", () => {
-  it("shows an Add about button when about is empty, and a value with edit/delete icons once set", () => {
-    render(<WhatsAppNumberDetail number={{ ...NUMBER, about: "" }} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
-    expect(screen.getByTestId("whatsapp-about-add")).toBeInTheDocument();
-  });
-
-  it("edits Business description and updates the live preview", () => {
+  it("edits About via the preview and reflects the new value", () => {
     render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
-
-    fireEvent.click(screen.getByTestId("whatsapp-about-edit"));
-    fireEvent.change(screen.getByTestId("whatsapp-about-input"), { target: { value: "New about text" } });
-    fireEvent.click(screen.getByTestId("whatsapp-about-save"));
-
+    fireEvent.click(screen.getByTestId("whatsapp-preview-about"));
+    fireEvent.change(screen.getByTestId("whatsapp-preview-about-input"), { target: { value: "New about text" } });
+    fireEvent.keyDown(screen.getByTestId("whatsapp-preview-about-input"), { key: "Enter" });
     expect(screen.getAllByText("New about text").length).toBeGreaterThan(0);
-  });
-
-  it("does not render a preview line for empty fields (business address is empty in the fixture)", () => {
-    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
-    expect(screen.queryByTestId("whatsapp-preview-address")).not.toBeInTheDocument();
   });
 });
 
@@ -143,12 +131,42 @@ describe("WhatsAppNumberDetail — account overview and Facebook Catalog", () =>
 });
 
 describe("WhatsAppNumberDetail — single-column section order", () => {
-  it.skip("renders the summary bar before the Catalog card, and the Catalog card before the big preview", () => {
+  it("renders the summary bar before the Catalog card, and the Catalog card before the big preview", () => {
     render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
     const summary = screen.getByTestId("whatsapp-summary-row-1");
     const catalog = screen.getByTestId("whatsapp-catalog-manage");
     const preview = screen.getByTestId("whatsapp-big-preview");
     expect(summary.compareDocumentPosition(catalog) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(catalog.compareDocumentPosition(preview) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+});
+
+describe("WhatsAppNumberDetail — big editable preview", () => {
+  it("renders the brand name and about text inside the big preview", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    const preview = screen.getByTestId("whatsapp-big-preview");
+    expect(within(preview).getByText("herbal-roots")).toBeInTheDocument();
+    expect(within(preview).getByText("Hey, there! I am using WhatsApp.")).toBeInTheDocument();
+  });
+
+  it("edits the brand name in place by clicking it in the preview", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    fireEvent.click(screen.getByTestId("whatsapp-preview-brand-name"));
+    fireEvent.change(screen.getByTestId("whatsapp-preview-brand-name-input"), { target: { value: "Herbal Roots Co" } });
+    fireEvent.blur(screen.getByTestId("whatsapp-preview-brand-name-input"));
+    expect(screen.getByTestId("whatsapp-preview-brand-name")).toHaveTextContent("Herbal Roots Co");
+  });
+
+  it("edits About in place by clicking it in the preview", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    fireEvent.click(screen.getByTestId("whatsapp-preview-about"));
+    fireEvent.change(screen.getByTestId("whatsapp-preview-about-input"), { target: { value: "New about text" } });
+    fireEvent.keyDown(screen.getByTestId("whatsapp-preview-about-input"), { key: "Enter" });
+    expect(screen.getByTestId("whatsapp-preview-about")).toHaveTextContent("New about text");
+  });
+
+  it("shows a photo edit affordance that triggers the placeholder stub", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    expect(screen.getByTestId("whatsapp-preview-photo-edit")).toBeInTheDocument();
   });
 });

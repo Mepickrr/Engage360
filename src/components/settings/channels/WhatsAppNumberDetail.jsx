@@ -1,19 +1,13 @@
 // src/components/settings/channels/WhatsAppNumberDetail.jsx
 import React, { useState } from "react";
-import { ArrowLeft, Copy, Pencil, Trash2, Plus, RefreshCw, UserRound, HelpCircle } from "lucide-react";
+import { ArrowLeft, Copy, Pencil, Trash2, Plus, RefreshCw, UserRound, Camera } from "lucide-react";
 import Badge from "./Badge";
 import { previewToast } from "@/components/common/PreviewHeader";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 function qualityTone(quality) {
   if (quality === "High") return "emerald";
   if (quality === "Medium") return "amber";
   return "rose";
-}
-
-function maskedNumber(num) {
-  const digits = (num || "").replace(/\D/g, "");
-  return `+${digits.slice(0, 2)}${"X".repeat(Math.max(digits.length - 2, 0))}`;
 }
 
 function EditableRow({ label, description, value, onSave, onDelete, testId, emptyLabel }) {
@@ -70,9 +64,43 @@ function EditableRow({ label, description, value, onSave, onDelete, testId, empt
   );
 }
 
+function InlineEditableField({ value, onSave, testId, placeholder, as = "text", className = "", inputClassName = "" }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value || "");
+
+  const commit = () => { onSave(draft.trim()); setEditing(false); };
+  const cancel = () => { setDraft(value || ""); setEditing(false); };
+
+  if (editing) {
+    if (as === "textarea") {
+      return (
+        <textarea
+          autoFocus value={draft} onChange={(e) => setDraft(e.target.value)} onBlur={commit}
+          onKeyDown={(e) => { if (e.key === "Escape") cancel(); }}
+          data-testid={`${testId}-input`} className={inputClassName}
+        />
+      );
+    }
+    return (
+      <input
+        type="text" autoFocus value={draft} onChange={(e) => setDraft(e.target.value)} onBlur={commit}
+        onKeyDown={(e) => { if (e.key === "Enter") commit(); if (e.key === "Escape") cancel(); }}
+        data-testid={`${testId}-input`} className={inputClassName}
+      />
+    );
+  }
+
+  return (
+    <button type="button" onClick={() => { setDraft(value || ""); setEditing(true); }} data-testid={testId} className={className}>
+      {value || placeholder}
+    </button>
+  );
+}
+
 export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) {
   const [businessDescription, setBusinessDescription] = useState(number.businessDescription || "");
   const [about, setAbout] = useState(number.about || "");
+  const [brandName, setBrandName] = useState(number.brandName || "");
   const [businessAddress, setBusinessAddress] = useState(number.businessAddress || "");
   const [businessEmail, setBusinessEmail] = useState(number.businessEmail || "");
   const [businessWebsite, setBusinessWebsite] = useState(number.businessWebsite || "");
@@ -252,12 +280,6 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
           />
 
           <EditableRow
-            label="About" description="Add your about section to be displayed on your whatsapp business profile."
-            value={about} onSave={setAbout} onDelete={() => setAbout("")}
-            testId="whatsapp-about" emptyLabel="Add about"
-          />
-
-          <EditableRow
             label="Business address" description="Edit your business's physical address."
             value={businessAddress} onSave={setBusinessAddress} onDelete={() => setBusinessAddress("")}
             testId="whatsapp-address" emptyLabel="Add address"
@@ -275,54 +297,28 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
             testId="whatsapp-website" emptyLabel="Add website"
           />
 
-          <div className="pt-6">
-            <p className="text-[13px] font-semibold text-text-primary mt-5 mb-3">Following details will be displayed on your WhatsApp Business Account profile.</p>
-
-            <div className="space-y-3">
-              <label className="block">
-                <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium inline-flex items-center gap-1">
-                  Brand Name
-                  <TooltipProvider delayDuration={120}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <HelpCircle className="w-3 h-3 cursor-pointer" />
-                      </TooltipTrigger>
-                      <TooltipContent side="top">The name shown to customers on your WhatsApp Business profile.</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </span>
-                <input type="text" defaultValue={number.brandName} data-testid="whatsapp-brand-name"
-                  className="mt-1 w-full px-3 py-2 text-sm border border-border rounded-md text-text-primary" />
-              </label>
-              <div>
-                <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium">Brand Logo</span>
-                <div className="mt-1 w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
-                  <UserRound className="w-5 h-5 text-slate-400" />
+          <div className="mt-6 max-w-md mx-auto border-4 border-slate-900 rounded-[2rem] overflow-hidden bg-white" data-testid="whatsapp-big-preview">
+            <div className="p-6 text-center">
+              <div className="relative w-20 h-20 mx-auto">
+                <div className="w-20 h-20 rounded-full bg-slate-200 flex items-center justify-center">
+                  <UserRound className="w-9 h-9 text-slate-400" />
                 </div>
+                <button type="button" onClick={() => previewToast()} data-testid="whatsapp-preview-photo-edit"
+                  className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center border-2 border-white">
+                  <Camera className="w-3.5 h-3.5" />
+                </button>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="w-64 flex-shrink-0">
-          <div className="sticky top-4 mx-auto border-4 border-slate-900 rounded-[2rem] w-60 overflow-hidden bg-white">
-            <div className="p-4 text-center">
-              <div className="w-14 h-14 mx-auto rounded-full bg-slate-200 flex items-center justify-center">
-                <UserRound className="w-7 h-7 text-slate-400" />
-              </div>
-              <div className="mt-2 text-[13px] font-semibold text-text-primary">{maskedNumber(number.number)}</div>
-              <div className="text-[11px] text-text-muted">Shopping and Retail</div>
-              <div className="mt-3 text-[11px] text-text-secondary">Official business account</div>
-              <div className="mt-3 text-left space-y-1 text-[11px] text-emerald-700">
-                {about && <p>{about}</p>}
-                {businessAddress && <p data-testid="whatsapp-preview-address">{businessAddress}</p>}
-                {businessEmail && <p>{businessEmail}</p>}
-                {businessWebsite && <p>{businessWebsite}</p>}
-              </div>
-            </div>
-            <div className="border-t border-border p-3 text-left">
-              <div className="text-[10px] text-text-muted">About and phone number</div>
-              <div className="text-[12px] text-text-primary">{about || "Hey there! I am using WhatsApp."}</div>
+              <InlineEditableField
+                value={brandName} onSave={setBrandName} testId="whatsapp-preview-brand-name"
+                placeholder={number.number} className="mt-3 block w-full text-[17px] font-semibold text-text-primary"
+                inputClassName="mt-3 block w-full text-[17px] font-semibold text-text-primary text-center border border-border rounded-md px-2 py-1"
+              />
+              <div className="text-[11px] text-text-muted mt-1">Official business account</div>
+              <InlineEditableField
+                value={about} onSave={setAbout} testId="whatsapp-preview-about"
+                placeholder="Hey there! I am using WhatsApp." className="mt-3 block w-full text-[12px] text-text-secondary"
+                inputClassName="mt-3 block w-full text-[12px] text-text-secondary text-center border border-border rounded-md px-2 py-1"
+              />
             </div>
           </div>
         </div>
