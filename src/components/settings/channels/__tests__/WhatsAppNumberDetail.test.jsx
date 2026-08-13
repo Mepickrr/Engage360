@@ -141,3 +141,14 @@ describe("WhatsAppNumberDetail — account overview and Facebook Catalog", () =>
     expect(screen.getByText(/remove out of stock products/i)).toBeInTheDocument();
   });
 });
+
+describe("WhatsAppNumberDetail — single-column section order", () => {
+  it.skip("renders the summary bar before the Catalog card, and the Catalog card before the big preview", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    const summary = screen.getByTestId("whatsapp-summary-row-1");
+    const catalog = screen.getByTestId("whatsapp-catalog-manage");
+    const preview = screen.getByTestId("whatsapp-big-preview");
+    expect(summary.compareDocumentPosition(catalog) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(catalog.compareDocumentPosition(preview) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+});

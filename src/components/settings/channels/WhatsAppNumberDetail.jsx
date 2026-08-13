@@ -209,6 +209,42 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
             </div>
           </div>
 
+          <div className="mt-6 bg-surface border border-border rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px]">f</div>
+                <span className="text-[13px] font-semibold text-text-primary">Catalog Id:</span>
+                <span className="text-[13px] text-text-primary">{number.catalogId}</span>
+              </div>
+              <a href="https://business.facebook.com/commerce/catalogs" target="_blank" rel="noreferrer" className="text-[12px] text-primary font-medium" data-testid="whatsapp-catalog-manage">Manage ↗</a>
+            </div>
+            <label className="flex items-center gap-2 mb-3">
+              <input
+                type="checkbox"
+                checked={catalogAllowAccess}
+                onChange={(e) => setCatalogAllowAccess(e.target.checked)}
+                aria-label="Allow customer to access catalog"
+                data-testid="whatsapp-catalog-allow-access"
+                className="w-4 h-4"
+              />
+              <span className="text-[12px] text-text-secondary">Allow your customer to access above connected catalog anytime on WhatsApp</span>
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={removeOutOfStock}
+                onChange={(e) => setRemoveOutOfStock(e.target.checked)}
+                aria-label="Remove Out of Stock products from the catalog"
+                data-testid="whatsapp-catalog-remove-oos"
+                className="w-4 h-4"
+              />
+              <span className="text-[12px] text-text-secondary">Remove Out of Stock products from the catalog</span>
+            </label>
+            <div className="mt-3 bg-violet-50 border border-violet-100 rounded-md p-2 text-[11px] text-violet-700">
+              Catalog will be synced regularly at an interval of 24 hours. Any changes made in the catalog will be reflected here after some time.
+            </div>
+          </div>
+
           <EditableRow
             label="Business description" description="Edit your WhatsApp Business account description."
             value={businessDescription} onSave={setBusinessDescription} onDelete={() => setBusinessDescription("")}
@@ -264,42 +300,6 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
                   <UserRound className="w-5 h-5 text-slate-400" />
                 </div>
               </div>
-            </div>
-          </div>
-
-          <div className="mt-6 bg-surface border border-border rounded-lg p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px]">f</div>
-                <span className="text-[13px] font-semibold text-text-primary">Catalog Id:</span>
-                <span className="text-[13px] text-text-primary">{number.catalogId}</span>
-              </div>
-              <a href="https://business.facebook.com/commerce/catalogs" target="_blank" rel="noreferrer" className="text-[12px] text-primary font-medium" data-testid="whatsapp-catalog-manage">Manage ↗</a>
-            </div>
-            <label className="flex items-center gap-2 mb-3">
-              <input
-                type="checkbox"
-                checked={catalogAllowAccess}
-                onChange={(e) => setCatalogAllowAccess(e.target.checked)}
-                aria-label="Allow customer to access catalog"
-                data-testid="whatsapp-catalog-allow-access"
-                className="w-4 h-4"
-              />
-              <span className="text-[12px] text-text-secondary">Allow your customer to access above connected catalog anytime on WhatsApp</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={removeOutOfStock}
-                onChange={(e) => setRemoveOutOfStock(e.target.checked)}
-                aria-label="Remove Out of Stock products from the catalog"
-                data-testid="whatsapp-catalog-remove-oos"
-                className="w-4 h-4"
-              />
-              <span className="text-[12px] text-text-secondary">Remove Out of Stock products from the catalog</span>
-            </label>
-            <div className="mt-3 bg-violet-50 border border-violet-100 rounded-md p-2 text-[11px] text-violet-700">
-              Catalog will be synced regularly at an interval of 24 hours. Any changes made in the catalog will be reflected here after some time.
             </div>
           </div>
         </div>
