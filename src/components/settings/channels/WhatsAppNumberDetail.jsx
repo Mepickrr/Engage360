@@ -159,13 +159,6 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
             </div>
           </div>
 
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-[12px] text-amber-800 mb-3">
-            Meta enforces daily WhatsApp Business messaging limits for quality, compliance, and tier-based improvements.
-          </div>
-
-          <div className="bg-gradient-to-r from-emerald-50 to-violet-50 border border-emerald-200 rounded-lg p-3 text-[12px] text-emerald-800 mb-4 flex items-center gap-2">
-            Your account is powered by MM Lite API. <span className="text-emerald-600">✓</span>
-          </div>
         </div>
 
         <div className="mt-6 bg-surface border border-border rounded-lg p-4">

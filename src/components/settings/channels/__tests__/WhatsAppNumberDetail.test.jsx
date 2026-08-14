@@ -110,11 +110,12 @@ describe("WhatsAppNumberDetail — editable rows and live preview", () => {
 });
 
 describe("WhatsAppNumberDetail — account overview and Facebook Catalog", () => {
-  it("renders the TSP onboarding and A/B testing links, and the MM Lite banner", () => {
+  it("renders the TSP onboarding and A/B testing links, without the messaging-limit or MM Lite notes", () => {
     render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
     expect(screen.getByText(/view details/i)).toBeInTheDocument();
     expect(screen.getByText(/test now/i)).toBeInTheDocument();
-    expect(screen.getByText(/powered by mm lite api/i)).toBeInTheDocument();
+    expect(screen.queryByText(/tier-based improvements/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/powered by mm lite api/i)).not.toBeInTheDocument();
   });
 
   it("hides the Business Portfolio ID, Phone Number, and WABA Provider fields", () => {
