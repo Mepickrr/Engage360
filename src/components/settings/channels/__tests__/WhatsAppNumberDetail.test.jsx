@@ -186,7 +186,7 @@ describe("WhatsAppNumberDetail — big editable preview", () => {
   });
 });
 
-describe("WhatsAppNumberDetail — description, category, and edit-in-place list", () => {
+describe("WhatsAppNumberDetail — description, category, address, email, and website all inline in the preview", () => {
   it("edits Business description inline inside the big preview", () => {
     render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
     fireEvent.click(screen.getByTestId("whatsapp-preview-description"));
@@ -206,25 +206,52 @@ describe("WhatsAppNumberDetail — description, category, and edit-in-place list
     expect(screen.queryByTestId("whatsapp-preview-description")).not.toBeInTheDocument();
   });
 
-  it("defaults Category to Shopping and Retail and allows editing it as an EditableRow", () => {
-    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
-    expect(screen.getByTestId("whatsapp-category")).toHaveTextContent("Shopping and Retail");
-    fireEvent.click(screen.getByTestId("whatsapp-category-edit"));
-    fireEvent.change(screen.getByTestId("whatsapp-category-input"), { target: { value: "Health and Beauty" } });
-    fireEvent.click(screen.getByTestId("whatsapp-category-save"));
-    expect(screen.getByTestId("whatsapp-category")).toHaveTextContent("Health and Beauty");
-  });
-
-  it("renders Business address, Email, and Website as edit-in-place rows below the preview, positioned after the big preview", () => {
+  it("shows the masked phone number as a static (non-editable) line in the preview", () => {
     render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
     const preview = screen.getByTestId("whatsapp-big-preview");
-    const address = screen.getByTestId("whatsapp-address");
-    const email = screen.getByTestId("whatsapp-email");
-    const website = screen.getByTestId("whatsapp-website");
-    expect(preview.compareDocumentPosition(address) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(screen.getByText("support@herbalroots.com")).toBeInTheDocument();
-    expect(screen.getByText("https://herbalroots.com/")).toBeInTheDocument();
-    expect(email).toBeInTheDocument();
-    expect(website).toBeInTheDocument();
+    expect(within(preview).getByTestId("whatsapp-preview-phone-number")).toHaveTextContent("+91XXXXXXXXXX");
+  });
+
+  it("defaults Category to Shopping and Retail and allows editing it in place inside the preview", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    const preview = screen.getByTestId("whatsapp-big-preview");
+    expect(within(preview).getByTestId("whatsapp-preview-category")).toHaveTextContent("Shopping and Retail");
+    fireEvent.click(screen.getByTestId("whatsapp-preview-category"));
+    fireEvent.change(screen.getByTestId("whatsapp-preview-category-input"), { target: { value: "Health and Beauty" } });
+    fireEvent.blur(screen.getByTestId("whatsapp-preview-category-input"));
+    expect(screen.getByTestId("whatsapp-preview-category")).toHaveTextContent("Health and Beauty");
+  });
+
+  it("edits Business address in place inside the preview", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    fireEvent.click(screen.getByTestId("whatsapp-preview-address"));
+    fireEvent.change(screen.getByTestId("whatsapp-preview-address-input"), { target: { value: "2 Road Pune Maharashtra India 411037" } });
+    fireEvent.blur(screen.getByTestId("whatsapp-preview-address-input"));
+    expect(screen.getByTestId("whatsapp-preview-address")).toHaveTextContent("2 Road Pune Maharashtra India 411037");
+  });
+
+  it("renders Support Email and Website as inline-editable fields inside the preview, with no separate boxes outside it", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    const preview = screen.getByTestId("whatsapp-big-preview");
+    expect(within(preview).getByTestId("whatsapp-preview-email")).toHaveTextContent("support@herbalroots.com");
+    expect(within(preview).getByTestId("whatsapp-preview-website")).toHaveTextContent("https://herbalroots.com/");
+    // The old standalone edit-in-place list below the preview no longer exists.
+    expect(screen.queryByTestId("whatsapp-category")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("whatsapp-address")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("whatsapp-email")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("whatsapp-website")).not.toBeInTheDocument();
+  });
+
+  it("edits Support Email and Website in place inside the preview", () => {
+    render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
+    fireEvent.click(screen.getByTestId("whatsapp-preview-email"));
+    fireEvent.change(screen.getByTestId("whatsapp-preview-email-input"), { target: { value: "support@home.com" } });
+    fireEvent.blur(screen.getByTestId("whatsapp-preview-email-input"));
+    expect(screen.getByTestId("whatsapp-preview-email")).toHaveTextContent("support@home.com");
+
+    fireEvent.click(screen.getByTestId("whatsapp-preview-website"));
+    fireEvent.change(screen.getByTestId("whatsapp-preview-website-input"), { target: { value: "https://www.hopeng.com" } });
+    fireEvent.blur(screen.getByTestId("whatsapp-preview-website-input"));
+    expect(screen.getByTestId("whatsapp-preview-website")).toHaveTextContent("https://www.hopeng.com");
   });
 });

@@ -1,6 +1,6 @@
 // src/components/settings/channels/WhatsAppNumberDetail.jsx
 import React, { useState } from "react";
-import { ArrowLeft, Copy, Pencil, Trash2, Plus, RefreshCw, UserRound, Camera } from "lucide-react";
+import { ArrowLeft, Copy, RefreshCw, UserRound, Camera } from "lucide-react";
 import Badge from "./Badge";
 import { previewToast } from "@/components/common/PreviewHeader";
 
@@ -10,58 +10,9 @@ function qualityTone(quality) {
   return "rose";
 }
 
-function EditableRow({ label, description, value, onSave, onDelete, testId, emptyLabel }) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(value || "");
-
-  if (editing) {
-    return (
-      <div className="py-4 border-b border-border" data-testid={testId}>
-        <div className="text-[13px] font-semibold text-text-primary mb-1">{label}</div>
-        {description && <p className="text-[11px] text-text-muted mb-2">{description}</p>}
-        <textarea
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          rows={2}
-          data-testid={`${testId}-input`}
-          className="w-full px-3 py-2 text-sm border border-border rounded-md text-text-primary"
-        />
-        <div className="flex gap-2 mt-2">
-          <button type="button" onClick={() => { onSave(draft); setEditing(false); }} data-testid={`${testId}-save`}
-            className="px-3 py-1.5 text-[12px] rounded-md bg-primary text-white">Save</button>
-          <button type="button" onClick={() => { setDraft(value || ""); setEditing(false); }} data-testid={`${testId}-cancel`}
-            className="px-3 py-1.5 text-[12px] rounded-md border border-border text-text-secondary">Cancel</button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="py-4 border-b border-border" data-testid={testId}>
-      <div className="text-[13px] font-semibold text-text-primary mb-1">{label}</div>
-      {description && <p className="text-[11px] text-text-muted mb-2">{description}</p>}
-      {value ? (
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-[13px] text-text-primary flex-1">&ldquo;{value}&rdquo;</p>
-          <div className="flex gap-1 flex-shrink-0">
-            <button type="button" onClick={() => setEditing(true)} data-testid={`${testId}-edit`}
-              className="w-7 h-7 border border-border rounded-md flex items-center justify-center text-text-secondary hover:bg-slate-50">
-              <Pencil className="w-3.5 h-3.5" />
-            </button>
-            <button type="button" onClick={onDelete} data-testid={`${testId}-delete`}
-              className="w-7 h-7 border border-border rounded-md flex items-center justify-center text-text-secondary hover:bg-rose-50 hover:text-rose-600">
-              <Trash2 className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-      ) : (
-        <button type="button" onClick={() => setEditing(true)} data-testid={`${testId}-add`}
-          className="px-3 py-1.5 text-[12px] rounded-md border border-dashed border-border text-text-secondary hover:bg-slate-50 inline-flex items-center gap-1">
-          <Plus className="w-3.5 h-3.5" /> {emptyLabel}
-        </button>
-      )}
-    </div>
-  );
+function maskedNumber(num) {
+  const digits = (num || "").replace(/\D/g, "");
+  return `+${digits.slice(0, 2)}${"X".repeat(Math.max(digits.length - 2, 0))}`;
 }
 
 function InlineEditableField({ value, onSave, testId, placeholder, as = "text", className = "", inputClassName = "", ariaLabel }) {
@@ -295,44 +246,59 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
               inputClassName="mt-3 block w-full text-[17px] font-semibold text-text-primary text-center border border-border rounded-md px-2 py-1"
               ariaLabel="Edit brand name"
             />
-            <div className="text-[11px] text-text-muted mt-1">Official business account</div>
+            <div className="mt-1 text-[12px] text-text-muted" data-testid="whatsapp-preview-phone-number">{maskedNumber(number.number)}</div>
             <InlineEditableField
-              value={about} onSave={setAbout} testId="whatsapp-preview-about"
-              placeholder="Hey there! I am using WhatsApp." className="mt-3 block w-full text-[12px] text-text-secondary"
-              inputClassName="mt-3 block w-full text-[12px] text-text-secondary text-center border border-border rounded-md px-2 py-1"
-              ariaLabel="Edit about"
+              value={category} onSave={setCategory} testId="whatsapp-preview-category"
+              placeholder="Shopping and Retail" className="mt-1 block w-full text-[12px] text-text-muted"
+              inputClassName="mt-1 block w-full text-[12px] text-text-muted text-center border border-border rounded-md px-2 py-1"
+              ariaLabel="Edit category"
             />
+          </div>
+
+          <div className="px-6 py-3 border-t border-slate-100 text-center text-[11px] text-text-muted">
+            Official business account
+          </div>
+
+          <div className="border-t border-slate-100">
             <InlineEditableField
               value={businessDescription} onSave={setBusinessDescription} as="textarea"
               testId="whatsapp-preview-description" placeholder="Add a business description"
-              className="mt-3 block w-full text-[11px] text-text-muted"
-              inputClassName="mt-3 block w-full text-[11px] text-text-muted text-center border border-border rounded-md px-2 py-1"
+              className="block w-full text-left text-[12px] text-text-primary px-6 py-3 border-b border-slate-100"
+              inputClassName="block w-full text-left text-[12px] text-text-primary px-6 py-3 border-b border-slate-100"
               ariaLabel="Edit business description"
             />
+            <InlineEditableField
+              value={businessAddress} onSave={setBusinessAddress} as="textarea"
+              testId="whatsapp-preview-address" placeholder="Add address"
+              className="block w-full text-left text-[12px] text-emerald-700 px-6 py-3 border-b border-slate-100"
+              inputClassName="block w-full text-left text-[12px] text-emerald-700 px-6 py-3 border-b border-slate-100"
+              ariaLabel="Edit business address"
+            />
+            <InlineEditableField
+              value={businessEmail} onSave={setBusinessEmail}
+              testId="whatsapp-preview-email" placeholder="Add support email"
+              className="block w-full text-left text-[12px] text-emerald-700 px-6 py-3 border-b border-slate-100"
+              inputClassName="block w-full text-left text-[12px] text-emerald-700 px-6 py-3 border-b border-slate-100"
+              ariaLabel="Edit support email"
+            />
+            <InlineEditableField
+              value={businessWebsite} onSave={setBusinessWebsite}
+              testId="whatsapp-preview-website" placeholder="Add website"
+              className="block w-full text-left text-[12px] text-emerald-700 px-6 py-3"
+              inputClassName="block w-full text-left text-[12px] text-emerald-700 px-6 py-3"
+              ariaLabel="Edit website"
+            />
           </div>
-        </div>
 
-        <div className="mt-6">
-          <EditableRow
-            label="Category" description="The business category shown on your WhatsApp Business profile."
-            value={category} onSave={setCategory} onDelete={() => setCategory("")}
-            testId="whatsapp-category" emptyLabel="Add category"
-          />
-          <EditableRow
-            label="Business address" description="Edit your business's physical address."
-            value={businessAddress} onSave={setBusinessAddress} onDelete={() => setBusinessAddress("")}
-            testId="whatsapp-address" emptyLabel="Add address"
-          />
-          <EditableRow
-            label="Email for business contact" description="Edit your business email as an additional point of contact for you customers."
-            value={businessEmail} onSave={setBusinessEmail} onDelete={() => setBusinessEmail("")}
-            testId="whatsapp-email" emptyLabel="Add email"
-          />
-          <EditableRow
-            label="Business website" description="Edit your business website. You must include the http:// or https:// portion of the URL."
-            value={businessWebsite} onSave={setBusinessWebsite} onDelete={() => setBusinessWebsite("")}
-            testId="whatsapp-website" emptyLabel="Add website"
-          />
+          <div className="border-t border-slate-100 px-6 py-3 text-left">
+            <div className="text-[10px] text-text-muted">About and phone number</div>
+            <InlineEditableField
+              value={about} onSave={setAbout} testId="whatsapp-preview-about"
+              placeholder="Hey there! I am using WhatsApp." className="block w-full text-left text-[12px] text-text-primary"
+              inputClassName="block w-full text-left text-[12px] text-text-primary border border-border rounded-md px-2 py-1"
+              ariaLabel="Edit about"
+            />
+          </div>
         </div>
       </div>
     </div>
