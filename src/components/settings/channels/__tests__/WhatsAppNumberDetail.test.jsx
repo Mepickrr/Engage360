@@ -21,7 +21,8 @@ const NON_DEFAULT_NUMBER = { ...NUMBER, id: "wa_2", isDefaultForCampaigns: false
 describe("WhatsAppNumberDetail — header and badges", () => {
   it("shows the number and username in the header, and the relocated provider/quality badges in the summary row", () => {
     render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
-    expect(screen.getByText("+91 74360 36062")).toBeInTheDocument();
+    // The number now also appears unmasked in the big preview, so assert at least one match.
+    expect(screen.getAllByText("+91 74360 36062").length).toBeGreaterThan(0);
     expect(screen.getByText("@herbalroots")).toBeInTheDocument();
     expect(screen.getByText("Provider: TSP Karix")).toBeInTheDocument();
     expect(screen.getByText("Quality: High")).toBeInTheDocument();
@@ -53,12 +54,13 @@ describe("WhatsAppNumberDetail — header and badges", () => {
 });
 
 describe("WhatsAppNumberDetail — metadata summary bar", () => {
-  it("shows Provider, Quality, and WABA ID on the first summary row", () => {
+  it("shows Provider, Quality, WABA ID, and an MM Lite tag on the first summary row", () => {
     render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
     const row1 = screen.getByTestId("whatsapp-summary-row-1");
     expect(row1).toHaveTextContent("Provider: TSP Karix");
     expect(row1).toHaveTextContent("Quality: High");
     expect(row1).toHaveTextContent("WABA ID: 328175003703387");
+    expect(row1).toHaveTextContent("MM Lite");
   });
 
   it("shows Messaging limit, Default badge, and Migrate provider on the second summary row when default", () => {
@@ -115,12 +117,12 @@ describe("WhatsAppNumberDetail — account overview and Facebook Catalog", () =>
     expect(screen.getByText(/powered by mm lite api/i)).toBeInTheDocument();
   });
 
-  it("renders Business Portfolio ID and WABA Provider with Available pills, and does not duplicate WABA ID here", () => {
+  it("hides the Business Portfolio ID, Phone Number, and WABA Provider fields", () => {
     render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
-    expect(screen.getByDisplayValue("1379257819643222")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("TSPENGAGE")).toBeInTheDocument();
+    expect(screen.queryByDisplayValue("1379257819643222")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("TSPENGAGE")).not.toBeInTheDocument();
     expect(screen.queryByDisplayValue("328175003703387")).not.toBeInTheDocument();
-    expect(screen.getAllByText("Available").length).toBe(2);
+    expect(screen.queryByText("Available")).not.toBeInTheDocument();
   });
 
   it("renders the Facebook Catalog card with catalog id and access toggle", () => {
@@ -206,10 +208,10 @@ describe("WhatsAppNumberDetail — description, category, address, email, and we
     expect(screen.queryByTestId("whatsapp-preview-description")).not.toBeInTheDocument();
   });
 
-  it("shows the masked phone number as a static (non-editable) line in the preview", () => {
+  it("shows the actual phone number (not masked) as a static (non-editable) line in the preview", () => {
     render(<WhatsAppNumberDetail number={NUMBER} onBack={jest.fn()} onMakeDefault={jest.fn()} />);
     const preview = screen.getByTestId("whatsapp-big-preview");
-    expect(within(preview).getByTestId("whatsapp-preview-phone-number")).toHaveTextContent("+91XXXXXXXXXX");
+    expect(within(preview).getByTestId("whatsapp-preview-phone-number")).toHaveTextContent(NUMBER.number);
   });
 
   it("defaults Category to Shopping and Retail and allows editing it in place inside the preview", () => {

@@ -10,11 +10,6 @@ function qualityTone(quality) {
   return "rose";
 }
 
-function maskedNumber(num) {
-  const digits = (num || "").replace(/\D/g, "");
-  return `+${digits.slice(0, 2)}${"X".repeat(Math.max(digits.length - 2, 0))}`;
-}
-
 function InlineEditableField({ value, onSave, testId, placeholder, as = "text", className = "", inputClassName = "", ariaLabel }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value || "");
@@ -103,6 +98,7 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
           <Badge tone="slate">Provider: {number.provider}</Badge>
           <Badge tone={qualityTone(number.quality)}>Quality: {number.quality}</Badge>
           <Badge tone="slate">WABA ID: {number.wabaId}</Badge>
+          <Badge tone="violet">MM Lite</Badge>
         </div>
 
         <div className="py-3 border-b border-border mb-4 flex items-center gap-2 flex-wrap justify-between" data-testid="whatsapp-summary-row-2">
@@ -170,27 +166,6 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
           <div className="bg-gradient-to-r from-emerald-50 to-violet-50 border border-emerald-200 rounded-lg p-3 text-[12px] text-emerald-800 mb-4 flex items-center gap-2">
             Your account is powered by MM Lite API. <span className="text-emerald-600">✓</span>
           </div>
-
-          <div className="grid grid-cols-1 gap-3">
-            {[
-              { label: "Business Portfolio ID", value: number.businessPortfolioId },
-              { label: "Phone Number", value: number.number.replace(/\D/g, "") },
-            ].map((f) => (
-              <div key={f.label} className="flex items-end gap-2">
-                <label className="block flex-1">
-                  <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium">{f.label}</span>
-                  <input type="text" defaultValue={f.value} disabled data-testid={`whatsapp-field-${f.label.toLowerCase().replace(/\s+/g, "-")}`}
-                    className="mt-1 w-full px-3 py-2 text-sm border border-border rounded-md bg-slate-50 text-text-primary disabled:cursor-not-allowed" />
-                </label>
-                <span className="mb-2 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700">Available</span>
-              </div>
-            ))}
-            <label className="block">
-              <span className="text-[11px] uppercase tracking-wide text-text-muted font-medium">WABA Provider</span>
-              <input type="text" defaultValue={number.wabaProvider} disabled data-testid="whatsapp-waba-provider"
-                className="mt-1 w-full px-3 py-2 text-sm border border-border rounded-md bg-slate-50 text-text-primary disabled:cursor-not-allowed" />
-            </label>
-          </div>
         </div>
 
         <div className="mt-6 bg-surface border border-border rounded-lg p-4">
@@ -246,7 +221,7 @@ export default function WhatsAppNumberDetail({ number, onBack, onMakeDefault }) 
               inputClassName="mt-3 block w-full text-[17px] font-semibold text-text-primary text-center border border-border rounded-md px-2 py-1"
               ariaLabel="Edit brand name"
             />
-            <div className="mt-1 text-[12px] text-text-muted" data-testid="whatsapp-preview-phone-number">{maskedNumber(number.number)}</div>
+            <div className="mt-1 text-[12px] text-text-muted" data-testid="whatsapp-preview-phone-number">{number.number}</div>
             <InlineEditableField
               value={category} onSave={setCategory} testId="whatsapp-preview-category"
               placeholder="Shopping and Retail" className="mt-1 block w-full text-[12px] text-text-muted"
