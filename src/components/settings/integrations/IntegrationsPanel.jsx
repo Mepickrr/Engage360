@@ -56,12 +56,12 @@ export default function IntegrationsPanel() {
 
   const RECORDS = { woocommerce, magento, razorpay, cashfree, shiprocketCheckout, gokwik, shopflo, judgeme };
 
-  // Shopify already has a connected store (rendered via ShopifyDetail below), so
-  // its Platform card in the "Create new integration" picker is always hidden.
+  // Shopify already has a connected store (rendered via ShopifyDetail below),
+  // but the Platform card still shows in the "Create new integration" picker
+  // so a second/alternate platform can be connected alongside it.
   const connectedSimpleIds = Object.entries(RECORDS)
     .filter(([, item]) => item.connected)
-    .map(([id]) => id)
-    .concat("shopify");
+    .map(([id]) => id);
 
   const groups = [
     { key: "platform", label: "Platform", items: [shopify, woocommerce, magento] },

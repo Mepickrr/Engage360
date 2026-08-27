@@ -21,4 +21,23 @@ describe("SettingsPage", () => {
     render(<SettingsPage />);
     expect(screen.getByTestId("settings-account")).toBeInTheDocument();
   });
+
+  it("hides Billing and API Keys from the nav, and lists the remaining items in the requested order", () => {
+    render(<SettingsPage />);
+    const nav = within(screen.getByTestId("settings-nav"));
+
+    expect(nav.queryByText("Billing")).not.toBeInTheDocument();
+    expect(nav.queryByText("API Keys")).not.toBeInTheDocument();
+
+    const labels = nav.getAllByRole("button").map((btn) => btn.textContent);
+    expect(labels).toEqual([
+      "Account",
+      "Connected channels",
+      "Integrations",
+      "Revenue Attribution",
+      "Delivery Controls",
+      "Team",
+      "Notifications",
+    ]);
+  });
 });

@@ -120,6 +120,30 @@ export function colorForSeed(seed) {
   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 }
 
+export const ACTIVITY_LOG_TIME_OPTIONS = ["Last 7 Days", "This Month", "Last Month", "All Time", "Custom Range"];
+
+export const ACTIVITY_LOG_ACTIONS = [
+  "Login",
+  "Campaign created",
+  "Campaign edited",
+  "Journey created",
+  "Journey Edited",
+  "Settings",
+];
+
+export const DEFAULT_ACTIVITY_LOGS = [
+  { id: "log-1", memberName: "Himanshu Kumar", action: "Login", description: "himanshu@tspkarix.com has logged in", createdAt: "2026-08-11T12:25:00" },
+  { id: "log-2", memberName: "Riya Sharma", action: "Campaign created", description: '"Riya Sharma" created campaign "Diwali Cashback Blast"', createdAt: "2026-08-11T10:19:00" },
+  { id: "log-3", memberName: "Arjun Patel", action: "Journey Edited", description: '"Arjun Patel" edited journey "Abandoned Cart Recovery"', createdAt: "2026-08-10T09:42:00" },
+  { id: "log-4", memberName: "Himanshu Kumar", action: "Settings", description: '"Himanshu Kumar" updated Delivery Controls settings', createdAt: "2026-08-09T17:05:00" },
+  { id: "log-5", memberName: "Riya Sharma", action: "Login", description: "riya@tspkarix.com has logged in", createdAt: "2026-08-08T08:52:00" },
+  { id: "log-6", memberName: "Arjun Patel", action: "Campaign edited", description: '"Arjun Patel" edited campaign "Weekend Flash Sale"', createdAt: "2026-08-06T14:30:00" },
+  { id: "log-7", memberName: "Himanshu Kumar", action: "Journey created", description: '"Himanshu Kumar" created journey "Welcome Series"', createdAt: "2026-08-02T11:15:00" },
+  { id: "log-8", memberName: "Riya Sharma", action: "Settings", description: '"Riya Sharma" updated Frequency Capping settings', createdAt: "2026-07-25T16:40:00" },
+  { id: "log-9", memberName: "Arjun Patel", action: "Login", description: "arjun@tspkarix.com has logged in", createdAt: "2026-07-18T09:00:00" },
+  { id: "log-10", memberName: "Himanshu Kumar", action: "Campaign created", description: '"Himanshu Kumar" created campaign "Monsoon Restock Alert"', createdAt: "2026-07-05T13:20:00" },
+];
+
 export function slugifyRoleName(name, existingIds) {
   const base = `custom-${name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`;
   let candidate = base;

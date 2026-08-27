@@ -150,9 +150,11 @@ export const DELIVERY_OUTPUT_OPTIONS = [
   { id: "not_ordered",     label: "Not Ordered",       isDefault: false },
 ];
 
-// Buttons that generate canvas output ports
+// Buttons that generate canvas output ports — URL and PHONE are informational
+// CTAs (they open a link/dialer on the recipient's device) with no reply event
+// to route on, so only QUICK_REPLY and FLOW get a port.
 export const isConnectable = (btn) =>
-  btn.type === "QUICK_REPLY" || btn.type === "URL" || btn.type === "FLOW";
+  btn.type === "QUICK_REPLY" || btn.type === "FLOW";
 
 export const defaultWANodeData = {
   template: null,

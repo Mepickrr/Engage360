@@ -1,0 +1,1340 @@
+    const COMMUNICATION_TYPE_ORDER_CONFIRMATION = 1;
+    const COMMUNICATION_TYPE_ADDRESS_CONFIRMATION = 2;
+    const COMMUNICATION_TYPE_COD_TO_PREPAID_CONFIRMATION = 3;
+    const COMMUNICATION_TYPE_ADDRESS_UPDATE_CONFIRMATION = 4;
+    const COMMUNICATION_TYPE_ADDRESS_PINCODE_CONFIRMATION = 5;
+    const COMMUNICATION_TYPE_COD_TO_PREPAID_REQUEST = 6;
+    const COMMUNICATION_TYPE_CTP_COD_CONFIRMATION = 7;
+    const COMMUNICATION_TYPE_CTP_PAYMENT_REQUEST = 8;
+    const COMMUNICATION_TYPE_ORDER_CANCEL_ACK = 9;
+    const COMMUNICATION_TYPE_ADDRESS_CONFIRM_ACK = 10;
+    const COMMUNICATION_TYPE_ADDRESS_EDIT_ACK = 11;
+    const COMMUNICATION_TYPE_COD_TO_PREPAID_CONFIRM_ACK = 12;
+    const COMMUNICATION_TYPE_ORDER_SHIPPING_INFORMATION = 13;
+    const COMMUNICATION_TYPE_ORDER_OFD_INFORMATION = 14;
+    const COMMUNICATION_TYPE_DELIVERY_INFORMATION = 15;
+    const COMMUNICATION_TYPE_NDR_CONFIRMATION = 16;
+    const COMMUNICATION_TYPE_CTP_PAYMENT_SUCCESS_INFORMATION = 17;
+    const COMMUNICATION_TYPE_CTP_PAYMENT_FAIL_INFORMATION = 18;
+    const COMMUNICATION_TYPE_FREE_TEXT = 20;
+    const COMMUNICATION_TYPE_RANDOM_RESPONSE = 21;
+    const COMMUNICATION_TYPE_ORDER_CONFIRMATION_RANDOM = 22;
+    const COMMUNICATION_TYPE_ADDRESS_CONFIRMATION_RANDOM = 23;
+    const COMMUNICATION_TYPE_CTP_CONFIRMATION_RANDOM = 24;
+    const COMMUNICATION_TYPE_RANDOM_TRACKING = 25;
+    const COMMUNICATION_TYPE_RANDOM_CONCERN = 26;
+    const COMMUNICATION_TYPE_RANDOM_END_CONV = 27;
+    const COMMUNICATION_TYPE_RANDOM_MAINMENU = 28;
+    const COMMUNICATION_TYPE_RANDOM_SUPPORT = 29;
+    const COMMUNICATION_TYPE_ADDRESS_EDIT_CANCELLED = 30;
+    const COMMUNICATION_TYPE_PAYMENT_LINK_EXPIRED = 31;
+    const COMMUNICATION_TYPE_COUPON_INFORMATION = 32;
+
+    //NDR
+    const COMMUNICATION_TYPE_FUTURE_DELIVERY = 33;
+    const COMMUNICATION_TYPE_NEXT_DAY_DELIVERY = 34;
+    const COMMUNICATION_TYPE_SELECT_DELIVERY_DATE = 35;
+    const COMMUNICATION_TYPE_DELIVERY_DATE_CONFIRMED = 36;
+    const COMMUNICATION_TYPE_NDR_RANDOM = 37;
+    const COMMUNICATION_TYPE_AUTO_REATTEMPT = 38;
+    const COMMUNICATION_TYPE_SELF_COLLECT = 39;
+    const COMMUNICATION_TYPE_SELF_COLLECT_CONFIRMED = 40;
+    const COMMUNICATION_TYPE_SELF_COLLECT_RANDOM = 41;
+    const COMMUNICATION_TYPE_OFFICE_CLOSED = 42;
+    const COMMUNICATION_TYPE_NDR_ADDRESS_EDIT_ACK = 43;
+    const COMMUNICATION_TYPE_NDR_ADDRESS_EDIT_CANCELLED = 44;
+    const COMMUNICATION_TYPE_NDR_ADDRESS_EDIT_CONFIRMED = 45;
+    const COMMUNICATION_TYPE_OFFICE_CLOSED_RANDOM = 46;
+    const COMMUNICATION_TYPE_NDR_OTHERS = 47;
+    const COMMUNICATION_TYPE_PAYMENT_DISPUTE = 48;
+    const COMMUNICATION_TYPE_COD_NOT_READY = 49;
+    const COMMUNICATION_TYPE_ENTRY_RESTRICTED = 50;
+    const COMMUNICATION_TYPE_ODA = 51;
+    const COMMUNICATION_TYPE_ODA_RANDOM = 52;
+    const COMMUNICATION_TYPE_CONSIGNEE_NOCONTACT = 53;
+    const COMMUNICATION_TYPE_SEND_ALT_NUMBER = 54;
+    const COMMUNICATION_TYPE_SEND_ALT_NUMBER_CONIRMED = 54;
+    const COMMUNICATION_TYPE_CONSIGNEE_RANDOM = 56;
+    const COMMUNICATION_TYPE_NDR_WRONG_ADDRESS = 57;
+    const COMMUNICATION_TYPE_NDR_CUST_REFUSED = 58;
+    const COMMUNICATION_TYPE_NDR_OPEN_DELIVERY = 59;
+    const COMMUNICATION_TYPE_NDR_CUST_UNVERIFY = 60;
+    const COMMUNICATION_TYPE_NDR_CONCERN = 61;
+    const COMMUNICATION_TYPE_NDR_RANDOM_END_CONV = 62;
+    const COMMUNICATION_TYPE_NDR_CUST_NOT_AVAILABLE = 63;
+    const COMMUNICATION_TYPE_NDR_MAIN_MENU = 64;
+    const COMMUNICATION_TYPE_NDR_NEED_SUPPORT = 65;
+    const COMMUNICATION_TYPE_FREE_MEDIA = 66;
+    const COMMUNICATION_TYPE_NDR_CANCEL = 67;
+
+    const COMMUNICATION_TYPE_ABANDON_CART_FM = 68;
+    const COMMUNICATION_TYPE_ABANDON_CART_SM = 69;
+
+    const COMMUNICATION_TYPE_CART_RESPONSE = 70;
+    const COMMUNICATION_TYPE_UNSUPPORTED_INBOUND = 71;
+
+    //in transit
+    const COMMUNICATION_TYPE_SHIPPED = 70;
+
+    const MESSAGE_TYPE_TEMPLATE = 'template';
+    const MESSAGE_TYPE_MEDIATEMPLATE = 'mediatemplate';
+    const MESSAGE_TYPE_TEXT = 'text';
+    const MESSAGE_TYPE_MEDIA = 'media';
+    const MESSAGE_TYPE_LIST = 'list';
+    const MESSAGE_TYPE_INTERACTIVE = 'interactive';
+    const MESSAGE_TYPE_REPLY_BUTTON = 'reply';
+    const MESSAGE_TYPE_ORDER = 'order';
+    const MESSAGE_TYPE_PRODUCT_LIST = 'multiproduct';
+    const MESSAGE_TYPE_ADDRESS_LIST = 'address';
+    const MESSAGE_TYPE_UNSUPPORTED = 'unsupported';
+
+    const LOG_TYPE_BOT = 1;
+    const LOG_TYPE_CALLBACK = 2;
+    const LOG_TYPE_CUSTOMER_RESPONSE = 3;
+    const LOG_TYPE_SELLER = 4;
+    const LOG_TYPE_CONVERT_BOT = 5;
+    const LOG_TYPE_CHECKOUT_BOT = 6;
+    const LOG_TYPE_ADMIN_BOT = 7;
+    const LOG_TYPE_TICKET_ASSIGNED = 8;
+    const LOG_TYPE_TICKET_COMMENTS = 9;
+    const LOG_TYPE_WIGZO_BOT = 10;
+    const LOG_TYPE_EXTERNAL = 11;
+
+    //Message status
+    const MESSAGE_STATUS_NO_STATUS = 0;
+    const MESSAGE_STATUS_SENT = 1;
+    const MESSAGE_STATUS_DELIVERED = 2;
+    const MESSAGE_STATUS_READ = 3;
+    const MESSAGE_STATUS_WHATSAPP_INACTIVE = 4;
+    const MESSAGE_STATUS_EXPIRED = 5;
+    const MESSAGE_STATUS_NO_RESPONSE = 6;
+    const MESSAGE_STATUS_FAILED = 7;
+    const MESSAGE_STATUS_NO_RECHARGE = 8;
+    const MESSAGE_STATUS_INVALID_TEMPLATE = 9;
+    const MESSAGE_STATUS_INVALID_PARAMETER = 10;
+    const MESSAGE_STATUS_PARAM_NOT_MATCHING = 11;
+    const MESSAGE_STATUS_UNKNOWN_ERROR = 12;
+    const MESSAGE_STATUS_INTERNAL_ERROR = 13;
+    const MESSAGE_STATUS_DATABASE_ERROR_OCCURED = 14;
+    const MESSAGE_STATUS_RECEIVER_VERSION_NOT_SUPPORTED = 15;
+    const MESSAGE_STATUS_FB_HIGH_REQUEST = 16;
+    const MESSAGE_STATUS_SERVICE_NOT_READY = 17;
+    const MESSAGE_STATUS_RESOURCE_NOT_FOUND = 18;
+    const MESSAGE_STATUS_NUMBER_FLAGGED = 19;
+    const MESSAGE_STATUS_PLAN_CANCELLED = 20;
+    const MESSAGE_STATUS_TEMPLATE_NAMESPACE_UNAVAILBALE = 21;
+
+    const MESSAGE_STATUS_MEDIA_DOWNLOAD_FAILED = 22;
+    const MESSAGE_STATUS_RATE_LIMIT_HIT = 23;
+    const MESSAGE_STATUS_UNSIGNED_CERT = 24;
+    const MESSAGE_STATUS_CERT_ID_MISMATCH = 25;
+    const MESSAGE_STATUS_CERT_INVALID_SIGN = 26;
+    const MESSAGE_STATUS_RE_ENGAGE_24_HRS = 27;
+    const MESSAGE_STATUS_SPAM_RATE_LIMIT_HIT = 28;
+    const MESSAGE_STATUS_NUMBER_PART_OF_EXPERIMENT = 29;
+    const MESSAGE_STATUS_USER_POTENTIALLY_CHANGED = 30;
+    const MESSAGE_STATUS_GENERIC_ERROR = 31;
+    const MESSAGE_STATUS_MESSAGE_TOO_LONG = 32;
+    const MESSAGE_STATUS_INVALID_RECIPIENT_TYPE = 33;
+    const MESSAGE_STATUS_RESOURCE_ALREADY_EXISTS = 34;
+    const MESSAGE_STATUS_ACCESS_DENIED = 35;
+    const MESSAGE_STATUS_RECIPIENT_BLOCKED_TO_RECIEVE = 36;
+    const MESSAGE_STATUS_USER_NOT_VALID = 37;
+    const MESSAGE_STATUS_TOO_MANY_REQ= 38;
+    const MESSAGE_STATUS_SYSTEM_OVERLOADED = 39;
+    const MESSAGE_STATUS_NOT_PRIMARY_MASTER = 40;
+    const MESSAGE_STATUS_NOT_PRIMARY_CORE_APP = 41;
+    const MESSAGE_STATUS_BAD_USER = 42;
+    const MESSAGE_STATUS_WEBHOOK_URL_NOT_CONFIGURED = 43;
+    const MESSAGE_STATUS_PASSWORD_CHANGE_REQUIRED = 44;
+    const MESSAGE_STATUS_INVALID_REQ = 45;
+    const MESSAGE_STATUS_RECEIVER_INCAPABLE = 46;
+    const MESSAGE_STATUS_USER_IDENTITY_CHANGED = 47;
+    const MESSAGE_STATUS_SENDER_ACCOUNT_LOCKED = 48;
+    const MESSAGE_STATUS_TEMPLATE_FETCH_FAILED = 49;
+    const MESSAGE_STATUS_TEMPLATE_PACK_MISSING = 50;
+    const MESSAGE_STATUS_TEMPLATE_LONG_PARAM_LENTH = 51;
+    const MESSAGE_STATUS_TEMPLATE_HYDRATED_TEXT_TOO_LONG = 52;
+    const MESSAGE_STATUS_POLICY_VIOLATED = 53;
+    const MESSAGE_STATUS_TEMPLATE_MEDIA_UNSUPPORTED = 54;
+    const MESSAGE_STATUS_MISSING_REQ_COMPONENT = 55;
+    const MESSAGE_STATUS_INVALID_HYDRATED_URL = 56;
+    const MESSAGE_STATUS_PARAM_FORMAT_NOT_MATCHING = 57;
+    const MESSAGE_STATUS_TEMPLATE_BUTTON_UNSUPPORTED= 58;
+    const MESSAGE_STATUS_TEMPLATE_NAMESPACE_EMPTY = 59;
+    const MESSAGE_STATUS_CHAR_POLICY_VIOLATED = 60;
+    const MESSAGE_STATUS_INVALID_HEADER_STRUCTURE = 61;
+    const MESSAGE_UNDELIVERABLE = 62;
+    const MESSAGE_STATUS_TEMPLATE_REJECTED = 63;
+    const MESSAGE_STATUS_TEMPLATE_PAUSED = 64;
+    const MESSAGE_STATUS_TEMPLATE_DISABLED = 65;
+    const MESSAGE_STATUS_SERVER_TEMPORARILIY_UNAVAILABLE = 66;
+    const MESSAGE_STATUS_TEMPLATE_PARAM_COUNT_MISMATCH = 67;
+    const MESSAGE_STATUS_MEDIA_UPLOAD_ERROR = 68;
+    const MESSAGE_STATUS_UNSUPPORTED_MESSAGE_TYPE = 69;
+    const MESSAGE_STATUS_INCORRECT_CERTIFICATE = 70;
+    const MESSAGE_STATUS_BUSINESS_ELIGIBILITY_PAYMENT_ISSUE = 71;
+    const MESSAGE_STATUS_REQUIRED_PARAMETER_MISSING = 72;
+    const MESSAGE_STATUS_QUEUED = 73;
+    const MESSAGE_STATUS_SUBMISSION_RETRY_EXHAUSTED = 74;
+    const MESSAGE_STATUS_OTHER = 75;
+    const MESSAGE_STATUS_BOT_MAPPING_FAILED = 76;
+    const MESSAGE_STATUS_INVALID_MEDIA_URL = 77;
+    const MESSAGE_STATUS_INVALID_MEDIA_SIZE = 78;
+    const MESSAGE_STATUS_UNSUPPORTED_CHANNEL_FEATURE = 79;
+    const MESSAGE_STATUS_COUNTRY_RESTRICTED = 80;
+    const MESSAGE_STATUS_CANNOT_MESSAGE_SELF = 81;
+    const MESSAGE_STATUS_DISPLAY_NAME_NOT_APPROVED = 82;
+    const MESSAGE_STATUS_META_POLICY_BLOCK = 83;
+    const MESSAGE_STATUS_ACCOUNT_MAINTENANCE_MODE = 84;
+    const MESSAGE_STATUS_FLOW_BLOCKED = 85;
+    const MESSAGE_STATUS_INCOMPLETE_DEREGISTRATION = 86;
+    const MESSAGE_STATUS_PIN_MISMATCH = 87;
+    const MESSAGE_STATUS_REVERIFICATION_NEEDED = 88;
+    const MESSAGE_STATUS_WAIT_BEFORE_REGISTERING = 89;
+    const MESSAGE_STATUS_PAYMENTS_TERMS_NOT_ACCEPTED = 90;
+    const MESSAGE_STATUS_SYNC_TIME_WINDOW_VIOLATION = 91;
+    const MESSAGE_STATUS_INVALID_FROM_NUMBER = 92;
+    const MESSAGE_STATUS_INVALID_TO_NUMBER = 93;
+    const MESSAGE_STATUS_INVALID_WHATSAPP_NUMBER = 94;
+    const MESSAGE_STATUS_TEMPLATE_HEADER_PARAM_MISMATCH = 95;
+    const MESSAGE_STATUS_INVALID_MEDIA_CONTENT = 96;
+    const MESSAGE_STATUS_MESSAGE_PENDING_TOO_LONG = 97;
+    const MESSAGE_STATUS_SECTION_COUNT_ERROR = 98;
+    const MESSAGE_STATUS_ROWS_COUNT_ERROR = 99;
+    const MESSAGE_STATUS_PRODUCT_COUNT_ERROR = 100;
+    const MESSAGE_STATUS_CATALOGUE_NOT_FOUND = 101;
+    const MESSAGE_STATUS_CATALOGUE_NOT_LINKED = 102;
+    const MESSAGE_STATUS_MISSING_PRODUCT = 103;
+    const MESSAGE_STATUS_PRODUCT_NOT_FOUND = 104;
+    const MESSAGE_STATUS_PRODUCT_COMPLIANCE_ERROR = 105;
+    const MESSAGE_STATUS_MISSING_COMPLIANCE = 106;
+    const MESSAGE_STATUS_PERMISSION_ISSUE = 107;
+    const MESSAGE_STATUS_PERMISSION_DENIED = 108;
+    const MESSAGE_STATUS_EXPIRED_TOKEN = 109;
+    const MESSAGE_STATUS_TEMPORARY_BLOCK = 110;
+    const MESSAGE_STATUS_ACCOUNT_RESTRICTED = 111;
+    const MESSAGE_STATUS_NUMBER_DELETED = 112;
+    const MESSAGE_STATUS_PARAMETER_INVALID = 113;
+    const MESSAGE_STATUS_SERVICE_UNAVAILABLE = 114;
+    const MESSAGE_STATUS_RECEPIENT_CANNOT_BE_SENDER = 115;
+    const MESSAGE_STATUS_MESSAGE_UNDELIVERABLE = 116;
+    const MESSAGE_STATUS_NUMBER_NOT_REGISTERED = 117;
+    const MESSAGE_STATUS_HEALTHY_ECOSYSTEM = 118;
+    const MESSAGE_STATUS_USER_STOPPED_MARKETING = 119;
+    const MESSAGE_STATUS_PARAMETER_COUNT_MISMATCH = 120;
+    const MESSAGE_STATUS_TEMPLATE_DOES_NOT_EXIST = 121;
+    const MESSAGE_STATUS_TEMPLATE_PARAMETER_FORMAT_MISMATCH = 122;
+    const MESSAGE_STATUS_FLOW_THROTTLED = 123;
+    const MESSAGE_STATUS_TWO_STEP_VERIFICATION_PIN_MISMATCH = 124;
+    const MESSAGE_STATUS_NUMBER_REVERIFICATION_NEEDED = 125;
+    const MESSAGE_STATUS_TOO_MANY_TWO_STEP_VERIFICATION_GUESS = 126;
+    const MESSAGE_STATUS_PHONE_NUMBER_NOT_REGISTERED = 127;
+    const MESSAGE_STATUS_NUMBER_RECENTLY_DELETED = 128;
+    const MESSAGE_STATUS_WHATSAPP_PAYMENT_TERMS_NOT_ACCEPTED = 129;
+    const MESSAGE_STATUS_SYNCHRONIZATION_ERROR = 130;
+    const MESSAGE_STATUS_SYNCHRONIZATION_REQUEST_OUTSIDE_WINDOW = 131;
+    const MESSAGE_STATUS_API_CALL_RATE_LIMIT_REACHED = 132;
+    const MESSAGE_STATUS_RATE_LIMIT_REACHED = 133;
+    const MESSAGE_STATUS_PAIR_RATE_LIMIT_HIT = 134;
+    const MESSAGE_STATUS_REGISTER_DEREGISTER_LIMIT_REACHED = 135;
+
+    // HTTP Error Code Message Statuses
+    const MESSAGE_STATUS_BAD_REQUEST = 136;
+    const MESSAGE_STATUS_UNAUTHORIZED = 137;
+    const MESSAGE_STATUS_PAYMENT_REQUIRED = 138;
+    const MESSAGE_STATUS_FORBIDDEN = 139;
+    const MESSAGE_STATUS_NOT_FOUND = 140;
+    const MESSAGE_STATUS_METHOD_NOT_ALLOWED = 141;
+    const MESSAGE_STATUS_NOT_ACCEPTABLE = 142;
+    const MESSAGE_STATUS_PROXY_AUTHENTICATION_REQUIRED = 143;
+    const MESSAGE_STATUS_REQUEST_TIMEOUT = 144;
+    const MESSAGE_STATUS_CONFLICT = 145;
+    const MESSAGE_STATUS_GONE = 146;
+    const MESSAGE_STATUS_LENGTH_REQUIRED = 147;
+    const MESSAGE_STATUS_PRECONDITION_FAILED = 148;
+    const MESSAGE_STATUS_PAYLOAD_TOO_LARGE = 149;
+    const MESSAGE_STATUS_URI_TOO_LONG = 150;
+    const MESSAGE_STATUS_UNSUPPORTED_MEDIA_TYPE = 151;
+    const MESSAGE_STATUS_RANGE_NOT_SATISFIABLE = 152;
+    const MESSAGE_STATUS_EXPECTATION_FAILED = 153;
+    const MESSAGE_STATUS_IM_A_TEAPOT = 154;
+    const MESSAGE_STATUS_MISDIRECTED_REQUEST = 155;
+    const MESSAGE_STATUS_UNPROCESSABLE_ENTITY = 156;
+    const MESSAGE_STATUS_LOCKED = 157;
+    const MESSAGE_STATUS_FAILED_DEPENDENCY = 158;
+    const MESSAGE_STATUS_TOO_EARLY = 159;
+    const MESSAGE_STATUS_UPGRADE_REQUIRED = 160;
+    const MESSAGE_STATUS_PRECONDITION_REQUIRED = 161;
+    const MESSAGE_STATUS_TOO_MANY_REQUESTS_HTTP = 162;
+    const MESSAGE_STATUS_REQUEST_HEADER_FIELDS_TOO_LARGE = 163;
+    const MESSAGE_STATUS_UNAVAILABLE_FOR_LEGAL_REASONS = 164;
+
+    // Custom Error Code Message Statuses
+    const MESSAGE_STATUS_MESSAGE_IDS_EMPTY = 165;
+    const MESSAGE_STATUS_COMPANY_ID_MISSING = 166;
+    const MESSAGE_STATUS_USER_ID_MISSING = 167;
+    const MESSAGE_STATUS_ROLE_ID_MISSING = 168;
+    const MESSAGE_STATUS_CERT_PATH_REQUIRED = 169;
+    const MESSAGE_STATUS_CERT_PATH_MUST_BE_STRING = 170;
+    const MESSAGE_STATUS_ID_VALUE_REQUIRED = 171;
+    const MESSAGE_STATUS_ID_VALUE_MUST_BE_NUMBER = 172;
+    const MESSAGE_STATUS_WHATSAPP_NUMBER_MANDATORY = 173;
+    const MESSAGE_STATUS_WHATSAPP_NUMBER_MUST_BE_STRING = 174;
+    const MESSAGE_STATUS_COUNTRY_CODE_MANDATORY = 175;
+    const MESSAGE_STATUS_COUNTRY_CODE_MUST_BE_STRING = 176;
+    const MESSAGE_STATUS_NAME_FIELD_MANDATORY = 177;
+    const MESSAGE_STATUS_NAME_VALUE_MUST_BE_STRING = 178;
+    const MESSAGE_STATUS_PATH_FIELD_MANDATORY = 179;
+    const MESSAGE_STATUS_PATH_VALUE_MUST_BE_STRING = 180;
+    const MESSAGE_STATUS_OTP_VALUE_MANDATORY = 181;
+    const MESSAGE_STATUS_OTP_VALUE_MUST_BE_STRING = 182;
+    const MESSAGE_STATUS_BODY_INPUT_MANDATORY = 183;
+    const MESSAGE_STATUS_BODY_INPUT_MUST_BE_STRING = 184;
+    const MESSAGE_STATUS_TEMPLATE_NAME_MANDATORY = 185;
+    const MESSAGE_STATUS_TEMPLATE_NAME_MUST_BE_STRING = 186;
+    const MESSAGE_STATUS_PARAMETERS_MUST_BE_LIST = 187;
+    const MESSAGE_STATUS_PARAMETER_VALUE_MUST_BE_STRING = 188;
+    const MESSAGE_STATUS_EMAIL_ADDRESS_MUST_BE_STRING = 189;
+    const MESSAGE_STATUS_ADDRESS_MUST_BE_STRING = 190;
+    const MESSAGE_STATUS_DESCRIPTION_MUST_BE_STRING = 191;
+    const MESSAGE_STATUS_INCOMING_URL_MUST_BE_STRING = 192;
+    const MESSAGE_STATUS_PROFILE_IMAGE_URL_MUST_BE_STRING = 193;
+    const MESSAGE_STATUS_CATEGORY_MUST_BE_STRING = 194;
+    const MESSAGE_STATUS_WEBSITES_MUST_BE_LIST = 195;
+    const MESSAGE_STATUS_WEBSITES_VALUE_MUST_BE_STRING = 196;
+    const MESSAGE_STATUS_FROM_FIELD_MANDATORY = 197;
+    const MESSAGE_STATUS_IP_ADDRESS_MANDATORY = 198;
+    const MESSAGE_STATUS_SOURCE_FIELD_MANDATORY = 199;
+    const MESSAGE_STATUS_CREATED_AT_FIELD_MANDATORY = 200;
+    const MESSAGE_STATUS_TYPE_FIELD_MANDATORY = 201;
+    const MESSAGE_STATUS_FROM_VALUE_MUST_BE_STRING = 202;
+    const MESSAGE_STATUS_IP_ADDRESS_MUST_BE_STRING = 203;
+    const MESSAGE_STATUS_SOURCE_VALUE_MUST_BE_STRING = 204;
+    const MESSAGE_STATUS_CREATED_AT_VALUE_MUST_BE_STRING = 205;
+    const MESSAGE_STATUS_TYPE_VALUE_MUST_BE_STRING = 206;
+    const MESSAGE_STATUS_TO_MUST_BE_LIST = 207;
+    const MESSAGE_STATUS_TO_VALUE_MUST_BE_STRING = 208;
+    const MESSAGE_STATUS_INVALID_OR_INCORRECT_INPUT = 209;
+    const MESSAGE_STATUS_PACKAGE_EXPIRED_OR_COUNT_NOT_AVAILABLE = 210;
+    const MESSAGE_STATUS_PACKAGE_COUNT_NOT_AVAILABLE = 211;
+    const MESSAGE_STATUS_TEMPLATE_PARAMETERS_NOT_MATCHING = 212;
+    const MESSAGE_STATUS_CHECKSUM_FIELD_MANDATORY = 214;
+    const MESSAGE_STATUS_CHECKSUM_VALUE_MUST_BE_STRING = 215;
+    const MESSAGE_STATUS_WHATSAPP_DAILY_LIMIT_REACHED = 218;
+    const MESSAGE_STATUS_TEMPLATE_HEADER_PARAMETERS_NOT_MATCHING = 220;
+    const MESSAGE_STATUS_INVALID_PARAMETER_VALUES = 222;
+    const MESSAGE_STATUS_FAILED_TO_UPLOAD_MEDIA_FILE = 223;
+    const MESSAGE_STATUS_UNABLE_TO_PROCESS_REQUEST = 224;
+    const MESSAGE_STATUS_INVALID_HTML_TAGS_IN_PARAMETERS = 225;
+    const MESSAGE_STATUS_BODY_PARAMETER_MANDATORY = 226;
+    const MESSAGE_STATUS_SENDER_ID_MISSING = 227;
+    const MESSAGE_STATUS_TO_PARAMETER_MISSING = 228;
+    const MESSAGE_STATUS_CAMPAIGN_NAME_ALPHANUMERIC_ONLY = 229;
+    const MESSAGE_STATUS_INVALID_CALLBACK_URL_FORMAT = 230;
+
+    // Additional Custom Error Code Message Statuses
+    const MESSAGE_STATUS_LAST_MAPPED_BOT_FAILED = 231;
+    const MESSAGE_STATUS_NUMBER_NOT_EXIST_ON_WHATSAPP = 232;
+    const MESSAGE_STATUS_WALLET_BALANCE_LOW = 233;
+    const MESSAGE_STATUS_TEMPLATE_DISABLED_FAILURE = 234;
+    const MESSAGE_STATUS_TEMPLATE_MATCH_FAILED = 235;
+    const MESSAGE_STATUS_TEMPLATE_OPT_IN_FAILURE = 236;
+    const MESSAGE_STATUS_TEMPLATE_OPT_IN_MATCH_FAILURE = 237;
+    const MESSAGE_STATUS_NEITHER_PROXIED_NOR_OPTED_IN = 238;
+    const MESSAGE_STATUS_NUMBER_OPTED_OUT = 241;
+    const MESSAGE_STATUS_API_RATE_LIMITED = 242;
+    const MESSAGE_STATUS_INVALID_RESPONSE_FROM_WHATSAPP = 243;
+    const MESSAGE_STATUS_NO_TEMPLATE_MATCH = 244;
+    const MESSAGE_STATUS_ONLY_CAPI_FEATURE = 245;
+    const MESSAGE_STATUS_PAUSED_TEMPLATE = 246;
+
+    // Extended Error Code Message Statuses (30001-30041)
+    const MESSAGE_STATUS_EX_MESSAGE_SENT = 247;
+    const MESSAGE_STATUS_EX_MESSAGE_DELIVERED = 248;
+    const MESSAGE_STATUS_EX_MESSAGE_SEEN = 249;
+    const MESSAGE_STATUS_EX_SYSTEM_ERROR = 250;
+    const MESSAGE_STATUS_EX_NUMBER_ERROR = 251;
+    const MESSAGE_STATUS_EX_SETUP_ERROR = 252;
+    const MESSAGE_STATUS_EX_RATE_LIMIT_HIT = 253;
+    const MESSAGE_STATUS_EX_SPAM_RATE_LIMIT_HIT = 254;
+    const MESSAGE_STATUS_EX_TOO_MANY_REQUEST = 255;
+    const MESSAGE_STATUS_EX_INVALID_REQUEST = 256;
+    const MESSAGE_STATUS_EX_UNKNOWN_ERROR = 257;
+    const MESSAGE_STATUS_EX_INVALID_RECIPIENT = 258;
+    const MESSAGE_STATUS_EX_INCAPABLE_RECIPIENT = 259;
+    const MESSAGE_STATUS_EX_RECIPIENT_BLOCKED = 260;
+    const MESSAGE_STATUS_EX_UNSUPPORTED_MESSAGE = 261;
+    const MESSAGE_STATUS_EX_MEDIA_DOWNLOAD_ERROR = 262;
+    const MESSAGE_STATUS_EX_MEDIA_UPLOAD_ERROR = 263;
+    const MESSAGE_STATUS_EX_REENGAGEMENT_ERROR = 264;
+    const MESSAGE_STATUS_EX_INVALID_PARAM = 265;
+    const MESSAGE_STATUS_EX_MISSING_PARAM = 266;
+    const MESSAGE_STATUS_EX_INVALID_PARAM_VALUE = 267;
+    const MESSAGE_STATUS_EX_TEMPLATE_ERROR = 268;
+    const MESSAGE_STATUS_EX_TEMPLATE_PARAM_ERROR = 269;
+    const MESSAGE_STATUS_EX_TEMPLATE_NOT_FOUND = 270;
+    const MESSAGE_STATUS_EX_TEMPLATE_TEXT_TOO_LONG = 271;
+    const MESSAGE_STATUS_EX_INVALID_TEMPLATE_NAMESPACE = 272;
+    const MESSAGE_STATUS_EX_MESSAGE_PENDING_TOO_LONG = 273;
+    const MESSAGE_STATUS_EX_MESSAGE_EXPIRED = 274;
+    const MESSAGE_STATUS_EX_MESSAGE_TOO_LONG = 275;
+    const MESSAGE_STATUS_EX_WEBHOOK_ERROR = 276;
+    const MESSAGE_STATUS_EX_SECTION_COUNT_ERROR = 277;
+    const MESSAGE_STATUS_EX_ROWS_COUNT_ERROR = 278;
+    const MESSAGE_STATUS_EX_PRODUCT_COUNT_ERROR = 279;
+    const MESSAGE_STATUS_EX_CATALOGUE_NOT_FOUND = 280;
+    const MESSAGE_STATUS_EX_CATALOGUE_NOT_LINKED = 281;
+    const MESSAGE_STATUS_EX_MISSING_PRODUCT = 282;
+    const MESSAGE_STATUS_EX_PRODUCT_NOT_FOUND = 283;
+    const MESSAGE_STATUS_EX_PRODUCT_COMPLIANCE_ERROR = 284;
+    const MESSAGE_STATUS_EX_INVALID_HEADER = 285;
+    const MESSAGE_STATUS_EX_MISSING_COMPLIANCE = 286;
+    const MESSAGE_STATUS_EX_CHAR_POLICY_VIOLATION = 287;
+
+    // Additional Extended Error Code Message Statuses
+    const MESSAGE_STATUS_QUEUED_FOR_DELIVERY = 288;
+    const MESSAGE_STATUS_INVALID_PERMISSION_RCM_MEDIA_NOT_ENABLED = 289;
+    const MESSAGE_STATUS_INVALID_PERMISSION_WHATSAPP_SERVICE_NOT_ASSIGNED = 290;
+    const MESSAGE_STATUS_NUMBER_NOT_IN_OPT_IN = 291;
+    const MESSAGE_STATUS_INVALID_REQUEST_GENERAL = 292;
+    const MESSAGE_STATUS_INVALID_REQUEST_WABA_SENDER_NOT_FOUND = 293;
+    const MESSAGE_STATUS_TEMPLATE_NOT_FOUND_GENERAL = 294;
+    const MESSAGE_STATUS_SUBMISSION_RETRY_EXHAUSTED_GENERAL = 295;
+    const MESSAGE_STATUS_ACCOUNT_FAILURES_OBO_PENDING_OR_DECLINED = 296;
+    const MESSAGE_STATUS_ACCOUNT_FAILURES_SPAM_RATE_LIMIT = 297;
+    const MESSAGE_STATUS_INVALID_RECIPIENT_GENERAL = 298;
+    const MESSAGE_STATUS_USER_RELATED_FAILURES = 299;
+    const MESSAGE_STATUS_SYSTEM_ERROR_RATE_LIMIT_HIT = 300;
+    const MESSAGE_STATUS_SYSTEM_ERROR_DISPATCHING_TO_WHATSAPP = 301;
+    const MESSAGE_STATUS_SYSTEM_ERROR_GENERAL = 302;
+    const MESSAGE_STATUS_MESSAGE_ERROR_REQUIRED_PARAMETER_MISSING = 303;
+    const MESSAGE_STATUS_MESSAGE_ERROR_RE_ENGAGEMENT_MESSAGE = 304;
+    const MESSAGE_STATUS_MESSAGE_EXPIRED_GENERAL = 305;
+    const MESSAGE_STATUS_OTHERS = 306;
+
+    const MESSAGE_STATUS = [
+        self::MESSAGE_STATUS_NO_STATUS => "No Status",
+        self::MESSAGE_STATUS_SENT => "Message Sent",
+        self::MESSAGE_STATUS_DELIVERED => "Message Delivered",
+        self::MESSAGE_STATUS_READ => "Message Read",
+        self::MESSAGE_STATUS_WHATSAPP_INACTIVE => "WhatsApp Inactive",
+        self::MESSAGE_STATUS_EXPIRED => "Expired",
+        self::MESSAGE_STATUS_NO_RESPONSE => "No Response",
+        self::MESSAGE_STATUS_FAILED => "Failed",
+        self::MESSAGE_STATUS_NO_RECHARGE => "No Recharge",
+        self::MESSAGE_STATUS_INVALID_TEMPLATE => "Invalid Template",
+        self::MESSAGE_STATUS_INVALID_PARAMETER => "Invalid Parameter",
+        self::MESSAGE_STATUS_PARAM_NOT_MATCHING => "Params not Matching",
+        self::MESSAGE_STATUS_UNKNOWN_ERROR => "Unknown Error",
+        self::MESSAGE_STATUS_INTERNAL_ERROR => "Internal Error",
+        self::MESSAGE_STATUS_DATABASE_ERROR_OCCURED => "Database Error Occured",
+        self::MESSAGE_STATUS_RECEIVER_VERSION_NOT_SUPPORTED => "Reciever Version not supported",
+        self::MESSAGE_STATUS_FB_HIGH_REQUEST => "FB High Request",
+        self::MESSAGE_STATUS_SERVICE_NOT_READY => "Service not Ready",
+        self::MESSAGE_STATUS_RESOURCE_NOT_FOUND => "Resource Not Found",
+        self::MESSAGE_STATUS_NUMBER_FLAGGED => "Number Flagged",
+        self::MESSAGE_STATUS_PLAN_CANCELLED => "Plan Cancelled",
+        self::MESSAGE_STATUS_TEMPLATE_NAMESPACE_UNAVAILBALE => "Template Namespace not Available",
+        self::MESSAGE_STATUS_MEDIA_DOWNLOAD_FAILED => "Media Download Failed",
+        self::MESSAGE_STATUS_RATE_LIMIT_HIT => "Rate Limit Hit",
+        self::MESSAGE_STATUS_UNSIGNED_CERT => "Unsigned Certificate",
+        self::MESSAGE_STATUS_CERT_ID_MISMATCH => "Certificate Id Mismatch",
+        self::MESSAGE_STATUS_CERT_INVALID_SIGN => "Certificate Sign Invalid",
+        self::MESSAGE_STATUS_RE_ENGAGE_24_HRS => "24 Hours Passed since Customer Last Replied",
+        self::MESSAGE_STATUS_SPAM_RATE_LIMIT_HIT => "Spam Rate Limit Hit",
+        self::MESSAGE_STATUS_NUMBER_PART_OF_EXPERIMENT => "Number Part of Expirement",
+        self::MESSAGE_STATUS_USER_POTENTIALLY_CHANGED => "User Changed",
+        self::MESSAGE_STATUS_GENERIC_ERROR => "Genric Error",
+        self::MESSAGE_STATUS_MESSAGE_TOO_LONG => "Message Too Long",
+        self::MESSAGE_STATUS_INVALID_RECIPIENT_TYPE => "Invalid Recipient Type",
+        self::MESSAGE_STATUS_RESOURCE_ALREADY_EXISTS => "Resource Already Exists",
+        self::MESSAGE_STATUS_ACCESS_DENIED => "Access Denied",
+        self::MESSAGE_STATUS_RECIPIENT_BLOCKED_TO_RECIEVE => "Recipient Blocked to Recieve",
+        self::MESSAGE_STATUS_USER_NOT_VALID => "User not Valid",
+        self::MESSAGE_STATUS_TOO_MANY_REQ => "Too Many Requests",
+        self::MESSAGE_STATUS_SYSTEM_OVERLOADED => "System Overloaded",
+        self::MESSAGE_STATUS_NOT_PRIMARY_MASTER => "Not Primary Master",
+        self::MESSAGE_STATUS_NOT_PRIMARY_CORE_APP => "Not Primary Core App",
+        self::MESSAGE_STATUS_BAD_USER => "Bad User",
+        self::MESSAGE_STATUS_WEBHOOK_URL_NOT_CONFIGURED => "Webhook URL not configured",
+        self::MESSAGE_STATUS_PASSWORD_CHANGE_REQUIRED => "Password Change Required",
+        self::MESSAGE_STATUS_INVALID_REQ => "Invalid Request",
+        self::MESSAGE_STATUS_RECEIVER_INCAPABLE => "Reciever Incapable",
+        self::MESSAGE_STATUS_USER_IDENTITY_CHANGED => "User Identity Changed",
+        self::MESSAGE_STATUS_SENDER_ACCOUNT_LOCKED => "Sender Account Locked",
+        self::MESSAGE_STATUS_TEMPLATE_FETCH_FAILED => "Template Fetch Failed",
+        self::MESSAGE_STATUS_TEMPLATE_PACK_MISSING => "Template Pack Missing",
+        self::MESSAGE_STATUS_TEMPLATE_LONG_PARAM_LENTH => "Long Template Param Length",
+        self::MESSAGE_STATUS_TEMPLATE_HYDRATED_TEXT_TOO_LONG => "Template Hydrated Text too Long",
+        self::MESSAGE_STATUS_POLICY_VIOLATED => "Policy Voilated",
+        self::MESSAGE_STATUS_TEMPLATE_MEDIA_UNSUPPORTED => "Template Media Unsupported",
+        self::MESSAGE_STATUS_MISSING_REQ_COMPONENT => "Missing Request Component",
+        self::MESSAGE_STATUS_INVALID_HYDRATED_URL => "Invalid Hydrated URL",
+        self::MESSAGE_STATUS_PARAM_FORMAT_NOT_MATCHING => "Param Format not Matching",
+        self::MESSAGE_STATUS_TEMPLATE_BUTTON_UNSUPPORTED => "Template Button Unsupported",
+        self::MESSAGE_STATUS_TEMPLATE_NAMESPACE_EMPTY => "Tempate Namespace Empty",
+        self::MESSAGE_STATUS_CHAR_POLICY_VIOLATED => "Char Policy Voilated",
+        self::MESSAGE_STATUS_INVALID_HEADER_STRUCTURE => "Invalid Header Structure",
+        self::MESSAGE_UNDELIVERABLE => "Message Undeliverable",
+        self::MESSAGE_STATUS_TEMPLATE_REJECTED => "Template Rejected",
+        self::MESSAGE_STATUS_TEMPLATE_PAUSED => "Template is Paused",
+        self::MESSAGE_STATUS_TEMPLATE_DISABLED => "Template is Disabled",
+        self::MESSAGE_STATUS_SERVER_TEMPORARILIY_UNAVAILABLE => "Server Temporarily Unavailable",
+        self::MESSAGE_STATUS_TEMPLATE_PARAM_COUNT_MISMATCH => 'Template Param Count Mismatch',
+        self::MESSAGE_STATUS_MEDIA_UPLOAD_ERROR => 'Media Upload Error',
+        self::MESSAGE_STATUS_UNSUPPORTED_MESSAGE_TYPE => 'Unsupported Message Type',
+        self::MESSAGE_STATUS_INCORRECT_CERTIFICATE => 'Incorrect Certificate',
+        self::MESSAGE_STATUS_BUSINESS_ELIGIBILITY_PAYMENT_ISSUE => 'Message failed to send because there were errors related to payment method',
+        self::MESSAGE_STATUS_REQUIRED_PARAMETER_MISSING => 'Required Parameter missing',
+        self::MESSAGE_STATUS_QUEUED => "Queued for Delivery",
+        self::MESSAGE_STATUS_SUBMISSION_RETRY_EXHAUSTED => "Submission Retry Exhausted",
+        self::MESSAGE_STATUS_OTHER => "Other Error",
+        self::MESSAGE_STATUS_BOT_MAPPING_FAILED => "Bot Mapping Failed",
+        self::MESSAGE_STATUS_INVALID_MEDIA_URL => "Invalid Media URL",
+        self::MESSAGE_STATUS_INVALID_MEDIA_SIZE => "Invalid Media Size",
+        self::MESSAGE_STATUS_UNSUPPORTED_CHANNEL_FEATURE => "Unsupported Channel Feature",
+        self::MESSAGE_STATUS_COUNTRY_RESTRICTED => "Country Messaging Restricted",
+        self::MESSAGE_STATUS_CANNOT_MESSAGE_SELF => "Cannot Message Self",
+        self::MESSAGE_STATUS_DISPLAY_NAME_NOT_APPROVED => "Display Name Not Approved",
+        self::MESSAGE_STATUS_META_POLICY_BLOCK => "Blocked by Meta Policy",
+        self::MESSAGE_STATUS_ACCOUNT_MAINTENANCE_MODE => "Account in Maintenance Mode",
+        self::MESSAGE_STATUS_FLOW_BLOCKED => "Flow is Blocked",
+        self::MESSAGE_STATUS_INCOMPLETE_DEREGISTRATION => "Incomplete Deregistration",
+        self::MESSAGE_STATUS_PIN_MISMATCH => "Two Step Verification PIN Mismatch",
+        self::MESSAGE_STATUS_REVERIFICATION_NEEDED => "Phone Number Reverification Needed",
+        self::MESSAGE_STATUS_WAIT_BEFORE_REGISTERING => "Wait Before Registering",
+        self::MESSAGE_STATUS_PAYMENTS_TERMS_NOT_ACCEPTED => "Payments Terms Not Accepted",
+        self::MESSAGE_STATUS_SYNC_TIME_WINDOW_VIOLATION => "Synchronization Request Outside Allowed Window",
+        self::MESSAGE_STATUS_INVALID_FROM_NUMBER => "Invalid From Number",
+        self::MESSAGE_STATUS_INVALID_TO_NUMBER => "Invalid To Number",
+        self::MESSAGE_STATUS_INVALID_WHATSAPP_NUMBER => "Invalid WhatsApp Number",
+        self::MESSAGE_STATUS_TEMPLATE_HEADER_PARAM_MISMATCH => "Template Header Parameter Mismatch",
+        self::MESSAGE_STATUS_INVALID_MEDIA_CONTENT => "Invalid Media Content",
+        self::MESSAGE_STATUS_MESSAGE_PENDING_TOO_LONG => "Message Pending Too Long",
+        self::MESSAGE_STATUS_SECTION_COUNT_ERROR => "Invalid Number of Sections",
+        self::MESSAGE_STATUS_ROWS_COUNT_ERROR => "Invalid Number of Rows",
+        self::MESSAGE_STATUS_PRODUCT_COUNT_ERROR => "Invalid Number of Products",
+        self::MESSAGE_STATUS_CATALOGUE_NOT_FOUND => "Catalogue Not Found",
+        self::MESSAGE_STATUS_CATALOGUE_NOT_LINKED => "Catalogue Not Linked",
+        self::MESSAGE_STATUS_MISSING_PRODUCT => "Product Missing in Catalogue",
+        self::MESSAGE_STATUS_PRODUCT_NOT_FOUND => "Product Not Found in Catalogue",
+        self::MESSAGE_STATUS_PRODUCT_COMPLIANCE_ERROR => "Product Compliance Error",
+        self::MESSAGE_STATUS_MISSING_COMPLIANCE => "Missing Compliance Information",
+        self::MESSAGE_STATUS_PERMISSION_ISSUE => "Capability or permissions issue.",
+        self::MESSAGE_STATUS_PERMISSION_DENIED => "Permission is either not granted or has been removed.",
+        self::MESSAGE_STATUS_EXPIRED_TOKEN => "Your access token has expired.",
+        self::MESSAGE_STATUS_TEMPORARY_BLOCK => "The WhatsApp Business Account associated with the app has been restricted or disabled for violating a platform policy.",
+        self::MESSAGE_STATUS_ACCOUNT_RESTRICTED => "The WhatsApp Business Account is restricted from messaging to users in certain countries.",
+        self::MESSAGE_STATUS_NUMBER_DELETED => "The business phone number has been deleted.",
+        self::MESSAGE_STATUS_PARAMETER_INVALID => "One or more parameter values are invalid.",
+        self::MESSAGE_STATUS_SERVICE_UNAVAILABLE => "A service is temporarily unavailable.",
+        self::MESSAGE_STATUS_RECEPIENT_CANNOT_BE_SENDER => "Sender and recipient phone number is the same.",
+        self::MESSAGE_STATUS_MESSAGE_UNDELIVERABLE => "Unable to deliver message. Reasons can include:
+
+    The recipient phone number is not a WhatsApp phone number.
+    Recipient has not accepted our new Terms of Service and Privacy Policy.
+    Recipient using an old WhatsApp version",
+        self::MESSAGE_STATUS_NUMBER_NOT_REGISTERED => "Incorrect Certificate. Message failed to send due to a phone number registration error.",
+        self::MESSAGE_STATUS_HEALTHY_ECOSYSTEM => "This message was not delivered to maintain healthy ecosystem engagement.",
+        self::MESSAGE_STATUS_USER_STOPPED_MARKETING => "Unable to deliver the message. This recipient has chosen to stop receiving marketing messages on WhatsApp from your business.",
+        self::MESSAGE_STATUS_PARAMETER_COUNT_MISMATCH => "The number of variable parameter values included in the request did not match the number of variable parameters defined in the template.",
+        self::MESSAGE_STATUS_TEMPLATE_DOES_NOT_EXIST => "The template does not exist in the specified language or the template has not been approved.",
+        self::MESSAGE_STATUS_TEMPLATE_PARAMETER_FORMAT_MISMATCH => "Variable parameter values formatted incorrectly.",
+        self::MESSAGE_STATUS_FLOW_THROTTLED => "Flow is in throttled state and 10 messages using this flow were already sent in the last hour.",
+        self::MESSAGE_STATUS_TWO_STEP_VERIFICATION_PIN_MISMATCH => "Two-step verification PIN incorrect.",
+        self::MESSAGE_STATUS_NUMBER_REVERIFICATION_NEEDED => "Phone number needs to be verified before registering.",
+        self::MESSAGE_STATUS_TOO_MANY_TWO_STEP_VERIFICATION_GUESS => "Too many two-step verification PIN guesses for this phone number.",
+        self::MESSAGE_STATUS_PHONE_NUMBER_NOT_REGISTERED => "Phone number not registered on the WhatsApp Business Platform.",
+        self::MESSAGE_STATUS_NUMBER_RECENTLY_DELETED => "The phone number you are attempting to register was recently deleted, and deletion has not yet completed.",
+        self::MESSAGE_STATUS_WHATSAPP_PAYMENT_TERMS_NOT_ACCEPTED => "Message failed to send because WhatsApp Payments terms of service acceptance is pending for this WhatsApp Business Account.",
+        self::MESSAGE_STATUS_SYNCHRONIZATION_ERROR => "You have exceeded the maximum number of times to call the synchronization api for this phone number.",
+        self::MESSAGE_STATUS_SYNCHRONIZATION_REQUEST_OUTSIDE_WINDOW => "Synchronization request can only be made within 24 hours of onboarding",
+        self::MESSAGE_STATUS_API_CALL_RATE_LIMIT_REACHED => "The app has reached its API call rate limit.",
+        self::MESSAGE_STATUS_RATE_LIMIT_REACHED => "The WhatsApp Business Account has reached its rate limit.",
+        self::MESSAGE_STATUS_PAIR_RATE_LIMIT_HIT => "Too many messages sent from the sender phone number to the same recipient phone number in a short period of time.",
+        self::MESSAGE_STATUS_REGISTER_DEREGISTER_LIMIT_REACHED => "Registration or Deregistration failed because there were too many attempts for this phone number in a short period of time",
+        self::MESSAGE_STATUS_BAD_REQUEST => "The request could not be understood or was missing required parameters",
+        self::MESSAGE_STATUS_UNAUTHORIZED => "Authentication is required and has failed or has not been provided",
+        self::MESSAGE_STATUS_PAYMENT_REQUIRED => "Payment is required to access the requested resource",
+        self::MESSAGE_STATUS_FORBIDDEN => "The server understood the request but refuses to authorize it",
+        self::MESSAGE_STATUS_NOT_FOUND => "The requested resource could not be found on the server",
+        self::MESSAGE_STATUS_METHOD_NOT_ALLOWED => "The method specified in the request is not allowed for the resource",
+        self::MESSAGE_STATUS_NOT_ACCEPTABLE => "The requested resource is capable of generating only content not acceptable according to the Accept headers sent in the request",
+        self::MESSAGE_STATUS_PROXY_AUTHENTICATION_REQUIRED => "The client must first authenticate itself with the proxy",
+        self::MESSAGE_STATUS_REQUEST_TIMEOUT => "The server timed out waiting for the request",
+        self::MESSAGE_STATUS_CONFLICT => "The request could not be completed due to a conflict with the current state of the resource",
+        self::MESSAGE_STATUS_GONE => "The requested resource is no longer available at the server and no forwarding address is known",
+        self::MESSAGE_STATUS_LENGTH_REQUIRED => "The server refuses to accept the request without a defined Content-Length",
+        self::MESSAGE_STATUS_PRECONDITION_FAILED => "The precondition given in one or more of the request-header fields evaluated to false when it was tested on the server",
+        self::MESSAGE_STATUS_PAYLOAD_TOO_LARGE => "The request entity is larger than the server is willing or able to process",
+        self::MESSAGE_STATUS_URI_TOO_LONG => "The URI provided was too long for the server to process",
+        self::MESSAGE_STATUS_UNSUPPORTED_MEDIA_TYPE => "The request entity has a media type which the server or resource does not support",
+        self::MESSAGE_STATUS_RANGE_NOT_SATISFIABLE => "The client has asked for a portion of the file, but the server cannot supply that portion",
+        self::MESSAGE_STATUS_EXPECTATION_FAILED => "The expectation given in an Expect request-header field could not be met by this server",
+        self::MESSAGE_STATUS_IM_A_TEAPOT => "The server refuses to brew coffee because it is, permanently, a teapot",
+        self::MESSAGE_STATUS_MISDIRECTED_REQUEST => "The request was directed at a server that is not able to produce a response",
+        self::MESSAGE_STATUS_UNPROCESSABLE_ENTITY => "The request was well-formed but was unable to be followed due to semantic errors",
+        self::MESSAGE_STATUS_LOCKED => "The resource that is being accessed is locked",
+        self::MESSAGE_STATUS_FAILED_DEPENDENCY => "The request failed because it depended on another request and that request failed",
+        self::MESSAGE_STATUS_TOO_EARLY => "The server is unwilling to risk processing a request that might be replayed",
+        self::MESSAGE_STATUS_UPGRADE_REQUIRED => "The client should switch to a different protocol",
+        self::MESSAGE_STATUS_PRECONDITION_REQUIRED => "The origin server requires the request to be conditional",
+        self::MESSAGE_STATUS_TOO_MANY_REQUESTS_HTTP => "The user has sent too many requests in a given amount of time",
+        self::MESSAGE_STATUS_REQUEST_HEADER_FIELDS_TOO_LARGE => "The server is unwilling to process the request because its header fields are too large",
+        self::MESSAGE_STATUS_UNAVAILABLE_FOR_LEGAL_REASONS => "The server is denying access to the resource as a consequence of a legal demand",
+        self::MESSAGE_STATUS_MESSAGE_IDS_EMPTY => "Message IDs are empty.",
+        self::MESSAGE_STATUS_COMPANY_ID_MISSING => "Company ID is missing.",
+        self::MESSAGE_STATUS_USER_ID_MISSING => "User ID is missing.",
+        self::MESSAGE_STATUS_ROLE_ID_MISSING => "Role ID is missing.",
+        self::MESSAGE_STATUS_CERT_PATH_REQUIRED => "Certificate path is required.",
+        self::MESSAGE_STATUS_CERT_PATH_MUST_BE_STRING => "Certificate path must be a string.",
+        self::MESSAGE_STATUS_ID_VALUE_REQUIRED => "ID value is required.",
+        self::MESSAGE_STATUS_ID_VALUE_MUST_BE_NUMBER => "ID value must be a number.",
+        self::MESSAGE_STATUS_WHATSAPP_NUMBER_MANDATORY => "WhatsApp number is mandatory.",
+        self::MESSAGE_STATUS_WHATSAPP_NUMBER_MUST_BE_STRING => "WhatsApp number must be a string.",
+        self::MESSAGE_STATUS_COUNTRY_CODE_MANDATORY => "Country code is mandatory.",
+        self::MESSAGE_STATUS_COUNTRY_CODE_MUST_BE_STRING => "Country code must be a string.",
+        self::MESSAGE_STATUS_NAME_FIELD_MANDATORY => "Name field is mandatory.",
+        self::MESSAGE_STATUS_NAME_VALUE_MUST_BE_STRING => "Name value must be a string.",
+        self::MESSAGE_STATUS_PATH_FIELD_MANDATORY => "Path field is mandatory.",
+        self::MESSAGE_STATUS_PATH_VALUE_MUST_BE_STRING => "Path value must be a string.",
+        self::MESSAGE_STATUS_OTP_VALUE_MANDATORY => "OTP value is mandatory.",
+        self::MESSAGE_STATUS_OTP_VALUE_MUST_BE_STRING => "OTP value must be a string.",
+        self::MESSAGE_STATUS_BODY_INPUT_MANDATORY => "Body input is mandatory.",
+        self::MESSAGE_STATUS_BODY_INPUT_MUST_BE_STRING => "Body input must be a string.",
+        self::MESSAGE_STATUS_TEMPLATE_NAME_MANDATORY => "Template name is mandatory.",
+        self::MESSAGE_STATUS_TEMPLATE_NAME_MUST_BE_STRING => "Template name must be a string.",
+        self::MESSAGE_STATUS_PARAMETERS_MUST_BE_LIST => "Parameters must be a list.",
+        self::MESSAGE_STATUS_PARAMETER_VALUE_MUST_BE_STRING => "Parameter value must be a string.",
+        self::MESSAGE_STATUS_EMAIL_ADDRESS_MUST_BE_STRING => "Email address must be a string.",
+        self::MESSAGE_STATUS_ADDRESS_MUST_BE_STRING => "Address must be a string.",
+        self::MESSAGE_STATUS_DESCRIPTION_MUST_BE_STRING => "Description must be a string.",
+        self::MESSAGE_STATUS_INCOMING_URL_MUST_BE_STRING => "Incoming URL must be a string.",
+        self::MESSAGE_STATUS_PROFILE_IMAGE_URL_MUST_BE_STRING => "Profile image URL must be a string.",
+        self::MESSAGE_STATUS_CATEGORY_MUST_BE_STRING => "Category must be a string.",
+        self::MESSAGE_STATUS_WEBSITES_MUST_BE_LIST => "Websites must be a list.",
+        self::MESSAGE_STATUS_WEBSITES_VALUE_MUST_BE_STRING => "Website value must be a string.",
+        self::MESSAGE_STATUS_FROM_FIELD_MANDATORY => "From field is mandatory.",
+        self::MESSAGE_STATUS_IP_ADDRESS_MANDATORY => "IP address is mandatory.",
+        self::MESSAGE_STATUS_SOURCE_FIELD_MANDATORY => "Source field is mandatory.",
+        self::MESSAGE_STATUS_CREATED_AT_FIELD_MANDATORY => "Created at field is mandatory.",
+        self::MESSAGE_STATUS_TYPE_FIELD_MANDATORY => "Type field is mandatory.",
+        self::MESSAGE_STATUS_FROM_VALUE_MUST_BE_STRING => "From value must be a string.",
+        self::MESSAGE_STATUS_IP_ADDRESS_MUST_BE_STRING => "IP address must be a string.",
+        self::MESSAGE_STATUS_SOURCE_VALUE_MUST_BE_STRING => "Source value must be a string.",
+        self::MESSAGE_STATUS_CREATED_AT_VALUE_MUST_BE_STRING => "Created at value must be a string.",
+        self::MESSAGE_STATUS_TYPE_VALUE_MUST_BE_STRING => "Type value must be a string.",
+        self::MESSAGE_STATUS_TO_MUST_BE_LIST => "To must be a list.",
+        self::MESSAGE_STATUS_TO_VALUE_MUST_BE_STRING => "To value must be a string.",
+        self::MESSAGE_STATUS_INVALID_OR_INCORRECT_INPUT => "Invalid or incorrect input.",
+        self::MESSAGE_STATUS_PACKAGE_EXPIRED_OR_COUNT_NOT_AVAILABLE => "Package expired or count not available.",
+        self::MESSAGE_STATUS_PACKAGE_COUNT_NOT_AVAILABLE => "Package count not available.",
+        self::MESSAGE_STATUS_TEMPLATE_PARAMETERS_NOT_MATCHING => "Template parameters do not match.",
+        self::MESSAGE_STATUS_CHECKSUM_FIELD_MANDATORY => "Checksum field is mandatory.",
+        self::MESSAGE_STATUS_CHECKSUM_VALUE_MUST_BE_STRING => "Checksum value must be a string.",
+        self::MESSAGE_STATUS_WHATSAPP_DAILY_LIMIT_REACHED => "WhatsApp daily limit reached.",
+        self::MESSAGE_STATUS_TEMPLATE_HEADER_PARAMETERS_NOT_MATCHING => "Template header parameters do not match.",
+        self::MESSAGE_STATUS_INVALID_PARAMETER_VALUES => "Invalid parameter values.",
+        self::MESSAGE_STATUS_FAILED_TO_UPLOAD_MEDIA_FILE => "Failed to upload media file.",
+        self::MESSAGE_STATUS_UNABLE_TO_PROCESS_REQUEST => "Unable to process request.",
+        self::MESSAGE_STATUS_INVALID_HTML_TAGS_IN_PARAMETERS => "Invalid HTML tags in parameters.",
+        self::MESSAGE_STATUS_BODY_PARAMETER_MANDATORY => "Body parameter is mandatory.",
+        self::MESSAGE_STATUS_SENDER_ID_MISSING => "Sender ID is missing.",
+        self::MESSAGE_STATUS_TO_PARAMETER_MISSING => "To parameter is missing.",
+        self::MESSAGE_STATUS_CAMPAIGN_NAME_ALPHANUMERIC_ONLY => "Campaign name must be alphanumeric only.",
+        self::MESSAGE_STATUS_INVALID_CALLBACK_URL_FORMAT => "Invalid callback URL format.",
+        self::MESSAGE_STATUS_LAST_MAPPED_BOT_FAILED => "Last mapped bot failed.",
+        self::MESSAGE_STATUS_NUMBER_NOT_EXIST_ON_WHATSAPP => "Number does not exist on WhatsApp.",
+        self::MESSAGE_STATUS_WALLET_BALANCE_LOW => "Wallet balance is low.",
+        self::MESSAGE_STATUS_TEMPLATE_DISABLED_FAILURE => "Template disabled failure.",
+        self::MESSAGE_STATUS_TEMPLATE_MATCH_FAILED => "Template match failed.",
+        self::MESSAGE_STATUS_TEMPLATE_OPT_IN_FAILURE => "Template opt-in failure.",
+        self::MESSAGE_STATUS_TEMPLATE_OPT_IN_MATCH_FAILURE => "Template opt-in match failure.",
+        self::MESSAGE_STATUS_NEITHER_PROXIED_NOR_OPTED_IN => "Neither proxiable nor opted-in.",
+        self::MESSAGE_STATUS_NUMBER_OPTED_OUT => "Number opted out.",
+        self::MESSAGE_STATUS_API_RATE_LIMITED => "API rate limited.",
+        self::MESSAGE_STATUS_INVALID_RESPONSE_FROM_WHATSAPP => "Invalid response from WhatsApp.",
+        self::MESSAGE_STATUS_NO_TEMPLATE_MATCH => "No template match.",
+        self::MESSAGE_STATUS_ONLY_CAPI_FEATURE => "Only CAPI feature.",
+        self::MESSAGE_STATUS_PAUSED_TEMPLATE => "Resume the template or use an alternative template for messaging.",
+        self::MESSAGE_STATUS_EX_MESSAGE_SENT => "The message has been sent to the user successfully.",
+        self::MESSAGE_STATUS_EX_MESSAGE_DELIVERED => "The message has been successfully delivered to the user.",
+        self::MESSAGE_STATUS_EX_MESSAGE_SEEN => "The message has been seen by the user.",
+        self::MESSAGE_STATUS_EX_SYSTEM_ERROR => "Check authentication, access tokens, permissions, and service availability.",
+        self::MESSAGE_STATUS_EX_NUMBER_ERROR => "Verify the phone number format and ensure it's valid for WhatsApp.",
+        self::MESSAGE_STATUS_EX_SETUP_ERROR => "Check your account setup and configuration settings.",
+        self::MESSAGE_STATUS_EX_RATE_LIMIT_HIT => "Reduce message frequency and wait before sending more messages.",
+        self::MESSAGE_STATUS_EX_SPAM_RATE_LIMIT_HIT => "Improve message quality and reduce spam-like behavior.",
+        self::MESSAGE_STATUS_EX_TOO_MANY_REQUEST => "Reduce the number of requests and implement proper rate limiting.",
+        self::MESSAGE_STATUS_EX_INVALID_REQUEST => "Check your request format and ensure all required fields are included.",
+        self::MESSAGE_STATUS_EX_UNKNOWN_ERROR => "Try again later or contact support if the issue persists.",
+        self::MESSAGE_STATUS_EX_INVALID_RECIPIENT => "Verify the recipient phone number and ensure it's valid.",
+        self::MESSAGE_STATUS_EX_INCAPABLE_RECIPIENT => "The recipient device cannot receive this type of message.",
+        self::MESSAGE_STATUS_EX_RECIPIENT_BLOCKED => "The recipient is not in the allowed list. Check your contact permissions.",
+        self::MESSAGE_STATUS_EX_UNSUPPORTED_MESSAGE => "Use a supported message type in your request.",
+        self::MESSAGE_STATUS_EX_MEDIA_DOWNLOAD_ERROR => "WhatsApp is unable to download the media. Check media URL and format.",
+        self::MESSAGE_STATUS_EX_MEDIA_UPLOAD_ERROR => "Use a supported media type in your request.",
+        self::MESSAGE_STATUS_EX_REENGAGEMENT_ERROR => "The 24-hour conversation window has expired. Use a template message.",
+        self::MESSAGE_STATUS_EX_INVALID_PARAM => "Check and correct the parameters in your request body.",
+        self::MESSAGE_STATUS_EX_MISSING_PARAM => "Include all mandatory parameters in your request body.",
+        self::MESSAGE_STATUS_EX_INVALID_PARAM_VALUE => "Ensure parameter values are in the correct format and within limits.",
+        self::MESSAGE_STATUS_EX_TEMPLATE_ERROR => "Check template format and ensure it complies with character policy.",
+        self::MESSAGE_STATUS_EX_TEMPLATE_PARAM_ERROR => "Ensure the number of template parameters matches the template definition.",
+        self::MESSAGE_STATUS_EX_TEMPLATE_NOT_FOUND => "Verify the template exists and is approved for your account.",
+        self::MESSAGE_STATUS_EX_TEMPLATE_TEXT_TOO_LONG => "Shorten the translated text in your template message.",
+        self::MESSAGE_STATUS_EX_INVALID_TEMPLATE_NAMESPACE => "Use a valid template namespace in your request.",
+        self::MESSAGE_STATUS_EX_MESSAGE_PENDING_TOO_LONG => "Resend the message as it was pending for too long.",
+        self::MESSAGE_STATUS_EX_MESSAGE_EXPIRED => "The message validity period has expired. Send a new message.",
+        self::MESSAGE_STATUS_EX_MESSAGE_TOO_LONG => "Keep your message under 4096 characters.",
+        self::MESSAGE_STATUS_EX_WEBHOOK_ERROR => "Configure a valid webhook URL in your account settings.",
+        self::MESSAGE_STATUS_EX_SECTION_COUNT_ERROR => "Check the number of sections in your message and ensure it's valid.",
+        self::MESSAGE_STATUS_EX_ROWS_COUNT_ERROR => "Check the number of rows in your message and ensure it's valid.",
+        self::MESSAGE_STATUS_EX_PRODUCT_COUNT_ERROR => "Check the number of products in your message and ensure it's valid.",
+        self::MESSAGE_STATUS_EX_CATALOGUE_NOT_FOUND => "Verify the catalog ID exists in your account.",
+        self::MESSAGE_STATUS_EX_CATALOGUE_NOT_LINKED => "Link the catalog to your API number before sending product messages.",
+        self::MESSAGE_STATUS_EX_MISSING_PRODUCT => "Add the missing product to your catalog before sending the message.",
+        self::MESSAGE_STATUS_EX_PRODUCT_NOT_FOUND => "Ensure all products in your request exist in the product catalog.",
+        self::MESSAGE_STATUS_EX_PRODUCT_COMPLIANCE_ERROR => "Ensure your products meet compliance requirements.",
+        self::MESSAGE_STATUS_EX_INVALID_HEADER => "Check your message header structure and ensure it's valid.",
+        self::MESSAGE_STATUS_EX_MISSING_COMPLIANCE => "Include all required compliance information in your message.",
+        self::MESSAGE_STATUS_EX_CHAR_POLICY_VIOLATION => "Review your message content and ensure it complies with character policies.",
+        self::MESSAGE_STATUS_QUEUED_FOR_DELIVERY => "Your message is queued and will be delivered shortly. No action required.",
+        self::MESSAGE_STATUS_INVALID_PERMISSION_RCM_MEDIA_NOT_ENABLED => "Enable RCM media permissions for your account to send media messages.",
+        self::MESSAGE_STATUS_INVALID_PERMISSION_WHATSAPP_SERVICE_NOT_ASSIGNED => "Contact support to assign WhatsApp service to your account.",
+        self::MESSAGE_STATUS_NUMBER_NOT_IN_OPT_IN => "Ensure the recipient number is in your opt-in list before sending messages.",
+        self::MESSAGE_STATUS_INVALID_REQUEST_GENERAL => "Check your request format and ensure all required fields are properly formatted.",
+        self::MESSAGE_STATUS_INVALID_REQUEST_WABA_SENDER_NOT_FOUND => "Verify your WABA (WhatsApp Business Account) sender configuration.",
+        self::MESSAGE_STATUS_TEMPLATE_NOT_FOUND_GENERAL => "Verify the template exists and is approved for your account.",
+        self::MESSAGE_STATUS_SUBMISSION_RETRY_EXHAUSTED_GENERAL => "Maximum retry attempts reached. Try sending the message again later.",
+        self::MESSAGE_STATUS_ACCOUNT_FAILURES_OBO_PENDING_OR_DECLINED => "Your On Behalf Of (OBO) messaging request is pending approval or has been declined.",
+        self::MESSAGE_STATUS_ACCOUNT_FAILURES_SPAM_RATE_LIMIT => "Your account has hit the spam rate limit. Improve message quality and reduce frequency.",
+        self::MESSAGE_STATUS_INVALID_RECIPIENT_GENERAL => "Verify the recipient phone number format and ensure it's valid for WhatsApp.",
+        self::MESSAGE_STATUS_USER_RELATED_FAILURES => "Check user account status and ensure all user-related configurations are correct.",
+        self::MESSAGE_STATUS_SYSTEM_ERROR_RATE_LIMIT_HIT => "System rate limit has been reached. Wait before sending more messages.",
+        self::MESSAGE_STATUS_SYSTEM_ERROR_DISPATCHING_TO_WHATSAPP => "System error occurred while sending to WhatsApp. Try again later.",
+        self::MESSAGE_STATUS_SYSTEM_ERROR_GENERAL => "A system error occurred. Try again later or contact support if the issue persists.",
+        self::MESSAGE_STATUS_MESSAGE_ERROR_REQUIRED_PARAMETER_MISSING => "Include all required parameters in your message request.",
+        self::MESSAGE_STATUS_MESSAGE_ERROR_RE_ENGAGEMENT_MESSAGE => "Use a template message for re-engagement as the 24-hour window has expired.",
+        self::MESSAGE_STATUS_MESSAGE_EXPIRED_GENERAL => "The message validity period has expired. Send a new message.",
+        self::MESSAGE_STATUS_OTHERS => "An unexpected error occurred. Contact support with the error details for assistance."
+    ];
+
+    const COMMUNICATION_RANDOM_MESSAGES = [
+        self::COMMUNICATION_TYPE_RANDOM_TRACKING,
+        self::COMMUNICATION_TYPE_RANDOM_CONCERN,
+        self::COMMUNICATION_TYPE_RANDOM_END_CONV,
+        self::COMMUNICATION_TYPE_RANDOM_MAINMENU,
+        self::COMMUNICATION_TYPE_RANDOM_SUPPORT
+    ];
+
+    const COMMUNICATION_ADDRESS_EDIT_IN_PROGRESS = [
+        self::COMMUNICATION_TYPE_ADDRESS_EDIT_ACK,
+        self::COMMUNICATION_TYPE_ADDRESS_PINCODE_CONFIRMATION,
+    ];
+
+    const MESSAGE_FAILED_STATUS = [
+        self::MESSAGE_STATUS_NO_STATUS,
+        self::MESSAGE_STATUS_EXPIRED,
+        self::MESSAGE_STATUS_NO_RESPONSE,
+        self::MESSAGE_STATUS_FAILED,
+        self::MESSAGE_STATUS_NO_RECHARGE,
+        self::MESSAGE_STATUS_INVALID_TEMPLATE,
+        self::MESSAGE_STATUS_INVALID_PARAMETER,
+        self::MESSAGE_STATUS_PARAM_NOT_MATCHING,
+        self::MESSAGE_STATUS_UNKNOWN_ERROR,
+        self::MESSAGE_STATUS_INTERNAL_ERROR,
+        self::MESSAGE_STATUS_DATABASE_ERROR_OCCURED,
+        self::MESSAGE_STATUS_RECEIVER_VERSION_NOT_SUPPORTED,
+        self::MESSAGE_STATUS_FB_HIGH_REQUEST,
+        self::MESSAGE_STATUS_SERVICE_NOT_READY,
+        self::MESSAGE_STATUS_RESOURCE_NOT_FOUND,
+        self::MESSAGE_STATUS_NUMBER_FLAGGED,
+        self::MESSAGE_STATUS_PLAN_CANCELLED,
+        self::MESSAGE_STATUS_TEMPLATE_NAMESPACE_UNAVAILBALE,
+        self::MESSAGE_STATUS_MEDIA_DOWNLOAD_FAILED,
+        self::MESSAGE_STATUS_RATE_LIMIT_HIT,
+        self::MESSAGE_STATUS_UNSIGNED_CERT,
+        self::MESSAGE_STATUS_CERT_ID_MISMATCH,
+        self::MESSAGE_STATUS_CERT_INVALID_SIGN,
+        self::MESSAGE_STATUS_RE_ENGAGE_24_HRS,
+        self::MESSAGE_STATUS_SPAM_RATE_LIMIT_HIT,
+        self::MESSAGE_STATUS_NUMBER_PART_OF_EXPERIMENT,
+        self::MESSAGE_STATUS_USER_POTENTIALLY_CHANGED,
+        self::MESSAGE_STATUS_GENERIC_ERROR,
+        self::MESSAGE_STATUS_MESSAGE_TOO_LONG,
+        self::MESSAGE_STATUS_INVALID_RECIPIENT_TYPE,
+        self::MESSAGE_STATUS_RESOURCE_ALREADY_EXISTS,
+        self::MESSAGE_STATUS_ACCESS_DENIED,
+        self::MESSAGE_STATUS_RECIPIENT_BLOCKED_TO_RECIEVE,
+        self::MESSAGE_STATUS_USER_NOT_VALID,
+        self::MESSAGE_STATUS_TOO_MANY_REQ,
+        self::MESSAGE_STATUS_SYSTEM_OVERLOADED,
+        self::MESSAGE_STATUS_NOT_PRIMARY_MASTER,
+        self::MESSAGE_STATUS_NOT_PRIMARY_CORE_APP,
+        self::MESSAGE_STATUS_BAD_USER,
+        self::MESSAGE_STATUS_WEBHOOK_URL_NOT_CONFIGURED,
+        self::MESSAGE_STATUS_PASSWORD_CHANGE_REQUIRED,
+        self::MESSAGE_STATUS_INVALID_REQ,
+        self::MESSAGE_STATUS_RECEIVER_INCAPABLE,
+        self::MESSAGE_STATUS_USER_IDENTITY_CHANGED,
+        self::MESSAGE_STATUS_SENDER_ACCOUNT_LOCKED,
+        self::MESSAGE_STATUS_TEMPLATE_FETCH_FAILED,
+        self::MESSAGE_STATUS_TEMPLATE_PACK_MISSING,
+        self::MESSAGE_STATUS_TEMPLATE_LONG_PARAM_LENTH,
+        self::MESSAGE_STATUS_TEMPLATE_HYDRATED_TEXT_TOO_LONG,
+        self::MESSAGE_STATUS_POLICY_VIOLATED,
+        self::MESSAGE_STATUS_TEMPLATE_MEDIA_UNSUPPORTED,
+        self::MESSAGE_STATUS_MISSING_REQ_COMPONENT,
+        self::MESSAGE_STATUS_INVALID_HYDRATED_URL,
+        self::MESSAGE_STATUS_PARAM_FORMAT_NOT_MATCHING,
+        self::MESSAGE_STATUS_TEMPLATE_BUTTON_UNSUPPORTED,
+        self::MESSAGE_STATUS_TEMPLATE_NAMESPACE_EMPTY,
+        self::MESSAGE_STATUS_CHAR_POLICY_VIOLATED,
+        self::MESSAGE_STATUS_INVALID_HEADER_STRUCTURE,
+        self::MESSAGE_UNDELIVERABLE,
+        self::MESSAGE_STATUS_TEMPLATE_REJECTED,
+        self::MESSAGE_STATUS_TEMPLATE_PAUSED,
+        self::MESSAGE_STATUS_TEMPLATE_DISABLED,
+        self::MESSAGE_STATUS_SERVER_TEMPORARILIY_UNAVAILABLE,
+        self::MESSAGE_STATUS_TEMPLATE_PARAM_COUNT_MISMATCH,
+        self::MESSAGE_STATUS_MEDIA_UPLOAD_ERROR,
+        self::MESSAGE_STATUS_UNSUPPORTED_MESSAGE_TYPE,
+        self::MESSAGE_STATUS_INCORRECT_CERTIFICATE,
+        self::MESSAGE_STATUS_BUSINESS_ELIGIBILITY_PAYMENT_ISSUE,
+        self::MESSAGE_STATUS_REQUIRED_PARAMETER_MISSING,
+        self::MESSAGE_STATUS_QUEUED,
+        self::MESSAGE_STATUS_SUBMISSION_RETRY_EXHAUSTED,
+        self::MESSAGE_STATUS_OTHER,
+        self::MESSAGE_STATUS_BOT_MAPPING_FAILED,
+        self::MESSAGE_STATUS_INVALID_MEDIA_URL,
+        self::MESSAGE_STATUS_INVALID_MEDIA_SIZE,
+        self::MESSAGE_STATUS_UNSUPPORTED_CHANNEL_FEATURE,
+        self::MESSAGE_STATUS_COUNTRY_RESTRICTED,
+        self::MESSAGE_STATUS_CANNOT_MESSAGE_SELF,
+        self::MESSAGE_STATUS_DISPLAY_NAME_NOT_APPROVED,
+        self::MESSAGE_STATUS_META_POLICY_BLOCK,
+        self::MESSAGE_STATUS_ACCOUNT_MAINTENANCE_MODE,
+        self::MESSAGE_STATUS_FLOW_BLOCKED,
+        self::MESSAGE_STATUS_INCOMPLETE_DEREGISTRATION,
+        self::MESSAGE_STATUS_PIN_MISMATCH,
+        self::MESSAGE_STATUS_REVERIFICATION_NEEDED,
+        self::MESSAGE_STATUS_WAIT_BEFORE_REGISTERING,
+        self::MESSAGE_STATUS_PAYMENTS_TERMS_NOT_ACCEPTED,
+        self::MESSAGE_STATUS_SYNC_TIME_WINDOW_VIOLATION,
+        self::MESSAGE_STATUS_INVALID_FROM_NUMBER,
+        self::MESSAGE_STATUS_INVALID_TO_NUMBER,
+        self::MESSAGE_STATUS_INVALID_WHATSAPP_NUMBER,
+        self::MESSAGE_STATUS_TEMPLATE_HEADER_PARAM_MISMATCH,
+        self::MESSAGE_STATUS_INVALID_MEDIA_CONTENT,
+        self::MESSAGE_STATUS_MESSAGE_PENDING_TOO_LONG,
+        self::MESSAGE_STATUS_SECTION_COUNT_ERROR,
+        self::MESSAGE_STATUS_ROWS_COUNT_ERROR,
+        self::MESSAGE_STATUS_PRODUCT_COUNT_ERROR,
+        self::MESSAGE_STATUS_CATALOGUE_NOT_FOUND,
+        self::MESSAGE_STATUS_CATALOGUE_NOT_LINKED,
+        self::MESSAGE_STATUS_MISSING_PRODUCT,
+        self::MESSAGE_STATUS_PRODUCT_NOT_FOUND,
+        self::MESSAGE_STATUS_PRODUCT_COMPLIANCE_ERROR,
+        self::MESSAGE_STATUS_MISSING_COMPLIANCE,
+        self::MESSAGE_STATUS_BAD_REQUEST,
+        self::MESSAGE_STATUS_UNAUTHORIZED,
+        self::MESSAGE_STATUS_PAYMENT_REQUIRED,
+        self::MESSAGE_STATUS_FORBIDDEN,
+        self::MESSAGE_STATUS_NOT_FOUND,
+        self::MESSAGE_STATUS_METHOD_NOT_ALLOWED,
+        self::MESSAGE_STATUS_NOT_ACCEPTABLE,
+        self::MESSAGE_STATUS_PROXY_AUTHENTICATION_REQUIRED,
+        self::MESSAGE_STATUS_REQUEST_TIMEOUT,
+        self::MESSAGE_STATUS_CONFLICT,
+        self::MESSAGE_STATUS_GONE,
+        self::MESSAGE_STATUS_LENGTH_REQUIRED,
+        self::MESSAGE_STATUS_PRECONDITION_FAILED,
+        self::MESSAGE_STATUS_PAYLOAD_TOO_LARGE,
+        self::MESSAGE_STATUS_URI_TOO_LONG,
+        self::MESSAGE_STATUS_UNSUPPORTED_MEDIA_TYPE,
+        self::MESSAGE_STATUS_RANGE_NOT_SATISFIABLE,
+        self::MESSAGE_STATUS_EXPECTATION_FAILED,
+        self::MESSAGE_STATUS_IM_A_TEAPOT,
+        self::MESSAGE_STATUS_MISDIRECTED_REQUEST,
+        self::MESSAGE_STATUS_UNPROCESSABLE_ENTITY,
+        self::MESSAGE_STATUS_LOCKED,
+        self::MESSAGE_STATUS_FAILED_DEPENDENCY,
+        self::MESSAGE_STATUS_TOO_EARLY,
+        self::MESSAGE_STATUS_UPGRADE_REQUIRED,
+        self::MESSAGE_STATUS_PRECONDITION_REQUIRED,
+        self::MESSAGE_STATUS_TOO_MANY_REQUESTS_HTTP,
+        self::MESSAGE_STATUS_REQUEST_HEADER_FIELDS_TOO_LARGE,
+        self::MESSAGE_STATUS_UNAVAILABLE_FOR_LEGAL_REASONS,
+        self::MESSAGE_STATUS_MESSAGE_IDS_EMPTY,
+        self::MESSAGE_STATUS_COMPANY_ID_MISSING,
+        self::MESSAGE_STATUS_USER_ID_MISSING,
+        self::MESSAGE_STATUS_ROLE_ID_MISSING,
+        self::MESSAGE_STATUS_CERT_PATH_REQUIRED,
+        self::MESSAGE_STATUS_CERT_PATH_MUST_BE_STRING,
+        self::MESSAGE_STATUS_ID_VALUE_REQUIRED,
+        self::MESSAGE_STATUS_ID_VALUE_MUST_BE_NUMBER,
+        self::MESSAGE_STATUS_WHATSAPP_NUMBER_MANDATORY,
+        self::MESSAGE_STATUS_WHATSAPP_NUMBER_MUST_BE_STRING,
+        self::MESSAGE_STATUS_COUNTRY_CODE_MANDATORY,
+        self::MESSAGE_STATUS_COUNTRY_CODE_MUST_BE_STRING,
+        self::MESSAGE_STATUS_NAME_FIELD_MANDATORY,
+        self::MESSAGE_STATUS_NAME_VALUE_MUST_BE_STRING,
+        self::MESSAGE_STATUS_PATH_FIELD_MANDATORY,
+        self::MESSAGE_STATUS_PATH_VALUE_MUST_BE_STRING,
+        self::MESSAGE_STATUS_OTP_VALUE_MANDATORY,
+        self::MESSAGE_STATUS_OTP_VALUE_MUST_BE_STRING,
+        self::MESSAGE_STATUS_BODY_INPUT_MANDATORY,
+        self::MESSAGE_STATUS_BODY_INPUT_MUST_BE_STRING,
+        self::MESSAGE_STATUS_TEMPLATE_NAME_MANDATORY,
+        self::MESSAGE_STATUS_TEMPLATE_NAME_MUST_BE_STRING,
+        self::MESSAGE_STATUS_PARAMETERS_MUST_BE_LIST,
+        self::MESSAGE_STATUS_PARAMETER_VALUE_MUST_BE_STRING,
+        self::MESSAGE_STATUS_EMAIL_ADDRESS_MUST_BE_STRING,
+        self::MESSAGE_STATUS_ADDRESS_MUST_BE_STRING,
+        self::MESSAGE_STATUS_DESCRIPTION_MUST_BE_STRING,
+        self::MESSAGE_STATUS_INCOMING_URL_MUST_BE_STRING,
+        self::MESSAGE_STATUS_PROFILE_IMAGE_URL_MUST_BE_STRING,
+        self::MESSAGE_STATUS_CATEGORY_MUST_BE_STRING,
+        self::MESSAGE_STATUS_WEBSITES_MUST_BE_LIST,
+        self::MESSAGE_STATUS_WEBSITES_VALUE_MUST_BE_STRING,
+        self::MESSAGE_STATUS_FROM_FIELD_MANDATORY,
+        self::MESSAGE_STATUS_IP_ADDRESS_MANDATORY,
+        self::MESSAGE_STATUS_SOURCE_FIELD_MANDATORY,
+        self::MESSAGE_STATUS_CREATED_AT_FIELD_MANDATORY,
+        self::MESSAGE_STATUS_TYPE_FIELD_MANDATORY,
+        self::MESSAGE_STATUS_FROM_VALUE_MUST_BE_STRING,
+        self::MESSAGE_STATUS_IP_ADDRESS_MUST_BE_STRING,
+        self::MESSAGE_STATUS_SOURCE_VALUE_MUST_BE_STRING,
+        self::MESSAGE_STATUS_CREATED_AT_VALUE_MUST_BE_STRING,
+        self::MESSAGE_STATUS_TYPE_VALUE_MUST_BE_STRING,
+        self::MESSAGE_STATUS_TO_MUST_BE_LIST,
+        self::MESSAGE_STATUS_TO_VALUE_MUST_BE_STRING,
+        self::MESSAGE_STATUS_INVALID_OR_INCORRECT_INPUT,
+        self::MESSAGE_STATUS_PACKAGE_EXPIRED_OR_COUNT_NOT_AVAILABLE,
+        self::MESSAGE_STATUS_PACKAGE_COUNT_NOT_AVAILABLE,
+        self::MESSAGE_STATUS_TEMPLATE_PARAMETERS_NOT_MATCHING,
+        self::MESSAGE_STATUS_CHECKSUM_FIELD_MANDATORY,
+        self::MESSAGE_STATUS_CHECKSUM_VALUE_MUST_BE_STRING,
+        self::MESSAGE_STATUS_WHATSAPP_DAILY_LIMIT_REACHED,
+        self::MESSAGE_STATUS_TEMPLATE_HEADER_PARAMETERS_NOT_MATCHING,
+        self::MESSAGE_STATUS_INVALID_PARAMETER_VALUES,
+        self::MESSAGE_STATUS_FAILED_TO_UPLOAD_MEDIA_FILE,
+        self::MESSAGE_STATUS_UNABLE_TO_PROCESS_REQUEST,
+        self::MESSAGE_STATUS_INVALID_HTML_TAGS_IN_PARAMETERS,
+        self::MESSAGE_STATUS_BODY_PARAMETER_MANDATORY,
+        self::MESSAGE_STATUS_SENDER_ID_MISSING,
+        self::MESSAGE_STATUS_TO_PARAMETER_MISSING,
+        self::MESSAGE_STATUS_CAMPAIGN_NAME_ALPHANUMERIC_ONLY,
+        self::MESSAGE_STATUS_INVALID_CALLBACK_URL_FORMAT,
+        self::MESSAGE_STATUS_LAST_MAPPED_BOT_FAILED,
+        self::MESSAGE_STATUS_NUMBER_NOT_EXIST_ON_WHATSAPP,
+        self::MESSAGE_STATUS_WALLET_BALANCE_LOW,
+        self::MESSAGE_STATUS_TEMPLATE_DISABLED_FAILURE,
+        self::MESSAGE_STATUS_TEMPLATE_MATCH_FAILED,
+        self::MESSAGE_STATUS_TEMPLATE_OPT_IN_FAILURE,
+        self::MESSAGE_STATUS_TEMPLATE_OPT_IN_MATCH_FAILURE,
+        self::MESSAGE_STATUS_NEITHER_PROXIED_NOR_OPTED_IN,
+        self::MESSAGE_STATUS_NUMBER_OPTED_OUT,
+        self::MESSAGE_STATUS_API_RATE_LIMITED,
+        self::MESSAGE_STATUS_INVALID_RESPONSE_FROM_WHATSAPP,
+        self::MESSAGE_STATUS_NO_TEMPLATE_MATCH,
+        self::MESSAGE_STATUS_ONLY_CAPI_FEATURE,
+        self::MESSAGE_STATUS_PAUSED_TEMPLATE,
+        self::MESSAGE_STATUS_EX_MESSAGE_SENT,
+        self::MESSAGE_STATUS_EX_MESSAGE_DELIVERED,
+        self::MESSAGE_STATUS_EX_MESSAGE_SEEN,
+        self::MESSAGE_STATUS_EX_SYSTEM_ERROR,
+        self::MESSAGE_STATUS_EX_NUMBER_ERROR,
+        self::MESSAGE_STATUS_EX_SETUP_ERROR,
+        self::MESSAGE_STATUS_EX_RATE_LIMIT_HIT,
+        self::MESSAGE_STATUS_EX_SPAM_RATE_LIMIT_HIT,
+        self::MESSAGE_STATUS_EX_TOO_MANY_REQUEST,
+        self::MESSAGE_STATUS_EX_INVALID_REQUEST,
+        self::MESSAGE_STATUS_EX_UNKNOWN_ERROR,
+        self::MESSAGE_STATUS_EX_INVALID_RECIPIENT,
+        self::MESSAGE_STATUS_EX_INCAPABLE_RECIPIENT,
+        self::MESSAGE_STATUS_EX_RECIPIENT_BLOCKED,
+        self::MESSAGE_STATUS_EX_UNSUPPORTED_MESSAGE,
+        self::MESSAGE_STATUS_EX_MEDIA_DOWNLOAD_ERROR,
+        self::MESSAGE_STATUS_EX_MEDIA_UPLOAD_ERROR,
+        self::MESSAGE_STATUS_EX_REENGAGEMENT_ERROR,
+        self::MESSAGE_STATUS_EX_INVALID_PARAM,
+        self::MESSAGE_STATUS_EX_MISSING_PARAM,
+        self::MESSAGE_STATUS_EX_INVALID_PARAM_VALUE,
+        self::MESSAGE_STATUS_EX_TEMPLATE_ERROR,
+        self::MESSAGE_STATUS_EX_TEMPLATE_PARAM_ERROR,
+        self::MESSAGE_STATUS_EX_TEMPLATE_NOT_FOUND,
+        self::MESSAGE_STATUS_EX_TEMPLATE_TEXT_TOO_LONG,
+        self::MESSAGE_STATUS_EX_INVALID_TEMPLATE_NAMESPACE,
+        self::MESSAGE_STATUS_EX_MESSAGE_PENDING_TOO_LONG,
+        self::MESSAGE_STATUS_EX_MESSAGE_EXPIRED,
+        self::MESSAGE_STATUS_EX_MESSAGE_TOO_LONG,
+        self::MESSAGE_STATUS_EX_WEBHOOK_ERROR,
+        self::MESSAGE_STATUS_EX_SECTION_COUNT_ERROR,
+        self::MESSAGE_STATUS_EX_ROWS_COUNT_ERROR,
+        self::MESSAGE_STATUS_EX_PRODUCT_COUNT_ERROR,
+        self::MESSAGE_STATUS_EX_CATALOGUE_NOT_FOUND,
+        self::MESSAGE_STATUS_EX_CATALOGUE_NOT_LINKED,
+        self::MESSAGE_STATUS_EX_MISSING_PRODUCT,
+        self::MESSAGE_STATUS_EX_PRODUCT_NOT_FOUND,
+        self::MESSAGE_STATUS_EX_PRODUCT_COMPLIANCE_ERROR,
+        self::MESSAGE_STATUS_EX_INVALID_HEADER,
+        self::MESSAGE_STATUS_EX_MISSING_COMPLIANCE,
+        self::MESSAGE_STATUS_EX_CHAR_POLICY_VIOLATION,
+        self::MESSAGE_STATUS_QUEUED_FOR_DELIVERY,
+        self::MESSAGE_STATUS_INVALID_PERMISSION_RCM_MEDIA_NOT_ENABLED,
+        self::MESSAGE_STATUS_INVALID_PERMISSION_WHATSAPP_SERVICE_NOT_ASSIGNED,
+        self::MESSAGE_STATUS_NUMBER_NOT_IN_OPT_IN,
+        self::MESSAGE_STATUS_INVALID_REQUEST_GENERAL,
+        self::MESSAGE_STATUS_INVALID_REQUEST_WABA_SENDER_NOT_FOUND,
+        self::MESSAGE_STATUS_TEMPLATE_NOT_FOUND_GENERAL,
+        self::MESSAGE_STATUS_SUBMISSION_RETRY_EXHAUSTED_GENERAL,
+        self::MESSAGE_STATUS_ACCOUNT_FAILURES_OBO_PENDING_OR_DECLINED,
+        self::MESSAGE_STATUS_ACCOUNT_FAILURES_SPAM_RATE_LIMIT,
+        self::MESSAGE_STATUS_INVALID_RECIPIENT_GENERAL,
+        self::MESSAGE_STATUS_USER_RELATED_FAILURES,
+        self::MESSAGE_STATUS_SYSTEM_ERROR_RATE_LIMIT_HIT,
+        self::MESSAGE_STATUS_SYSTEM_ERROR_DISPATCHING_TO_WHATSAPP,
+        self::MESSAGE_STATUS_SYSTEM_ERROR_GENERAL,
+        self::MESSAGE_STATUS_MESSAGE_ERROR_REQUIRED_PARAMETER_MISSING,
+        self::MESSAGE_STATUS_MESSAGE_ERROR_RE_ENGAGEMENT_MESSAGE,
+        self::MESSAGE_STATUS_MESSAGE_EXPIRED_GENERAL,
+        self::MESSAGE_STATUS_OTHERS,
+        self::MESSAGE_STATUS_PERMISSION_DENIED,
+        self::MESSAGE_STATUS_PERMISSION_ISSUE,
+        self::MESSAGE_STATUS_EXPIRED_TOKEN,
+        self::MESSAGE_STATUS_TEMPORARY_BLOCK,
+        self::MESSAGE_STATUS_ACCOUNT_RESTRICTED,
+        self::MESSAGE_STATUS_NUMBER_DELETED,
+        self::MESSAGE_STATUS_PARAMETER_INVALID,
+        self::MESSAGE_STATUS_SERVICE_UNAVAILABLE,
+        self::MESSAGE_STATUS_RECEPIENT_CANNOT_BE_SENDER,
+        self::MESSAGE_STATUS_MESSAGE_UNDELIVERABLE,
+        self::MESSAGE_STATUS_NUMBER_NOT_REGISTERED,
+        self::MESSAGE_STATUS_HEALTHY_ECOSYSTEM,
+        self::MESSAGE_STATUS_USER_STOPPED_MARKETING,
+        self::MESSAGE_STATUS_PARAMETER_COUNT_MISMATCH,
+        self::MESSAGE_STATUS_TEMPLATE_DOES_NOT_EXIST,
+        self::MESSAGE_STATUS_TEMPLATE_PARAMETER_FORMAT_MISMATCH,
+        self::MESSAGE_STATUS_FLOW_THROTTLED,
+        self::MESSAGE_STATUS_TWO_STEP_VERIFICATION_PIN_MISMATCH,
+        self::MESSAGE_STATUS_NUMBER_REVERIFICATION_NEEDED,
+        self::MESSAGE_STATUS_TOO_MANY_TWO_STEP_VERIFICATION_GUESS,
+        self::MESSAGE_STATUS_PHONE_NUMBER_NOT_REGISTERED,
+        self:: MESSAGE_STATUS_NUMBER_RECENTLY_DELETED,
+        self::MESSAGE_STATUS_WHATSAPP_PAYMENT_TERMS_NOT_ACCEPTED,
+        self::MESSAGE_STATUS_SYNCHRONIZATION_ERROR,
+        self::MESSAGE_STATUS_SYNCHRONIZATION_REQUEST_OUTSIDE_WINDOW,
+        self::MESSAGE_STATUS_API_CALL_RATE_LIMIT_REACHED,
+        self::MESSAGE_STATUS_RATE_LIMIT_REACHED,
+        self::MESSAGE_STATUS_PAIR_RATE_LIMIT_HIT,
+        self::MESSAGE_STATUS_REGISTER_DEREGISTER_LIMIT_REACHED
+    ];
+
+    const MESSAGE_STATUS_SOLUTIONS = [
+    self::MESSAGE_STATUS_NO_STATUS => "No additional information is available. Please try again later.",
+    self::MESSAGE_STATUS_SENT => "Your message was successfully sent.",
+    self::MESSAGE_STATUS_DELIVERED => "Your message was delivered to the recipient.",
+    self::MESSAGE_STATUS_READ => "Your message was read by the recipient.",
+    self::MESSAGE_STATUS_WHATSAPP_INACTIVE => "Ensure the recipient's WhatsApp account is active.",
+    self::MESSAGE_STATUS_EXPIRED => "Message validity expired. Try resending.",
+    self::MESSAGE_STATUS_NO_RESPONSE => "No response from recipient. Consider following up later.",
+    self::MESSAGE_STATUS_FAILED => "Check the error details and try resending.",
+    self::MESSAGE_STATUS_NO_RECHARGE => "Recharge your account to continue sending messages.",
+    self::MESSAGE_STATUS_INVALID_TEMPLATE => "Verify your template and get it approved if necessary.",
+    self::MESSAGE_STATUS_INVALID_PARAMETER => "Check and correct the request parameters.",
+    self::MESSAGE_STATUS_PARAM_NOT_MATCHING => "Ensure all template parameters match the definition.",
+    self::MESSAGE_STATUS_UNKNOWN_ERROR => "Try again later or contact support.",
+    self::MESSAGE_STATUS_INTERNAL_ERROR => "Service error. Please try again later.",
+    self::MESSAGE_STATUS_DATABASE_ERROR_OCCURED => "Internal server issue. Try again later.",
+    self::MESSAGE_STATUS_RECEIVER_VERSION_NOT_SUPPORTED => "Ask recipient to update their WhatsApp app.",
+    self::MESSAGE_STATUS_FB_HIGH_REQUEST => "High load. Wait and retry later.",
+    self::MESSAGE_STATUS_SERVICE_NOT_READY => "Service is unavailable. Please try again shortly.",
+    self::MESSAGE_STATUS_RESOURCE_NOT_FOUND => "Check resource identifiers and try again.",
+    self::MESSAGE_STATUS_NUMBER_FLAGGED => "Recipient number flagged. Avoid sending more messages.",
+    self::MESSAGE_STATUS_PLAN_CANCELLED => "Renew or update your plan to resume sending.",
+    self::MESSAGE_STATUS_TEMPLATE_NAMESPACE_UNAVAILBALE => "Ensure template namespace exists and is correct.",
+    self::MESSAGE_STATUS_MEDIA_DOWNLOAD_FAILED => "Ask the sender to resend the media or use another channel.",
+    self::MESSAGE_STATUS_RATE_LIMIT_HIT => "Reduce message frequency and try again later.",
+    self::MESSAGE_STATUS_UNSIGNED_CERT => "Upload and verify a valid certificate.",
+    self::MESSAGE_STATUS_CERT_ID_MISMATCH => "Ensure the certificate ID matches your account.",
+    self::MESSAGE_STATUS_CERT_INVALID_SIGN => "Verify and upload a properly signed certificate.",
+    self::MESSAGE_STATUS_RE_ENGAGE_24_HRS => "Use a pre-approved template to re-engage after 24 hours.",
+    self::MESSAGE_STATUS_SPAM_RATE_LIMIT_HIT => "Improve message quality and reduce frequency.",
+    self::MESSAGE_STATUS_NUMBER_PART_OF_EXPERIMENT => "Messaging is restricted for this number. Try another.",
+    self::MESSAGE_STATUS_USER_POTENTIALLY_CHANGED => "Ask recipient to verify their number.",
+    self::MESSAGE_STATUS_GENERIC_ERROR => "An error occurred. Retry or contact support.",
+    self::MESSAGE_STATUS_MESSAGE_TOO_LONG => "Shorten the message text and try again.",
+    self::MESSAGE_STATUS_INVALID_RECIPIENT_TYPE => "Verify the recipient type and try again.",
+    self::MESSAGE_STATUS_RESOURCE_ALREADY_EXISTS => "Check if the resource already exists before creating.",
+    self::MESSAGE_STATUS_ACCESS_DENIED => "Verify permissions or obtain a new access token.",
+    self::MESSAGE_STATUS_RECIPIENT_BLOCKED_TO_RECIEVE => "Recipient cannot receive messages. Stop sending.",
+    self::MESSAGE_STATUS_USER_NOT_VALID => "Verify the recipient number is correct and active.",
+    self::MESSAGE_STATUS_TOO_MANY_REQ => "Slow down request rate and try again.",
+    self::MESSAGE_STATUS_SYSTEM_OVERLOADED => "Service busy. Wait and try later.",
+    self::MESSAGE_STATUS_NOT_PRIMARY_MASTER => "Check your setup. Only primary master can proceed.",
+    self::MESSAGE_STATUS_NOT_PRIMARY_CORE_APP => "Ensure you are using the primary app configuration.",
+    self::MESSAGE_STATUS_BAD_USER => "Verify recipient details and try again.",
+    self::MESSAGE_STATUS_WEBHOOK_URL_NOT_CONFIGURED => "Configure a valid webhook URL in your settings.",
+    self::MESSAGE_STATUS_PASSWORD_CHANGE_REQUIRED => "Update your password to continue.",
+    self::MESSAGE_STATUS_INVALID_REQ => "Check your request and correct any issues.",
+    self::MESSAGE_STATUS_RECEIVER_INCAPABLE => "Recipient device can't receive this message type.",
+    self::MESSAGE_STATUS_USER_IDENTITY_CHANGED => "Verify the user and confirm their identity.",
+    self::MESSAGE_STATUS_SENDER_ACCOUNT_LOCKED => "Unlock your account to continue sending.",
+    self::MESSAGE_STATUS_TEMPLATE_FETCH_FAILED => "Check template ID and try again.",
+    self::MESSAGE_STATUS_TEMPLATE_PACK_MISSING => "Ensure the template pack exists and is correctly linked.",
+    self::MESSAGE_STATUS_TEMPLATE_LONG_PARAM_LENTH => "Reduce parameter length to fit limits.",
+    self::MESSAGE_STATUS_TEMPLATE_HYDRATED_TEXT_TOO_LONG => "Shorten the translated text in the template.",
+    self::MESSAGE_STATUS_POLICY_VIOLATED => "Review and comply with messaging policies.",
+    self::MESSAGE_STATUS_TEMPLATE_MEDIA_UNSUPPORTED => "Use a supported media type in the template.",
+    self::MESSAGE_STATUS_MISSING_REQ_COMPONENT => "Include all required components in your request.",
+    self::MESSAGE_STATUS_INVALID_HYDRATED_URL => "Check URLs in template and ensure validity.",
+    self::MESSAGE_STATUS_PARAM_FORMAT_NOT_MATCHING => "Match parameter formats as per guidelines.",
+    self::MESSAGE_STATUS_TEMPLATE_BUTTON_UNSUPPORTED => "Use supported buttons in the template.",
+    self::MESSAGE_STATUS_TEMPLATE_NAMESPACE_EMPTY => "Ensure template namespace is correctly defined.",
+    self::MESSAGE_STATUS_CHAR_POLICY_VIOLATED => "Adjust text to comply with content policies.",
+    self::MESSAGE_STATUS_INVALID_HEADER_STRUCTURE => "Correct the template header structure.",
+    self::MESSAGE_UNDELIVERABLE => "Ensure recipient's number is active and using WhatsApp.",
+    self::MESSAGE_STATUS_TEMPLATE_REJECTED => "Edit template as per feedback and re-submit.",
+    self::MESSAGE_STATUS_TEMPLATE_PAUSED => "Improve template quality and resume usage.",
+    self::MESSAGE_STATUS_TEMPLATE_DISABLED => "Create a new template or reactivate this one.",
+    self::MESSAGE_STATUS_SERVER_TEMPORARILIY_UNAVAILABLE => "Wait and try again later.",
+    self::MESSAGE_STATUS_TEMPLATE_PARAM_COUNT_MISMATCH => "Correct the number of parameters in your template.",
+    self::MESSAGE_STATUS_MEDIA_UPLOAD_ERROR => "Check your media type and try uploading again.",
+    self::MESSAGE_STATUS_UNSUPPORTED_MESSAGE_TYPE => "Use a supported message type.",
+    self::MESSAGE_STATUS_INCORRECT_CERTIFICATE => "Upload a valid certificate.",
+    self::MESSAGE_STATUS_BUSINESS_ELIGIBILITY_PAYMENT_ISSUE => "Verify and update your payment method.",
+    self::MESSAGE_STATUS_REQUIRED_PARAMETER_MISSING => "Include all required parameters in your request.",
+    self::MESSAGE_STATUS_QUEUED => "Message will be sent shortly.",
+    self::MESSAGE_STATUS_SUBMISSION_RETRY_EXHAUSTED => "Try resending the message.",
+    self::MESSAGE_STATUS_OTHER => "Please review details or contact support.",
+    self::MESSAGE_STATUS_BOT_MAPPING_FAILED => "Review bot mapping and fix configuration.",
+    self::MESSAGE_STATUS_INVALID_MEDIA_URL => "Check the media URL for correctness.",
+    self::MESSAGE_STATUS_INVALID_MEDIA_SIZE => "Ensure media size is within allowed limits.",
+    self::MESSAGE_STATUS_UNSUPPORTED_CHANNEL_FEATURE => "Use features supported on your channel.",
+    self::MESSAGE_STATUS_COUNTRY_RESTRICTED => "Messaging is restricted in this country.",
+    self::MESSAGE_STATUS_CANNOT_MESSAGE_SELF => "Cannot send messages to the same number.",
+    self::MESSAGE_STATUS_DISPLAY_NAME_NOT_APPROVED => "Update display name to meet guidelines.",
+    self::MESSAGE_STATUS_META_POLICY_BLOCK => "Delivery temporarily blocked by Meta policy. Retry later with increasing delay.",
+    self::MESSAGE_STATUS_ACCOUNT_MAINTENANCE_MODE => "Try again once maintenance is over.",
+    self::MESSAGE_STATUS_FLOW_BLOCKED => "Review and unblock your message flow.",
+    self::MESSAGE_STATUS_INCOMPLETE_DEREGISTRATION => "Retry deregistration before new registration.",
+    self::MESSAGE_STATUS_PIN_MISMATCH => "Verify and enter the correct PIN.",
+    self::MESSAGE_STATUS_REVERIFICATION_NEEDED => "Reverify the phone number before proceeding.",
+    self::MESSAGE_STATUS_WAIT_BEFORE_REGISTERING => "Wait the recommended time before retrying.",
+    self::MESSAGE_STATUS_PAYMENTS_TERMS_NOT_ACCEPTED => "Accept payment terms to continue.",
+    self::MESSAGE_STATUS_SYNC_TIME_WINDOW_VIOLATION => "Perform synchronization within the allowed timeframe.",
+    self::MESSAGE_STATUS_INVALID_FROM_NUMBER => "Check the sender number for correctness.",
+    self::MESSAGE_STATUS_INVALID_TO_NUMBER => "Check the recipient number for correctness.",
+    self::MESSAGE_STATUS_INVALID_WHATSAPP_NUMBER => "Ensure it's a valid WhatsApp number.",
+    self::MESSAGE_STATUS_TEMPLATE_HEADER_PARAM_MISMATCH => "Fix template header parameters to match.",
+    self::MESSAGE_STATUS_INVALID_MEDIA_CONTENT => "Use supported media content.",
+    self::MESSAGE_STATUS_MESSAGE_PENDING_TOO_LONG => "Resend the message to retry.",
+    self::MESSAGE_STATUS_SECTION_COUNT_ERROR => "Check the number of sections in your message.",
+    self::MESSAGE_STATUS_ROWS_COUNT_ERROR => "Check the number of rows in your message.",
+    self::MESSAGE_STATUS_PRODUCT_COUNT_ERROR => "Ensure correct number of products in your message.",
+    self::MESSAGE_STATUS_CATALOGUE_NOT_FOUND => "Verify the catalogue ID exists.",
+    self::MESSAGE_STATUS_CATALOGUE_NOT_LINKED => "Link the catalogue to your number.",
+    self::MESSAGE_STATUS_MISSING_PRODUCT => "Add the missing product to your catalogue.",
+    self::MESSAGE_STATUS_PRODUCT_NOT_FOUND => "Ensure the product exists in your catalogue.",
+    self::MESSAGE_STATUS_PRODUCT_COMPLIANCE_ERROR => "Ensure products meet compliance requirements.",
+    self::MESSAGE_STATUS_MISSING_COMPLIANCE => "Add missing compliance information to your message.",
+    self::MESSAGE_STATUS_PERMISSION_ISSUE => "Use the access token debugger to verify that your app has been granted the permissions required by the endpoint",
+    self::MESSAGE_STATUS_PERMISSION_DENIED => "Use the access token debugger to verify that your app has been granted the permissions required by the endpoint",
+    self::MESSAGE_STATUS_EXPIRED_TOKEN => "Get a new access token.",
+    self::MESSAGE_STATUS_TEMPORARY_BLOCK => "See the Policy Enforcement document to learn about policy violations and how to resolve them.",
+    self::MESSAGE_STATUS_ACCOUNT_RESTRICTED => "See WhatsApp Business Messaging Policy for details on allowed countries for messaging in your business category.",
+    self::MESSAGE_STATUS_NUMBER_DELETED => "Verify that the business phone number is correct.",
+    self::MESSAGE_STATUS_PARAMETER_INVALID => "See the endpoint's reference to determine which values are supported for each parameter, and see Phone Numbers to learn how to add a phone number to a WhatsApp Business Account.",
+    self::MESSAGE_STATUS_SERVICE_UNAVAILABLE => "Check the WhatsApp Business Platform Status page to see API status information before trying again.",
+    self::MESSAGE_STATUS_RECEPIENT_CANNOT_BE_SENDER => "Send a message to a phone number different from the sender.",
+    self::MESSAGE_STATUS_MESSAGE_UNDELIVERABLE => "Using a non-WhatsApp communication method, ask the WhatsApp user to:
+
+Confirm that they can actually send a message to your WhatsApp business phone number.
+Confirm that they have accepted our latest Terms of Service (Settings > Help, or Settings > Application information will prompt them to accept the latest terms/policies if they haven't done so already)
+Update to the latest version of the WhatsApp client.",
+    self::MESSAGE_STATUS_NUMBER_NOT_REGISTERED => "Register the phone number before trying again.",
+    self::MESSAGE_STATUS_HEALTHY_ECOSYSTEM => "Do not retry immediately if you do receive this error code and suspect it is due to the limit. Instead, retry in increasing larger time increments until the message is delivered, since the limit may be in effect for differing periods of time.",
+    self::MESSAGE_STATUS_USER_STOPPED_MARKETING => "Do not retry sending messages to this user as they will not be received.",
+    self::MESSAGE_STATUS_PARAMETER_COUNT_MISMATCH => "See Message Template Guidelines and make sure the request includes all of the variable parameter values that have been defined in the template.",
+    self::MESSAGE_STATUS_TEMPLATE_DOES_NOT_EXIST => "Make sure your template has been approved and the template name and language locale are correct.",
+    self::MESSAGE_STATUS_TEMPLATE_PARAMETER_FORMAT_MISMATCH => "The variable parameter values included in the request are not using the format specified in the template.",
+    self::MESSAGE_STATUS_FLOW_THROTTLED => "Correct the Flow",
+    self::MESSAGE_STATUS_TWO_STEP_VERIFICATION_PIN_MISMATCH => "Verify that the two-step verification PIN included in the request is correct.",
+    self::MESSAGE_STATUS_NUMBER_REVERIFICATION_NEEDED => "Verify the phone number before registering it.",
+    self::MESSAGE_STATUS_TOO_MANY_TWO_STEP_VERIFICATION_GUESS => "Try again after the amount of time specified in the details response value.",
+    self::MESSAGE_STATUS_PHONE_NUMBER_NOT_REGISTERED => "Register the phone number before trying again.",
+    self::MESSAGE_STATUS_NUMBER_RECENTLY_DELETED => "Wait 5 minutes before re-trying the request.",
+    self::MESSAGE_STATUS_WHATSAPP_PAYMENT_TERMS_NOT_ACCEPTED => "Accept the WhatsApp Payments terms of service using the link provided in the error message before trying again.",
+    self::MESSAGE_STATUS_SYNCHRONIZATION_ERROR => "Offboard the business customer and re-onboard them.",
+    self::MESSAGE_STATUS_SYNCHRONIZATION_REQUEST_OUTSIDE_WINDOW => "Offboard the user and re-onboard them.",
+    self::MESSAGE_STATUS_API_CALL_RATE_LIMIT_REACHED => "Load the app in the App Dashboard and view the Application Rate Limit section to verify that the app has reached its rate limit. If it has, try again later or reduce the frequency or amount of API queries the app is making.",
+    self::MESSAGE_STATUS_RATE_LIMIT_REACHED => "Try again later or reduce the frequency or amount of API queries the app is making.",
+    self::MESSAGE_STATUS_PAIR_RATE_LIMIT_HIT => "Wait and retry the operation, if you intend to send messages to the same phone number. You can still send messages to a different phone number without waiting",
+    self::MESSAGE_STATUS_REGISTER_DEREGISTER_LIMIT_REACHED => "The business phone number is being blocked because it has reached its registration/deregistration attempt limit. Try again once the number is unblocked.",
+    self::MESSAGE_STATUS_BAD_REQUEST => "Check your request parameters and ensure all required fields are properly formatted and included.",
+    self::MESSAGE_STATUS_UNAUTHORIZED => "Verify your authentication credentials and ensure you have valid access tokens.",
+    self::MESSAGE_STATUS_PAYMENT_REQUIRED => "Complete the required payment to access the requested service or resource.",
+    self::MESSAGE_STATUS_FORBIDDEN => "Contact support to verify your account permissions and access rights.",
+    self::MESSAGE_STATUS_NOT_FOUND => "Verify the resource URL or identifier and ensure it exists in the system.",
+    self::MESSAGE_STATUS_METHOD_NOT_ALLOWED => "Use the correct HTTP method for the requested resource (GET, POST, PUT, DELETE, etc.).",
+    self::MESSAGE_STATUS_NOT_ACCEPTABLE => "Check the Accept headers in your request and ensure they match the available content types.",
+    self::MESSAGE_STATUS_PROXY_AUTHENTICATION_REQUIRED => "Provide valid proxy authentication credentials before making the request.",
+    self::MESSAGE_STATUS_REQUEST_TIMEOUT => "Try again later or increase the timeout settings if the request takes longer than expected.",
+    self::MESSAGE_STATUS_CONFLICT => "Resolve any conflicts with the current state of the resource before retrying the request.",
+    self::MESSAGE_STATUS_GONE => "The requested resource has been permanently removed. Use an alternative resource or contact support.",
+    self::MESSAGE_STATUS_LENGTH_REQUIRED => "Include a valid Content-Length header in your request.",
+    self::MESSAGE_STATUS_PRECONDITION_FAILED => "Ensure all preconditions specified in the request headers are met before retrying.",
+    self::MESSAGE_STATUS_PAYLOAD_TOO_LARGE => "Reduce the size of your request payload to fit within the server's limits.",
+    self::MESSAGE_STATUS_URI_TOO_LONG => "Shorten the URI or use POST method with request body for large data.",
+    self::MESSAGE_STATUS_UNSUPPORTED_MEDIA_TYPE => "Use a supported media type in your request or convert the data to a supported format.",
+    self::MESSAGE_STATUS_RANGE_NOT_SATISFIABLE => "Check the range headers and ensure they are within the available resource bounds.",
+    self::MESSAGE_STATUS_EXPECTATION_FAILED => "Remove or modify the Expect header if it's causing the request to fail.",
+    self::MESSAGE_STATUS_IM_A_TEAPOT => "This is a humorous error code. Check if you're accessing the correct endpoint.",
+    self::MESSAGE_STATUS_MISDIRECTED_REQUEST => "Ensure your request is being sent to the correct server endpoint.",
+    self::MESSAGE_STATUS_UNPROCESSABLE_ENTITY => "Review your request data for semantic errors and correct any validation issues.",
+    self::MESSAGE_STATUS_LOCKED => "Wait for the resource to become available or contact support if the lock persists.",
+    self::MESSAGE_STATUS_FAILED_DEPENDENCY => "Resolve the dependency issue first, then retry your original request.",
+    self::MESSAGE_STATUS_TOO_EARLY => "Wait for the appropriate time window before retrying the request.",
+    self::MESSAGE_STATUS_UPGRADE_REQUIRED => "Upgrade your client or protocol version to continue using the service.",
+    self::MESSAGE_STATUS_PRECONDITION_REQUIRED => "Include the required conditional headers in your request.",
+    self::MESSAGE_STATUS_TOO_MANY_REQUESTS_HTTP => "Reduce your request frequency and implement proper rate limiting in your application.",
+    self::MESSAGE_STATUS_REQUEST_HEADER_FIELDS_TOO_LARGE => "Reduce the size of your request headers or remove unnecessary ones.",
+    self::MESSAGE_STATUS_UNAVAILABLE_FOR_LEGAL_REASONS => "Contact support to understand the legal restrictions and available alternatives.",
+    self::MESSAGE_STATUS_MESSAGE_IDS_EMPTY => "Provide a list of message IDs and try again.",
+    self::MESSAGE_STATUS_COMPANY_ID_MISSING => "Include the Company ID in your request and re-execute the command.",
+    self::MESSAGE_STATUS_USER_ID_MISSING => "Include the User ID in your request.",
+    self::MESSAGE_STATUS_ROLE_ID_MISSING => "Include the Role ID in your request.",
+    self::MESSAGE_STATUS_CERT_PATH_REQUIRED => "Provide the certificate path value in your request.",
+    self::MESSAGE_STATUS_CERT_PATH_MUST_BE_STRING => "Ensure the certificate path is provided as a string value.",
+    self::MESSAGE_STATUS_ID_VALUE_REQUIRED => "Include the ID value in your request.",
+    self::MESSAGE_STATUS_ID_VALUE_MUST_BE_NUMBER => "Ensure the ID value is provided as a number.",
+    self::MESSAGE_STATUS_WHATSAPP_NUMBER_MANDATORY => "Include the WhatsApp number in your request.",
+    self::MESSAGE_STATUS_WHATSAPP_NUMBER_MUST_BE_STRING => "Ensure the WhatsApp number is provided as a string.",
+    self::MESSAGE_STATUS_COUNTRY_CODE_MANDATORY => "Include the country code in your request.",
+    self::MESSAGE_STATUS_COUNTRY_CODE_MUST_BE_STRING => "Ensure the country code is provided as a string.",
+    self::MESSAGE_STATUS_NAME_FIELD_MANDATORY => "Include the name field in your request.",
+    self::MESSAGE_STATUS_NAME_VALUE_MUST_BE_STRING => "Ensure the name value is provided as a string.",
+    self::MESSAGE_STATUS_PATH_FIELD_MANDATORY => "Include the path field in your request.",
+    self::MESSAGE_STATUS_PATH_VALUE_MUST_BE_STRING => "Ensure the path value is provided as a string.",
+    self::MESSAGE_STATUS_OTP_VALUE_MANDATORY => "Include the OTP value in your request.",
+    self::MESSAGE_STATUS_OTP_VALUE_MUST_BE_STRING => "Ensure the OTP value is provided as a string.",
+    self::MESSAGE_STATUS_BODY_INPUT_MANDATORY => "Include the body input in your request.",
+    self::MESSAGE_STATUS_BODY_INPUT_MUST_BE_STRING => "Ensure the body input is provided as a string.",
+    self::MESSAGE_STATUS_TEMPLATE_NAME_MANDATORY => "Include the template name in your request.",
+    self::MESSAGE_STATUS_TEMPLATE_NAME_MUST_BE_STRING => "Ensure the template name is provided as a string.",
+    self::MESSAGE_STATUS_PARAMETERS_MUST_BE_LIST => "Ensure parameters are provided as a list.",
+    self::MESSAGE_STATUS_PARAMETER_VALUE_MUST_BE_STRING => "Ensure parameter values are provided as strings.",
+    self::MESSAGE_STATUS_EMAIL_ADDRESS_MUST_BE_STRING => "Ensure the email address is provided as a string.",
+    self::MESSAGE_STATUS_ADDRESS_MUST_BE_STRING => "Ensure the address is provided as a string.",
+    self::MESSAGE_STATUS_DESCRIPTION_MUST_BE_STRING => "Ensure the description is provided as a string.",
+    self::MESSAGE_STATUS_INCOMING_URL_MUST_BE_STRING => "Ensure the incoming URL is provided as a string.",
+    self::MESSAGE_STATUS_PROFILE_IMAGE_URL_MUST_BE_STRING => "Ensure the profile image URL is provided as a string.",
+    self::MESSAGE_STATUS_CATEGORY_MUST_BE_STRING => "Ensure the category is provided as a string.",
+    self::MESSAGE_STATUS_WEBSITES_MUST_BE_LIST => "Ensure websites are provided as a list.",
+    self::MESSAGE_STATUS_WEBSITES_VALUE_MUST_BE_STRING => "Ensure website values are provided as strings.",
+    self::MESSAGE_STATUS_FROM_FIELD_MANDATORY => "Include the from field in your request.",
+    self::MESSAGE_STATUS_IP_ADDRESS_MANDATORY => "Include the IP address in your request.",
+    self::MESSAGE_STATUS_SOURCE_FIELD_MANDATORY => "Include the source field in your request.",
+    self::MESSAGE_STATUS_CREATED_AT_FIELD_MANDATORY => "Include the created at field in your request.",
+    self::MESSAGE_STATUS_TYPE_FIELD_MANDATORY => "Include the type field in your request.",
+    self::MESSAGE_STATUS_FROM_VALUE_MUST_BE_STRING => "Ensure the from value is provided as a string.",
+    self::MESSAGE_STATUS_IP_ADDRESS_MUST_BE_STRING => "Ensure the IP address is provided as a string.",
+    self::MESSAGE_STATUS_SOURCE_VALUE_MUST_BE_STRING => "Ensure the source value is provided as a string.",
+    self::MESSAGE_STATUS_CREATED_AT_VALUE_MUST_BE_STRING => "Ensure the created at value is provided as a string.",
+    self::MESSAGE_STATUS_TYPE_VALUE_MUST_BE_STRING => "Ensure the type value is provided as a string.",
+    self::MESSAGE_STATUS_TO_MUST_BE_LIST => "Ensure the 'to' field is provided as a list.",
+    self::MESSAGE_STATUS_TO_VALUE_MUST_BE_STRING => "Ensure the 'to' value is provided as a string.",
+    self::MESSAGE_STATUS_INVALID_OR_INCORRECT_INPUT => "Check your input values and ensure they are correct and properly formatted.",
+    self::MESSAGE_STATUS_PACKAGE_EXPIRED_OR_COUNT_NOT_AVAILABLE => "Renew your package or check your available count before proceeding.",
+    self::MESSAGE_STATUS_PACKAGE_COUNT_NOT_AVAILABLE => "Check your package details and ensure you have sufficient count available.",
+    self::MESSAGE_STATUS_TEMPLATE_PARAMETERS_NOT_MATCHING => "Ensure all template parameters match the template definition exactly.",
+    self::MESSAGE_STATUS_CHECKSUM_FIELD_MANDATORY => "Include the checksum field in your request.",
+    self::MESSAGE_STATUS_CHECKSUM_VALUE_MUST_BE_STRING => "Ensure the checksum value is provided as a string.",
+    self::MESSAGE_STATUS_WHATSAPP_DAILY_LIMIT_REACHED => "Wait until the next day or upgrade your plan to increase daily limits.",
+    self::MESSAGE_STATUS_TEMPLATE_HEADER_PARAMETERS_NOT_MATCHING => "Ensure template header parameters match the template definition exactly.",
+    self::MESSAGE_STATUS_INVALID_PARAMETER_VALUES => "Check and correct the parameter values according to the expected format.",
+    self::MESSAGE_STATUS_FAILED_TO_UPLOAD_MEDIA_FILE => "Check your media file format and size, then try uploading again.",
+    self::MESSAGE_STATUS_UNABLE_TO_PROCESS_REQUEST => "Try again later or contact support if the issue persists.",
+    self::MESSAGE_STATUS_INVALID_HTML_TAGS_IN_PARAMETERS => "Remove HTML tags from parameters or use plain text instead.",
+    self::MESSAGE_STATUS_BODY_PARAMETER_MANDATORY => "Include the body parameter in your request.",
+    self::MESSAGE_STATUS_SENDER_ID_MISSING => "Include the sender ID in your request and proceed.",
+    self::MESSAGE_STATUS_TO_PARAMETER_MISSING => "Include the 'to' parameter, set the value, and re-execute the command.",
+    self::MESSAGE_STATUS_CAMPAIGN_NAME_ALPHANUMERIC_ONLY => "Use only alphanumeric characters in the campaign name.",
+    self::MESSAGE_STATUS_INVALID_CALLBACK_URL_FORMAT => "Provide a valid callback URL format.",
+    self::MESSAGE_STATUS_LAST_MAPPED_BOT_FAILED => "Check bot mapping configuration and ensure sender details match.",
+    self::MESSAGE_STATUS_NUMBER_NOT_EXIST_ON_WHATSAPP => "Verify the phone number exists on WhatsApp before sending messages.",
+    self::MESSAGE_STATUS_WALLET_BALANCE_LOW => "Recharge your wallet to continue sending messages.",
+    self::MESSAGE_STATUS_TEMPLATE_DISABLED_FAILURE => "Use session messaging or enable template messaging for inactive users.",
+    self::MESSAGE_STATUS_TEMPLATE_MATCH_FAILED => "Ensure the template matches the user's session status and requirements.",
+    self::MESSAGE_STATUS_TEMPLATE_OPT_IN_FAILURE => "User must opt-in for template messages before sending.",
+    self::MESSAGE_STATUS_TEMPLATE_OPT_IN_MATCH_FAILURE => "User must opt-in and template must match requirements.",
+    self::MESSAGE_STATUS_NEITHER_PROXIED_NOR_OPTED_IN => "User must either be proxied or opted-in for messaging.",
+    self::MESSAGE_STATUS_NUMBER_OPTED_OUT => "This number has opted out of receiving messages. Stop sending messages to this number.",
+    self::MESSAGE_STATUS_API_RATE_LIMITED => "Stop sending messages and contact Gupshup Team with your error code.",
+    self::MESSAGE_STATUS_INVALID_RESPONSE_FROM_WHATSAPP => "Check WhatsApp API response and try again later.",
+    self::MESSAGE_STATUS_NO_TEMPLATE_MATCH => "Ensure the template matches the message requirements and user status.",
+    self::MESSAGE_STATUS_ONLY_CAPI_FEATURE => "This message type is only supported on Meta hosted cloud API.",
+    self::MESSAGE_STATUS_PAUSED_TEMPLATE => "Resume the template or use an alternative template for messaging.",
+    self::MESSAGE_STATUS_EX_MESSAGE_SENT => "The message has been sent to the user successfully.",
+    self::MESSAGE_STATUS_EX_MESSAGE_DELIVERED => "The message has been successfully delivered to the user.",
+    self::MESSAGE_STATUS_EX_MESSAGE_SEEN => "The message has been seen by the user.",
+    self::MESSAGE_STATUS_EX_SYSTEM_ERROR => "Check authentication, access tokens, permissions, and service availability.",
+    self::MESSAGE_STATUS_EX_NUMBER_ERROR => "Verify the phone number format and ensure it's valid for WhatsApp.",
+    self::MESSAGE_STATUS_EX_SETUP_ERROR => "Check your account setup and configuration settings.",
+    self::MESSAGE_STATUS_EX_RATE_LIMIT_HIT => "Reduce message frequency and wait before sending more messages.",
+    self::MESSAGE_STATUS_EX_SPAM_RATE_LIMIT_HIT => "Improve message quality and reduce spam-like behavior.",
+    self::MESSAGE_STATUS_EX_TOO_MANY_REQUEST => "Reduce the number of requests and implement proper rate limiting.",
+    self::MESSAGE_STATUS_EX_INVALID_REQUEST => "Check your request format and ensure all required fields are included.",
+    self::MESSAGE_STATUS_EX_UNKNOWN_ERROR => "Try again later or contact support if the issue persists.",
+    self::MESSAGE_STATUS_EX_INVALID_RECIPIENT => "Verify the recipient phone number and ensure it's valid.",
+    self::MESSAGE_STATUS_EX_INCAPABLE_RECIPIENT => "The recipient device cannot receive this type of message.",
+    self::MESSAGE_STATUS_EX_RECIPIENT_BLOCKED => "The recipient is not in the allowed list. Check your contact permissions.",
+    self::MESSAGE_STATUS_EX_UNSUPPORTED_MESSAGE => "Use a supported message type in your request.",
+    self::MESSAGE_STATUS_EX_MEDIA_DOWNLOAD_ERROR => "WhatsApp is unable to download the media. Check media URL and format.",
+    self::MESSAGE_STATUS_EX_MEDIA_UPLOAD_ERROR => "Use a supported media type in your request.",
+    self::MESSAGE_STATUS_EX_REENGAGEMENT_ERROR => "The 24-hour conversation window has expired. Use a template message.",
+    self::MESSAGE_STATUS_EX_INVALID_PARAM => "Check and correct the parameters in your request body.",
+    self::MESSAGE_STATUS_EX_MISSING_PARAM => "Include all mandatory parameters in your request body.",
+    self::MESSAGE_STATUS_EX_INVALID_PARAM_VALUE => "Ensure parameter values are in the correct format and within limits.",
+    self::MESSAGE_STATUS_EX_TEMPLATE_ERROR => "Check template format and ensure it complies with character policy.",
+    self::MESSAGE_STATUS_EX_TEMPLATE_PARAM_ERROR => "Ensure the number of template parameters matches the template definition.",
+    self::MESSAGE_STATUS_EX_TEMPLATE_NOT_FOUND => "Verify the template exists and is approved for your account.",
+    self::MESSAGE_STATUS_EX_TEMPLATE_TEXT_TOO_LONG => "Shorten the translated text in your template message.",
+    self::MESSAGE_STATUS_EX_INVALID_TEMPLATE_NAMESPACE => "Use a valid template namespace in your request.",
+    self::MESSAGE_STATUS_EX_MESSAGE_PENDING_TOO_LONG => "Resend the message as it was pending for too long.",
+    self::MESSAGE_STATUS_EX_MESSAGE_EXPIRED => "The message validity period has expired. Send a new message.",
+    self::MESSAGE_STATUS_EX_MESSAGE_TOO_LONG => "Keep your message under 4096 characters.",
+    self::MESSAGE_STATUS_EX_WEBHOOK_ERROR => "Configure a valid webhook URL in your account settings.",
+    self::MESSAGE_STATUS_EX_SECTION_COUNT_ERROR => "Check the number of sections in your message and ensure it's valid.",
+    self::MESSAGE_STATUS_EX_ROWS_COUNT_ERROR => "Check the number of rows in your message and ensure it's valid.",
+    self::MESSAGE_STATUS_EX_PRODUCT_COUNT_ERROR => "Check the number of products in your message and ensure it's valid.",
+    self::MESSAGE_STATUS_EX_CATALOGUE_NOT_FOUND => "Verify the catalog ID exists in your account.",
+    self::MESSAGE_STATUS_EX_CATALOGUE_NOT_LINKED => "Link the catalog to your API number before sending product messages.",
+    self::MESSAGE_STATUS_EX_MISSING_PRODUCT => "Add the missing product to your catalog before sending the message.",
+    self::MESSAGE_STATUS_EX_PRODUCT_NOT_FOUND => "Ensure all products in your request exist in the product catalog.",
+    self::MESSAGE_STATUS_EX_PRODUCT_COMPLIANCE_ERROR => "Ensure your products meet compliance requirements.",
+    self::MESSAGE_STATUS_EX_INVALID_HEADER => "Check your message header structure and ensure it's valid.",
+    self::MESSAGE_STATUS_EX_MISSING_COMPLIANCE => "Include all required compliance information in your message.",
+    self::MESSAGE_STATUS_EX_CHAR_POLICY_VIOLATION => "Review your message content and ensure it complies with character policies.",
+    self::MESSAGE_STATUS_QUEUED_FOR_DELIVERY => "Your message is queued and will be delivered shortly. No action required.",
+    self::MESSAGE_STATUS_INVALID_PERMISSION_RCM_MEDIA_NOT_ENABLED => "Enable RCM media permissions for your account to send media messages.",
+    self::MESSAGE_STATUS_INVALID_PERMISSION_WHATSAPP_SERVICE_NOT_ASSIGNED => "Contact support to assign WhatsApp service to your account.",
+    self::MESSAGE_STATUS_NUMBER_NOT_IN_OPT_IN => "Ensure the recipient number is in your opt-in list before sending messages.",
+    self::MESSAGE_STATUS_INVALID_REQUEST_GENERAL => "Check your request format and ensure all required fields are properly formatted.",
+    self::MESSAGE_STATUS_INVALID_REQUEST_WABA_SENDER_NOT_FOUND => "Verify your WABA (WhatsApp Business Account) sender configuration.",
+    self::MESSAGE_STATUS_TEMPLATE_NOT_FOUND_GENERAL => "Verify the template exists and is approved for your account.",
+    self::MESSAGE_STATUS_SUBMISSION_RETRY_EXHAUSTED_GENERAL => "Maximum retry attempts reached. Try sending the message again later.",
+    self::MESSAGE_STATUS_ACCOUNT_FAILURES_OBO_PENDING_OR_DECLINED => "Your On Behalf Of (OBO) messaging request is pending approval or has been declined.",
+    self::MESSAGE_STATUS_ACCOUNT_FAILURES_SPAM_RATE_LIMIT => "Your account has hit the spam rate limit. Improve message quality and reduce frequency.",
+    self::MESSAGE_STATUS_INVALID_RECIPIENT_GENERAL => "Verify the recipient phone number format and ensure it's valid for WhatsApp.",
+    self::MESSAGE_STATUS_USER_RELATED_FAILURES => "Check user account status and ensure all user-related configurations are correct.",
+    self::MESSAGE_STATUS_SYSTEM_ERROR_RATE_LIMIT_HIT => "System rate limit has been reached. Wait before sending more messages.",
+    self::MESSAGE_STATUS_SYSTEM_ERROR_DISPATCHING_TO_WHATSAPP => "System error occurred while sending to WhatsApp. Try again later.",
+    self::MESSAGE_STATUS_SYSTEM_ERROR_GENERAL => "A system error occurred. Try again later or contact support if the issue persists.",
+    self::MESSAGE_STATUS_MESSAGE_ERROR_REQUIRED_PARAMETER_MISSING => "Include all required parameters in your message request.",
+    self::MESSAGE_STATUS_MESSAGE_ERROR_RE_ENGAGEMENT_MESSAGE => "Use a template message for re-engagement as the 24-hour window has expired.",
+    self::MESSAGE_STATUS_MESSAGE_EXPIRED_GENERAL => "The message validity period has expired. Send a new message.",
+    self::MESSAGE_STATUS_OTHERS => "An unexpected error occurred. Contact support with the error details for assistance."
+    ];

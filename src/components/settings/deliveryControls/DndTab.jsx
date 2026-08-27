@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Info, CheckCircle2 } from "lucide-react";
 import { previewToast } from "@/components/common/PreviewHeader";
 import SaveBar from "./SaveBar";
-import { DEFAULT_DND_ROWS, DND_TYPE_OPTIONS } from "./constants";
+import { DEFAULT_DND_ROWS, DND_CHANNELS } from "./constants";
 
 function ToggleSwitch({ checked, onChange, testId }) {
   return (
@@ -70,60 +70,57 @@ export default function DndTab() {
           <thead className="bg-slate-50 text-[11px] uppercase tracking-wide text-text-muted">
             <tr>
               <th className="px-4 py-2 font-medium">Channel</th>
-              <th className="px-4 py-2 font-medium">Enable/Disable</th>
               <th className="px-4 py-2 font-medium">Type</th>
+              <th className="px-4 py-2 font-medium">Enable/Disable</th>
               <th className="px-4 py-2 font-medium">Start Time</th>
               <th className="px-4 py-2 font-medium">End Time</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
-              <tr key={row.id} className="border-t border-border" data-testid={`dnd-row-${row.id}`}>
-                <td className="px-4 py-3 text-sm font-medium text-text-primary">{row.channel}</td>
-                <td className="px-4 py-3">
-                  <ToggleSwitch
-                    checked={row.enabled}
-                    onChange={(v) => patchRow(row.id, { enabled: v })}
-                    testId={`dnd-row-${row.id}-enabled`}
-                  />
-                </td>
-                <td className="px-4 py-3">
-                  <select
-                    disabled={!row.enabled}
-                    value={row.type}
-                    onChange={(e) => patchRow(row.id, { type: e.target.value })}
-                    data-testid={`dnd-row-${row.id}-type`}
-                    className="px-2 py-1.5 border border-border rounded-md text-sm bg-slate-50 disabled:cursor-not-allowed disabled:text-text-muted"
-                  >
-                    {DND_TYPE_OPTIONS.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td className="px-4 py-3">
-                  <input
-                    type="time"
-                    disabled={!row.enabled}
-                    value={row.start}
-                    onChange={(e) => patchRow(row.id, { start: e.target.value })}
-                    data-testid={`dnd-row-${row.id}-start`}
-                    className="px-2 py-1.5 border border-border rounded-md text-sm bg-slate-50 disabled:cursor-not-allowed disabled:text-text-muted"
-                  />
-                </td>
-                <td className="px-4 py-3">
-                  <input
-                    type="time"
-                    disabled={!row.enabled}
-                    value={row.end}
-                    onChange={(e) => patchRow(row.id, { end: e.target.value })}
-                    data-testid={`dnd-row-${row.id}-end`}
-                    className="px-2 py-1.5 border border-border rounded-md text-sm bg-slate-50 disabled:cursor-not-allowed disabled:text-text-muted"
-                  />
-                </td>
-              </tr>
-            ))}
+            {DND_CHANNELS.map((c) => {
+              const channelRows = rows.filter((r) => r.channelId === c.id);
+              return (
+                <React.Fragment key={c.id}>
+                  {channelRows.map((row, idx) => (
+                    <tr key={row.id} className="border-t border-border" data-testid={`dnd-row-${row.id}`}>
+                      {idx === 0 && (
+                        <td className="px-4 py-3 align-top text-sm font-medium text-text-primary" rowSpan={channelRows.length}>
+                          {c.channel}
+                        </td>
+                      )}
+                      <td className="px-4 py-3 text-[13px] text-text-secondary">{row.type}</td>
+                      <td className="px-4 py-3">
+                        <ToggleSwitch
+                          checked={row.enabled}
+                          onChange={(v) => patchRow(row.id, { enabled: v })}
+                          testId={`dnd-row-${row.id}-enabled`}
+                        />
+                      </td>
+                      <td className="px-4 py-3">
+                        <input
+                          type="time"
+                          disabled={!row.enabled}
+                          value={row.start}
+                          onChange={(e) => patchRow(row.id, { start: e.target.value })}
+                          data-testid={`dnd-row-${row.id}-start`}
+                          className="px-2 py-1.5 border border-border rounded-md text-sm bg-slate-50 disabled:cursor-not-allowed disabled:text-text-muted"
+                        />
+                      </td>
+                      <td className="px-4 py-3">
+                        <input
+                          type="time"
+                          disabled={!row.enabled}
+                          value={row.end}
+                          onChange={(e) => patchRow(row.id, { end: e.target.value })}
+                          data-testid={`dnd-row-${row.id}-end`}
+                          className="px-2 py-1.5 border border-border rounded-md text-sm bg-slate-50 disabled:cursor-not-allowed disabled:text-text-muted"
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </React.Fragment>
+              );
+            })}
           </tbody>
         </table>
       </div>
