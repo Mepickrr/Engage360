@@ -118,6 +118,12 @@ describe("AnalyticsPage", () => {
     expect(screen.getByTestId("overview-tab")).toBeInTheDocument();
   });
 
+  test("switching to Communication Logs renders the logs table", () => {
+    renderAtTab("overview");
+    fireEvent.mouseDown(screen.getByRole("tab", { name: "Communication Logs" }));
+    expect(screen.getByTestId("communication-logs-tab")).toBeInTheDocument();
+  });
+
   test("changing the time range re-renders Overview with different numbers", () => {
     renderAtTab("overview");
     const before = screen.getByTestId("metric-revenue-overall").textContent;
