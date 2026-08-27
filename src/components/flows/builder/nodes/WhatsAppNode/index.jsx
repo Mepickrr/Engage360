@@ -95,6 +95,9 @@ function PortRow({ portId, label, wired, children }) {
 }
 
 // ── Button port row (left-aligned label) ────────────────────────
+// Used by node styles whose own preview (carousel, list message) already
+// shows the buttons/rows in a different visual form, so the port list below
+// stays a plain technical row rather than a native WhatsApp CTA.
 function ButtonPortRow({ portId, label, wired }) {
   return (
     <div style={{
@@ -130,6 +133,58 @@ function ButtonPortRow({ portId, label, wired }) {
       />
     </div>
   );
+}
+
+// ── Native-looking CTA button row, rendered inside the message bubble ───
+// Renders exactly like a real WhatsApp template button (centered blue text,
+// divider line, full width). When `portId` is set (Quick Reply / Flow —
+// see isConnectable), a small output-port dot + Handle sit flush on the
+// row's right edge so the connector reads as part of the native button
+// rather than a separate technical element. URL/Phone buttons render the
+// identical row with no dot/handle: visible, not wireable.
+function TemplateButtonRow({ label, portId, wired }) {
+  const connectable = portId != null;
+  return (
+    <div style={{
+      position: "relative",
+      padding: connectable ? "9px 26px 9px 10px" : "9px 10px",
+      borderTop: "1px solid #f0f0f0",
+      fontSize: 11, color: "#0a8fc4", textAlign: "center", fontWeight: 500,
+      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+    }}>
+      {label}
+      {connectable && (
+        <>
+          <div style={{
+            position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
+            width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
+            border: `2px solid ${wired ? WA_GREEN : "#CBD5E1"}`,
+            background: wired ? WA_GREEN : "transparent",
+            transition: "all 0.15s",
+          }} />
+          <Handle
+            id={portId}
+            type="source"
+            position={Position.Right}
+            style={{
+              position: "absolute", right: 4, top: "50%",
+              transform: "translateY(-50%)",
+              width: 8, height: 8,
+              background: "transparent", border: "none",
+            }}
+          />
+        </>
+      )}
+    </div>
+  );
+}
+
+// Assigns `btn_{n}` port ids over only the connectable buttons in a list,
+// keeping the numbering seen by the rest of the node (wiredPorts, etc.)
+// stable regardless of URL/Phone buttons interleaved between them.
+function withButtonPortIds(buttons) {
+  let n = 0;
+  return buttons.map((btn) => ({ btn, portId: isConnectable(btn) ? `btn_${n++}` : null }));
 }
 
 // ── Carousel canvas preview ─────────────────────────────────────
@@ -239,7 +294,7 @@ function ListMessageNodePreview({ template }) {
 
 // ── Standard template bubble content (shared by the plain preview and the
 // primary card in the fallback stack) ────────────────────────────
-function StandardBubbleContent({ template, variableMap }) {
+function StandardBubbleContent({ template, variableMap, wiredPorts = [] }) {
   return (
     <div style={{ background: "#fff", borderRadius: "8px 8px 8px 3px", overflow: "hidden", boxShadow: "0 1px 2px rgba(0,0,0,0.1)" }}>
       {/* Media header */}
@@ -291,6 +346,11 @@ function StandardBubbleContent({ template, variableMap }) {
       <div style={{ textAlign: "right", padding: "0 10px 6px", fontSize: 9, color: "#aaa" }}>
         16:48 ✓✓
       </div>
+
+      {/* CTA buttons — Quick Reply/Flow get an inline output port, URL/Phone are shown as native, non-connectable rows */}
+      {withButtonPortIds((template.buttons ?? []).filter((b) => b.label)).map(({ btn, portId }, i) => (
+        <TemplateButtonRow key={i} label={btn.label} portId={portId} wired={portId != null && wiredPorts.includes(portId)} />
+      ))}
     </div>
   );
 }
@@ -604,12 +664,17 @@ export default function WhatsAppNode({ id, data, selected }) {
             <TemplatePreviewStack items={templateStackItems} onIndexChange={setActiveStackIndex} />
           ) : (
           <div style={{ margin: "0 8px 8px", background: "#E5DDD5", borderRadius: 8, padding: 6 }}>
-            <StandardBubbleContent template={template} variableMap={data?.variableMap || {}} />
+            <StandardBubbleContent template={template} variableMap={data?.variableMap || {}} wiredPorts={wiredPorts} />
           </div>
           )}
 
-          {/* ── Button response ports (output handles) ── */}
-          {connectableButtons.length > 0 && connectableButtons.map((btn, i) => (
+          {/* ── Button response ports (output handles) ──
+              Only for previews that don't already render buttons inline
+              (carousel/list rows have their own visual form; the fallback
+              stack keeps ports tied to the primary template regardless of
+              which card is currently swiped into view). The plain preview
+              above renders its ports inline inside the bubble instead. */}
+          {(isCarousel || isListMessageNode || hasFallback) && connectableButtons.length > 0 && connectableButtons.map((btn, i) => (
             <ButtonPortRow
               key={`btn_${i}`}
               portId={`btn_${i}`}

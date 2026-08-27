@@ -33,10 +33,10 @@ describe("IntegrationsPanel — Platform group", () => {
     expect(magentoRow).toHaveTextContent("Connected");
   });
 
-  it("hides Shopify from the Create new integration picker since a store is already connected", () => {
+  it("still shows Shopify in the Create new integration picker so another platform can be connected alongside it", () => {
     render(<IntegrationsPanel />);
     fireEvent.click(screen.getByTestId("create-integration-btn"));
-    expect(screen.queryByTestId("connect-integration-type-shopify")).not.toBeInTheDocument();
+    expect(screen.getByTestId("connect-integration-type-shopify")).toBeInTheDocument();
     expect(screen.getByTestId("connect-integration-type-woocommerce")).toBeInTheDocument();
     expect(screen.getByTestId("connect-integration-type-magento")).toBeInTheDocument();
   });

@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { previewToast } from "@/components/common/PreviewHeader";
-import { Pencil, Save, Lock, Megaphone, Share2, MessageSquare, Bot, Info } from "lucide-react";
+import { Pencil, Save, Lock, Megaphone, Share2, Info } from "lucide-react";
 
-const ATTRIBUTION_TYPES = ["Click based", "Delivery based", "Open based", "Link shared", "Response based"];
+const ATTRIBUTION_TYPES = ["First Click", "Last Click", "Open", "Delivered"];
 
+// Helpdesk and AI agents are hidden for now — not ready to surface attribution
+// for those sources yet.
 const INITIAL_CARDS = [
-  { id: "campaigns", label: "Campaigns", Icon: Megaphone, window: 3, type: "Click based" },
-  { id: "journeys", label: "Journeys", Icon: Share2, window: 3, type: "Click based" },
-  { id: "helpdesk", label: "Helpdesk", Icon: MessageSquare, window: 3, type: "Link shared" },
-  { id: "aiAgents", label: "AI agents", Icon: Bot, window: 7, type: "Response based" },
+  { id: "campaigns", label: "Campaigns", Icon: Megaphone, window: 3, type: "First Click" },
+  { id: "journeys", label: "Journeys", Icon: Share2, window: 3, type: "First Click" },
 ];
 
 function AttributionCard({ card, editing, onChange }) {
@@ -42,7 +42,7 @@ function AttributionCard({ card, editing, onChange }) {
         </div>
 
         <div className="flex items-center gap-2 text-sm text-text-primary">
-          <span>Your attribution Type is</span>
+          <span>Your attribution Type is based on </span>
           <select
             disabled={!editing}
             value={type}
@@ -113,16 +113,21 @@ export default function AttributionWindowsTab() {
         <Info className="w-4 h-4 text-text-muted flex-shrink-0 mt-0.5" />
         <ul className="text-[12px] text-text-secondary space-y-1.5">
           <li>
-            <span className="font-semibold text-text-primary">Click Based:</span> attributes orders to a message if
-            placed within a specific window after a customers clicks a link in the message.
+            <span className="font-semibold text-text-primary">First Click:</span> attributes orders to a message
+            based on the first link a customer clicks within a specific window, even if they click other links
+            afterwards.
           </li>
           <li>
-            <span className="font-semibold text-text-primary">Delivery Based:</span> attributes orders to a message
-            if placed within a specific window after delivering a message to a customer.
+            <span className="font-semibold text-text-primary">Last Click:</span> attributes orders to a message
+            based on the most recent link a customer clicked within a specific window before placing the order.
           </li>
           <li>
-            <span className="font-semibold text-text-primary">Open Based:</span> attributes orders to a message if
-            placed within a specific window after customer opening a message.
+            <span className="font-semibold text-text-primary">Open:</span> attributes orders to a message if
+            placed within a specific window after the customer opens the message.
+          </li>
+          <li>
+            <span className="font-semibold text-text-primary">Delivered:</span> attributes orders to a message
+            if placed within a specific window after the message is delivered to the customer.
           </li>
         </ul>
       </div>

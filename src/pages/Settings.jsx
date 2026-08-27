@@ -8,25 +8,23 @@ import IntegrationsPanel from "@/components/settings/integrations/IntegrationsPa
 import {
   User,
   Plug,
-  CreditCard,
   UsersRound,
   BellRing,
-  KeyRound,
   IndianRupee,
   SlidersHorizontal,
   Puzzle,
 } from "lucide-react";
 
+// Billing and API Keys are hidden from the nav for now (their panels stay
+// registered in PANELS below in case they're switched back on later).
 const SUB_NAV = [
   { id: "account", label: "Account", Icon: User },
   { id: "channels", label: "Connected channels", Icon: Plug },
   { id: "integrations", label: "Integrations", Icon: Puzzle },
-  { id: "billing", label: "Billing", Icon: CreditCard },
-  { id: "team", label: "Team", Icon: UsersRound },
   { id: "revenueAttribution", label: "Revenue Attribution", Icon: IndianRupee },
   { id: "deliveryControls", label: "Delivery Controls", Icon: SlidersHorizontal },
+  { id: "team", label: "Team", Icon: UsersRound },
   { id: "notifications", label: "Notifications", Icon: BellRing },
-  { id: "api", label: "API Keys", Icon: KeyRound },
 ];
 
 function Field({ label, value, disabled = true, testId }) {

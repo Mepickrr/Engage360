@@ -4,6 +4,7 @@ import MembersTab from "./MembersTab";
 import RolesTab from "./RolesTab";
 import SecurityTab from "./SecurityTab";
 import TestModeTab from "./TestModeTab";
+import ActivityLogTab from "./ActivityLogTab";
 import { DEFAULT_MEMBERS, DEFAULT_ROLES, UNASSIGNED_ROLE_ID, allPermissions } from "./constants";
 
 export default function TeamManagementPanel() {
@@ -65,6 +66,7 @@ export default function TeamManagementPanel() {
           <TabsTrigger value="roles" data-testid="team-tab-roles">Role Management</TabsTrigger>
           <TabsTrigger value="security" data-testid="team-tab-security">Security</TabsTrigger>
           <TabsTrigger value="testmode" data-testid="team-tab-testmode">Test Mode</TabsTrigger>
+          <TabsTrigger value="activityLog" data-testid="team-tab-activity-log">Activity Log</TabsTrigger>
         </TabsList>
         <TabsContent value="members">
           <MembersTab
@@ -93,6 +95,9 @@ export default function TeamManagementPanel() {
         </TabsContent>
         <TabsContent value="testmode">
           <TestModeTab members={members} />
+        </TabsContent>
+        <TabsContent value="activityLog">
+          <ActivityLogTab members={members} />
         </TabsContent>
       </Tabs>
     </div>

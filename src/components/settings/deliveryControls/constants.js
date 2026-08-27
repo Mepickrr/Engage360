@@ -1,67 +1,76 @@
-export const PERIOD_OPTIONS = ["Hour", "Day", "Week"];
+export const PERIOD_OPTIONS = ["Hour", "Day", "Month"];
 export const GAP_UNIT_OPTIONS = ["Minutes", "Hours", "Days"];
-export const DND_TYPE_OPTIONS = ["All", "Promotional"];
-
-const BLANK_TYPE_CONFIG = { enabled: false, limit: 0, limitPeriod: "Day", gapEnabled: false, gap: 0, gapUnit: "Hours" };
-
-function configByTypeFor(types, overrides = {}) {
-  return types.reduce((acc, t) => ({ ...acc, [t]: { ...BLANK_TYPE_CONFIG, ...(overrides[t] || {}) } }), {});
-}
+export const DND_TYPE_OPTIONS = ["Utility", "Marketing"];
 
 export const FREQUENCY_TYPE_OPTIONS = ["All", "Utility", "Marketing"];
+export const FREQUENCY_MODE_OPTIONS = ["All", "Campaign", "Journey"];
 
-export const DEFAULT_FREQUENCY_CAPPING_ROWS = [
-  {
-    id: "all",
-    channel: "All Channels",
-    types: ["All"],
-    selectedType: "All",
-    configByType: configByTypeFor(["All"], { All: { enabled: true, limit: 20000 } }),
-  },
-  {
-    id: "whatsapp",
-    channel: "WhatsApp",
-    types: FREQUENCY_TYPE_OPTIONS,
-    selectedType: "All",
-    configByType: configByTypeFor(FREQUENCY_TYPE_OPTIONS),
-  },
-  {
-    id: "email",
-    channel: "Email",
-    types: FREQUENCY_TYPE_OPTIONS,
-    selectedType: "All",
-    configByType: configByTypeFor(FREQUENCY_TYPE_OPTIONS),
-  },
-  {
-    id: "sms",
-    channel: "SMS",
-    types: FREQUENCY_TYPE_OPTIONS,
-    selectedType: "All",
-    configByType: configByTypeFor(FREQUENCY_TYPE_OPTIONS),
-  },
-  {
-    id: "rcs",
-    channel: "RCS",
-    types: FREQUENCY_TYPE_OPTIONS,
-    selectedType: "All",
-    configByType: configByTypeFor(FREQUENCY_TYPE_OPTIONS),
-  },
-  {
-    id: "mobilepush",
-    channel: "Mobile Push",
-    types: ["All"],
-    selectedType: "All",
-    configByType: configByTypeFor(["All"]),
-  },
+// Frequency Capping is a flat list of rules, grouped by channel for display.
+// A channel can carry several rules — e.g. WhatsApp/All/All capped at 10 per
+// month AND a separate WhatsApp/All/All capped at 1 per day — so a seller can
+// layer a loose long-window cap with a tight short-window one. The unique key
+// is (channel, type, mode, time range): two "All / All" rules are fine as
+// long as one is Day and the other is Month — only an exact repeat of all
+// three fields races itself. Each dropdown only ever offers combinations
+// that don't collide with another rule already on the channel, so a
+// duplicate can't be created in the first place — no error state needed.
+export const FREQUENCY_CHANNELS = [
+  { id: "all", channel: "All Channels", types: ["All"] },
+  { id: "whatsapp", channel: "WhatsApp", types: FREQUENCY_TYPE_OPTIONS },
+  { id: "email", channel: "Email", types: FREQUENCY_TYPE_OPTIONS },
+  { id: "sms", channel: "SMS", types: FREQUENCY_TYPE_OPTIONS },
+  { id: "rcs", channel: "RCS", types: FREQUENCY_TYPE_OPTIONS },
+  { id: "mobilepush", channel: "Mobile Push", types: ["All"] },
 ];
 
-export const DEFAULT_DND_ROWS = [
-  { id: "whatsapp", channel: "WhatsApp", enabled: false, type: "All", start: "22:00", end: "08:00" },
-  { id: "email", channel: "Email", enabled: false, type: "All", start: "22:00", end: "08:00" },
-  { id: "sms", channel: "SMS", enabled: false, type: "All", start: "22:00", end: "08:00" },
-  { id: "rcs", channel: "RCS", enabled: false, type: "All", start: "22:00", end: "07:00" },
-  { id: "mobilepush", channel: "Mobile Push", enabled: false, type: "All", start: "22:00", end: "08:00" },
+export function frequencyRuleId(channelId, type, mode, limitPeriod) {
+  return `${channelId}__${type}__${mode}__${limitPeriod}`;
+}
+
+function blankRule(channelId, type, mode, limitPeriod, overrides = {}) {
+  return {
+    id: frequencyRuleId(channelId, type, mode, limitPeriod),
+    channelId,
+    type,
+    mode,
+    enabled: false,
+    limit: 0,
+    limitPeriod,
+    gapEnabled: false,
+    gap: 0,
+    gapUnit: "Hours",
+    ...overrides,
+  };
+}
+
+export const DEFAULT_FREQUENCY_CAPPING_RULES = FREQUENCY_CHANNELS.map((c) =>
+  c.id === "all"
+    ? blankRule(c.id, "All", "All", "Day", { enabled: true, limit: 20000 })
+    : blankRule(c.id, c.types[0], "All", "Day")
+);
+
+export const DND_CHANNELS = [
+  { id: "whatsapp", channel: "WhatsApp", start: "22:00", end: "08:00" },
+  { id: "email", channel: "Email", start: "22:00", end: "08:00" },
+  { id: "sms", channel: "SMS", start: "22:00", end: "08:00" },
+  { id: "rcs", channel: "RCS", start: "22:00", end: "07:00" },
+  { id: "mobilepush", channel: "Mobile Push", start: "22:00", end: "08:00" },
 ];
+
+// Each channel carries one row per Type — Utility and Marketing DND windows
+// are independent, so a seller can (for example) go quiet on Marketing
+// sends overnight while still allowing Utility/transactional messages through.
+export const DEFAULT_DND_ROWS = DND_CHANNELS.flatMap((c) =>
+  DND_TYPE_OPTIONS.map((type) => ({
+    id: `${c.id}-${type.toLowerCase()}`,
+    channelId: c.id,
+    channel: c.channel,
+    type,
+    enabled: false,
+    start: c.start,
+    end: c.end,
+  }))
+);
 
 export const JOURNEY_CAP_EVENT_POOL = [
   "Back in Stock",

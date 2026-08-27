@@ -106,8 +106,9 @@ export const SAMPLE_WEBHOOK_CURL = `curl -X POST https://api.bik.ai/v1/pos/order
 
 // Drives the "Create new integration" modal's picker step. POS is
 // intentionally absent — it's a toggle + webhook setup rather than a
-// single-field connect form. Shopify is included for stores that haven't
-// connected one yet; connectedIds hides it once a store already exists.
+// single-field connect form. Shopify's card always stays visible under
+// Platform so an additional/alternate platform can be connected alongside
+// an existing store.
 export const CONNECT_INTEGRATION_GROUPS = [
   { group: "Platform", types: [
     { id: "shopify", desc: "Connect your Shopify store to sync orders, customers, and products.", formField: { key: "domain", label: "Store domain", placeholder: "https://yourstore.myshopify.com" } },
