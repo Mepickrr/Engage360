@@ -46,7 +46,7 @@ function HeroSection() {
   return (
     <div
       className="rounded-lg p-5 mb-6 text-white"
-      style={{ background: "linear-gradient(135deg, #6C3AE8 0%, #22C55E 100%)" }}
+      style={{ background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-success) 100%)" }}
       data-testid="fastrr-engage-panel-hero"
     >
       {/* Simple CSS chat-bubble mockup standing in for a product screenshot */}
@@ -164,7 +164,7 @@ export default function FastrrEngagePanel() {
     <Sheet open={isOpen} onOpenChange={(open) => !open && close()}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-[420px] overflow-y-auto"
+        className="w-full sm:max-w-[420px] flex flex-col overflow-hidden"
         data-testid="fastrr-engage-panel"
       >
         <SheetHeader className="mb-4">
@@ -174,19 +174,21 @@ export default function FastrrEngagePanel() {
           </p>
         </SheetHeader>
 
-        <HeroSection />
+        <div className="flex-1 overflow-y-auto">
+          <HeroSection />
 
-        <h4 className="text-sm font-semibold text-text-primary mb-1">
-          WhatsApp Marketing Journeys
-        </h4>
-        <p className="text-[13px] text-text-secondary mb-4">
-          Turn anonymous website visitors and drop-offs into recovered revenue — automatically.
-        </p>
+          <h4 className="text-sm font-semibold text-text-primary mb-1">
+            WhatsApp Marketing Journeys
+          </h4>
+          <p className="text-[13px] text-text-secondary mb-4">
+            Turn anonymous website visitors and drop-offs into recovered revenue — automatically.
+          </p>
 
-        <StatGrid />
-        <TrustLine />
-        <JourneyList />
-        <WhySection />
+          <StatGrid />
+          <TrustLine />
+          <JourneyList />
+          <WhySection />
+        </div>
 
         <Button
           type="button"
