@@ -9,6 +9,8 @@ import AppShell from "@/components/layout/AppShell";
 import CampaignsPage from "@/pages/Campaigns";
 import CampaignBuilderPage from "@/pages/CampaignBuilderPage";
 import PushPage from "@/pages/Push";
+import FastrrEngagePage from "@/pages/FastrrEngage";
+import FastrrEngagePanel from "@/components/engage/FastrrEngagePanel";
 import FlowsPage from "@/pages/Flows";
 import FlowBuilder from "@/pages/FlowBuilder";
 import FlowCreatePage from "@/pages/FlowCreate";
@@ -80,10 +82,12 @@ function App() {
             <Route path="/analytics" element={<Navigate to="/analytics/overview" replace />} />
             <Route path="/analytics/:tab" element={<AnalyticsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/fastrr-engage" element={<FastrrEngagePage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>
         <ConversationPanel />
+        <FastrrEngagePanel />
         <Toaster richColors position="top-right" />
       </BrowserRouter>
     </QueryClientProvider>

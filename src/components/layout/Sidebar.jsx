@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   Home,
+  Sparkles,
   LayoutDashboard,
   Terminal,
   Layers,
@@ -79,6 +80,7 @@ export const SIDEBAR_ITEMS = [
     testId: "nav-home-v6",
     matchPaths: ["/home-v6", "/"],
   },
+  { label: "Fastrr Engage", icon: Sparkles, route: "/fastrr-engage", testId: "nav-fastrr-engage" },
   { label: "Templates", icon: FileText, route: "/templates", testId: "nav-templates" },
   { label: "Campaigns", icon: Megaphone, route: "/campaigns", testId: "nav-campaigns" },
   { label: "Push", icon: Bell, route: "/push", testId: "nav-push", hidden: true },
