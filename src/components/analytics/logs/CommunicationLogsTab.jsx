@@ -29,14 +29,17 @@ export default function CommunicationLogsTab() {
     [dateFilter]
   );
 
-  const filters = {
-    dateRange,
-    search,
-    types: typeSelected,
-    channels: channelSelected,
-    statuses: statusSelected,
-    errors: errorSelected,
-  };
+  const filters = useMemo(
+    () => ({
+      dateRange,
+      search,
+      types: typeSelected,
+      channels: channelSelected,
+      statuses: statusSelected,
+      errors: errorSelected,
+    }),
+    [dateRange, search, typeSelected, channelSelected, statusSelected, errorSelected]
+  );
 
   const filteredRows = useMemo(() => filterLogs(COMMUNICATION_LOGS, filters), [filters]);
   const sortedRows = useMemo(() => sortLogs(filteredRows, sort), [filteredRows, sort]);
