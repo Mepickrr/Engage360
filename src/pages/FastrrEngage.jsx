@@ -56,7 +56,7 @@ function HeroSection({ onOpenPanel }) {
   return (
     <div className="text-center py-16 px-6 bg-primary-tint rounded-lg mb-10">
       <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-3 max-w-2xl mx-auto">
-        Turn Every Anonymous Visitor Into a Paying Customer
+        Convert Every Anonymous Visitor Into a Paying Customer
       </h1>
       <p className="text-base text-text-secondary max-w-xl mx-auto mb-6">
         Identify shoppers before they sign up, then win them back on WhatsApp —
