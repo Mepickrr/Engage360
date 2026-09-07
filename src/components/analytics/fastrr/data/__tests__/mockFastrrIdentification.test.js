@@ -56,4 +56,11 @@ describe("getFastrrIdentificationAnalytics — hero + funnel", () => {
     const data = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "All", compare: true });
     expect(data.funnel.dropoffByPage.map((d) => d.page)).toEqual(["Homepage", "PDP", "Cart", "Checkout"]);
   });
+
+  test("hero and funnel are channel-invariant (identification-only sections)", () => {
+    const withAll = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "All", compare: true });
+    const withWa = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "WhatsApp", compare: true });
+    expect(withAll.hero).toEqual(withWa.hero);
+    expect(withAll.funnel).toEqual(withWa.funnel);
+  });
 });

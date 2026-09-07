@@ -26,17 +26,22 @@ function baseSeed(datePreset, channel) {
   return hashKey(`${datePreset}|${channel}`);
 }
 
+function identificationSeed(datePreset) {
+  return hashKey(`identification|${datePreset}`);
+}
+
 function buildHeroAndFunnel(datePreset, channel) {
+  const identSeed = identificationSeed(datePreset);
   const seed = baseSeed(datePreset, channel);
 
-  const totalSessions = 40000 + (seed % 60000);
-  const identificationRateFraction = 0.15 + ((seed >> 3) % 15) / 100; // 15%-30%
+  const totalSessions = 40000 + (identSeed % 60000);
+  const identificationRateFraction = 0.15 + ((identSeed >> 3) % 15) / 100; // 15%-30%
   const identifiedSessions = Math.round(totalSessions * identificationRateFraction);
   const checkoutInitiated = Math.round(identifiedSessions * 0.42);
   const checkoutSso = Math.round(checkoutInitiated * 0.68);
   const orderPlaced = Math.round(checkoutSso * 0.71);
 
-  const deltaPct = ((seed >> 5) % 20) - 4; // -4 .. +15
+  const deltaPct = ((identSeed >> 5) % 20) - 4; // -4 .. +15
   const identificationRateValue = (identifiedSessions / totalSessions) * 100;
 
   const hero = {
@@ -48,7 +53,7 @@ function buildHeroAndFunnel(datePreset, channel) {
     },
     identificationRate: {
       value: identificationRateValue,
-      deltaPct: (seed >> 7) % 10 - 3,
+      deltaPct: (identSeed >> 7) % 10 - 3,
       deltaAbs: 0,
     },
     benchmark: {
@@ -57,8 +62,8 @@ function buildHeroAndFunnel(datePreset, channel) {
       categoryAvg: 17.3,
     },
     gmv: {
-      lastClick: 2000000 + (seed % 4000000),
-      firstClick: 2600000 + (seed % 5200000),
+      lastClick: 2000000 + (identSeed % 4000000),
+      firstClick: 2600000 + (identSeed % 5200000),
     },
     freshness: {
       intervalMinutes: 15,
