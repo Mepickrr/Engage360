@@ -165,4 +165,14 @@ describe("getFastrrIdentificationAnalytics — segmentComparison", () => {
     const withWa = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "WhatsApp", compare: true });
     expect(withAll.segmentComparison).toEqual(withWa.segmentComparison);
   });
+
+  test("segment aov and revenue are never negative, across every datePreset", () => {
+    for (const datePreset of FASTRR_DATE_PRESETS) {
+      const data = getFastrrIdentificationAnalytics({ datePreset, channel: "All", compare: true });
+      data.segmentComparison.segments.forEach((s) => {
+        expect(s.aov).toBeGreaterThan(0);
+        expect(s.revenue).toBeGreaterThan(0);
+      });
+    }
+  });
 });

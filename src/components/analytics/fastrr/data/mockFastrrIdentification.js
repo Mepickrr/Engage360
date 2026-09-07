@@ -35,13 +35,13 @@ function buildHeroAndFunnel(datePreset, channel) {
   const seed = baseSeed(datePreset, channel);
 
   const totalSessions = 40000 + (identSeed % 60000);
-  const identificationRateFraction = 0.15 + ((identSeed >> 3) % 15) / 100; // 15%-30%
+  const identificationRateFraction = 0.15 + ((identSeed >>> 3) % 15) / 100; // 15%-30%
   const identifiedSessions = Math.round(totalSessions * identificationRateFraction);
   const checkoutInitiated = Math.round(identifiedSessions * 0.42);
   const checkoutSso = Math.round(checkoutInitiated * 0.68);
   const orderPlaced = Math.round(checkoutSso * 0.71);
 
-  const deltaPct = ((identSeed >> 5) % 20) - 4; // -4 .. +15
+  const deltaPct = ((identSeed >>> 5) % 20) - 4; // -4 .. +15
   const identificationRateValue = (identifiedSessions / totalSessions) * 100;
 
   const hero = {
@@ -53,7 +53,7 @@ function buildHeroAndFunnel(datePreset, channel) {
     },
     identificationRate: {
       value: identificationRateValue,
-      deltaPct: (identSeed >> 7) % 10 - 3,
+      deltaPct: (identSeed >>> 7) % 10 - 3,
       deltaAbs: 0,
     },
     benchmark: {
@@ -121,8 +121,8 @@ function buildEngagement(datePreset, channel, seed) {
   const totalSent = 80000 + (seed % 120000);
   const scaledSent = channel === "All" ? totalSent : Math.round(totalSent * (CHANNEL_SHARE[channel] ?? 1));
   const delivered = Math.round(scaledSent * 0.94);
-  const read = Math.round(delivered * (0.4 + ((seed >> 2) % 20) / 100));
-  const clicked = Math.round(read * (0.18 + ((seed >> 4) % 12) / 100));
+  const read = Math.round(delivered * (0.4 + ((seed >>> 2) % 20) / 100));
+  const clicked = Math.round(read * (0.18 + ((seed >>> 4) % 12) / 100));
 
   const byChannel = channel === "All" || channel === "AI Calling"
     ? MESSAGING_CHANNELS.map((label, i) => {
@@ -180,7 +180,7 @@ function buildConversionRoi(datePreset, channel, seed) {
   const byChannel = allChannels.map((label, i) => {
     const share = CHANNEL_SHARE[label];
     const orders = Math.round((1200 + (seed % 3000)) * share * 3);
-    const revenue = orders * (900 + ((seed >> i) % 700));
+    const revenue = orders * (900 + ((seed >>> i) % 700));
     const aov = Math.round(revenue / orders);
     const cost = label === "AI Calling"
       ? (500 + (seed % 900)) * AI_CALLING_COST_PER_MIN
@@ -232,13 +232,13 @@ function buildSegmentComparison(seed) {
     { key: "fastrrIdentified", label: "Fastrr-Identified", orders: 4100 + (seed % 2000), revenue: 0, aov: 0, repeatRate: 29 + (seed % 10), engagementRate: 54 + (seed % 8) },
     { key: "anonymous", label: "Anonymous", orders: 1200 + (seed % 800), revenue: 0, aov: 0, repeatRate: 6 + (seed % 4), engagementRate: 11 + (seed % 5) },
   ].map((seg, i) => {
-    const aov = 850 + ((seed >> i) % 900);
+    const aov = 850 + ((seed >>> i) % 900);
     return { ...seg, aov, revenue: seg.orders * aov };
   });
 
   const growthTrend = Array.from({ length: 6 }, (_, i) => ({
     period: `Wk ${i + 1}`,
-    conversionRate: 4 + i * 0.6 + ((seed >> i) % 3) * 0.2,
+    conversionRate: 4 + i * 0.6 + ((seed >>> i) % 3) * 0.2,
   }));
 
   const topIdentifiedUsers = IDENTIFIED_USER_NAMES.map((name, i) => ({
@@ -250,8 +250,8 @@ function buildSegmentComparison(seed) {
 
   const repeatCohort = ["W0", "W1", "W2", "W3", "W4"].map((week, i) => ({
     week,
-    fastrrIdentified: Math.max(0, 22 - i * 4 + ((seed >> i) % 3)),
-    known: Math.max(0, 30 - i * 4 + ((seed >> i) % 3)),
+    fastrrIdentified: Math.max(0, 22 - i * 4 + ((seed >>> i) % 3)),
+    known: Math.max(0, 30 - i * 4 + ((seed >>> i) % 3)),
   }));
 
   return { segments, growthTrend, topIdentifiedUsers, repeatCohort };
