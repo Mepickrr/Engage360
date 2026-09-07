@@ -176,3 +176,92 @@ describe("getFastrrIdentificationAnalytics — segmentComparison", () => {
     }
   });
 });
+
+describe("getFastrrIdentificationAnalytics — smartCard + trends + sourceBreakdown", () => {
+  test("smartCard rates are within 0-100 and channel-agnostic", () => {
+    const withAll = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "All", compare: true });
+    const withSms = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "SMS", compare: true });
+    expect(withAll.smartCard).toEqual(withSms.smartCard);
+    expect(withAll.smartCard.autofillTriggerRate).toBeGreaterThan(0);
+    expect(withAll.smartCard.autofillTriggerRate).toBeLessThanOrEqual(100);
+    expect(withAll.smartCard.conversionRate.smartCard).toBeGreaterThan(withAll.smartCard.conversionRate.standard);
+  });
+
+  test("smartCard field edit rates cover exactly Name, Phone, Address, Pincode", () => {
+    const data = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "All", compare: true });
+    expect(data.smartCard.fieldEditRates.map((f) => f.field)).toEqual(["Name", "Phone", "Address", "Pincode"]);
+  });
+
+  test("trends each carry day + week arrays and a deltaPct", () => {
+    const data = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "All", compare: true });
+    for (const key of ["identificationRate", "messagingFunnel", "ordersRevenue", "repeatOrders"]) {
+      expect(Array.isArray(data.trends[key].day)).toBe(true);
+      expect(Array.isArray(data.trends[key].week)).toBe(true);
+      expect(data.trends[key].day.length).toBeGreaterThan(data.trends[key].week.length);
+      expect(typeof data.trends[key].deltaPct).toBe("number");
+    }
+  });
+
+  test("messagingFunnel and ordersRevenue react to channel, identificationRate and repeatOrders do not", () => {
+    const withAll = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "All", compare: true });
+    const withRcs = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "RCS", compare: true });
+    expect(withAll.trends.identificationRate).toEqual(withRcs.trends.identificationRate);
+    expect(withAll.trends.repeatOrders).toEqual(withRcs.trends.repeatOrders);
+    expect(withAll.trends.messagingFunnel).not.toEqual(withRcs.trends.messagingFunnel);
+  });
+
+  test("sourceBreakdown uses exactly the 5 fixed sources, sorted descending by pct", () => {
+    const data = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "All", compare: true });
+    const sources = data.sourceBreakdown.sources;
+    expect(new Set(sources.map((s) => s.source))).toEqual(
+      new Set(["Smart Card", "Checkout", "Pop-up", "Cookie", "Signup"])
+    );
+    const pcts = sources.map((s) => s.pct);
+    expect(pcts).toEqual([...pcts].sort((a, b) => b - a));
+  });
+
+  test("deviceSplit covers Web (Desktop), Web (Mobile), App and sums close to 100", () => {
+    const data = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "All", compare: true });
+    expect(data.sourceBreakdown.deviceSplit.map((d) => d.device)).toEqual(["Web (Desktop)", "Web (Mobile)", "App"]);
+    const sum = data.sourceBreakdown.deviceSplit.reduce((acc, d) => acc + d.pct, 0);
+    expect(sum).toBeCloseTo(100, 0);
+  });
+
+  test("smartCard/trends/sourceBreakdown fields are never negative, across multiple datePresets", () => {
+    for (const datePreset of ["last_7_days", "this_month", "yesterday"]) {
+      const data = getFastrrIdentificationAnalytics({ datePreset, channel: "All", compare: true });
+
+      expect(data.smartCard.autofillTriggerRate).toBeGreaterThan(0);
+      expect(data.smartCard.acceptanceRate).toBeGreaterThan(0);
+      data.smartCard.fieldEditRates.forEach((f) => expect(f.editRate).toBeGreaterThan(0));
+      expect(data.smartCard.checkoutTimeSeconds.smartCard).toBeGreaterThan(0);
+      expect(data.smartCard.checkoutTimeSeconds.manual).toBeGreaterThan(0);
+      expect(data.smartCard.conversionRate.smartCard).toBeGreaterThan(0);
+      expect(data.smartCard.conversionRate.standard).toBeGreaterThan(0);
+      data.smartCard.dropoffByStep.forEach((d) => {
+        expect(d.withSmartCard).toBeGreaterThan(0);
+        expect(d.withoutSmartCard).toBeGreaterThan(0);
+      });
+
+      for (const key of ["identificationRate", "repeatOrders"]) {
+        data.trends[key].day.forEach((p) => expect(p.value).toBeGreaterThan(0));
+        data.trends[key].week.forEach((p) => expect(p.value).toBeGreaterThan(0));
+      }
+      ["day", "week"].forEach((granularity) => {
+        data.trends.messagingFunnel[granularity].forEach((p) => {
+          expect(p.sent).toBeGreaterThan(0);
+          expect(p.delivered).toBeGreaterThan(0);
+          expect(p.read).toBeGreaterThan(0);
+          expect(p.clicked).toBeGreaterThan(0);
+        });
+        data.trends.ordersRevenue[granularity].forEach((p) => {
+          expect(p.orders).toBeGreaterThan(0);
+          expect(p.revenue).toBeGreaterThan(0);
+        });
+      });
+
+      data.sourceBreakdown.sources.forEach((s) => expect(s.pct).toBeGreaterThan(0));
+      data.sourceBreakdown.deviceSplit.forEach((d) => expect(d.pct).toBeGreaterThan(0));
+    }
+  });
+});

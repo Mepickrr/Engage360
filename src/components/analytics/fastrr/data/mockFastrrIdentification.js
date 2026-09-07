@@ -257,11 +257,95 @@ function buildSegmentComparison(seed) {
   return { segments, growthTrend, topIdentifiedUsers, repeatCohort };
 }
 
+function buildSmartCard(idSeed) {
+  return {
+    autofillTriggerRate: 58 + (idSeed % 20),
+    acceptanceRate: 71 + (idSeed % 15),
+    fieldEditRates: [
+      { field: "Name", editRate: 3 + (idSeed % 5) },
+      { field: "Phone", editRate: 5 + (idSeed % 6) },
+      { field: "Address", editRate: 14 + (idSeed % 10) },
+      { field: "Pincode", editRate: 8 + (idSeed % 7) },
+    ],
+    checkoutTimeSeconds: { smartCard: 28 + (idSeed % 12), manual: 95 + (idSeed % 40) },
+    conversionRate: { smartCard: 34 + (idSeed % 8), standard: 19 + (idSeed % 5) },
+    dropoffByStep: ["Cart", "Address", "Payment", "Confirmation"].map((step, i) => ({
+      step,
+      withSmartCard: Math.max(1, 12 - i * 3 + (idSeed % 3)),
+      withoutSmartCard: Math.max(2, 24 - i * 4 + (idSeed % 4)),
+    })),
+  };
+}
+
+const DAY_LABELS = ["01 Sep", "02 Sep", "03 Sep", "04 Sep", "05 Sep", "06 Sep", "07 Sep"];
+const WEEK_LABELS = ["Wk 27", "Wk 28", "Wk 29", "Wk 30"];
+
+function buildTrendSeries(dayLabels, weekLabels, seed, buildPoint) {
+  return {
+    day: dayLabels.map((period, i) => buildPoint(period, i, seed)),
+    week: weekLabels.map((period, i) => buildPoint(period, i, seed + 17)),
+    deltaPct: ((seed >>> 6) % 20) - 5,
+  };
+}
+
+function buildTrends(idSeed, commSeed) {
+  const identificationRate = buildTrendSeries(DAY_LABELS, WEEK_LABELS, idSeed, (period, i, s) => ({
+    period, value: 18 + ((s >>> i) % 10) + i * 0.4,
+  }));
+
+  const messagingFunnel = buildTrendSeries(DAY_LABELS, WEEK_LABELS, commSeed, (period, i, s) => {
+    const sent = 9000 + ((s >>> i) % 6000);
+    const delivered = Math.round(sent * 0.93);
+    const read = Math.round(delivered * 0.5);
+    const clicked = Math.round(read * 0.22);
+    return { period, sent, delivered, read, clicked };
+  });
+
+  const ordersRevenue = buildTrendSeries(DAY_LABELS, WEEK_LABELS, commSeed, (period, i, s) => {
+    const orders = 300 + ((s >>> i) % 400);
+    return { period, orders, revenue: orders * (900 + (s % 500)) };
+  });
+
+  const repeatOrders = buildTrendSeries(DAY_LABELS, WEEK_LABELS, idSeed, (period, i, s) => ({
+    period, value: 400 + ((s >>> i) % 300) + i * 5,
+  }));
+
+  return { identificationRate, messagingFunnel, ordersRevenue, repeatOrders };
+}
+
+function buildSourceBreakdown(idSeed) {
+  const rawSources = [
+    { source: "Smart Card", weight: 34 + (idSeed % 10) },
+    { source: "Checkout", weight: 27 + (idSeed % 8) },
+    { source: "Pop-up", weight: 18 + (idSeed % 6) },
+    { source: "Cookie", weight: 12 + (idSeed % 5) },
+    { source: "Signup", weight: 9 + (idSeed % 4) },
+  ];
+  const total = rawSources.reduce((acc, s) => acc + s.weight, 0);
+  const sources = rawSources
+    .map((s) => ({ source: s.source, pct: (s.weight / total) * 100 }))
+    .sort((a, b) => b.pct - a.pct);
+
+  const deviceRaw = [
+    { device: "Web (Desktop)", weight: 38 + (idSeed % 10) },
+    { device: "Web (Mobile)", weight: 44 + (idSeed % 10) },
+    { device: "App", weight: 18 + (idSeed % 6) },
+  ];
+  const deviceTotal = deviceRaw.reduce((acc, d) => acc + d.weight, 0);
+  const deviceSplit = deviceRaw.map((d) => ({ device: d.device, pct: (d.weight / deviceTotal) * 100 }));
+
+  return { sources, deviceSplit };
+}
+
 export function getFastrrIdentificationAnalytics(filters) {
   const { datePreset, channel } = filters;
   const { hero, funnel, seed } = buildHeroAndFunnel(datePreset, channel);
+  const idSeed = identificationSeed(datePreset);
   const engagement = buildEngagement(datePreset, channel, seed);
   const conversionRoi = buildConversionRoi(datePreset, channel, seed);
-  const segmentComparison = buildSegmentComparison(identificationSeed(datePreset));
-  return { hero, funnel, engagement, conversionRoi, segmentComparison };
+  const segmentComparison = buildSegmentComparison(idSeed);
+  const smartCard = buildSmartCard(idSeed);
+  const trends = buildTrends(idSeed, seed);
+  const sourceBreakdown = buildSourceBreakdown(idSeed);
+  return { hero, funnel, engagement, conversionRoi, segmentComparison, smartCard, trends, sourceBreakdown };
 }
