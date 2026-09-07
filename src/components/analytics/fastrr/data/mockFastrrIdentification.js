@@ -145,18 +145,23 @@ function buildEngagement(datePreset, channel, seed) {
   const callsCompleted = Math.round(callsConnected * 0.81);
   const actionTaken = Math.round(callsCompleted * 0.44);
 
+  const isAiCalling = channel === "AI Calling";
+  const funnel = isAiCalling
+    ? { sent: 0, delivered: 0, read: 0, clicked: 0 }
+    : { sent: scaledSent, delivered, read, clicked };
+
   return {
     isEmpty: false,
-    funnel: { sent: scaledSent, delivered, read, clicked },
-    readRate: (read / delivered) * 100,
-    clickRate: (clicked / delivered) * 100,
+    funnel,
+    readRate: funnel.delivered > 0 ? (funnel.read / funnel.delivered) * 100 : 0,
+    clickRate: funnel.delivered > 0 ? (funnel.clicked / funnel.delivered) * 100 : 0,
     byChannel,
     aiCalling: { callsPlaced, callsConnected, callsCompleted, actionTaken },
   };
 }
 
 function roiFor(revenue, cost) {
-  return cost > 0 ? (revenue - cost) / cost * 100 / 100 : 0; // expressed as an X multiplier
+  return cost > 0 ? (revenue - cost) / cost : 0;
 }
 
 function buildConversionRoi(datePreset, channel, seed) {
@@ -180,7 +185,7 @@ function buildConversionRoi(datePreset, channel, seed) {
     const cost = label === "AI Calling"
       ? (500 + (seed % 900)) * AI_CALLING_COST_PER_MIN
       : orders * 8 * CHANNEL_COST_PER_MSG[label];
-    const roi = cost > 0 ? (revenue - cost) / cost : 0;
+    const roi = roiFor(revenue, cost);
     return { label, orders, revenue, aov, roi };
   });
 
@@ -197,7 +202,7 @@ function buildConversionRoi(datePreset, channel, seed) {
       channels: [MESSAGING_CHANNELS[i % MESSAGING_CHANNELS.length]],
       triggerEvent: TRIGGER_EVENTS[i % TRIGGER_EVENTS.length],
       sent, delivered, orders, revenue, aov,
-      roi: cost > 0 ? (revenue - cost) / cost : 0,
+      roi: roiFor(revenue, cost),
       uniqueCustomers: Math.round(orders * 0.86),
     };
   });

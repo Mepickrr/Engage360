@@ -119,3 +119,15 @@ describe("getFastrrIdentificationAnalytics — engagement + conversionRoi", () =
     expect(getFastrrIdentificationAnalytics({ datePreset: "today", channel: "WhatsApp", compare: true }).engagement.isEmpty).toBe(false);
   });
 });
+
+describe("getFastrrIdentificationAnalytics — AI Calling messaging funnel", () => {
+  test("AI Calling channel (non-today) zeroes the messaging funnel but keeps aiCalling and byChannel populated", () => {
+    const data = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "AI Calling", compare: true });
+    expect(data.engagement.isEmpty).toBe(false);
+    expect(data.engagement.funnel).toEqual({ sent: 0, delivered: 0, read: 0, clicked: 0 });
+    expect(data.engagement.readRate).toBe(0);
+    expect(data.engagement.clickRate).toBe(0);
+    expect(data.engagement.aiCalling.callsPlaced).toBeGreaterThan(0);
+    expect(data.engagement.byChannel.length).toBeGreaterThan(0);
+  });
+});
