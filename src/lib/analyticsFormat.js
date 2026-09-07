@@ -28,3 +28,14 @@ export function formatDelta(deltaPct, deltaAbs, formatter) {
     tone,
   };
 }
+
+export function formatPercent(value, digits = 1) {
+  return `${value.toFixed(digits)}%`;
+}
+
+export function formatSeconds(value) {
+  const totalSeconds = Math.round(value);
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return m === 0 ? `${s}s` : `${m}m ${s}s`;
+}
