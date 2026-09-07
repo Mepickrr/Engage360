@@ -224,10 +224,44 @@ function buildConversionRoi(datePreset, channel, seed) {
   };
 }
 
+const IDENTIFIED_USER_NAMES = ["Ritika Desai", "Manav Shah", "Ishaan Kapoor", "Simran Kaur", "Aarav Joshi"];
+
+function buildSegmentComparison(seed) {
+  const segments = [
+    { key: "known", label: "Known", orders: 9200 + (seed % 3000), revenue: 0, aov: 0, repeatRate: 38 + (seed % 10), engagementRate: 61 + (seed % 8) },
+    { key: "fastrrIdentified", label: "Fastrr-Identified", orders: 4100 + (seed % 2000), revenue: 0, aov: 0, repeatRate: 29 + (seed % 10), engagementRate: 54 + (seed % 8) },
+    { key: "anonymous", label: "Anonymous", orders: 1200 + (seed % 800), revenue: 0, aov: 0, repeatRate: 6 + (seed % 4), engagementRate: 11 + (seed % 5) },
+  ].map((seg, i) => {
+    const aov = 850 + ((seed >> i) % 900);
+    return { ...seg, aov, revenue: seg.orders * aov };
+  });
+
+  const growthTrend = Array.from({ length: 6 }, (_, i) => ({
+    period: `Wk ${i + 1}`,
+    conversionRate: 4 + i * 0.6 + ((seed >> i) % 3) * 0.2,
+  }));
+
+  const topIdentifiedUsers = IDENTIFIED_USER_NAMES.map((name, i) => ({
+    id: `top-user-${i + 1}`,
+    name,
+    identifiedOn: `0${(i % 9) + 1} Sep 2026`,
+    ltv: 8000 + ((seed + i * 613) % 40000),
+  }));
+
+  const repeatCohort = ["W0", "W1", "W2", "W3", "W4"].map((week, i) => ({
+    week,
+    fastrrIdentified: Math.max(0, 22 - i * 4 + ((seed >> i) % 3)),
+    known: Math.max(0, 30 - i * 4 + ((seed >> i) % 3)),
+  }));
+
+  return { segments, growthTrend, topIdentifiedUsers, repeatCohort };
+}
+
 export function getFastrrIdentificationAnalytics(filters) {
   const { datePreset, channel } = filters;
   const { hero, funnel, seed } = buildHeroAndFunnel(datePreset, channel);
   const engagement = buildEngagement(datePreset, channel, seed);
   const conversionRoi = buildConversionRoi(datePreset, channel, seed);
-  return { hero, funnel, engagement, conversionRoi };
+  const segmentComparison = buildSegmentComparison(identificationSeed(datePreset));
+  return { hero, funnel, engagement, conversionRoi, segmentComparison };
 }

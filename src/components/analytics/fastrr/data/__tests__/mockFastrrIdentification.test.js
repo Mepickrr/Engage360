@@ -131,3 +131,38 @@ describe("getFastrrIdentificationAnalytics — AI Calling messaging funnel", () 
     expect(data.engagement.byChannel.length).toBeGreaterThan(0);
   });
 });
+
+describe("getFastrrIdentificationAnalytics — segmentComparison", () => {
+  test("segments are known, fastrrIdentified, anonymous in that order", () => {
+    const data = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "All", compare: true });
+    expect(data.segmentComparison.segments.map((s) => s.key)).toEqual(["known", "fastrrIdentified", "anonymous"]);
+  });
+
+  test("every segment has a repeat rate and engagement rate under 100", () => {
+    const data = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "All", compare: true });
+    data.segmentComparison.segments.forEach((s) => {
+      expect(s.repeatRate).toBeGreaterThan(0);
+      expect(s.repeatRate).toBeLessThanOrEqual(100);
+      expect(s.engagementRate).toBeGreaterThan(0);
+      expect(s.engagementRate).toBeLessThanOrEqual(100);
+    });
+  });
+
+  test("growthTrend has 6 points and topIdentifiedUsers has 5 unique rows", () => {
+    const data = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "All", compare: true });
+    expect(data.segmentComparison.growthTrend).toHaveLength(6);
+    expect(data.segmentComparison.topIdentifiedUsers).toHaveLength(5);
+    expect(new Set(data.segmentComparison.topIdentifiedUsers.map((u) => u.id)).size).toBe(5);
+  });
+
+  test("repeatCohort covers W0 through W4", () => {
+    const data = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "All", compare: true });
+    expect(data.segmentComparison.repeatCohort.map((c) => c.week)).toEqual(["W0", "W1", "W2", "W3", "W4"]);
+  });
+
+  test("segmentComparison is unaffected by channel — identification-only section", () => {
+    const withAll = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "All", compare: true });
+    const withWa = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "WhatsApp", compare: true });
+    expect(withAll.segmentComparison).toEqual(withWa.segmentComparison);
+  });
+});
