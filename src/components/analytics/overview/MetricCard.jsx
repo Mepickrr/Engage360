@@ -2,7 +2,7 @@ import React from "react";
 import { Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-export default function MetricCard({ testId, label, value, delta, subBadge, infoText }) {
+export default function MetricCard({ testId, label, value, delta, subBadge, infoText, labelExtra }) {
   const deltaToneClass =
     delta?.tone === "negative"
       ? "text-rose-700 bg-rose-50"
@@ -22,6 +22,7 @@ export default function MetricCard({ testId, label, value, delta, subBadge, info
             </Tooltip>
           </TooltipProvider>
         )}
+        {labelExtra}
         {subBadge && (
           <span
             data-testid={`${testId}-badge`}
