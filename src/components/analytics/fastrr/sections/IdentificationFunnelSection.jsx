@@ -16,7 +16,7 @@ export default function IdentificationFunnelSection({ data, isLoading }) {
         <h2 className="text-[15px] font-semibold text-text-primary">Identification → Checkout → Order funnel</h2>
         <PoweredByLabel source="Shiprocket order sync" />
       </div>
-      {/* TODO: confirm all funnel stages share a common denominator before enabling connected funnel visual */}
+      {/* Funnel denominator logic + its TODO live in shared/funnelMath.js */}
       <div className="bg-surface border border-border rounded-lg p-4">
         <FunnelChart testId="fastrr-funnel-chart" stages={data.stages} />
       </div>

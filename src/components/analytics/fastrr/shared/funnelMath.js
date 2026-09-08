@@ -1,4 +1,5 @@
 export function computeFunnelStagePercents(stages) {
+  // TODO: confirm all funnel stages share a common denominator before enabling connected funnel visual
   const denom = stages[0]?.count || 0;
   return stages.map((stage, i) => ({
     ...stage,
