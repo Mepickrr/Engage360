@@ -129,6 +129,7 @@ export default function LogsFilterBar({
   channelOptions, channelSelected, onChannelChange,
   statusOptions, statusSelected, onStatusChange,
   errorOptions, errorSelected, onErrorChange,
+  audienceTypeOptions, audienceTypeSelected, onAudienceTypeChange,
   onClearAll,
 }) {
   const chips = [
@@ -136,6 +137,7 @@ export default function LogsFilterBar({
     ...[...channelSelected].map((v) => ({ facet: "channel", value: v, onRemove: () => onChannelChange(toggleInSet(channelSelected, v)) })),
     ...[...statusSelected].map((v) => ({ facet: "status", value: v, onRemove: () => onStatusChange(toggleInSet(statusSelected, v)) })),
     ...[...errorSelected].map((v) => ({ facet: "error", value: v, onRemove: () => onErrorChange(toggleInSet(errorSelected, v)) })),
+    ...[...audienceTypeSelected].map((v) => ({ facet: "audienceType", value: v, onRemove: () => onAudienceTypeChange(toggleInSet(audienceTypeSelected, v)) })),
   ];
   const hasActiveFilters = chips.length > 0 || dateFilter.preset !== "last_30_days" || search.trim() !== "";
 
@@ -156,6 +158,7 @@ export default function LogsFilterBar({
         <FacetPopover testId="logs-filter-type" label="Type" options={typeOptions} selected={typeSelected} onChange={onTypeChange} />
         <FacetPopover testId="logs-filter-channel" label="Channel" options={channelOptions} selected={channelSelected} onChange={onChannelChange} />
         <FacetPopover testId="logs-filter-status" label="Status" options={statusOptions} selected={statusSelected} onChange={onStatusChange} />
+        <FacetPopover testId="logs-filter-audience-type" label="Audience Type" options={audienceTypeOptions} selected={audienceTypeSelected} onChange={onAudienceTypeChange} />
         <FacetPopover
           testId="logs-filter-error"
           label="Error Response"

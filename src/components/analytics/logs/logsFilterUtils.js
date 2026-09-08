@@ -56,7 +56,7 @@ export function resolveDateRange(preset, customRange, anchor) {
   return resolver ? resolver(anchor) : null;
 }
 
-const FACET_FIELD_MAP = { types: "type", channels: "channel", statuses: "deliveryStatus", errors: "errorResponse" };
+const FACET_FIELD_MAP = { types: "type", channels: "channel", statuses: "deliveryStatus", errors: "errorResponse", audienceTypes: "audienceType" };
 
 export function filterLogs(logs, filters, options = {}) {
   const exclude = new Set(options.exclude || []);
@@ -68,7 +68,7 @@ export function filterLogs(logs, filters, options = {}) {
       const sentMs = new Date(log.sentAt).getTime();
       if (sentMs < range.from.getTime() || sentMs > range.to.getTime()) return false;
     }
-    for (const key of ["types", "channels", "statuses", "errors"]) {
+    for (const key of ["types", "channels", "statuses", "errors", "audienceTypes"]) {
       if (exclude.has(key)) continue;
       const set = filters[key];
       if (set && set.size > 0 && !set.has(log[FACET_FIELD_MAP[key]])) return false;

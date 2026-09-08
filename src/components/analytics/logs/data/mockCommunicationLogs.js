@@ -9,6 +9,7 @@ const ROW_COUNT = 150;
 
 const CHANNELS = ["WhatsApp", "Email", "SMS", "RCS", "AI Calling"];
 const TYPES = ["Campaign", "Journey"];
+const AUDIENCE_TYPES = ["Fastrr Identified", "Known"];
 
 // 12-slot weighted cycle: 8 successful, 1 pending, 3 failure states.
 const STATUS_CYCLE = [
@@ -57,6 +58,7 @@ function contactForIndex(i, channel) {
 function buildRow(i) {
   const channel = CHANNELS[i % CHANNELS.length];
   const type = TYPES[i % TYPES.length];
+  const audienceType = AUDIENCE_TYPES[i % AUDIENCE_TYPES.length];
   const status = STATUS_CYCLE[i % STATUS_CYCLE.length];
   const templates = TEMPLATES_BY_CHANNEL[channel];
   const templateName = templates[i % templates.length];
@@ -90,6 +92,7 @@ function buildRow(i) {
     phone,
     email,
     type,
+    audienceType,
     templateName,
     channel,
     senderPhone,
@@ -105,5 +108,6 @@ export const COMMUNICATION_LOGS = Array.from({ length: ROW_COUNT }, (_, i) => bu
 
 export const LOG_CHANNELS = CHANNELS;
 export const LOG_TYPES = TYPES;
+export const LOG_AUDIENCE_TYPES = AUDIENCE_TYPES;
 export const LOG_STATUSES = ["Sent", "Delivered", "Read", "Failed", "Bounced", "Pending"];
 export const LOG_DATA_ANCHOR = new Date(ANCHOR_MS);

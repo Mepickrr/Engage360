@@ -27,6 +27,9 @@ function baseProps(overrides = {}) {
     errorOptions: [],
     errorSelected: new Set(),
     onErrorChange: jest.fn(),
+    audienceTypeOptions: [{ value: "Fastrr Identified", count: 3 }, { value: "Known", count: 2 }],
+    audienceTypeSelected: new Set(),
+    onAudienceTypeChange: jest.fn(),
     onClearAll: jest.fn(),
     ...overrides,
   };

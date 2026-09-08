@@ -1,9 +1,10 @@
 import React, { useMemo, useState } from "react";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext } from "@/components/ui/pagination";
+import { previewToast } from "@/components/common/PreviewHeader";
 import LogsFilterBar from "./LogsFilterBar";
 import LogsTable from "./LogsTable";
 import LogDetailDrawer from "./LogDetailDrawer";
-import { COMMUNICATION_LOGS, LOG_TYPES, LOG_CHANNELS, LOG_STATUSES, LOG_DATA_ANCHOR } from "./data/mockCommunicationLogs";
+import { COMMUNICATION_LOGS, LOG_TYPES, LOG_CHANNELS, LOG_STATUSES, LOG_AUDIENCE_TYPES, LOG_DATA_ANCHOR } from "./data/mockCommunicationLogs";
 import { filterLogs, sortLogs, computeFacetCounts, resolveDateRange } from "./logsFilterUtils";
 
 const PAGE_SIZE = 25;
@@ -20,6 +21,7 @@ export default function CommunicationLogsTab() {
   const [channelSelected, setChannelSelected] = useState(new Set());
   const [statusSelected, setStatusSelected] = useState(new Set());
   const [errorSelected, setErrorSelected] = useState(new Set());
+  const [audienceTypeSelected, setAudienceTypeSelected] = useState(new Set());
   const [sort, setSort] = useState({ field: "sentAt", dir: "desc" });
   const [page, setPage] = useState(1);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -37,8 +39,9 @@ export default function CommunicationLogsTab() {
       channels: channelSelected,
       statuses: statusSelected,
       errors: errorSelected,
+      audienceTypes: audienceTypeSelected,
     }),
-    [dateRange, search, typeSelected, channelSelected, statusSelected, errorSelected]
+    [dateRange, search, typeSelected, channelSelected, statusSelected, errorSelected, audienceTypeSelected]
   );
 
   const filteredRows = useMemo(() => filterLogs(COMMUNICATION_LOGS, filters), [filters]);
@@ -64,6 +67,10 @@ export default function CommunicationLogsTab() {
     const counts = computeFacetCounts(filterLogs(COMMUNICATION_LOGS, filters, { exclude: ["errors"] }), "errors");
     return [...counts.entries()].map(([value, count]) => ({ value, count }));
   }, [filters]);
+  const audienceTypeOptions = useMemo(
+    () => toOptions(computeFacetCounts(filterLogs(COMMUNICATION_LOGS, filters, { exclude: ["audienceTypes"] }), "audienceTypes"), LOG_AUDIENCE_TYPES),
+    [filters]
+  );
 
   function withPageReset(setter) {
     return (next) => {
@@ -79,6 +86,7 @@ export default function CommunicationLogsTab() {
     setChannelSelected(new Set());
     setStatusSelected(new Set());
     setErrorSelected(new Set());
+    setAudienceTypeSelected(new Set());
     setPage(1);
   }
 
@@ -108,8 +116,21 @@ export default function CommunicationLogsTab() {
         errorOptions={errorOptions}
         errorSelected={errorSelected}
         onErrorChange={withPageReset(setErrorSelected)}
+        audienceTypeOptions={audienceTypeOptions}
+        audienceTypeSelected={audienceTypeSelected}
+        onAudienceTypeChange={withPageReset(setAudienceTypeSelected)}
         onClearAll={handleClearAll}
       />
+      <div className="flex justify-end">
+        <button
+          type="button"
+          data-testid="logs-download-btn"
+          onClick={() => previewToast()}
+          className="px-3 h-8 rounded-md border border-border text-[12px] font-medium text-text-primary hover:bg-slate-50 transition-colors"
+        >
+          Download Logs
+        </button>
+      </div>
       <LogsTable rows={pageRows} sort={sort} onSortChange={handleSortChange} onRowClick={setSelectedRow} />
       {totalPages > 1 && (
         <Pagination data-testid="logs-pagination">

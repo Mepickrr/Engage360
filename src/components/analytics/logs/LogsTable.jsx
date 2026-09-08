@@ -60,6 +60,7 @@ export default function LogsTable({ rows, sort, onSortChange, onRowClick }) {
             <TableHead>Engage ID</TableHead>
             <TableHead>Contact</TableHead>
             <TableHead>Type</TableHead>
+            <TableHead>Audience Type</TableHead>
             <TableHead>Template Name</TableHead>
             <TableHead>Channel</TableHead>
             <TableHead>Delivery Status</TableHead>
@@ -76,6 +77,7 @@ export default function LogsTable({ rows, sort, onSortChange, onRowClick }) {
                 <TableCell className="text-[13px]">{row.engageId}</TableCell>
                 <TableCell className="text-[13px]">{row.phone || row.email}</TableCell>
                 <TableCell><Badge variant="outline">{row.type}</Badge></TableCell>
+                <TableCell className="text-[13px]">{row.audienceType}</TableCell>
                 <TableCell className="text-[13px] max-w-[180px] truncate" title={row.templateName}>{row.templateName}</TableCell>
                 <TableCell className="text-[13px]">
                   <span className="inline-flex items-center gap-1.5">

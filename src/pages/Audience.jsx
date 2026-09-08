@@ -8,6 +8,7 @@ const KPIS = [
   { label: "Total targetable users",  value: "45.2K", delta: "+1.2K",  testId: "aud-kpi-total"  },
   { label: "Known",   value: "32.1K", delta: "+820",   testId: "aud-kpi-id"     },
   { label: "Fastrr identified",    value: "13.1K",                  testId: "aud-kpi-anon"   },
+  { label: "Fastrr Identified New User", value: "4.6K", delta: "+310", testId: "aud-kpi-fastrr-new" },
   { label: "Active 30d",   value: "18.9K", delta: "+6.1%",  testId: "aud-kpi-active" },
 ];
 
@@ -255,7 +256,7 @@ const USERS = [
   },
 ];
 
-const FILTERS = ["All users", "Identified", "VIPs", "Active 30d", "Cart abandoners", "New signups"];
+const FILTERS = ["All users", "Identified", "Fastrr Identified New User", "VIPs", "Active 30d", "Cart abandoners", "New signups"];
 
 export default function AudiencePage() {
   const [activeFilter,  setActiveFilter]  = useState("All users");
@@ -293,7 +294,7 @@ export default function AudiencePage() {
         }
       />
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-6">
         {KPIS.map((k) => <KpiTile key={k.testId} {...k} />)}
       </div>
 
