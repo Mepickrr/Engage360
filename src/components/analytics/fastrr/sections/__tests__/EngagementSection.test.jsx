@@ -38,4 +38,12 @@ describe("EngagementSection", () => {
     const triggers = within(summary).getAllByTestId("metric-tooltip-trigger");
     expect(triggers).toHaveLength(2);
   });
+
+  test("skips the channel chart (not isEmpty) when byChannel is empty, but still shows the AI Calling funnel card", () => {
+    render(<EngagementSection data={{ ...FIXTURE, byChannel: [] }} isLoading={false} />);
+    expect(screen.queryByTestId("fastrr-engagement-empty")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("fastrr-engagement-by-channel")).not.toBeInTheDocument();
+    expect(screen.getByTestId("fastrr-engagement-ai-calling")).toHaveTextContent("Calls Placed");
+    expect(screen.getByTestId("fastrr-engagement-summary")).toBeInTheDocument();
+  });
 });

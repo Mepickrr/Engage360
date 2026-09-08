@@ -92,8 +92,10 @@ function buildHeroAndFunnel(datePreset, channel) {
 
 const MESSAGING_CHANNELS = ["WhatsApp", "Email", "SMS", "RCS"];
 const CHANNEL_SHARE = { WhatsApp: 0.46, Email: 0.19, SMS: 0.14, RCS: 0.09, "AI Calling": 0.12 };
-const CHANNEL_COST_PER_MSG = { WhatsApp: 0.35, Email: 0.05, SMS: 0.12, RCS: 0.28 }; // (estimated)
-const AI_CALLING_COST_PER_MIN = 1.5; // (estimated)
+// (estimated)
+// TODO: confirm real per-channel cost inputs, especially AI Calling (per-minute billing, not per-message).
+const CHANNEL_COST_PER_MSG = { WhatsApp: 0.35, Email: 0.05, SMS: 0.12, RCS: 0.28 };
+const AI_CALLING_COST_PER_MIN = 1.5;
 
 const JOURNEY_NAMES = [
   "Abandoned Cart Recovery", "Post-Purchase Upsell", "Welcome Series", "COD Confirmation",
@@ -124,7 +126,14 @@ function buildEngagement(datePreset, channel, seed) {
   const read = Math.round(delivered * (0.4 + ((seed >>> 2) % 20) / 100));
   const clicked = Math.round(read * (0.18 + ((seed >>> 4) % 12) / 100));
 
-  const byChannel = channel === "All" || channel === "AI Calling"
+  // AI Calling has no messaging channel of its own to compare — its funnel
+  // is a separate Calls Placed→Connected→Completed→Action Taken card below,
+  // so the channel-comparison chart has nothing to show and must be empty,
+  // not populated with the 4 messaging channels at "All"-like volumes
+  // (that would visibly contradict the zeroed funnel/readRate/clickRate above).
+  const byChannel = channel === "AI Calling"
+    ? []
+    : channel === "All"
     ? MESSAGING_CHANNELS.map((label, i) => {
         const chSent = Math.round(totalSent * CHANNEL_SHARE[label]);
         const chDelivered = Math.round(chSent * 0.94);
@@ -169,7 +178,7 @@ function buildConversionRoi(datePreset, channel, seed) {
     return {
       isEmpty: true,
       byChannel: [],
-      roiFormulaNote: "ROI (WhatsApp) ≈ Delivered Count × assumed cost/msg (estimated). TODO: confirm real per-channel cost inputs, especially AI Calling (per-minute billing, not per-message).",
+      roiFormulaNote: "Channel costs are estimated — a flat assumed cost per message, except AI Calling which is billed per-minute.",
       attribution: { lastClick: 0, firstClick: 0 },
       topJourneys: [],
       triggerSplit: [],
@@ -177,7 +186,7 @@ function buildConversionRoi(datePreset, channel, seed) {
   }
 
   const allChannels = [...MESSAGING_CHANNELS, "AI Calling"];
-  const byChannel = allChannels.map((label, i) => {
+  const byChannelAll = allChannels.map((label, i) => {
     const share = CHANNEL_SHARE[label];
     const orders = Math.round((1200 + (seed % 3000)) * share * 3);
     const revenue = orders * (900 + ((seed >>> i) % 700));
@@ -188,8 +197,12 @@ function buildConversionRoi(datePreset, channel, seed) {
     const roi = roiFor(revenue, cost);
     return { label, orders, revenue, aov, roi };
   });
+  // Same pattern as buildEngagement: narrow byChannel down to the single
+  // selected channel's row so §4 actually reflects the channel filter,
+  // rather than only re-seeding its random numbers while showing all channels.
+  const byChannel = channel === "All" ? byChannelAll : byChannelAll.filter((c) => c.label === channel);
 
-  const topJourneys = JOURNEY_NAMES.map((name, i) => {
+  const topJourneysAll = JOURNEY_NAMES.map((name, i) => {
     const sent = 4000 + ((seed + i * 977) % 20000);
     const delivered = Math.round(sent * 0.93);
     const orders = Math.round(delivered * (0.02 + (i % 5) * 0.01));
@@ -206,7 +219,17 @@ function buildConversionRoi(datePreset, channel, seed) {
       uniqueCustomers: Math.round(orders * 0.86),
     };
   });
+  // Journeys only ever carry messaging channels in their `channels` array
+  // (never "AI Calling"), so filtering to channel: "AI Calling" correctly
+  // yields an empty list here — that's expected, not a bug.
+  const topJourneys = channel === "All"
+    ? topJourneysAll
+    : topJourneysAll.filter((j) => j.channels.includes(channel));
 
+  // triggerSplit intentionally does NOT narrow by channel filter, unlike
+  // byChannel/topJourneys above: trigger-event revenue has no channel
+  // dimension modeled in this mock (a trigger like "Cart Abandon" isn't
+  // tied to a single channel) — this is a deliberate, documented exception.
   const triggerSplit = [
     { trigger: "Product View", revenue: 800000 + (seed % 400000) },
     { trigger: "Add-to-Cart", revenue: 1200000 + (seed % 600000) },
@@ -217,7 +240,7 @@ function buildConversionRoi(datePreset, channel, seed) {
   return {
     isEmpty: false,
     byChannel,
-    roiFormulaNote: "ROI (WhatsApp) ≈ Delivered Count × assumed cost/msg (estimated). TODO: confirm real per-channel cost inputs, especially AI Calling (per-minute billing, not per-message).",
+    roiFormulaNote: "Channel costs are estimated — a flat assumed cost per message, except AI Calling which is billed per-minute.",
     attribution: { lastClick: 3200000 + (seed % 2000000), firstClick: 4100000 + (seed % 2600000) },
     topJourneys,
     triggerSplit,

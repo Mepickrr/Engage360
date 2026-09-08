@@ -102,6 +102,38 @@ describe("getFastrrIdentificationAnalytics — engagement + conversionRoi", () =
     ]);
   });
 
+  test("conversionRoi.byChannel narrows to just the selected channel, like engagement.byChannel does", () => {
+    const data = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "SMS", compare: true });
+    expect(data.conversionRoi.byChannel.map((c) => c.label)).toEqual(["SMS"]);
+  });
+
+  test("conversionRoi.topJourneys narrows to journeys whose channels include the selected channel", () => {
+    const withAll = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "All", compare: true });
+    const withWa = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "WhatsApp", compare: true });
+    expect(withWa.conversionRoi.topJourneys.length).toBeLessThan(withAll.conversionRoi.topJourneys.length);
+    withWa.conversionRoi.topJourneys.forEach((j) => expect(j.channels).toContain("WhatsApp"));
+  });
+
+  test("conversionRoi.topJourneys is empty for AI Calling — journeys never carry that channel", () => {
+    const data = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "AI Calling", compare: true });
+    expect(data.conversionRoi.isEmpty).toBe(false);
+    expect(data.conversionRoi.topJourneys).toEqual([]);
+  });
+
+  test("conversionRoi.triggerSplit is never filtered down by channel (documented exception) — always all 4 triggers", () => {
+    // Unlike byChannel/topJourneys, triggerSplit isn't narrowed by channel — only its
+    // underlying random numbers re-seed per channel (same as before this fix), since
+    // trigger-event revenue has no channel dimension modeled in this mock.
+    const withSms = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "SMS", compare: true });
+    const withAiCalling = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "AI Calling", compare: true });
+    expect(withSms.conversionRoi.triggerSplit.map((t) => t.trigger)).toEqual([
+      "Product View", "Add-to-Cart", "Cart Abandon", "Other",
+    ]);
+    expect(withAiCalling.conversionRoi.triggerSplit.map((t) => t.trigger)).toEqual([
+      "Product View", "Add-to-Cart", "Cart Abandon", "Other",
+    ]);
+  });
+
   test("AI Calling + today is empty for engagement and conversionRoi only", () => {
     const data = getFastrrIdentificationAnalytics({ datePreset: "today", channel: "AI Calling", compare: true });
     expect(data.engagement.isEmpty).toBe(true);
@@ -121,14 +153,17 @@ describe("getFastrrIdentificationAnalytics — engagement + conversionRoi", () =
 });
 
 describe("getFastrrIdentificationAnalytics — AI Calling messaging funnel", () => {
-  test("AI Calling channel (non-today) zeroes the messaging funnel but keeps aiCalling and byChannel populated", () => {
+  test("AI Calling channel (non-today) zeroes the messaging funnel and byChannel, but keeps aiCalling populated", () => {
     const data = getFastrrIdentificationAnalytics({ datePreset: "last_7_days", channel: "AI Calling", compare: true });
     expect(data.engagement.isEmpty).toBe(false);
     expect(data.engagement.funnel).toEqual({ sent: 0, delivered: 0, read: 0, clicked: 0 });
     expect(data.engagement.readRate).toBe(0);
     expect(data.engagement.clickRate).toBe(0);
     expect(data.engagement.aiCalling.callsPlaced).toBeGreaterThan(0);
-    expect(data.engagement.byChannel.length).toBeGreaterThan(0);
+    // byChannel is empty for AI Calling at every datePreset — it has no messaging
+    // channel of its own to compare against, so the channel chart has nothing to show
+    // (this must not contradict the zeroed funnel/readRate/clickRate above by being populated).
+    expect(data.engagement.byChannel).toEqual([]);
   });
 });
 

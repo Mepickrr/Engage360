@@ -39,19 +39,21 @@ export default function EngagementSection({ data, isLoading }) {
             </div>
           </div>
 
-          <GroupedBarChart
-            testId="fastrr-engagement-by-channel"
-            title="Engagement by channel"
-            data={data.byChannel}
-            xKey="label"
-            series={[
-              { key: "sent", label: "Sent", color: "#94A3B8" },
-              { key: "delivered", label: "Delivered", color: "#6C3AE8" },
-              { key: "read", label: "Read", color: "#22C55E" },
-              { key: "clicked", label: "Clicked", color: "#F59E0B" },
-            ]}
-            valueFormatter={formatCompactNumber}
-          />
+          {data.byChannel.length > 0 && (
+            <GroupedBarChart
+              testId="fastrr-engagement-by-channel"
+              title="Engagement by channel"
+              data={data.byChannel}
+              xKey="label"
+              series={[
+                { key: "sent", label: "Sent", color: "#94A3B8" },
+                { key: "delivered", label: "Delivered", color: "#6C3AE8" },
+                { key: "read", label: "Read", color: "#22C55E" },
+                { key: "clicked", label: "Clicked", color: "#F59E0B" },
+              ]}
+              valueFormatter={formatCompactNumber}
+            />
+          )}
 
           <div className="bg-surface border border-border rounded-lg p-4" data-testid="fastrr-engagement-ai-calling">
             <h3 className="text-[13px] font-semibold text-text-primary mb-2">AI Calling</h3>
