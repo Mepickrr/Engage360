@@ -105,11 +105,8 @@ describe("AnalyticsPage", () => {
     expect(screen.getByTestId("time-range-trigger")).toBeInTheDocument();
   });
 
-  test("switching to Campaign, Journey, Reports renders their coming-soon panels", () => {
+  test("switching to Journey, Reports renders their coming-soon panels", () => {
     renderAtTab("overview");
-    fireEvent.mouseDown(screen.getByRole("tab", { name: "Campaign" }));
-    expect(screen.getByTestId("analytics-tab-campaign")).toBeInTheDocument();
-
     fireEvent.mouseDown(screen.getByRole("tab", { name: "Journey" }));
     expect(screen.getByTestId("analytics-tab-journey")).toBeInTheDocument();
 
@@ -118,6 +115,15 @@ describe("AnalyticsPage", () => {
 
     fireEvent.mouseDown(screen.getByRole("tab", { name: "Overview" }));
     expect(screen.getByTestId("overview-tab")).toBeInTheDocument();
+  });
+
+  test("switching to Campaign renders the Campaign analytics tab", () => {
+    jest.useFakeTimers();
+    renderAtTab("overview");
+    fireEvent.mouseDown(screen.getByRole("tab", { name: "Campaign" }));
+    act(() => { jest.advanceTimersByTime(500); });
+    expect(screen.getByTestId("campaign-analytics-tab")).toBeInTheDocument();
+    jest.useRealTimers();
   });
 
   test("switching to Communication Logs renders the logs table", () => {

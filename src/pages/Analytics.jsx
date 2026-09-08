@@ -6,6 +6,7 @@ import ComingSoonPanel from "@/components/analytics/ComingSoonPanel";
 import OverviewTab from "@/components/analytics/overview/OverviewTab";
 import CommunicationLogsTab from "@/components/analytics/logs/CommunicationLogsTab";
 import FastrrIdentificationTab from "@/components/analytics/fastrr/FastrrIdentificationTab";
+import CampaignAnalyticsTab from "@/components/analytics/campaign/CampaignAnalyticsTab";
 
 const TABS = [
   { value: "overview", label: "Overview" },
@@ -41,7 +42,7 @@ export default function AnalyticsPage() {
       </Tabs>
 
       {activeTab === "overview" && <OverviewTab timeRange={timeRange} />}
-      {activeTab === "campaign" && <ComingSoonPanel tabName="Campaign" testId="analytics-tab-campaign" />}
+      {activeTab === "campaign" && <CampaignAnalyticsTab />}
       {activeTab === "journey" && <ComingSoonPanel tabName="Journey" testId="analytics-tab-journey" />}
       {activeTab === "fastrr-identification" && <FastrrIdentificationTab />}
       {activeTab === "reports" && <ComingSoonPanel tabName="Reports" testId="analytics-tab-reports" />}
