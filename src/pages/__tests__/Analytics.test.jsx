@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import AnalyticsPage from "../Analytics";
 
@@ -86,6 +86,8 @@ jest.mock(
   { virtual: true },
 );
 
+const TABS_ORDER_FOR_TEST = ["Overview", "Campaign", "Journey", "Fastrr Identification", "Reports", "Communication Logs"];
+
 function renderAtTab(tab) {
   return render(
     <MemoryRouter initialEntries={[`/analytics/${tab}`]}>
@@ -141,5 +143,18 @@ describe("AnalyticsPage", () => {
   test("an unknown tab value falls back to rendering Overview", () => {
     renderAtTab("bogus");
     expect(screen.getByTestId("overview-tab")).toBeInTheDocument();
+  });
+
+  test("Fastrr Identification tab sits between Journey and Reports and renders its content", () => {
+    const tabNames = TABS_ORDER_FOR_TEST;
+    expect(tabNames.indexOf("Journey")).toBeLessThan(tabNames.indexOf("Fastrr Identification"));
+    expect(tabNames.indexOf("Fastrr Identification")).toBeLessThan(tabNames.indexOf("Reports"));
+
+    jest.useFakeTimers();
+    renderAtTab("overview");
+    fireEvent.mouseDown(screen.getByRole("tab", { name: "Fastrr Identification" }));
+    act(() => { jest.advanceTimersByTime(500); });
+    expect(screen.getByTestId("fastrr-identification-tab")).toBeInTheDocument();
+    jest.useRealTimers();
   });
 });

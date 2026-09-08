@@ -5,11 +5,13 @@ import TimeRangeFilter from "@/components/analytics/TimeRangeFilter";
 import ComingSoonPanel from "@/components/analytics/ComingSoonPanel";
 import OverviewTab from "@/components/analytics/overview/OverviewTab";
 import CommunicationLogsTab from "@/components/analytics/logs/CommunicationLogsTab";
+import FastrrIdentificationTab from "@/components/analytics/fastrr/FastrrIdentificationTab";
 
 const TABS = [
   { value: "overview", label: "Overview" },
   { value: "campaign", label: "Campaign" },
   { value: "journey", label: "Journey" },
+  { value: "fastrr-identification", label: "Fastrr Identification" },
   { value: "reports", label: "Reports" },
   { value: "logs", label: "Communication Logs" },
 ];
@@ -41,6 +43,7 @@ export default function AnalyticsPage() {
       {activeTab === "overview" && <OverviewTab timeRange={timeRange} />}
       {activeTab === "campaign" && <ComingSoonPanel tabName="Campaign" testId="analytics-tab-campaign" />}
       {activeTab === "journey" && <ComingSoonPanel tabName="Journey" testId="analytics-tab-journey" />}
+      {activeTab === "fastrr-identification" && <FastrrIdentificationTab />}
       {activeTab === "reports" && <ComingSoonPanel tabName="Reports" testId="analytics-tab-reports" />}
       {activeTab === "logs" && <CommunicationLogsTab />}
     </div>
