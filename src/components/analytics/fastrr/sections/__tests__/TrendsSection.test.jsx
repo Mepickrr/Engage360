@@ -55,4 +55,15 @@ describe("TrendsSection", () => {
       expect(screen.getByTestId(`${id}-delta-chip`)).toHaveTextContent("8%");
     });
   });
+
+  test("Orders & Revenue card renders cleanly with its dual-axis wiring (rightAxisKey='revenue')", () => {
+    // recharts' ResponsiveContainer is 0x0 in jsdom so it renders no SVG children here
+    // (same limitation as this repo's other chart tests) — this asserts the card and
+    // its granularity/compare controls still render correctly once a second Y axis
+    // and per-line yAxisId are wired in, i.e. the dual-axis change didn't break the card.
+    render(<TrendsSection data={FIXTURE} compare isLoading={false} />);
+    const card = screen.getByTestId("fastrr-trend-orders-revenue");
+    expect(card).toHaveTextContent("Orders & Revenue");
+    expect(screen.getByTestId("fastrr-trend-orders-revenue-delta-chip")).toHaveTextContent("8%");
+  });
 });

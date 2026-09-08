@@ -36,18 +36,31 @@ export default function ConversionRoiSection({ data, isLoading }) {
       ) : (
         <>
           <div>
-            <GroupedBarChart
-              testId="fastrr-conversion-by-channel"
-              title="Orders & Revenue by channel"
-              data={data.byChannel}
-              xKey="label"
-              series={[
-                { key: "orders", label: "Orders", color: "#94A3B8" },
-                { key: "revenue", label: "Revenue", color: "#6C3AE8" },
-              ]}
-              valueFormatter={formatCompactNumber}
-            />
-            {/* AOV and ROI are shown per-channel below, not in the chart above — mixing
+            {/* Orders (hundreds) and Revenue (hundreds of thousands+) sit on incompatible
+                linear scales — plotted together the Orders series/bars are effectively
+                invisible next to Revenue. Split into two single-series charts instead of
+                adding a dual-axis mode to GroupedBarChart (shared by 3 other sections),
+                consistent with pulling AOV/ROI out below for the same "incompatible units"
+                reason. */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <GroupedBarChart
+                testId="fastrr-conversion-orders-by-channel"
+                title="Orders by channel"
+                data={data.byChannel}
+                xKey="label"
+                series={[{ key: "orders", label: "Orders", color: "#94A3B8" }]}
+                valueFormatter={formatCompactNumber}
+              />
+              <GroupedBarChart
+                testId="fastrr-conversion-revenue-by-channel"
+                title="Revenue by channel"
+                data={data.byChannel}
+                xKey="label"
+                series={[{ key: "revenue", label: "Revenue", color: "#6C3AE8" }]}
+                valueFormatter={formatCompactNumber}
+              />
+            </div>
+            {/* AOV and ROI are shown per-channel below, not in either chart above — mixing
                 order counts/revenue with an X-multiplier and a rupee average in one
                 grouped bar would compare incompatible units. */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mt-3" data-testid="fastrr-conversion-channel-stats">

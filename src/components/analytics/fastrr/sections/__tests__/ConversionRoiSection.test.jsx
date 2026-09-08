@@ -8,7 +8,7 @@ const FIXTURE = {
     { label: "WhatsApp", orders: 900, revenue: 810000, aov: 900, roi: 10.5 },
     { label: "Email", orders: 300, revenue: 240000, aov: 800, roi: 6.2 },
   ],
-  roiFormulaNote: "ROI (WhatsApp) ≈ Delivered Count × assumed cost/msg (estimated).",
+  roiFormulaNote: "Channel costs are estimated — a flat assumed cost per message, except AI Calling which is billed per-minute.",
   attribution: { lastClick: 3200000, firstClick: 4100000 },
   topJourneys: Array.from({ length: 12 }, (_, i) => ({
     id: `journey-${i + 1}`, name: `Journey ${i + 1}`, channels: ["WhatsApp"], triggerEvent: "Cart Abandon",
@@ -51,5 +51,12 @@ describe("ConversionRoiSection", () => {
   test("shows the empty state when data.isEmpty", () => {
     render(<ConversionRoiSection data={{ ...FIXTURE, isEmpty: true }} isLoading={false} />);
     expect(screen.getByTestId("fastrr-conversion-empty")).toBeInTheDocument();
+  });
+
+  test("splits Orders and Revenue into two separate single-series charts, not one combined chart", () => {
+    render(<ConversionRoiSection data={FIXTURE} isLoading={false} />);
+    expect(screen.getByTestId("fastrr-conversion-orders-by-channel")).toHaveTextContent("Orders by channel");
+    expect(screen.getByTestId("fastrr-conversion-revenue-by-channel")).toHaveTextContent("Revenue by channel");
+    expect(screen.queryByTestId("fastrr-conversion-by-channel")).not.toBeInTheDocument();
   });
 });

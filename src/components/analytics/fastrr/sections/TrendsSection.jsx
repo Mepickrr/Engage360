@@ -13,7 +13,7 @@ function pctChip(deltaPct) {
   return { text: `${arrow} ${Math.abs(deltaPct)}%`, tone };
 }
 
-function TrendChartCard({ testId, title, series, lines, valueFormatter, compare }) {
+function TrendChartCard({ testId, title, series, lines, valueFormatter, compare, rightAxisKey }) {
   const [granularity, setGranularity] = useState("day");
   const data = series[granularity];
   const chip = pctChip(series.deltaPct);
@@ -58,11 +58,22 @@ function TrendChartCard({ testId, title, series, lines, valueFormatter, compare 
           <LineChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: -10 }}>
             <CartesianGrid stroke="#E5E7EB" strokeDasharray="2 2" />
             <XAxis dataKey="period" tick={TICK} stroke="#94A3B8" />
-            <YAxis tick={TICK} stroke="#94A3B8" tickFormatter={valueFormatter} />
+            <YAxis yAxisId="left" tick={TICK} stroke="#94A3B8" tickFormatter={valueFormatter} />
+            {rightAxisKey && (
+              <YAxis yAxisId="right" orientation="right" tick={TICK} stroke="#94A3B8" tickFormatter={valueFormatter} />
+            )}
             <Tooltip formatter={(v) => valueFormatter(v)} contentStyle={{ fontSize: 11 }} />
             {lines.length > 1 && <Legend wrapperStyle={{ fontSize: 11 }} />}
             {lines.map((key, i) => (
-              <Line key={key} type="monotone" dataKey={key} stroke={LINE_COLORS[i % LINE_COLORS.length]} strokeWidth={2.5} dot={false} />
+              <Line
+                key={key}
+                yAxisId={rightAxisKey && key === rightAxisKey ? "right" : "left"}
+                type="monotone"
+                dataKey={key}
+                stroke={LINE_COLORS[i % LINE_COLORS.length]}
+                strokeWidth={2.5}
+                dot={false}
+              />
             ))}
           </LineChart>
         </ResponsiveContainer>
@@ -104,6 +115,7 @@ export default function TrendsSection({ data, compare, isLoading }) {
           lines={["orders", "revenue"]}
           valueFormatter={formatCompactNumber}
           compare={compare}
+          rightAxisKey="revenue"
         />
         <TrendChartCard
           testId="fastrr-trend-repeat-orders"
