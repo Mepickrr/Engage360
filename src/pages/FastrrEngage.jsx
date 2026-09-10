@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Eye,
   MessageCircle,
@@ -53,7 +54,7 @@ const FEATURES = [
   },
 ];
 
-function HeroSection({ onOpenPanel }) {
+function HeroSection({ onEnable }) {
   return (
     <div className="text-center py-16 px-6 bg-primary-tint rounded-lg mb-10">
       <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-3 max-w-2xl mx-auto">
@@ -68,7 +69,7 @@ function HeroSection({ onOpenPanel }) {
           type="button"
           size="lg"
           data-testid="fastrr-engage-hero-cta"
-          onClick={onOpenPanel}
+          onClick={onEnable}
         >
           Set Up My Abandoned Cart Journey
         </Button>
@@ -146,7 +147,7 @@ function FeatureGrid() {
   );
 }
 
-function OnboardingCTA({ onOpenPanel }) {
+function OnboardingCTA({ onEnable }) {
   return (
     <div className="text-center py-12 px-6 bg-success-bg rounded-lg">
       <h2 className="text-xl font-semibold text-text-primary mb-2">
@@ -160,7 +161,7 @@ function OnboardingCTA({ onOpenPanel }) {
         type="button"
         size="lg"
         data-testid="fastrr-engage-onboarding-cta"
-        onClick={onOpenPanel}
+        onClick={onEnable}
       >
         Set Up My Abandoned Cart Journey
       </Button>
@@ -170,23 +171,30 @@ function OnboardingCTA({ onOpenPanel }) {
 
 export default function FastrrEngagePage() {
   const open = useFastrrEngagePanelStore((s) => s.open);
+  const close = useFastrrEngagePanelStore((s) => s.close);
+  const navigate = useNavigate();
 
   useEffect(() => {
     open();
   }, [open]);
 
+  function handleEnable() {
+    close();
+    navigate("/engage/account-setup");
+  }
+
   return (
     <div className="max-w-[1000px] mx-auto" data-testid="page-fastrr-engage">
-      <HeroSection onOpenPanel={open} />
+      <HeroSection onEnable={handleEnable} />
       <RevenueOpportunityCard
         variant="full"
         ctaLabel="Unlock This Revenue with Fastrr Journey"
-        onCtaClick={open}
+        onCtaClick={handleEnable}
       />
       <StatsBar />
       <TaglineBanner />
       <FeatureGrid />
-      <OnboardingCTA onOpenPanel={open} />
+      <OnboardingCTA onEnable={handleEnable} />
     </div>
   );
 }
