@@ -6,7 +6,7 @@
 
 **Architecture:** A pure-function module (`metaSignupMock.js`) handles the cross-tab data hand-off (build/write/read a payload via `localStorage`, open the popup). Two presentational "chrome" wrappers (Meta top bar vs. a nested "Facebook Login for Business" window) alternate around 8 small step components as a `MetaEmbeddedSignup` page owns a `currentStep` index. `WhatsAppProfilePreview`'s form state is lifted up into `EngageAccountSetup.jsx` so its sibling `SetupInstructions` can read it when its CTAs fire.
 
-**Tech Stack:** React 18, react-router-dom v7, shadcn/ui primitives (`Input`, `Textarea`, `Select`, `Button`), lucide-react icons, Jest + React Testing Library (via `craco test`).
+**Tech Stack:** React 19, react-router-dom v7, shadcn/ui primitives (`Input`, `Textarea`, `Select`, `Button`), lucide-react icons, Jest + React Testing Library (via `craco test`).
 
 **Spec:** `docs/superpowers/specs/2026-09-11-meta-embedded-signup-mock-design.md`
 
