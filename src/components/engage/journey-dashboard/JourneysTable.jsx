@@ -34,8 +34,6 @@ function MetricCell({ enabled }) {
 }
 
 function JourneyRow({ journey: j, enabled, onToggle, onPreview }) {
-  const [menuOpen, setMenuOpen] = React.useState(false);
-
   return (
     <TableRow data-testid={`journey-row-${j.id}`}>
       <TableCell>
@@ -119,13 +117,12 @@ function JourneyRow({ journey: j, enabled, onToggle, onPreview }) {
             <Eye className="w-3.5 h-3.5" />
           </button>
 
-          <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+          <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
                 title="More"
                 data-testid={`journey-menu-${j.id}`}
-                onClick={() => setMenuOpen((open) => !open)}
                 className="p-1.5 hover:bg-slate-100 rounded-md text-text-secondary"
               >
                 <MoreVertical className="w-3.5 h-3.5" />

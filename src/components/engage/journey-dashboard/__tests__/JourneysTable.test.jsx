@@ -1,5 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import JourneysTable from "../JourneysTable";
 import { JOURNEYS } from "../data";
 
@@ -72,10 +73,11 @@ describe.each([
   "Download Conversation Report",
   "View All Chat",
 ])("kebab menu item %s", (label) => {
-  it("calls previewToast when clicked", () => {
+  it("calls previewToast when clicked", async () => {
     previewToast.mockClear();
+    const user = userEvent.setup();
     renderTable();
-    fireEvent.click(screen.getByTestId(`journey-menu-${JOURNEYS[0].id}`));
+    await user.click(screen.getByTestId(`journey-menu-${JOURNEYS[0].id}`));
     fireEvent.click(screen.getByText(label));
     expect(previewToast).toHaveBeenCalledTimes(1);
   });
