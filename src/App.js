@@ -11,6 +11,7 @@ import CampaignBuilderPage from "@/pages/CampaignBuilderPage";
 import PushPage from "@/pages/Push";
 import FastrrEngagePage from "@/pages/FastrrEngage";
 import FastrrEngagePanel from "@/components/engage/FastrrEngagePanel";
+import EngageAccountSetupPage from "@/pages/EngageAccountSetup";
 import FlowsPage from "@/pages/Flows";
 import FlowBuilder from "@/pages/FlowBuilder";
 import FlowCreatePage from "@/pages/FlowCreate";
@@ -85,6 +86,7 @@ function App() {
             <Route path="/fastrr-engage" element={<FastrrEngagePage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
+          <Route path="/engage/account-setup" element={<EngageAccountSetupPage />} />
         </Routes>
         <ConversationPanel />
         <FastrrEngagePanel />
