@@ -29,21 +29,17 @@ export default function NumberSetupCard({
 }) {
   return (
     <div
-      className="bg-primary-tint border border-primary/20 rounded-lg p-3 mb-4"
+      className="bg-primary-tint border border-primary/20 rounded-lg p-2.5"
       data-testid="number-setup-card"
     >
-      <h4 className="text-[13px] font-semibold text-text-primary mb-2">
-        Connect Your WhatsApp Number
-      </h4>
-
-      <div className="grid grid-cols-3 gap-1 mb-3" data-testid="number-setup-mode-toggle">
+      <div className="grid grid-cols-3 gap-1 mb-2" data-testid="number-setup-mode-toggle">
         {MODES.map((m) => (
           <button
             key={m.value}
             type="button"
             data-testid={`number-setup-mode-${m.value}`}
             onClick={() => onModeChange(m.value)}
-            className={`text-[10px] font-medium px-2 py-1.5 rounded-md leading-tight transition-colors ${
+            className={`text-[10px] font-medium px-1.5 py-1 rounded-md leading-tight transition-colors ${
               mode === m.value
                 ? "bg-primary text-white"
                 : "bg-white text-text-secondary border border-border"

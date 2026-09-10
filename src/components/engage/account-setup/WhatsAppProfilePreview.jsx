@@ -46,19 +46,6 @@ export default function WhatsAppProfilePreview() {
       </div>
 
       <div className="p-4">
-        <NumberSetupCard
-          mode={numberMode}
-          onModeChange={setNumberMode}
-          numberValue={numberValue}
-          onNumberValueChange={setNumberValue}
-          virtualNumberValue={virtualNumberValue}
-          onVirtualNumberChange={setVirtualNumberValue}
-          appId={appId}
-          onAppIdChange={setAppId}
-          apiKeySecret={apiKeySecret}
-          onApiKeySecretChange={setApiKeySecret}
-        />
-
         <div className="flex flex-col items-center mb-4">
           <label
             htmlFor="engage-setup-logo-input"
@@ -97,6 +84,24 @@ export default function WhatsAppProfilePreview() {
               onChange={(e) => setBrandName(e.target.value)}
               placeholder="Your brand name"
               data-testid="field-brand-name"
+            />
+          </div>
+
+          <div>
+            <label className="text-[11px] font-medium text-text-secondary mb-1 block">
+              WhatsApp Number
+            </label>
+            <NumberSetupCard
+              mode={numberMode}
+              onModeChange={setNumberMode}
+              numberValue={numberValue}
+              onNumberValueChange={setNumberValue}
+              virtualNumberValue={virtualNumberValue}
+              onVirtualNumberChange={setVirtualNumberValue}
+              appId={appId}
+              onAppIdChange={setAppId}
+              apiKeySecret={apiKeySecret}
+              onApiKeySecretChange={setApiKeySecret}
             />
           </div>
 
