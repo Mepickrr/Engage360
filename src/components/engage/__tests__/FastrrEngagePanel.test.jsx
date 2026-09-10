@@ -19,11 +19,19 @@ describe("FastrrEngagePanel", () => {
     expect(screen.getByTestId("fastrr-engage-panel")).toBeInTheDocument();
     expect(screen.getByText("Fastrr Journey")).toBeInTheDocument();
     expect(screen.getByText("Powered by Fastrr Engage")).toBeInTheDocument();
+    expect(screen.getByTestId("fastrr-revenue-opportunity")).toBeInTheDocument();
     expect(screen.getByTestId("fastrr-engage-stat-grid")).toBeInTheDocument();
     expect(screen.getByTestId("fastrr-engage-journey-list")).toBeInTheDocument();
     expect(screen.getByText("Abandoned Product")).toBeInTheDocument();
     expect(screen.getByText("Abandoned Cart")).toBeInTheDocument();
     expect(screen.getByText("Abandoned Checkout")).toBeInTheDocument();
+  });
+
+  it("revenue opportunity card's CTA is a clickable no-op that doesn't close the panel", () => {
+    useFastrrEngagePanelStore.getState().open();
+    render(<FastrrEngagePanel />);
+    fireEvent.click(screen.getByTestId("fastrr-revenue-opportunity-cta"));
+    expect(useFastrrEngagePanelStore.getState().isOpen).toBe(true);
   });
 
   it("closing via the Sheet's close control updates the store", () => {

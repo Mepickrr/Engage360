@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useFastrrEngagePanelStore } from "@/store/fastrrEngagePanelStore";
+import RevenueOpportunityCard from "./RevenueOpportunityCard";
 
 const STATS = [
   // TODO: replace with real benchmark
@@ -176,6 +177,12 @@ export default function FastrrEngagePanel() {
 
         <div className="flex-1 overflow-y-auto">
           <HeroSection />
+
+          <RevenueOpportunityCard
+            variant="compact"
+            ctaLabel="See How This Gets Recovered"
+            onCtaClick={() => {}} // TODO: wire up once enablement flow is defined
+          />
 
           <h4 className="text-sm font-semibold text-text-primary mb-1">
             WhatsApp Marketing Journeys

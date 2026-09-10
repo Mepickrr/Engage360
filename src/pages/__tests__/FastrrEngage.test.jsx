@@ -17,8 +17,9 @@ describe("FastrrEngagePage", () => {
     render(<FastrrEngagePage />);
     expect(screen.getByTestId("page-fastrr-engage")).toBeInTheDocument();
     expect(
-      screen.getByText("Turn Every Anonymous Visitor Into a Paying Customer")
+      screen.getByText("Convert Every Anonymous Visitor Into a Paying Customer")
     ).toBeInTheDocument();
+    expect(screen.getByTestId("fastrr-revenue-opportunity")).toBeInTheDocument();
     expect(screen.getByTestId("fastrr-engage-stats-bar")).toBeInTheDocument();
     expect(screen.getByText("20%+")).toBeInTheDocument();
     expect(screen.getByText("25%+")).toBeInTheDocument();
@@ -52,5 +53,12 @@ describe("FastrrEngagePage", () => {
     useFastrrEngagePanelStore.getState().close();
     fireEvent.click(screen.getByTestId("fastrr-engage-hero-secondary-cta"));
     expect(useFastrrEngagePanelStore.getState().isOpen).toBe(false);
+  });
+
+  it("clicking the revenue opportunity card's CTA opens the panel", () => {
+    render(<FastrrEngagePage />);
+    useFastrrEngagePanelStore.getState().close();
+    fireEvent.click(screen.getByTestId("fastrr-revenue-opportunity-cta"));
+    expect(useFastrrEngagePanelStore.getState().isOpen).toBe(true);
   });
 });

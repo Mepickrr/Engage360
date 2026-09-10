@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useFastrrEngagePanelStore } from "@/store/fastrrEngagePanelStore";
+import RevenueOpportunityCard from "@/components/engage/RevenueOpportunityCard";
 
 // Benchmarks below are directionally real, pending final marketing/legal
 // sign-off before this page goes live externally.
@@ -177,6 +178,11 @@ export default function FastrrEngagePage() {
   return (
     <div className="max-w-[1000px] mx-auto" data-testid="page-fastrr-engage">
       <HeroSection onOpenPanel={open} />
+      <RevenueOpportunityCard
+        variant="full"
+        ctaLabel="Unlock This Revenue with Fastrr Journey"
+        onCtaClick={open}
+      />
       <StatsBar />
       <TaglineBanner />
       <FeatureGrid />
