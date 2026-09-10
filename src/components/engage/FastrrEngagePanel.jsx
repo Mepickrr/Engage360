@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Eye, ShoppingCart, AlertTriangle, CheckCircle2 } from "lucide-react";
 import {
   Sheet,
@@ -43,7 +44,7 @@ const WHY_POINTS = [
   "Ease of onboarding: live in under 15 minutes",
 ];
 
-function HeroSection() {
+function HeroSection({ onEnable }) {
   return (
     <div
       className="rounded-lg p-5 mb-6 text-white"
@@ -74,7 +75,7 @@ function HeroSection() {
           size="sm"
           className="bg-white text-primary hover:bg-white/90"
           data-testid="fastrr-engage-hero-primary-cta"
-          onClick={() => {}} // TODO: wire up once enablement flow is defined
+          onClick={onEnable}
         >
           Enable Fastrr Journey
         </Button>
@@ -160,6 +161,12 @@ function WhySection() {
 export default function FastrrEngagePanel() {
   const isOpen = useFastrrEngagePanelStore((s) => s.isOpen);
   const close = useFastrrEngagePanelStore((s) => s.close);
+  const navigate = useNavigate();
+
+  function handleEnable() {
+    close();
+    navigate("/engage/account-setup");
+  }
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && close()}>
@@ -176,7 +183,7 @@ export default function FastrrEngagePanel() {
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto">
-          <HeroSection />
+          <HeroSection onEnable={handleEnable} />
 
           <RevenueOpportunityCard
             variant="compact"
@@ -201,7 +208,7 @@ export default function FastrrEngagePanel() {
           type="button"
           className="w-full"
           data-testid="fastrr-engage-footer-cta"
-          onClick={() => {}} // TODO: wire up once enablement flow is defined
+          onClick={handleEnable}
         >
           Enable Fastrr Journey
         </Button>

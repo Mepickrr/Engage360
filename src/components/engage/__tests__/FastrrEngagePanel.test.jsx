@@ -3,6 +3,11 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import FastrrEngagePanel from "../FastrrEngagePanel";
 import { useFastrrEngagePanelStore } from "@/store/fastrrEngagePanelStore";
 
+const mockNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  useNavigate: () => mockNavigate,
+}), { virtual: true });
+
 describe("FastrrEngagePanel", () => {
   beforeEach(() => {
     useFastrrEngagePanelStore.getState().close();
@@ -44,9 +49,23 @@ describe("FastrrEngagePanel", () => {
   it("CTA buttons render and are clickable no-ops", () => {
     useFastrrEngagePanelStore.getState().open();
     render(<FastrrEngagePanel />);
-    fireEvent.click(screen.getByTestId("fastrr-engage-hero-primary-cta"));
     fireEvent.click(screen.getByTestId("fastrr-engage-hero-secondary-cta"));
-    fireEvent.click(screen.getByTestId("fastrr-engage-footer-cta"));
     expect(useFastrrEngagePanelStore.getState().isOpen).toBe(true);
+  });
+
+  it("clicking the hero primary CTA closes the panel and navigates to account setup", () => {
+    useFastrrEngagePanelStore.getState().open();
+    render(<FastrrEngagePanel />);
+    fireEvent.click(screen.getByTestId("fastrr-engage-hero-primary-cta"));
+    expect(useFastrrEngagePanelStore.getState().isOpen).toBe(false);
+    expect(mockNavigate).toHaveBeenCalledWith("/engage/account-setup");
+  });
+
+  it("clicking the footer CTA closes the panel and navigates to account setup", () => {
+    useFastrrEngagePanelStore.getState().open();
+    render(<FastrrEngagePanel />);
+    fireEvent.click(screen.getByTestId("fastrr-engage-footer-cta"));
+    expect(useFastrrEngagePanelStore.getState().isOpen).toBe(false);
+    expect(mockNavigate).toHaveBeenCalledWith("/engage/account-setup");
   });
 });

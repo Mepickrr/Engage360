@@ -35,7 +35,7 @@ export default function PhoneMockup({ children }) {
       />
       <div
         className="relative bg-slate-100 rounded-[3rem] border-[8px] border-slate-800 shadow-2xl overflow-hidden flex flex-col"
-        style={{ width: FRAME_WIDTH, height: FRAME_HEIGHT }}
+        style={{ width: FRAME_WIDTH, height: FRAME_HEIGHT, maxHeight: "calc(100vh - 5rem)" }}
       >
         <StatusBar />
         <div className="flex-1 overflow-y-auto bg-white" data-testid="phone-mockup-screen">

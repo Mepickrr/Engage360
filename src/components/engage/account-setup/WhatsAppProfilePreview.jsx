@@ -88,10 +88,11 @@ export default function WhatsAppProfilePreview() {
 
         <div className="flex flex-col gap-3">
           <div>
-            <label className="text-[11px] font-medium text-text-secondary mb-1 block">
+            <label htmlFor="field-brand-name-input" className="text-[11px] font-medium text-text-secondary mb-1 block">
               Brand Name
             </label>
             <Input
+              id="field-brand-name-input"
               value={brandName}
               onChange={(e) => setBrandName(e.target.value)}
               placeholder="Your brand name"
@@ -100,10 +101,11 @@ export default function WhatsAppProfilePreview() {
           </div>
 
           <div>
-            <label className="text-[11px] font-medium text-text-secondary mb-1 block">
+            <label htmlFor="field-description-input" className="text-[11px] font-medium text-text-secondary mb-1 block">
               Company Description
             </label>
             <Textarea
+              id="field-description-input"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What does your business do?"
@@ -112,10 +114,11 @@ export default function WhatsAppProfilePreview() {
           </div>
 
           <div>
-            <label className="text-[11px] font-medium text-text-secondary mb-1 block">
+            <label htmlFor="field-website-input" className="text-[11px] font-medium text-text-secondary mb-1 block">
               Website URL
             </label>
             <Input
+              id="field-website-input"
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
               placeholder="https://yourstore.com"
@@ -124,11 +127,11 @@ export default function WhatsAppProfilePreview() {
           </div>
 
           <div>
-            <label className="text-[11px] font-medium text-text-secondary mb-1 block">
+            <label htmlFor="field-category-input" className="text-[11px] font-medium text-text-secondary mb-1 block">
               Business Category
             </label>
             <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger data-testid="field-category">
+              <SelectTrigger id="field-category-input" data-testid="field-category">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -142,10 +145,11 @@ export default function WhatsAppProfilePreview() {
           </div>
 
           <div>
-            <label className="text-[11px] font-medium text-text-secondary mb-1 block">
+            <label htmlFor="field-email-input" className="text-[11px] font-medium text-text-secondary mb-1 block">
               Contact Email
             </label>
             <Input
+              id="field-email-input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -155,10 +159,11 @@ export default function WhatsAppProfilePreview() {
           </div>
 
           <div>
-            <label className="text-[11px] font-medium text-text-secondary mb-1 block">
+            <label htmlFor="field-support-number-input" className="text-[11px] font-medium text-text-secondary mb-1 block">
               Support Number
             </label>
             <Input
+              id="field-support-number-input"
               value={supportNumber}
               onChange={(e) => setSupportNumber(e.target.value)}
               placeholder="+91 98765 43210"
@@ -167,10 +172,11 @@ export default function WhatsAppProfilePreview() {
           </div>
 
           <div>
-            <label className="text-[11px] font-medium text-text-secondary mb-1 block">
+            <label htmlFor="field-address-input" className="text-[11px] font-medium text-text-secondary mb-1 block">
               Office Address
             </label>
             <Textarea
+              id="field-address-input"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               placeholder="Street, city, state, PIN"
