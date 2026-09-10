@@ -12,6 +12,7 @@ import PushPage from "@/pages/Push";
 import FastrrEngagePage from "@/pages/FastrrEngage";
 import FastrrEngagePanel from "@/components/engage/FastrrEngagePanel";
 import EngageAccountSetupPage from "@/pages/EngageAccountSetup";
+import MetaEmbeddedSignup from "@/pages/MetaEmbeddedSignup";
 import FlowsPage from "@/pages/Flows";
 import FlowBuilder from "@/pages/FlowBuilder";
 import FlowCreatePage from "@/pages/FlowCreate";
@@ -87,6 +88,7 @@ function App() {
             <Route path="*" element={<NotFoundPage />} />
           </Route>
           <Route path="/engage/account-setup" element={<EngageAccountSetupPage />} />
+          <Route path="/engage/meta-embedded-signup" element={<MetaEmbeddedSignup />} />
         </Routes>
         <ConversationPanel />
         <FastrrEngagePanel />

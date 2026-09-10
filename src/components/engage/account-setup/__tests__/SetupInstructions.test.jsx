@@ -4,7 +4,7 @@ import SetupInstructions from "../SetupInstructions";
 
 describe("SetupInstructions", () => {
   it("renders the heading, both tips, all 3 steps, and both CTAs", () => {
-    render(<SetupInstructions />);
+    render(<SetupInstructions onStart={() => {}} />);
     expect(screen.getByText("Let's Get Your WhatsApp Business Ready")).toBeInTheDocument();
     expect(screen.getByTestId("setup-tips").children).toHaveLength(2);
     expect(screen.getByTestId("setup-steps").children).toHaveLength(3);
@@ -15,9 +15,11 @@ describe("SetupInstructions", () => {
     expect(screen.getByTestId("setup-cta-ai")).toBeInTheDocument();
   });
 
-  it("both CTAs are clickable without throwing (no-ops by design)", () => {
-    render(<SetupInstructions />);
+  it("both CTAs call the onStart prop when clicked", () => {
+    const onStart = jest.fn();
+    render(<SetupInstructions onStart={onStart} />);
     fireEvent.click(screen.getByTestId("setup-cta-manual"));
     fireEvent.click(screen.getByTestId("setup-cta-ai"));
+    expect(onStart).toHaveBeenCalledTimes(2);
   });
 });

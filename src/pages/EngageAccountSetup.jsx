@@ -1,10 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import SetupInstructions from "@/components/engage/account-setup/SetupInstructions";
 import PhoneMockup from "@/components/engage/account-setup/PhoneMockup";
 import WhatsAppProfilePreview from "@/components/engage/account-setup/WhatsAppProfilePreview";
+import { DEFAULT_BUSINESS_CATEGORY } from "@/components/engage/account-setup/data";
+import { buildSignupPayload, writeSignupPayload, openSignupPopup } from "@/lib/metaSignupMock";
 
 export default function EngageAccountSetupPage() {
+  const [numberMode, setNumberMode] = useState("has_number");
+  const [numberValue, setNumberValue] = useState("");
+  const [virtualNumberValue, setVirtualNumberValue] = useState("");
+  const [appId, setAppId] = useState("");
+  const [apiKeySecret, setApiKeySecret] = useState("");
+
+  const [logoUrl, setLogoUrl] = useState(null);
+  const [brandName, setBrandName] = useState("");
+  const [description, setDescription] = useState("");
+  const [website, setWebsite] = useState("");
+  const [category, setCategory] = useState(DEFAULT_BUSINESS_CATEGORY);
+  const [email, setEmail] = useState("");
+  const [supportNumber, setSupportNumber] = useState("");
+  const [address, setAddress] = useState("");
+
+  function handleLogoFileChange(e) {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      setLogoUrl(URL.createObjectURL(file));
+    }
+  }
+
+  function handleStartSignup() {
+    const payload = buildSignupPayload({
+      brandName,
+      category,
+      website,
+      email,
+      numberMode,
+      numberValue,
+      virtualNumberValue,
+    });
+    writeSignupPayload(payload);
+    openSignupPopup();
+  }
+
   return (
     <div className="min-h-screen bg-app-bg" data-testid="page-engage-account-setup">
       <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-surface">
@@ -20,11 +58,38 @@ export default function EngageAccountSetupPage() {
 
       <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 px-6 py-10">
         <div>
-          <SetupInstructions />
+          <SetupInstructions onStart={handleStartSignup} />
         </div>
         <div className="flex justify-center lg:sticky lg:top-10 lg:self-start">
           <PhoneMockup>
-            <WhatsAppProfilePreview />
+            <WhatsAppProfilePreview
+              numberMode={numberMode}
+              onNumberModeChange={setNumberMode}
+              numberValue={numberValue}
+              onNumberValueChange={setNumberValue}
+              virtualNumberValue={virtualNumberValue}
+              onVirtualNumberChange={setVirtualNumberValue}
+              appId={appId}
+              onAppIdChange={setAppId}
+              apiKeySecret={apiKeySecret}
+              onApiKeySecretChange={setApiKeySecret}
+              logoUrl={logoUrl}
+              onLogoFileChange={handleLogoFileChange}
+              brandName={brandName}
+              onBrandNameChange={setBrandName}
+              description={description}
+              onDescriptionChange={setDescription}
+              website={website}
+              onWebsiteChange={setWebsite}
+              category={category}
+              onCategoryChange={setCategory}
+              email={email}
+              onEmailChange={setEmail}
+              supportNumber={supportNumber}
+              onSupportNumberChange={setSupportNumber}
+              address={address}
+              onAddressChange={setAddress}
+            />
           </PhoneMockup>
         </div>
       </div>

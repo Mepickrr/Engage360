@@ -28,7 +28,7 @@ const STEPS = [
   },
 ];
 
-export default function SetupInstructions() {
+export default function SetupInstructions({ onStart }) {
   return (
     <div data-testid="setup-instructions">
       <h1 className="text-2xl font-bold text-text-primary mb-1">
@@ -69,7 +69,7 @@ export default function SetupInstructions() {
           type="button"
           size="lg"
           data-testid="setup-cta-manual"
-          onClick={() => {}} // TODO: wire up once enablement flow is defined
+          onClick={onStart}
         >
           Start Meta Embedded Signup
         </Button>
@@ -78,7 +78,7 @@ export default function SetupInstructions() {
           size="lg"
           variant="outline"
           data-testid="setup-cta-ai"
-          onClick={() => {}} // TODO: wire up once enablement flow is defined
+          onClick={onStart}
         >
           Set Up With AI Instead
         </Button>

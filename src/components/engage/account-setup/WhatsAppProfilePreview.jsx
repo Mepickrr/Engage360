@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Camera } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,31 +10,36 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import NumberSetupCard from "./NumberSetupCard";
-import { BUSINESS_CATEGORIES, DEFAULT_BUSINESS_CATEGORY } from "./data";
+import { BUSINESS_CATEGORIES } from "./data";
 
-export default function WhatsAppProfilePreview() {
-  const [numberMode, setNumberMode] = useState("has_number");
-  const [numberValue, setNumberValue] = useState("");
-  const [virtualNumberValue, setVirtualNumberValue] = useState("");
-  const [appId, setAppId] = useState("");
-  const [apiKeySecret, setApiKeySecret] = useState("");
-
-  const [logoUrl, setLogoUrl] = useState(null);
-  const [brandName, setBrandName] = useState("");
-  const [description, setDescription] = useState("");
-  const [website, setWebsite] = useState("");
-  const [category, setCategory] = useState(DEFAULT_BUSINESS_CATEGORY);
-  const [email, setEmail] = useState("");
-  const [supportNumber, setSupportNumber] = useState("");
-  const [address, setAddress] = useState("");
-
-  function handleLogoChange(e) {
-    const file = e.target.files && e.target.files[0];
-    if (file) {
-      setLogoUrl(URL.createObjectURL(file));
-    }
-  }
-
+export default function WhatsAppProfilePreview({
+  numberMode,
+  onNumberModeChange,
+  numberValue,
+  onNumberValueChange,
+  virtualNumberValue,
+  onVirtualNumberChange,
+  appId,
+  onAppIdChange,
+  apiKeySecret,
+  onApiKeySecretChange,
+  logoUrl,
+  onLogoFileChange,
+  brandName,
+  onBrandNameChange,
+  description,
+  onDescriptionChange,
+  website,
+  onWebsiteChange,
+  category,
+  onCategoryChange,
+  email,
+  onEmailChange,
+  supportNumber,
+  onSupportNumberChange,
+  address,
+  onAddressChange,
+}) {
   return (
     <div data-testid="whatsapp-profile-preview">
       <div
@@ -69,7 +74,7 @@ export default function WhatsAppProfilePreview() {
             accept="image/*"
             className="hidden"
             data-testid="logo-file-input"
-            onChange={handleLogoChange}
+            onChange={onLogoFileChange}
           />
         </div>
 
@@ -81,7 +86,7 @@ export default function WhatsAppProfilePreview() {
             <Input
               id="field-brand-name-input"
               value={brandName}
-              onChange={(e) => setBrandName(e.target.value)}
+              onChange={(e) => onBrandNameChange(e.target.value)}
               placeholder="Your brand name"
               data-testid="field-brand-name"
             />
@@ -93,15 +98,15 @@ export default function WhatsAppProfilePreview() {
             </label>
             <NumberSetupCard
               mode={numberMode}
-              onModeChange={setNumberMode}
+              onModeChange={onNumberModeChange}
               numberValue={numberValue}
-              onNumberValueChange={setNumberValue}
+              onNumberValueChange={onNumberValueChange}
               virtualNumberValue={virtualNumberValue}
-              onVirtualNumberChange={setVirtualNumberValue}
+              onVirtualNumberChange={onVirtualNumberChange}
               appId={appId}
-              onAppIdChange={setAppId}
+              onAppIdChange={onAppIdChange}
               apiKeySecret={apiKeySecret}
-              onApiKeySecretChange={setApiKeySecret}
+              onApiKeySecretChange={onApiKeySecretChange}
             />
           </div>
 
@@ -112,7 +117,7 @@ export default function WhatsAppProfilePreview() {
             <Textarea
               id="field-description-input"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => onDescriptionChange(e.target.value)}
               placeholder="What does your business do?"
               data-testid="field-description"
             />
@@ -125,7 +130,7 @@ export default function WhatsAppProfilePreview() {
             <Input
               id="field-website-input"
               value={website}
-              onChange={(e) => setWebsite(e.target.value)}
+              onChange={(e) => onWebsiteChange(e.target.value)}
               placeholder="https://yourstore.com"
               data-testid="field-website"
             />
@@ -135,7 +140,7 @@ export default function WhatsAppProfilePreview() {
             <label htmlFor="field-category-input" className="text-[11px] font-medium text-text-secondary mb-1 block">
               Business Category
             </label>
-            <Select value={category} onValueChange={setCategory}>
+            <Select value={category} onValueChange={onCategoryChange}>
               <SelectTrigger id="field-category-input" data-testid="field-category">
                 <SelectValue />
               </SelectTrigger>
@@ -157,7 +162,7 @@ export default function WhatsAppProfilePreview() {
               id="field-email-input"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => onEmailChange(e.target.value)}
               placeholder="hello@yourstore.com"
               data-testid="field-email"
             />
@@ -170,7 +175,7 @@ export default function WhatsAppProfilePreview() {
             <Input
               id="field-support-number-input"
               value={supportNumber}
-              onChange={(e) => setSupportNumber(e.target.value)}
+              onChange={(e) => onSupportNumberChange(e.target.value)}
               placeholder="+91 98765 43210"
               data-testid="field-support-number"
             />
@@ -183,7 +188,7 @@ export default function WhatsAppProfilePreview() {
             <Textarea
               id="field-address-input"
               value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              onChange={(e) => onAddressChange(e.target.value)}
               placeholder="Street, city, state, PIN"
               data-testid="field-address"
             />
