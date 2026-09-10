@@ -65,7 +65,7 @@ export default function MetaEmbeddedSignup() {
       Chrome = FbLoginWindowChrome;
       content = (
         <div className="flex h-full">
-          <StepRail activeIndex={0} count={4} />
+          <StepRail activeIndex={0} count={2} />
           <div className="flex-1">
             <SelectAssetsStep onBack={goBack} onNext={goNext} />
           </div>
@@ -76,7 +76,7 @@ export default function MetaEmbeddedSignup() {
       Chrome = FbLoginWindowChrome;
       content = (
         <div className="flex h-full">
-          <StepRail activeIndex={1} count={4} />
+          <StepRail activeIndex={1} count={2} />
           <div className="flex-1">
             <BusinessInfoStep
               brandName={payload.brandName}
@@ -105,10 +105,10 @@ export default function MetaEmbeddedSignup() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-200 flex items-center justify-center p-4" data-testid="page-meta-embedded-signup">
+    <div className="h-screen bg-slate-200 flex items-center justify-center" data-testid="page-meta-embedded-signup">
       <div
-        className="bg-white rounded-lg shadow-2xl overflow-hidden w-full"
-        style={{ maxWidth: 560, height: 740 }}
+        className="bg-white rounded-lg shadow-2xl overflow-hidden w-full h-full relative"
+        style={{ maxWidth: 560 }}
         data-testid="meta-signup-card"
       >
         <Chrome>{content}</Chrome>

@@ -3,7 +3,14 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import EngageAccountSetupPage from "../EngageAccountSetup";
 import { STORAGE_KEY } from "@/lib/metaSignupMock";
+import { toast } from "sonner";
 
+jest.mock("sonner", () => ({ toast: { success: jest.fn(), error: jest.fn() } }));
+
+// react-router-dom cannot be resolved by Jest in this project (its package.json
+// "exports" map is ESM-only under Jest's default "node" condition). This page
+// only needs MemoryRouter as a passthrough wrapper and Link rendered as a
+// plain anchor — see e.g. BuilderTopbar.test.jsx for the same workaround.
 jest.mock(
   "react-router-dom",
   () => ({
@@ -59,6 +66,33 @@ describe("EngageAccountSetupPage", () => {
       "metaEmbeddedSignup",
       "width=560,height=780"
     );
+
+    window.localStorage.clear();
+    openSpy.mockClear();
+    fireEvent.click(screen.getByTestId("setup-cta-ai"));
+
+    const storedAgain = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
+    expect(storedAgain.brandName).toBe("Avimee");
+    expect(storedAgain.phoneNumber).toBe("+91 98765 43210");
+    expect(openSpy).toHaveBeenCalledWith(
+      "/engage/meta-embedded-signup",
+      "metaEmbeddedSignup",
+      "width=560,height=780"
+    );
+
     openSpy.mockRestore();
+  });
+
+  it("shows an error toast when the popup is blocked", () => {
+    jest.spyOn(window, "open").mockImplementation(() => null);
+    render(
+      <MemoryRouter>
+        <EngageAccountSetupPage />
+      </MemoryRouter>
+    );
+    fireEvent.click(screen.getByTestId("setup-cta-manual"));
+    expect(toast.error).toHaveBeenCalledWith(
+      "Your browser blocked the signup popup. Please allow popups for this site and try again."
+    );
   });
 });

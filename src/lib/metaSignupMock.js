@@ -43,6 +43,11 @@ export function writeSignupPayload(payload) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
 }
 
+// Note: this payload persists across sessions until overwritten by a new
+// handleStartSignup() call — opening this URL directly without going
+// through the Account Setup CTA will read whatever was last written
+// (or DEFAULT_SIGNUP_PAYLOAD if nothing ever was). Fine for this prototype;
+// worth revisiting if this flow gets a real backend.
 export function readSignupPayload() {
   const raw = window.localStorage.getItem(STORAGE_KEY);
   if (!raw) return DEFAULT_SIGNUP_PAYLOAD;
@@ -54,7 +59,7 @@ export function readSignupPayload() {
 }
 
 export function openSignupPopup() {
-  window.open(
+  return window.open(
     "/engage/meta-embedded-signup",
     "metaEmbeddedSignup",
     "width=560,height=780"

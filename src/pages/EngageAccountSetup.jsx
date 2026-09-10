@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import SetupInstructions from "@/components/engage/account-setup/SetupInstructions";
 import PhoneMockup from "@/components/engage/account-setup/PhoneMockup";
 import WhatsAppProfilePreview from "@/components/engage/account-setup/WhatsAppProfilePreview";
@@ -40,7 +41,10 @@ export default function EngageAccountSetupPage() {
       virtualNumberValue,
     });
     writeSignupPayload(payload);
-    openSignupPopup();
+    const popup = openSignupPopup();
+    if (!popup) {
+      toast.error("Your browser blocked the signup popup. Please allow popups for this site and try again.");
+    }
   }
 
   return (

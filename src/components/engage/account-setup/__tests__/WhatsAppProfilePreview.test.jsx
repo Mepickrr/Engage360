@@ -101,4 +101,11 @@ describe("WhatsAppProfilePreview", () => {
     fireEvent.click(screen.getByTestId("number-setup-mode-has_app"));
     expect(props.onNumberModeChange).toHaveBeenCalledWith("has_app");
   });
+
+  it("selecting a different business category calls onCategoryChange with the chosen value", () => {
+    const props = renderPreview();
+    fireEvent.click(screen.getByTestId("field-category"));
+    fireEvent.click(screen.getByText("Education"));
+    expect(props.onCategoryChange).toHaveBeenCalledWith("Education");
+  });
 });

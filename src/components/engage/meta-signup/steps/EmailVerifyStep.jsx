@@ -15,7 +15,7 @@ function maskEmail(email) {
 
 export default function EmailVerifyStep({ email, onNext }) {
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4" data-testid="email-verify-step">
+    <div className="absolute inset-0 bg-black/40 flex items-center justify-center p-4" data-testid="email-verify-step">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-sm p-6">
         <p className="text-[11px] text-text-muted mb-1">Facebook</p>
         <h2 className="text-lg font-bold text-text-primary mb-2">Enter confirmation code</h2>

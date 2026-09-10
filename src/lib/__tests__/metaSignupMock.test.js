@@ -95,14 +95,16 @@ describe("writeSignupPayload / readSignupPayload", () => {
 });
 
 describe("openSignupPopup", () => {
-  it("opens the signup route as a named popup with fixed dimensions", () => {
-    const openSpy = jest.spyOn(window, "open").mockImplementation(() => {});
-    openSignupPopup();
+  it("opens the signup route as a named popup with fixed dimensions and returns the opened window", () => {
+    const fakeWindow = {};
+    const openSpy = jest.spyOn(window, "open").mockImplementation(() => fakeWindow);
+    const result = openSignupPopup();
     expect(openSpy).toHaveBeenCalledWith(
       "/engage/meta-embedded-signup",
       "metaEmbeddedSignup",
       "width=560,height=780"
     );
+    expect(result).toBe(fakeWindow);
     openSpy.mockRestore();
   });
 });
