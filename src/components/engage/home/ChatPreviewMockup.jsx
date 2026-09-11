@@ -13,11 +13,11 @@ export default function ChatPreviewMockup() {
         <span className="w-2 h-2 rounded-full bg-white" />
         <span className="text-sm font-semibold">Fastrr Journey</span>
       </div>
-      <div className="flex flex-col gap-2 p-4 bg-app-bg">
-        <div className="bg-white/90 text-slate-900 text-sm rounded-lg rounded-bl-none px-3 py-2 self-start shadow-sm max-w-[85%]">
+      <div className="flex flex-col gap-2 p-4 bg-slate-100">
+        <div className="bg-white text-slate-900 text-sm rounded-lg rounded-bl-none px-3 py-2 self-start shadow-sm max-w-[85%]">
           Cart reminder sent
         </div>
-        <div className="bg-white/60 text-slate-900 text-sm rounded-lg rounded-br-none px-3 py-2 self-end shadow-sm max-w-[85%]">
+        <div className="bg-primary-tint text-slate-900 text-sm rounded-lg rounded-br-none px-3 py-2 self-end shadow-sm max-w-[85%]">
           "Yes, still interested!"
         </div>
         <div className="bg-white text-slate-900 text-sm rounded-lg rounded-bl-none px-3 py-2 self-start shadow-sm font-medium max-w-[85%]">
