@@ -5,13 +5,16 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import WhatsAppBubblePreview from "@/components/flows/builder/nodes/WhatsAppNode/WhatsAppBubblePreview";
 import { previewToast } from "@/components/common/PreviewHeader";
-import { WAIT_LABEL } from "./data";
+import { WAIT_LABEL, RATE_CARD } from "./data";
+
+const MARKETING_RATE = RATE_CARD.enabled.find((c) => c.id === "wa-marketing").price;
 
 export default function JourneyPreviewModal({ journey, onClose, onActivate }) {
   const open = !!journey;
@@ -26,6 +29,9 @@ export default function JourneyPreviewModal({ journey, onClose, onActivate }) {
               <Badge variant="outline" className="w-fit">
                 {journey.audience}
               </Badge>
+              <DialogDescription data-testid="journey-preview-description">
+                {journey.tooltip}
+              </DialogDescription>
             </DialogHeader>
 
             <div className="flex items-center gap-3 py-6 overflow-x-auto">
@@ -83,6 +89,13 @@ export default function JourneyPreviewModal({ journey, onClose, onActivate }) {
               <div className="w-[240px] flex-shrink-0" data-testid="preview-whatsapp-block">
                 <WhatsAppBubblePreview draft={journey.waDraft} />
               </div>
+            </div>
+
+            <div
+              className="text-xs text-text-secondary mb-2"
+              data-testid="journey-preview-cost"
+            >
+              {`1 WhatsApp Marketing: ${MARKETING_RATE}`}
             </div>
 
             <DialogFooter>

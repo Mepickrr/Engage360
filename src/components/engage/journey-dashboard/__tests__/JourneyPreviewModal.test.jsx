@@ -23,6 +23,20 @@ describe("JourneyPreviewModal", () => {
     expect(screen.getByTestId("preview-whatsapp-block")).toHaveTextContent("you left");
   });
 
+  it("renders the journey's description below the title and audience badge", () => {
+    const journey = JOURNEYS.find((j) => j.id === "abandoned-cart-known");
+    render(<JourneyPreviewModal journey={journey} onClose={() => {}} onActivate={() => {}} />);
+    expect(screen.getByTestId("journey-preview-description")).toHaveTextContent(journey.tooltip);
+  });
+
+  it("shows the WhatsApp Marketing rate in the footer", () => {
+    const journey = JOURNEYS[0];
+    render(<JourneyPreviewModal journey={journey} onClose={() => {}} onActivate={() => {}} />);
+    expect(screen.getByTestId("journey-preview-cost")).toHaveTextContent(
+      "1 WhatsApp Marketing: ₹1.50 / message"
+    );
+  });
+
   it("clicking 'Edit on Engage' calls previewToast", () => {
     const journey = JOURNEYS[0];
     render(<JourneyPreviewModal journey={journey} onClose={() => {}} onActivate={() => {}} />);
