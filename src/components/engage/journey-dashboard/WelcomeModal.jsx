@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { PartyPopper, CheckCircle2, Lock, ChevronDown, X } from "lucide-react";
+import { PartyPopper, CheckCircle2, Lock, ChevronDown, X, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -12,16 +12,34 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { previewToast } from "@/components/common/PreviewHeader";
 import { useJourneyWalletStore } from "@/store/journeyWalletStore";
-import { RATE_CARD, WALLET_TOPUP } from "./data";
+import { computeRevenueOpportunity } from "@/components/engage/RevenueOpportunityCard";
+import { RATE_CARD, WALLET_TOPUP, COUPONS } from "./data";
 
 function formatINR(amount) {
   return `₹${amount.toLocaleString("en-IN")}`;
 }
 
+function computeAiSuggestion() {
+  const { abandonedCheckoutPerDay } = computeRevenueOpportunity();
+  const marketingRate = RATE_CARD.enabled.find((c) => c.id === "wa-marketing").pricePerMessage;
+  const dailyCost = abandonedCheckoutPerDay * marketingRate;
+  const suggestedAmount = dailyCost * WALLET_TOPUP.aiSuggestRunwayDays;
+  return { abandonedCheckoutPerDay, dailyCost, suggestedAmount };
+}
+
 export default function WelcomeModal({ open, onClose }) {
   const [expanded, setExpanded] = useState(false);
   const [amount, setAmount] = useState(WALLET_TOPUP.defaultAmount);
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponError, setCouponError] = useState(null);
   const credit = useJourneyWalletStore((s) => s.credit);
+
+  const aiSuggestion = computeAiSuggestion();
+  const bonusAmount = appliedCoupon
+    ? Math.round((amount * appliedCoupon.bonusPercent) / 100)
+    : 0;
+  const totalCredit = amount + bonusAmount;
 
   function handleIncrement(inc) {
     setAmount((a) => a + inc);
@@ -32,11 +50,33 @@ export default function WelcomeModal({ open, onClose }) {
     setAmount(Number.isFinite(next) && next >= 0 ? next : 0);
   }
 
+  function handleUseAiSuggestion() {
+    setAmount(aiSuggestion.suggestedAmount);
+  }
+
+  function handleApplyCoupon() {
+    const code = couponInput.trim().toUpperCase();
+    const coupon = COUPONS[code];
+    if (coupon) {
+      setAppliedCoupon({ code, ...coupon });
+      setCouponError(null);
+    } else {
+      setAppliedCoupon(null);
+      setCouponError("Invalid code");
+    }
+  }
+
+  function handleRemoveCoupon() {
+    setAppliedCoupon(null);
+    setCouponInput("");
+    setCouponError(null);
+  }
+
   function handleAddToWallet() {
     if (amount <= 0) return;
-    credit(amount);
+    credit(totalCredit);
     onClose();
-    toast.success(`${formatINR(amount)} added to your wallet`);
+    toast.success(`${formatINR(totalCredit)} added to your wallet`);
   }
 
   return (
@@ -119,6 +159,33 @@ export default function WelcomeModal({ open, onClose }) {
             </div>
           </div>
 
+          <div
+            className="rounded-md bg-surface border border-primary/30 p-3 mb-3"
+            data-testid="welcome-ai-suggestion"
+          >
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-primary mb-1">
+              <Sparkles className="w-3.5 h-3.5" />
+              AI Suggested for Your Store
+            </div>
+            <p className="text-xs text-text-secondary mb-2">
+              {`Your store sees ~${aiSuggestion.abandonedCheckoutPerDay.toLocaleString(
+                "en-IN"
+              )} abandoned carts a day. At current WhatsApp rates, that's ~${formatINR(
+                aiSuggestion.suggestedAmount
+              )} to keep recovery messages flowing for the next ${
+                WALLET_TOPUP.aiSuggestRunwayDays
+              } days without a gap.`}
+            </p>
+            <button
+              type="button"
+              data-testid="welcome-ai-suggestion-cta"
+              className="text-xs font-semibold text-primary hover:text-primary-hover transition-colors"
+              onClick={handleUseAiSuggestion}
+            >
+              Use {formatINR(aiSuggestion.suggestedAmount)}
+            </button>
+          </div>
+
           <div className="relative mb-3">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-text-primary pointer-events-none">
               ₹
@@ -158,6 +225,65 @@ export default function WelcomeModal({ open, onClose }) {
               </button>
             ))}
           </div>
+
+          {appliedCoupon ? (
+            <div
+              className="flex items-center justify-between rounded-md bg-success-bg px-3 py-2 mb-4"
+              data-testid="welcome-coupon-applied"
+            >
+              <span className="text-xs font-medium text-text-primary">
+                {`"${appliedCoupon.code}" applied — ${appliedCoupon.bonusPercent}% bonus (+${formatINR(
+                  bonusAmount
+                )})`}
+              </span>
+              <button
+                type="button"
+                className="text-xs font-semibold text-text-secondary hover:text-text-primary"
+                onClick={handleRemoveCoupon}
+                data-testid="welcome-coupon-remove"
+              >
+                Remove
+              </button>
+            </div>
+          ) : (
+            <div className="mb-4">
+              <div className="flex items-center gap-2">
+                <Input
+                  type="text"
+                  placeholder="Have a coupon? Enter code"
+                  value={couponInput}
+                  onChange={(e) => {
+                    setCouponInput(e.target.value);
+                    if (couponError) setCouponError(null);
+                  }}
+                  className="bg-surface"
+                  data-testid="welcome-coupon-input"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleApplyCoupon}
+                  disabled={!couponInput.trim()}
+                  data-testid="welcome-coupon-apply"
+                >
+                  Apply
+                </Button>
+              </div>
+              {couponError && (
+                <p className="text-xs text-destructive mt-1" data-testid="welcome-coupon-error">
+                  {couponError}
+                </p>
+              )}
+            </div>
+          )}
+
+          {appliedCoupon && (
+            <p className="text-xs text-text-secondary mb-2" data-testid="welcome-wallet-total-breakdown">
+              {`You'll receive ${formatINR(amount)} + ${formatINR(bonusAmount)} bonus = ${formatINR(
+                totalCredit
+              )}`}
+            </p>
+          )}
 
           <div className="flex flex-col sm:flex-row gap-2">
             <Button

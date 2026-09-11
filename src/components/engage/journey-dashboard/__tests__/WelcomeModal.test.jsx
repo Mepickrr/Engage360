@@ -98,4 +98,58 @@ describe("WelcomeModal", () => {
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(useJourneyWalletStore.getState().balance).toBe(0);
   });
+
+  it("shows an AI-suggested amount computed from the store's mock traffic, and Use applies it", () => {
+    render(<WelcomeModal open={true} onClose={() => {}} />);
+    // 4,000 abandoned carts/day * ₹1.50/message * 3-day runway = ₹18,000
+    expect(screen.getByTestId("welcome-ai-suggestion")).toHaveTextContent("4,000 abandoned carts");
+    expect(screen.getByTestId("welcome-ai-suggestion")).toHaveTextContent("₹18,000");
+    expect(screen.getByTestId("welcome-ai-suggestion")).toHaveTextContent("next 3 days");
+
+    fireEvent.click(screen.getByTestId("welcome-ai-suggestion-cta"));
+    expect(screen.getByTestId("welcome-wallet-amount-input")).toHaveValue(18000);
+  });
+
+  it("applying a valid coupon shows the bonus breakdown and credits the bonus amount to the wallet", () => {
+    const onClose = jest.fn();
+    render(<WelcomeModal open={true} onClose={onClose} />);
+    fireEvent.change(screen.getByTestId("welcome-coupon-input"), {
+      target: { value: "welcome10" },
+    });
+    fireEvent.click(screen.getByTestId("welcome-coupon-apply"));
+
+    expect(screen.getByTestId("welcome-coupon-applied")).toHaveTextContent(
+      '"WELCOME10" applied — 10% bonus (+₹50)'
+    );
+    expect(screen.getByTestId("welcome-wallet-total-breakdown")).toHaveTextContent(
+      "You'll receive ₹500 + ₹50 bonus = ₹550"
+    );
+
+    fireEvent.click(screen.getByTestId("welcome-wallet-add-cta"));
+    expect(useJourneyWalletStore.getState().balance).toBe(550);
+    expect(toast.success).toHaveBeenCalledWith("₹550 added to your wallet");
+  });
+
+  it("shows an inline error for an invalid coupon and applies no bonus", () => {
+    render(<WelcomeModal open={true} onClose={() => {}} />);
+    fireEvent.change(screen.getByTestId("welcome-coupon-input"), {
+      target: { value: "BOGUS" },
+    });
+    fireEvent.click(screen.getByTestId("welcome-coupon-apply"));
+
+    expect(screen.getByTestId("welcome-coupon-error")).toHaveTextContent("Invalid code");
+    expect(screen.queryByTestId("welcome-coupon-applied")).not.toBeInTheDocument();
+  });
+
+  it("removing an applied coupon clears the bonus and reverts to the plain coupon input", () => {
+    render(<WelcomeModal open={true} onClose={() => {}} />);
+    fireEvent.change(screen.getByTestId("welcome-coupon-input"), {
+      target: { value: "WELCOME10" },
+    });
+    fireEvent.click(screen.getByTestId("welcome-coupon-apply"));
+    fireEvent.click(screen.getByTestId("welcome-coupon-remove"));
+
+    expect(screen.queryByTestId("welcome-coupon-applied")).not.toBeInTheDocument();
+    expect(screen.getByTestId("welcome-coupon-input")).toHaveValue("");
+  });
 });

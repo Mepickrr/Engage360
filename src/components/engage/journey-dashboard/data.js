@@ -82,9 +82,9 @@ export const WAIT_LABEL = "30 Minutes";
 // approved; other channels are gated behind a KAM conversation for now.
 export const RATE_CARD = {
   enabled: [
-    { id: "wa-utility", name: "WhatsApp Utility", price: "₹0.40 / message" },
-    { id: "wa-marketing", name: "WhatsApp Marketing", price: "₹1.50 / message" },
-    { id: "wa-session", name: "WhatsApp Session", price: "₹0.40 / message" },
+    { id: "wa-utility", name: "WhatsApp Utility", price: "₹0.40 / message", pricePerMessage: 0.4 },
+    { id: "wa-marketing", name: "WhatsApp Marketing", price: "₹1.50 / message", pricePerMessage: 1.5 },
+    { id: "wa-session", name: "WhatsApp Session", price: "₹0.40 / message", pricePerMessage: 0.4 },
   ],
   disabled: [
     { id: "email", name: "Email" },
@@ -96,4 +96,13 @@ export const RATE_CARD = {
 export const WALLET_TOPUP = {
   defaultAmount: 500,
   increments: [100, 500, 1000],
+  // How many days of recovery-messaging runway the AI suggestion covers.
+  aiSuggestRunwayDays: 3,
+};
+
+// Demo-only coupon codes for the wallet recharge nudge. Applying one adds
+// bonus wallet credit on top of the recharge amount (not a checkout
+// discount — this is a top-up, so "bonus credit" is the honest framing).
+export const COUPONS = {
+  WELCOME10: { bonusPercent: 10 },
 };
