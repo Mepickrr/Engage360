@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import BentoFeatureGrid from "../BentoFeatureGrid";
 
 describe("BentoFeatureGrid", () => {
-  it("renders the tagline, all 6 features, and exactly 2 wide tiles", () => {
+  it("renders the tagline and all 6 features as equally-sized tiles", () => {
     render(<BentoFeatureGrid />);
     expect(screen.getByTestId("bento-tagline-heading")).toHaveTextContent(
       "Identify | Engage | Grow"
@@ -15,7 +15,6 @@ describe("BentoFeatureGrid", () => {
     expect(screen.getByText("Real-Time Performance Analytics")).toBeInTheDocument();
     expect(screen.getByText("Instant Checkout on WhatsApp")).toBeInTheDocument();
     expect(screen.getByText("Built-In Security & Trust")).toBeInTheDocument();
-    expect(screen.getAllByTestId("feature-tile-wide")).toHaveLength(2);
-    expect(screen.getAllByTestId("feature-tile")).toHaveLength(4);
+    expect(screen.getAllByTestId("feature-tile")).toHaveLength(6);
   });
 });
