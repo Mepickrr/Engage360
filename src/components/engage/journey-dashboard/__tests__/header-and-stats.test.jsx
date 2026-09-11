@@ -2,11 +2,15 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import JourneyHeader from "../JourneyHeader";
 import JourneyStatsRow from "../JourneyStatsRow";
+import { useJourneyWalletStore } from "@/store/journeyWalletStore";
 
 jest.mock("@/components/common/PreviewHeader", () => ({
   previewToast: jest.fn(),
 }));
-import { previewToast } from "@/components/common/PreviewHeader";
+
+jest.mock("sonner", () => ({
+  toast: { success: jest.fn() },
+}));
 
 jest.mock(
   "react-router-dom",
@@ -20,20 +24,44 @@ jest.mock(
   { virtual: true }
 );
 
+beforeAll(() => {
+  window.HTMLElement.prototype.hasPointerCapture = jest.fn();
+  window.HTMLElement.prototype.releasePointerCapture = jest.fn();
+  window.HTMLElement.prototype.scrollIntoView = jest.fn();
+});
+
+beforeEach(() => {
+  useJourneyWalletStore.setState({ balance: 0 });
+  window.localStorage.clear();
+});
+
 describe("JourneyHeader", () => {
-  it("renders the wallet balance, recharge link, profile icon, and Open Engage link", () => {
+  it("renders the WhatsApp connected status, wallet balance, recharge link, profile icon, and Open Engage link", () => {
     render(<JourneyHeader />);
     expect(screen.getByTestId("journey-header")).toBeInTheDocument();
+    expect(screen.getByTestId("journey-whatsapp-status")).toHaveTextContent(
+      "WhatsApp: TSP Karix Connected"
+    );
     expect(screen.getByTestId("journey-wallet-balance")).toHaveTextContent("₹0.00");
     expect(screen.getByTestId("journey-recharge-link")).toBeInTheDocument();
     expect(screen.getByTestId("journey-profile-icon")).toBeInTheDocument();
     expect(screen.getByTestId("journey-open-engage-link")).toHaveAttribute("href", "/");
   });
 
-  it("clicking Recharge calls previewToast", () => {
+  it("clicking the wallet pill opens the recharge wallet modal", () => {
     render(<JourneyHeader />);
-    fireEvent.click(screen.getByTestId("journey-recharge-link"));
-    expect(previewToast).toHaveBeenCalledTimes(1);
+    expect(screen.queryByTestId("recharge-wallet-modal")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("journey-wallet-pill"));
+    expect(screen.getByTestId("recharge-wallet-modal")).toBeInTheDocument();
+  });
+
+  it("clicking the profile icon opens the profile details modal", () => {
+    render(<JourneyHeader />);
+    expect(screen.queryByTestId("profile-details-modal")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("journey-profile-icon"));
+    expect(screen.getByTestId("profile-details-modal")).toBeInTheDocument();
   });
 });
 

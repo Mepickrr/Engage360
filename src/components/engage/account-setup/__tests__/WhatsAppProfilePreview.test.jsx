@@ -108,4 +108,15 @@ describe("WhatsAppProfilePreview", () => {
     fireEvent.click(screen.getByText("Education"));
     expect(props.onCategoryChange).toHaveBeenCalledWith("Education");
   });
+
+  it("does not render a WABA ID row when wabaId is not given", () => {
+    renderPreview();
+    expect(screen.queryByTestId("field-waba-id")).not.toBeInTheDocument();
+  });
+
+  it("renders a read-only WABA ID row when wabaId is given", () => {
+    renderPreview({ wabaId: "1029384756203847" });
+    expect(screen.getByTestId("field-waba-id")).toHaveTextContent("WABA ID");
+    expect(screen.getByTestId("field-waba-id")).toHaveTextContent("1029384756203847");
+  });
 });

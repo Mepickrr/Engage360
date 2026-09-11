@@ -65,3 +65,9 @@ export function openSignupPopup() {
     "width=560,height=780"
   );
 }
+
+// Meta assigns a WhatsApp Business Account ID once Embedded Signup
+// completes — it doesn't exist during the form-filling steps, so it's
+// never part of DEFAULT_SIGNUP_PAYLOAD. Fixed mock value for this
+// prototype; a real integration would read this back from Meta's API.
+export const MOCK_WABA_ID = "1029384756203847";

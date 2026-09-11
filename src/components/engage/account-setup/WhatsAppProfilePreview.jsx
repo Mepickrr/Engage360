@@ -39,6 +39,7 @@ export default function WhatsAppProfilePreview({
   onSupportNumberChange,
   address,
   onAddressChange,
+  wabaId,
 }) {
   return (
     <div data-testid="whatsapp-profile-preview">
@@ -79,6 +80,16 @@ export default function WhatsAppProfilePreview({
         </div>
 
         <div className="flex flex-col gap-3">
+          {wabaId && (
+            <div
+              className="rounded-md bg-app-bg px-3 py-2 flex items-center justify-between"
+              data-testid="field-waba-id"
+            >
+              <span className="text-[11px] font-medium text-text-secondary">WABA ID</span>
+              <span className="text-xs font-mono text-text-primary">{wabaId}</span>
+            </div>
+          )}
+
           <div>
             <label htmlFor="field-brand-name-input" className="text-[11px] font-medium text-text-secondary mb-1 block">
               Brand Name
