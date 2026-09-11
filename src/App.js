@@ -13,6 +13,7 @@ import FastrrEngagePage from "@/pages/FastrrEngage";
 import FastrrEngagePanel from "@/components/engage/FastrrEngagePanel";
 import EngageAccountSetupPage from "@/pages/EngageAccountSetup";
 import MetaEmbeddedSignup from "@/pages/MetaEmbeddedSignup";
+import FastrrJourneyPage from "@/pages/FastrrJourney";
 import FlowsPage from "@/pages/Flows";
 import FlowBuilder from "@/pages/FlowBuilder";
 import FlowCreatePage from "@/pages/FlowCreate";
@@ -89,6 +90,7 @@ function App() {
           </Route>
           <Route path="/engage/account-setup" element={<EngageAccountSetupPage />} />
           <Route path="/engage/meta-embedded-signup" element={<MetaEmbeddedSignup />} />
+          <Route path="/fastrr-journey" element={<FastrrJourneyPage />} />
         </Routes>
         <ConversationPanel />
         <FastrrEngagePanel />

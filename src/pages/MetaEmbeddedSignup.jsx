@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { flushSync } from "react-dom";
+import { useNavigate } from "react-router-dom";
 import MetaTopBarChrome from "@/components/engage/meta-signup/MetaTopBarChrome";
 import FbLoginWindowChrome from "@/components/engage/meta-signup/FbLoginWindowChrome";
 import StepRail from "@/components/engage/meta-signup/StepRail";
@@ -18,6 +19,7 @@ const TOTAL_STEPS = 8;
 export default function MetaEmbeddedSignup() {
   const [payload] = useState(() => readSignupPayload());
   const [currentStep, setCurrentStep] = useState(0);
+  const navigate = useNavigate();
 
   const goNext = useCallback(() => {
     flushSync(() => {
@@ -28,8 +30,13 @@ export default function MetaEmbeddedSignup() {
     setCurrentStep((s) => Math.max(s - 1, 0));
   }, []);
   const handleFinish = useCallback(() => {
-    window.close();
-  }, []);
+    if (window.opener) {
+      window.opener.location.href = "/fastrr-journey";
+      window.close();
+    } else {
+      navigate("/fastrr-journey");
+    }
+  }, [navigate]);
 
   let Chrome;
   let content;

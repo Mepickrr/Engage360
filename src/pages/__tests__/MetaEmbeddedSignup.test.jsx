@@ -3,8 +3,22 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import MetaEmbeddedSignup from "../MetaEmbeddedSignup";
 import { writeSignupPayload } from "@/lib/metaSignupMock";
 
+const mockNavigate = jest.fn();
+jest.mock(
+  "react-router-dom",
+  () => ({
+    useNavigate: () => mockNavigate,
+  }),
+  { virtual: true }
+);
+
 beforeEach(() => {
   window.localStorage.clear();
+  mockNavigate.mockClear();
+});
+
+afterEach(() => {
+  delete window.opener;
 });
 
 describe("MetaEmbeddedSignup", () => {
@@ -51,8 +65,7 @@ describe("MetaEmbeddedSignup", () => {
     jest.useRealTimers();
   });
 
-  it("reaches the success step after email verify, back in the Meta top bar chrome, and Finish closes the window", () => {
-    const closeSpy = jest.spyOn(window, "close").mockImplementation(() => {});
+  it("reaches the success step after email verify, back in the Meta top bar chrome, and Finish (no opener) navigates to /fastrr-journey", () => {
     jest.useFakeTimers();
     render(<MetaEmbeddedSignup />);
     fireEvent.click(screen.getByTestId("intro-continue"));
@@ -66,9 +79,22 @@ describe("MetaEmbeddedSignup", () => {
     expect(screen.getByTestId("meta-top-bar-chrome")).toBeInTheDocument();
 
     fireEvent.click(screen.getByTestId("success-finish"));
+    expect(mockNavigate).toHaveBeenCalledWith("/fastrr-journey");
+    jest.useRealTimers();
+  });
+
+  it("Finish (with an opener) redirects the opener tab and closes this popup", () => {
+    const closeSpy = jest.spyOn(window, "close").mockImplementation(() => {});
+    const fakeOpener = { location: { href: "" } };
+    Object.defineProperty(window, "opener", {
+      value: fakeOpener,
+      configurable: true,
+    });
+    render(<MetaEmbeddedSignup />);
+    fireEvent.click(screen.getByTestId("intro-cancel"));
+    expect(fakeOpener.location.href).toBe("/fastrr-journey");
     expect(closeSpy).toHaveBeenCalledTimes(1);
     closeSpy.mockRestore();
-    jest.useRealTimers();
   });
 
   it("prefills the phone number from a payload written to localStorage before mount", () => {
