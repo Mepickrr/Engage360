@@ -3,11 +3,19 @@ import JourneyHeader from "@/components/engage/journey-dashboard/JourneyHeader";
 import JourneyStatsRow from "@/components/engage/journey-dashboard/JourneyStatsRow";
 import JourneysTable from "@/components/engage/journey-dashboard/JourneysTable";
 import JourneyPreviewModal from "@/components/engage/journey-dashboard/JourneyPreviewModal";
+import WelcomeModal from "@/components/engage/journey-dashboard/WelcomeModal";
 import { JOURNEYS } from "@/components/engage/journey-dashboard/data";
+
+function consumeWelcomeFlag() {
+  const shouldShow = window.sessionStorage.getItem("fastrrJourneyWelcome") === "1";
+  if (shouldShow) window.sessionStorage.removeItem("fastrrJourneyWelcome");
+  return shouldShow;
+}
 
 export default function FastrrJourneyPage() {
   const [enabledMap, setEnabledMap] = useState({});
   const [previewId, setPreviewId] = useState(null);
+  const [showWelcome, setShowWelcome] = useState(consumeWelcomeFlag);
 
   const activeCount = Object.values(enabledMap).filter(Boolean).length;
   const previewJourney = JOURNEYS.find((j) => j.id === previewId) || null;
@@ -42,6 +50,7 @@ export default function FastrrJourneyPage() {
         onClose={() => setPreviewId(null)}
         onActivate={handleActivate}
       />
+      <WelcomeModal open={showWelcome} onClose={() => setShowWelcome(false)} />
     </div>
   );
 }

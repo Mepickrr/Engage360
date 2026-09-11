@@ -2,8 +2,15 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Wallet, User } from "lucide-react";
 import { previewToast } from "@/components/common/PreviewHeader";
+import { useJourneyWalletStore } from "@/store/journeyWalletStore";
+
+function formatINR(amount) {
+  return `₹${amount.toFixed(2)}`;
+}
 
 export default function JourneyHeader() {
+  const balance = useJourneyWalletStore((s) => s.balance);
+
   return (
     <div
       className="flex items-center justify-between px-6 py-4 border-b border-border bg-surface"
@@ -21,7 +28,7 @@ export default function JourneyHeader() {
             className="text-[12px] font-semibold tabular-nums text-text-primary"
             data-testid="journey-wallet-balance"
           >
-            ₹0.00
+            {formatINR(balance)}
           </span>
           <span className="h-3 w-px bg-border" />
           <button

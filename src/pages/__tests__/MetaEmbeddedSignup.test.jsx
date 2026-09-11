@@ -14,6 +14,7 @@ jest.mock(
 
 beforeEach(() => {
   window.localStorage.clear();
+  window.sessionStorage.clear();
   mockNavigate.mockClear();
 });
 
@@ -80,12 +81,13 @@ describe("MetaEmbeddedSignup", () => {
 
     fireEvent.click(screen.getByTestId("success-finish"));
     expect(mockNavigate).toHaveBeenCalledWith("/fastrr-journey");
+    expect(window.sessionStorage.getItem("fastrrJourneyWelcome")).toBe("1");
     jest.useRealTimers();
   });
 
-  it("Finish (with an opener) redirects the opener tab and closes this popup", () => {
+  it("Finish (with an opener) redirects the opener tab, closes this popup, and sets the welcome flag on the opener's own storage", () => {
     const closeSpy = jest.spyOn(window, "close").mockImplementation(() => {});
-    const fakeOpener = { location: { href: "" } };
+    const fakeOpener = { location: { href: "" }, sessionStorage: window.sessionStorage };
     Object.defineProperty(window, "opener", {
       value: fakeOpener,
       configurable: true,
@@ -102,6 +104,7 @@ describe("MetaEmbeddedSignup", () => {
     fireEvent.click(screen.getByTestId("success-finish"));
     expect(fakeOpener.location.href).toBe("/fastrr-journey");
     expect(closeSpy).toHaveBeenCalledTimes(1);
+    expect(fakeOpener.sessionStorage.getItem("fastrrJourneyWelcome")).toBe("1");
     closeSpy.mockRestore();
     jest.useRealTimers();
   });

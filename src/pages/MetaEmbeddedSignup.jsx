@@ -30,6 +30,13 @@ export default function MetaEmbeddedSignup() {
     setCurrentStep((s) => Math.max(s - 1, 0));
   }, []);
   const handleFinish = useCallback(() => {
+    // Consumed once by FastrrJourneyPage to auto-open the welcome modal —
+    // never reappears on a later visit or refresh. sessionStorage is
+    // per-tab, so when this ran in a popup the flag must be set on the
+    // *opener* tab's storage (where /fastrr-journey actually renders),
+    // not this popup's own.
+    const targetStorage = window.opener ? window.opener.sessionStorage : window.sessionStorage;
+    targetStorage.setItem("fastrrJourneyWelcome", "1");
     if (window.opener) {
       window.opener.location.href = "/fastrr-journey";
       window.close();

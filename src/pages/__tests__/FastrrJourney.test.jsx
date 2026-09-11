@@ -27,7 +27,39 @@ beforeAll(() => {
   window.HTMLElement.prototype.scrollIntoView = jest.fn();
 });
 
+beforeEach(() => {
+  window.sessionStorage.clear();
+});
+
 describe("FastrrJourneyPage", () => {
+  it("does not show the welcome modal on a normal visit", () => {
+    render(
+      <MemoryRouter>
+        <FastrrJourneyPage />
+      </MemoryRouter>
+    );
+    expect(screen.queryByTestId("welcome-modal")).not.toBeInTheDocument();
+  });
+
+  it("shows the welcome modal when arriving fresh from signup, and consumes the flag so it won't reappear", () => {
+    window.sessionStorage.setItem("fastrrJourneyWelcome", "1");
+    const { unmount } = render(
+      <MemoryRouter>
+        <FastrrJourneyPage />
+      </MemoryRouter>
+    );
+    expect(screen.getByTestId("welcome-modal")).toBeInTheDocument();
+    expect(window.sessionStorage.getItem("fastrrJourneyWelcome")).toBeNull();
+    unmount();
+
+    render(
+      <MemoryRouter>
+        <FastrrJourneyPage />
+      </MemoryRouter>
+    );
+    expect(screen.queryByTestId("welcome-modal")).not.toBeInTheDocument();
+  });
+
   it("renders the header, stats row, and journeys table together", () => {
     render(
       <MemoryRouter>

@@ -76,3 +76,24 @@ export const JOURNEYS = [
 ];
 
 export const WAIT_LABEL = "30 Minutes";
+
+// Shown in WelcomeModal's rate card, right after Meta Embedded Signup
+// completes. WhatsApp channels are switched on the moment the account is
+// approved; other channels are gated behind a KAM conversation for now.
+export const RATE_CARD = {
+  enabled: [
+    { id: "wa-utility", name: "WhatsApp Utility", price: "₹0.40 / message" },
+    { id: "wa-marketing", name: "WhatsApp Marketing", price: "₹1.50 / message" },
+    { id: "wa-session", name: "WhatsApp Session", price: "₹0.40 / message" },
+  ],
+  disabled: [
+    { id: "email", name: "Email" },
+    { id: "rcs", name: "RCS" },
+    { id: "sms", name: "SMS" },
+  ],
+};
+
+export const WALLET_TOPUP = {
+  defaultAmount: 500,
+  increments: [100, 500, 1000],
+};
