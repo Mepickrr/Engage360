@@ -1,7 +1,12 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import JourneyHeader from "../JourneyHeader";
 import JourneyStatsRow from "../JourneyStatsRow";
+
+jest.mock("@/components/common/PreviewHeader", () => ({
+  previewToast: jest.fn(),
+}));
+import { previewToast } from "@/components/common/PreviewHeader";
 
 jest.mock(
   "react-router-dom",
@@ -23,6 +28,12 @@ describe("JourneyHeader", () => {
     expect(screen.getByTestId("journey-recharge-link")).toBeInTheDocument();
     expect(screen.getByTestId("journey-profile-icon")).toBeInTheDocument();
     expect(screen.getByTestId("journey-open-engage-link")).toHaveAttribute("href", "/");
+  });
+
+  it("clicking Recharge calls previewToast", () => {
+    render(<JourneyHeader />);
+    fireEvent.click(screen.getByTestId("journey-recharge-link"));
+    expect(previewToast).toHaveBeenCalledTimes(1);
   });
 });
 

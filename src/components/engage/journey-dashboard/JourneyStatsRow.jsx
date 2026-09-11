@@ -1,4 +1,5 @@
 import React from "react";
+import { JOURNEYS } from "./data";
 
 const CARDS = [
   { key: "active", label: "Active Journeys", hint: "Turn one on below to start recovering revenue" },
@@ -18,7 +19,7 @@ export default function JourneyStatsRow({ activeCount }) {
           data-testid={`journey-stat-${card.key}`}
         >
           <div className="text-2xl font-bold text-text-primary">
-            {card.key === "active" ? `${activeCount} / 6` : "—"}
+            {card.key === "active" ? `${activeCount} / ${JOURNEYS.length}` : "—"}
           </div>
           <div className="text-xs font-semibold text-text-secondary mt-1">{card.label}</div>
           <div className="text-[11px] text-text-muted mt-1">{card.hint}</div>

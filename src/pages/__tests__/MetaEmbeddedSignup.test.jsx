@@ -90,9 +90,38 @@ describe("MetaEmbeddedSignup", () => {
       value: fakeOpener,
       configurable: true,
     });
+    jest.useFakeTimers();
+    render(<MetaEmbeddedSignup />);
+    fireEvent.click(screen.getByTestId("intro-continue"));
+    fireEvent.click(screen.getByTestId("phone-number-next"));
+    fireEvent.click(screen.getByTestId("verify-phone-next"));
+    fireEvent.click(screen.getByTestId("select-assets-next"));
+    fireEvent.click(screen.getByTestId("business-info-next"));
+    jest.advanceTimersByTime(1500);
+    fireEvent.click(screen.getByTestId("email-verify-next"));
+    fireEvent.click(screen.getByTestId("success-finish"));
+    expect(fakeOpener.location.href).toBe("/fastrr-journey");
+    expect(closeSpy).toHaveBeenCalledTimes(1);
+    closeSpy.mockRestore();
+    jest.useRealTimers();
+  });
+
+  it("Cancel (no opener) navigates to account setup instead of the journey dashboard", () => {
     render(<MetaEmbeddedSignup />);
     fireEvent.click(screen.getByTestId("intro-cancel"));
-    expect(fakeOpener.location.href).toBe("/fastrr-journey");
+    expect(mockNavigate).toHaveBeenCalledWith("/engage/account-setup");
+  });
+
+  it("Cancel (with an opener) just closes the popup, without redirecting to the journey dashboard", () => {
+    const closeSpy = jest.spyOn(window, "close").mockImplementation(() => {});
+    const fakeOpener = { location: { href: "" } };
+    Object.defineProperty(window, "opener", {
+      value: fakeOpener,
+      configurable: true,
+    });
+    render(<MetaEmbeddedSignup />);
+    fireEvent.click(screen.getByTestId("intro-cancel"));
+    expect(fakeOpener.location.href).toBe("");
     expect(closeSpy).toHaveBeenCalledTimes(1);
     closeSpy.mockRestore();
   });

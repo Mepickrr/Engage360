@@ -37,6 +37,13 @@ export default function MetaEmbeddedSignup() {
       navigate("/fastrr-journey");
     }
   }, [navigate]);
+  const handleCancel = useCallback(() => {
+    if (window.opener) {
+      window.close();
+    } else {
+      navigate("/engage/account-setup");
+    }
+  }, [navigate]);
 
   let Chrome;
   let content;
@@ -44,7 +51,7 @@ export default function MetaEmbeddedSignup() {
   switch (currentStep) {
     case 0:
       Chrome = MetaTopBarChrome;
-      content = <IntroStep onCancel={handleFinish} onContinue={goNext} />;
+      content = <IntroStep onCancel={handleCancel} onContinue={goNext} />;
       break;
     case 1:
       Chrome = MetaTopBarChrome;

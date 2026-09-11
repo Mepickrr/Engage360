@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Wallet, User } from "lucide-react";
+import { previewToast } from "@/components/common/PreviewHeader";
 
 export default function JourneyHeader() {
   return (
@@ -27,6 +28,7 @@ export default function JourneyHeader() {
             type="button"
             data-testid="journey-recharge-link"
             className="text-[12px] font-semibold text-primary hover:text-primary-hover transition-colors"
+            onClick={() => previewToast()}
           >
             Recharge
           </button>
