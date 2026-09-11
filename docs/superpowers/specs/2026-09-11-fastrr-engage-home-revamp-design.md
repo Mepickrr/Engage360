@@ -11,6 +11,45 @@ and GoKwik's KwikPass — plus current (2026) B2B SaaS landing-page research,
 while keeping this codebase's existing content (stat values, feature
 copy, hero headline) and design tokens.
 
+## Additional reference research (added after initial design pass, at user's request)
+
+- **Fastrr's own real marketing site** (fastrrai.shiprocket.in): headline
+  "India's first AI-native growth suite for Commerce brands"; 11 product
+  cards (Fastrr Checkout, Identify, Broadcast, **Journey**, Login, Ads,
+  Assist, Studio, Voice, Signals, Shield) each with icon + name +
+  description + bolded inline metrics + "Get Started Now ↗" CTA; real
+  stat callouts include **"90M+ subscribers on Shiprocket network"** and
+  "ROAS up to 10x"; notably has **no client logos or testimonials** on
+  this particular page.
+- **Shiprocket's own site** (shiprocket.in, the parent company): teal
+  accent brand color (not adopted here — this app already has its own
+  established purple primary token); a real, publicly-stated
+  **"4 Lakh+ Businesses"** stat; a 2-row grayscale client-logo strip;
+  a testimonial section with photo/name/title/company attribution and
+  star ratings; card-grid feature showcase (3-4 columns); consistent
+  teal "Sign Up for Free" CTAs.
+
+These two additional references changed two decisions from the initial
+design pass (both re-confirmed with the user):
+
+1. **Logo strip** now uses styled text wordmarks with clearly fictional
+   D2C brand names (not real companies) — closer to Shiprocket's actual
+   logo-strip pattern — instead of the earlier abstract-icon-shape design.
+2. **Testimonials are now in scope**, as a static 3-card row (not a
+   rotating carousel, for prototype simplicity) with fictional
+   attribution (name/title/fictional-brand/stars) — the user explicitly
+   authorized this, superseding the initial pass's "no fabricated
+   quotes" caution. Names, titles, and brand names must remain clearly
+   fictional/generic (no real people or companies), consistent with this
+   being an internal prototype, not a page real external users will see.
+
+A new, **real** trust line is also added: Fastrr's own site's "90M+
+subscribers on Shiprocket network" and Shiprocket's own "4 Lakh+
+Businesses" are both currently-public, verifiable facts (fetched
+directly from the two live sites above) — not fabricated, so this one
+does not need a "pending sign-off" flag the way the page's other
+benchmark numbers do.
+
 ## Competitive reference summary (researched directly, not assumed)
 
 - **Bitespeed** (bitespeed.co): centered hero with dual high-contrast CTAs;
@@ -37,10 +76,10 @@ copy, hero headline) and design tokens.
 
 ## Non-goals
 
-- No fabricated customer testimonials/named quotes — with no real
-  customers yet, inventing a quote (even labeled "illustrative") crosses
-  into misrepresentation. The logo strip uses abstract, non-representational
-  placeholder marks only — no real or invented brand names.
+- The logo strip and testimonials use clearly **fictional** brand/person
+  names (never a real company or person) — this is authorized for this
+  internal prototype page specifically, not a general license to
+  fabricate customer proof elsewhere in the app.
 - No copy rewrite of the existing hero headline/subhead, stat values, or
   feature names/descriptions — this is a visual/structural revamp. The
   only copy addition is the two bento "hero" tiles' descriptions may read
@@ -65,12 +104,13 @@ becomes a thin composition of imports in the new section order.
 
 | File | Purpose |
 |---|---|
-| `src/pages/FastrrEngage.jsx` (rewrite) | Composition only: renders `HeroSection`, `LogoStrip`, `RevenueOpportunityCard` (unchanged import), `DarkStatBand`, `BentoFeatureGrid`, `FinalCTA` in order. Still owns `handleEnable` (unchanged logic) and passes it down. |
+| `src/pages/FastrrEngage.jsx` (rewrite) | Composition only: renders `HeroSection`, `LogoStrip`, `RevenueOpportunityCard` (unchanged import), `DarkStatBand`, `BentoFeatureGrid`, `TestimonialSection`, `FinalCTA` in order. Still owns `handleEnable` (unchanged logic) and passes it down. |
 | `src/components/engage/home/HeroSection.jsx` (new) | 2-column hero: text + dual CTA on the left (same copy/testids as today), `ChatPreviewMockup` on the right. Gradient background instead of flat tint. |
 | `src/components/engage/home/ChatPreviewMockup.jsx` (new) | The floating chat-bubble visual: a white card, `shadow-xl`, slight tilt, WhatsApp-green header strip, 3 message bubbles (same copy as `FastrrEngagePanel`'s existing hero mockup: "Cart reminder sent" / "Yes, still interested!" / "✅ Order confirmed"), sized larger/more polished for hero use. |
-| `src/components/engage/home/LogoStrip.jsx` (new) | "Trusted by growing D2C brands" eyebrow + a row of 6 abstract geometric placeholder marks (lucide icons in muted circles) — no text/names. |
+| `src/components/engage/home/LogoStrip.jsx` (new) | "Trusted by growing D2C brands" eyebrow + a "Backed by Shiprocket — powering 4 Lakh+ businesses and 90M+ shoppers" trust line (real, sourced numbers) + a row of 6 fictional D2C brand-name wordmarks. |
 | `src/components/engage/home/DarkStatBand.jsx` (new) | Full-width dark section; the existing `STATS` (unchanged values/labels from `FastrrEngage.jsx`, moved here) rendered large/bold in white on dark; a primary-colored eyebrow line above. |
 | `src/components/engage/home/BentoFeatureGrid.jsx` (new) | The existing `FEATURES` (unchanged names/descriptions, moved here) laid out in the 3-column bento pattern below; replaces both the old `TaglineBanner` and `FeatureGrid` — the tagline becomes this section's eyebrow heading. |
+| `src/components/engage/home/TestimonialSection.jsx` (new) | 3 static testimonial cards — quote, 5-star rating, initials-avatar, name/title/fictional-brand attribution. |
 | `src/components/engage/home/FinalCTA.jsx` (new) | The existing onboarding CTA copy/testid, restyled with a gradient background and a high-contrast button. |
 
 ## Behavior
@@ -84,6 +124,7 @@ becomes a thin composition of imports in the new section order.
   <RevenueOpportunityCard variant="full" ctaLabel="Unlock This Revenue with Fastrr Journey" onCtaClick={handleEnable} />
   <DarkStatBand />
   <BentoFeatureGrid />
+  <TestimonialSection />
   <FinalCTA onEnable={handleEnable} />
 </div>
 ```
@@ -119,12 +160,19 @@ for hero prominence.
 ### `LogoStrip.jsx`
 
 Centered eyebrow text **"Trusted by growing D2C brands"** (small, muted),
-then a row of 6 abstract marks: a plain lucide icon (e.g. `Hexagon`,
-`Triangle`, `Circle`, `Square`, `Diamond`, `Pentagon` — whichever 6 exist
-in this app's lucide-react version) each centered in a muted gray circle
-(`bg-slate-100 text-slate-400`), evenly spaced with `flex justify-between`
-or a `grid grid-cols-6`. No labels, no names — reads as "logo placement
-reserved," not as any specific brand, real or invented.
+then the trust line **"Backed by Shiprocket — powering 4 Lakh+ businesses
+and 90M+ shoppers"** (`text-sm text-text-secondary`, with a code comment
+citing the source: Fastrr's own site's "90M+ subscribers on Shiprocket
+network" and Shiprocket's own "4 Lakh+ Businesses", both fetched directly
+from the live sites — real, public numbers, no sign-off flag needed),
+then a row of 6 fictional D2C brand-name wordmarks — **"Lumora"**,
+**"Verve & Co."**, **"Northline"**, **"Aurelia Home"**, **"Kindred
+Goods"**, **"Solstice Apparel"** — rendered as bold gray text
+(`text-lg font-bold text-slate-300` or similar muted-but-legible weight),
+evenly spaced in a `grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6` row.
+These are clearly invented names (no resemblance to real companies
+intended or checked against), consistent with this being an internal
+prototype page.
 
 ### `DarkStatBand.jsx`
 
@@ -160,6 +208,23 @@ h-10`) and heading size (`text-base` vs `text-sm`) to read as visual
 anchors; all 6 keep their exact existing name/description text from
 `FEATURES` (moved here unchanged, not reworded).
 
+### `TestimonialSection.jsx`
+
+Section heading: **"Loved by Growing D2C Brands"**. Three cards in a
+`grid grid-cols-1 md:grid-cols-3 gap-5`, each with: a 5-star row (filled
+`Star` icons from lucide-react, `text-warning`/amber), a short quote
+(2 lines), and an attribution row (a circular initials avatar —
+`bg-primary-tint text-primary`, no real photo — + name, title, and one
+of the fictional brand names introduced in `LogoStrip.jsx`, reusing the
+same names for continuity). Exact copy (fictional, tied to this
+product's actual value proposition, not generic praise):
+
+| Quote | Attribution |
+|---|---|
+| "We recovered 22% of abandoned carts in the first month — WhatsApp converts so much better than email ever did for us." | Ananya Rao, Growth Lead, Lumora |
+| "Fastrr Journey found shoppers we didn't even know we had. Our repeat purchase rate jumped almost overnight." | Rohit Malhotra, Founder, Northline |
+| "Setup took less than 15 minutes and we were already sending our first recovery messages that same day." | Priya Nair, D2C Manager, Aurelia Home |
+
 ### `FinalCTA.jsx`
 
 Same heading ("Quick Onboarding, Real Results"), same subcopy (the
@@ -190,8 +255,10 @@ are introduced.
   3 message bubbles; clicking the primary CTA calls `onEnable`; the
   secondary CTA remains a no-op (unchanged from today's test coverage,
   moved into this file).
-- `LogoStrip.test.jsx`: renders the eyebrow text and exactly 6 placeholder
-  marks.
+- `LogoStrip.test.jsx`: renders the eyebrow text, the Shiprocket trust
+  line, and exactly 6 fictional brand-name wordmarks.
+- `TestimonialSection.test.jsx`: renders the section heading and all 3
+  testimonial cards (quote text + attribution name/title/brand).
 - `DarkStatBand.test.jsx`: renders all 4 stat values and labels.
 - `BentoFeatureGrid.test.jsx`: renders all 6 feature names/descriptions;
   confirms the 2 designated tiles carry a wider-tile class/testid
@@ -199,7 +266,7 @@ are introduced.
   regression test).
 - `FinalCTA.test.jsx`: renders the heading/subcopy/testid; clicking the
   CTA calls `onEnable`.
-- `FastrrEngage.test.jsx` (rewrite): page-level test confirming all six
+- `FastrrEngage.test.jsx` (rewrite): page-level test confirming all seven
   sections render together in order and the page's own testid/max-width
   wrapper is present; the existing hero/onboarding/revenue-card CTA
   behavior tests (close panel + navigate to `/engage/account-setup`)
@@ -210,8 +277,10 @@ are introduced.
 
 ## Open items (explicitly deferred, not blocking this design)
 
-- Real customer logos/testimonials/case studies — deferred until real
-  customers exist; the logo strip stays abstract placeholders until then.
+- Real customer logos/testimonials/case studies — the logo strip and
+  testimonials use clearly fictional names for now; swapping in real
+  customer names/logos/quotes (with their consent) is deferred until
+  real customers exist and agree to be featured.
 - Whether `ChatPreviewMockup`/`DarkStatBand`/bento-grid patterns should
   become shared primitives if a second marketing page needs them —
   kept bespoke per YAGNI (only one consumer today).
