@@ -14,6 +14,11 @@ import FastrrEngagePanel from "@/components/engage/FastrrEngagePanel";
 import EngageAccountSetupPage from "@/pages/EngageAccountSetup";
 import MetaEmbeddedSignup from "@/pages/MetaEmbeddedSignup";
 import FastrrJourneyPage from "@/pages/FastrrJourney";
+import FastrrEngagePage2 from "@/pages/FastrrEngage2";
+import FastrrEngagePanel2 from "@/components/engage2/FastrrEngagePanel2";
+import EngageAccountSetupPage2 from "@/pages/EngageAccountSetup2";
+import MetaEmbeddedSignup2 from "@/pages/MetaEmbeddedSignup2";
+import FastrrJourneyPage2 from "@/pages/FastrrJourney2";
 import FlowsPage from "@/pages/Flows";
 import FlowBuilder from "@/pages/FlowBuilder";
 import FlowCreatePage from "@/pages/FlowCreate";
@@ -86,14 +91,19 @@ function App() {
             <Route path="/analytics/:tab" element={<AnalyticsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/fastrr-engage" element={<FastrrEngagePage />} />
+            <Route path="/fastrr-engage-2" element={<FastrrEngagePage2 />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
           <Route path="/engage/account-setup" element={<EngageAccountSetupPage />} />
           <Route path="/engage/meta-embedded-signup" element={<MetaEmbeddedSignup />} />
           <Route path="/fastrr-journey" element={<FastrrJourneyPage />} />
+          <Route path="/engage-2/account-setup" element={<EngageAccountSetupPage2 />} />
+          <Route path="/engage-2/meta-embedded-signup" element={<MetaEmbeddedSignup2 />} />
+          <Route path="/fastrr-journey-2" element={<FastrrJourneyPage2 />} />
         </Routes>
         <ConversationPanel />
         <FastrrEngagePanel />
+        <FastrrEngagePanel2 />
         <Toaster richColors position="top-right" />
       </BrowserRouter>
     </QueryClientProvider>

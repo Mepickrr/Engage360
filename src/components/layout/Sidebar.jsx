@@ -81,6 +81,7 @@ export const SIDEBAR_ITEMS = [
     matchPaths: ["/home-v6", "/"],
   },
   { label: "Fastrr Engage", icon: Sparkles, route: "/fastrr-engage", testId: "nav-fastrr-engage" },
+  { label: "Fastrr Engage V2", icon: Sparkles, route: "/fastrr-engage-2", testId: "nav-fastrr-engage-2" },
   { label: "Templates", icon: FileText, route: "/templates", testId: "nav-templates" },
   { label: "Campaigns", icon: Megaphone, route: "/campaigns", testId: "nav-campaigns" },
   { label: "Push", icon: Bell, route: "/push", testId: "nav-push", hidden: true },
