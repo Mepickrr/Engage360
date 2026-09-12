@@ -19,3 +19,12 @@
    ```
 
 If a change is genuinely meant for both versions (a real bug fix, not a redesign), editing the shared file in place is correct — don't fork just to be safe.
+
+## Fastrr Engage 2 (`engage2/`) — shared code boundary with `engage/`
+
+The Fastrr Engage 2 fork (`src/components/engage2/`, `src/pages/*2.jsx`) duplicated the original Fastrr Engage code (`src/components/engage/`) rather than reusing it, so most of `engage2/` is free to change without touching `engage/`. Two imports were correctly left shared instead of forked, because they were never in scope for the fork:
+
+- `WhatsAppBubblePreview` (`src/components/flows/builder/nodes/WhatsAppNode/WhatsAppBubblePreview`) — a WhatsApp message-bubble preview component. Imported by `src/components/engage2/journey-dashboard/JourneyPreviewModal.jsx`.
+- `previewToast` (`src/components/common/PreviewHeader`) — a shared "not wired yet" toast helper. Imported by `src/components/engage2/journey-dashboard/JourneyPreviewModal.jsx`, `src/components/engage2/journey-dashboard/JourneysTable.jsx`, and `src/components/engage2/journey-dashboard/WalletRechargeCard.jsx`.
+
+Editing either of these in place changes both `engage/` and `engage2/` — there is no v1/v2 split for them today. If a change to `WhatsAppBubblePreview` or `previewToast` is meant for `engage2/` alone, fork it first (copy it into `engage2/`'s own tree and repoint only the `engage2/` import), the same rule as the Flow Builder section above. If the change is a real bug fix meant for both, editing the shared file in place is correct.
