@@ -7,11 +7,17 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import WalletRechargeCard from "./WalletRechargeCard";
+import { Button } from "@/components/ui/button";
+import { useJourneyWalletStore } from "@/store/journeyWalletStore2";
 import { RATE_CARD } from "./data";
 
-export default function WelcomeModal({ open, onClose }) {
+function formatINR(amount) {
+  return `₹${amount.toLocaleString("en-IN")}`;
+}
+
+export default function WelcomeModal({ open, onClose, activatedCount = 0 }) {
   const [expanded, setExpanded] = useState(false);
+  const balance = useJourneyWalletStore((s) => s.balance);
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -82,20 +88,20 @@ export default function WelcomeModal({ open, onClose }) {
           </button>
         </div>
 
-        <WalletRechargeCard
-          eyebrow="Fund Your First Journey"
-          subtitle="Add balance now so your Abandoned Cart journey can start sending the moment it's live — no delays, no missed carts."
-          onDone={onClose}
-        />
-
-        <button
-          type="button"
-          className="text-xs font-medium text-text-secondary hover:text-text-primary text-center mx-auto"
-          onClick={onClose}
-          data-testid="welcome-modal-skip"
+        <div
+          className="rounded-lg bg-success-bg text-center py-4 px-4 mb-2"
+          data-testid="welcome-recap"
         >
-          Skip for now
-        </button>
+          <p className="text-sm font-semibold text-text-primary">
+            {`✓ ${formatINR(balance)} funded, ${activatedCount} journey${
+              activatedCount === 1 ? "" : "s"
+            } live`}
+          </p>
+        </div>
+
+        <Button type="button" className="w-full" onClick={onClose} data-testid="welcome-modal-done">
+          Got it
+        </Button>
       </DialogContent>
     </Dialog>
   );

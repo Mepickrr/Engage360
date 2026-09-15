@@ -5,6 +5,7 @@ import JourneysTable from "@/components/engage2/journey-dashboard/JourneysTable"
 import JourneyPreviewModal from "@/components/engage2/journey-dashboard/JourneyPreviewModal";
 import WelcomeModal from "@/components/engage2/journey-dashboard/WelcomeModal";
 import { JOURNEYS } from "@/components/engage2/journey-dashboard/data";
+import { useJourneySelectionStore2 } from "@/store/journeySelectionStore2";
 
 function consumeWelcomeFlag() {
   const shouldShow = window.sessionStorage.getItem("fastrrJourney2Welcome") === "1";
@@ -12,8 +13,20 @@ function consumeWelcomeFlag() {
   return shouldShow;
 }
 
+function seedEnabledMapFromSelection() {
+  const { selectedJourneys, clear } = useJourneySelectionStore2.getState();
+  const picked = selectedJourneys();
+  if (picked.length === 0) return {};
+  const seeded = {};
+  picked.forEach((j) => {
+    seeded[j.id] = true;
+  });
+  clear();
+  return seeded;
+}
+
 export default function FastrrJourneyPage() {
-  const [enabledMap, setEnabledMap] = useState({});
+  const [enabledMap, setEnabledMap] = useState(seedEnabledMapFromSelection);
   const [previewId, setPreviewId] = useState(null);
   const [showWelcome, setShowWelcome] = useState(consumeWelcomeFlag);
 
@@ -50,7 +63,11 @@ export default function FastrrJourneyPage() {
         onClose={() => setPreviewId(null)}
         onActivate={handleActivate}
       />
-      <WelcomeModal open={showWelcome} onClose={() => setShowWelcome(false)} />
+      <WelcomeModal
+        open={showWelcome}
+        onClose={() => setShowWelcome(false)}
+        activatedCount={activeCount}
+      />
     </div>
   );
 }
