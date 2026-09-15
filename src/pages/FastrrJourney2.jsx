@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import JourneyHeader from "@/components/engage2/journey-dashboard/JourneyHeader";
 import JourneyStatsRow from "@/components/engage2/journey-dashboard/JourneyStatsRow";
 import JourneysTable from "@/components/engage2/journey-dashboard/JourneysTable";
@@ -14,14 +14,12 @@ function consumeWelcomeFlag() {
 }
 
 function seedEnabledMapFromSelection() {
-  const { selectedJourneys, clear } = useJourneySelectionStore2.getState();
-  const picked = selectedJourneys();
+  const picked = useJourneySelectionStore2.getState().selectedJourneys();
   if (picked.length === 0) return {};
   const seeded = {};
   picked.forEach((j) => {
     seeded[j.id] = true;
   });
-  clear();
   return seeded;
 }
 
@@ -29,6 +27,10 @@ export default function FastrrJourneyPage() {
   const [enabledMap, setEnabledMap] = useState(seedEnabledMapFromSelection);
   const [previewId, setPreviewId] = useState(null);
   const [showWelcome, setShowWelcome] = useState(consumeWelcomeFlag);
+
+  useEffect(() => {
+    useJourneySelectionStore2.getState().clear();
+  }, []);
 
   const activeCount = Object.values(enabledMap).filter(Boolean).length;
   const previewJourney = JOURNEYS.find((j) => j.id === previewId) || null;
