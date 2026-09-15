@@ -35,9 +35,10 @@ export default function WalletRechargeCard({
   eyebrow = "Fund Your Wallet",
   subtitle = "Add balance so your journeys keep sending without interruption.",
   onDone,
+  initialAmount = WALLET_TOPUP.defaultAmount,
 }) {
   const [expandCoupon, setExpandCoupon] = useState(false);
-  const [amount, setAmount] = useState(WALLET_TOPUP.defaultAmount);
+  const [amount, setAmount] = useState(initialAmount);
   const [couponInput, setCouponInput] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponError, setCouponError] = useState(null);

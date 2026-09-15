@@ -138,4 +138,9 @@ describe("WalletRechargeCard", () => {
     expect(screen.queryByTestId("wallet-recharge-coupon-applied")).not.toBeInTheDocument();
     expect(screen.getByTestId("wallet-recharge-coupon-input")).toHaveValue("");
   });
+
+  it("seeds the amount from initialAmount when given, instead of the default", () => {
+    render(<WalletRechargeCard initialAmount={18000} />);
+    expect(screen.getByTestId("wallet-recharge-amount-input")).toHaveValue(18000);
+  });
 });
