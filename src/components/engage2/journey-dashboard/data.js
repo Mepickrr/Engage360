@@ -14,6 +14,9 @@ export const JOURNEYS = [
       body: "Hey {{1}}, still thinking about {{2}}? It's waiting for you — tap below to grab it before it's gone.",
       buttons: [{ label: "View Product" }],
     },
+    previewSample:
+      "Hey Aanya, still thinking about the Juniper Throw? It's waiting for you — tap below to grab it before it's gone.",
+    estimatedDailyVolume: 1200,
   },
   {
     id: "abandoned-product-identified",
@@ -26,6 +29,9 @@ export const JOURNEYS = [
       body: "Spotted you browsing {{1}}! Here's a closer look — tap below to check it out again.",
       buttons: [{ label: "View Product" }],
     },
+    previewSample:
+      "Spotted you browsing the Linen Weave Throw! Here's a closer look — tap below to check it out again.",
+    estimatedDailyVolume: 1200,
   },
   {
     id: "abandoned-cart-known",
@@ -37,6 +43,9 @@ export const JOURNEYS = [
       body: "Hey {{1}}, you left {{2}} in your cart! Complete your order now and get {{3}} off.",
       buttons: [{ label: "Complete Order" }],
     },
+    previewSample:
+      "Hey Aanya, you left the Juniper Throw in your cart! Complete your order now and get 10% off.",
+    estimatedDailyVolume: 4000,
   },
   {
     id: "abandoned-cart-identified",
@@ -49,6 +58,8 @@ export const JOURNEYS = [
       body: "Spotted you checking us out! We saved your cart — tap below to pick up right where you left off.",
       buttons: [{ label: "Resume Cart" }],
     },
+    previewSample: "Spotted you checking us out! We saved your cart — tap below to pick up right where you left off.",
+    estimatedDailyVolume: 4000,
   },
   {
     id: "abandoned-checkout-known",
@@ -60,6 +71,8 @@ export const JOURNEYS = [
       body: "Hey {{1}}, you're just one step away! Complete your payment for {{2}} now.",
       buttons: [{ label: "Complete Payment" }],
     },
+    previewSample: "Hey Aanya, you're just one step away! Complete your payment for ₹1,840 now.",
+    estimatedDailyVolume: 1600,
   },
   {
     id: "abandoned-checkout-identified",
@@ -72,6 +85,34 @@ export const JOURNEYS = [
       body: "Almost done! Your order is saved — tap below to complete checkout in seconds.",
       buttons: [{ label: "Complete Checkout" }],
     },
+    previewSample: "Almost done! Your order is saved — tap below to complete checkout in seconds.",
+    estimatedDailyVolume: 1600,
+  },
+];
+
+// Groups the 6 JOURNEYS entries above into the 3 listing cards shown on the
+// v2 Home page — each card offers both audience variants (Known / Fastrr
+// Identified) of one journeyType. `icon` names a lucide-react icon,
+// resolved by the presentation layer (JourneyListingCard), not here, so
+// this file stays free of component/JSX imports.
+export const JOURNEY_TYPES = [
+  {
+    id: "abandoned-product",
+    journeyType: "Abandoned Product",
+    icon: "Eye",
+    description: "Views a product but never adds it to cart.",
+  },
+  {
+    id: "abandoned-cart",
+    journeyType: "Abandoned Cart",
+    icon: "ShoppingCart",
+    description: "Adds to cart but doesn't check out.",
+  },
+  {
+    id: "abandoned-checkout",
+    journeyType: "Abandoned Checkout",
+    icon: "CreditCard",
+    description: "Starts checkout but doesn't complete payment.",
   },
 ];
 
