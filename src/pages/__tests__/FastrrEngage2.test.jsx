@@ -31,4 +31,15 @@ describe("FastrrEngagePage (v2 listing)", () => {
     render(<FastrrEngagePage />);
     expect(useFastrrEngagePanelStore.getState().isOpen).toBe(false);
   });
+
+  it("adds bottom padding to the page root once a journey is selected, so the floating cart rail can't cover the testimonials", () => {
+    useJourneySelectionStore2.getState().toggle("abandoned-cart-known");
+    render(<FastrrEngagePage />);
+    expect(screen.getByTestId("page-fastrr-engage").className).toContain("pb-28");
+  });
+
+  it("has no bottom padding on the page root when nothing is selected", () => {
+    render(<FastrrEngagePage />);
+    expect(screen.getByTestId("page-fastrr-engage").className).not.toContain("pb-28");
+  });
 });

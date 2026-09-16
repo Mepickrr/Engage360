@@ -2,16 +2,14 @@ import React from "react";
 import JourneyListingCard from "./JourneyListingCard";
 import CartRail from "./CartRail";
 import { JOURNEY_TYPES } from "@/components/engage2/journey-dashboard/data";
-import { useJourneySelectionStore2 } from "@/store/journeySelectionStore2";
 
+// Bottom clearance for the floating cart rail lives on the page root
+// (FastrrEngage2.jsx), not here — this section isn't reliably the page's
+// last one (TestimonialSection renders after it), so padding added at
+// this level doesn't guarantee the rail clears the page's true end.
 export default function JourneyListingSection() {
-  const hasSelection = useJourneySelectionStore2((s) => Object.keys(s.selected).length > 0);
-
   return (
-    <div
-      className={`mb-10 ${hasSelection ? "pb-28" : ""}`}
-      data-testid="journey-listing-section"
-    >
+    <div className="mb-10" data-testid="journey-listing-section">
       <div className="text-center mb-6">
         <h2 className="text-xl font-semibold text-text-primary mb-2">
           Pick the moments worth messaging
