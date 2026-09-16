@@ -9,11 +9,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useJourneyWalletStore } from "@/store/journeyWalletStore2";
+import { formatINR } from "./WalletRechargeCard";
 import { RATE_CARD } from "./data";
-
-function formatINR(amount) {
-  return `₹${amount.toLocaleString("en-IN")}`;
-}
 
 export default function WelcomeModal({ open, onClose, activatedCount = 0 }) {
   const [expanded, setExpanded] = useState(false);
@@ -93,9 +90,13 @@ export default function WelcomeModal({ open, onClose, activatedCount = 0 }) {
           data-testid="welcome-recap"
         >
           <p className="text-sm font-semibold text-text-primary">
-            {`✓ ${formatINR(balance)} funded, ${activatedCount} journey${
-              activatedCount === 1 ? "" : "s"
-            } live`}
+            {balance > 0
+              ? `✓ ${formatINR(balance)} funded, ${activatedCount} journey${
+                  activatedCount === 1 ? "" : "s"
+                } live`
+              : `${activatedCount} journey${
+                  activatedCount === 1 ? "" : "s"
+                } live — add wallet balance to start sending.`}
           </p>
         </div>
 

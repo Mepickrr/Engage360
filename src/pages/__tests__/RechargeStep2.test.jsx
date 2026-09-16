@@ -60,4 +60,10 @@ describe("RechargeStep2Page", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/engage-2/account-setup");
     expect(useJourneyWalletStore.getState().balance).toBe(0);
   });
+
+  it("hides the generic AI-suggestion block since the amount is already cart-derived", () => {
+    useJourneySelectionStore2.getState().toggle("abandoned-cart-known");
+    render(<RechargeStep2Page />);
+    expect(screen.queryByTestId("wallet-recharge-ai-suggestion")).not.toBeInTheDocument();
+  });
 });

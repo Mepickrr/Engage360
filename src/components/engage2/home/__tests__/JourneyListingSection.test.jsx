@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import JourneyListingSection from "../JourneyListingSection";
 import { useJourneySelectionStore2 } from "@/store/journeySelectionStore2";
 
@@ -29,5 +29,12 @@ describe("JourneyListingSection", () => {
   it("does not render the cart rail when nothing is selected", () => {
     render(<JourneyListingSection />);
     expect(screen.queryByTestId("cart-rail")).not.toBeInTheDocument();
+  });
+
+  it("shows the cart rail with the cart total once a pill is selected", () => {
+    render(<JourneyListingSection />);
+    fireEvent.click(screen.getByTestId("journey-listing-pill-abandoned-cart-known"));
+    expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("1 journey selected");
+    expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("₹18,000");
   });
 });

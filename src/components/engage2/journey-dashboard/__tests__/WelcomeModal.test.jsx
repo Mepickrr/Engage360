@@ -63,4 +63,10 @@ describe("WelcomeModal", () => {
     fireEvent.click(screen.getByTestId("welcome-modal-done"));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
+
+  it("shows a funding nudge instead of a false 'funded' claim when the wallet balance is still zero", () => {
+    render(<WelcomeModal open={true} onClose={() => {}} activatedCount={1} />);
+    expect(screen.getByTestId("welcome-recap")).not.toHaveTextContent("funded");
+    expect(screen.getByTestId("welcome-recap")).toHaveTextContent("1 journey live");
+  });
 });

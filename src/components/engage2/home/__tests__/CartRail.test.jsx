@@ -48,4 +48,15 @@ describe("CartRail", () => {
     fireEvent.click(screen.getByTestId("cart-rail-continue"));
     expect(mockNavigate).toHaveBeenCalledWith("/engage-2/recharge");
   });
+
+  it("counts a journey type's daily volume once even when both audience variants are selected", () => {
+    useJourneySelectionStore2.getState().toggle("abandoned-cart-known");
+    useJourneySelectionStore2.getState().toggle("abandoned-cart-identified");
+    render(<CartRail />);
+    // Both variants share the same 4,000/day Abandoned Cart volume — selecting
+    // both doesn't double it: 4,000 * ₹1.50 * 3 days = ₹18,000, same as
+    // selecting just one.
+    expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("2 journeys selected");
+    expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("₹18,000");
+  });
 });

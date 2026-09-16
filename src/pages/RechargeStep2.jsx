@@ -3,21 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { Wallet } from "lucide-react";
 import WalletRechargeCard from "@/components/engage2/journey-dashboard/WalletRechargeCard";
 import { useJourneySelectionStore2 } from "@/store/journeySelectionStore2";
-import { RATE_CARD, WALLET_TOPUP } from "@/components/engage2/journey-dashboard/data";
-
-const MARKETING_RATE_PER_MESSAGE = RATE_CARD.enabled.find(
-  (c) => c.id === "wa-marketing"
-).pricePerMessage;
+import { computeCartFunding } from "@/components/engage2/home/cartFunding";
+import { WALLET_TOPUP } from "@/components/engage2/journey-dashboard/data";
 
 export default function RechargeStep2Page() {
   const navigate = useNavigate();
   const selectedJourneys = useJourneySelectionStore2((s) => s.selectedJourneys());
-
-  const dailyCost = selectedJourneys.reduce(
-    (sum, j) => sum + j.estimatedDailyVolume * MARKETING_RATE_PER_MESSAGE,
-    0
-  );
-  const cartAmount = dailyCost * WALLET_TOPUP.aiSuggestRunwayDays || WALLET_TOPUP.defaultAmount;
+  const { total, runwayDays } = computeCartFunding(selectedJourneys);
+  const cartAmount = total || WALLET_TOPUP.defaultAmount;
 
   function handleContinue() {
     navigate("/engage-2/account-setup");
@@ -42,8 +35,9 @@ export default function RechargeStep2Page() {
 
         <WalletRechargeCard
           eyebrow="Recharge for Your Selected Journeys"
-          subtitle="This covers the journeys you just picked for their first 3 days."
+          subtitle={`This covers the journeys you just picked for their first ${runwayDays} days.`}
           initialAmount={cartAmount}
+          showAiSuggestion={false}
           onDone={handleContinue}
         />
 

@@ -143,4 +143,9 @@ describe("WalletRechargeCard", () => {
     render(<WalletRechargeCard initialAmount={18000} />);
     expect(screen.getByTestId("wallet-recharge-amount-input")).toHaveValue(18000);
   });
+
+  it("hides the AI suggestion block when showAiSuggestion is false", () => {
+    render(<WalletRechargeCard showAiSuggestion={false} />);
+    expect(screen.queryByTestId("wallet-recharge-ai-suggestion")).not.toBeInTheDocument();
+  });
 });
