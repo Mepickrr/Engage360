@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Eye, ShoppingCart, CreditCard, Check } from "lucide-react";
 import { JOURNEYS, RATE_CARD } from "@/components/engage2/journey-dashboard/data";
 import { useJourneySelectionStore2 } from "@/store/journeySelectionStore2";
+import JourneyPreviewModal from "@/components/engage2/journey-dashboard/JourneyPreviewModal";
 
 const ICONS = { Eye, ShoppingCart, CreditCard };
 
@@ -15,6 +16,7 @@ const MARKETING_RATE = RATE_CARD.enabled.find((c) => c.id === "wa-marketing").pr
 
 export default function JourneyListingCard({ journeyTypeConfig }) {
   const [activeAudience, setActiveAudience] = useState("Known");
+  const [previewOpen, setPreviewOpen] = useState(false);
   const toggle = useJourneySelectionStore2((s) => s.toggle);
   const selected = useJourneySelectionStore2((s) => s.selected);
 
@@ -77,17 +79,33 @@ export default function JourneyListingCard({ journeyTypeConfig }) {
 
       <p className="text-xs text-text-muted mb-3">{AUDIENCE_EXPLAINER[activeAudience]}</p>
 
-      <div
-        className="bg-app-bg border border-border rounded-md p-3 mb-3"
-        data-testid={`journey-listing-preview-${activeJourney.id}`}
+      <button
+        type="button"
+        className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-primary border border-dashed border-primary/40 rounded-md py-2.5 mb-3 hover:bg-primary-tint/40 transition-colors"
+        data-testid={`journey-listing-preview-trigger-${activeJourney.id}`}
+        onClick={() => setPreviewOpen(true)}
       >
-        <p className="text-sm text-text-primary">{`"${activeJourney.previewSample}"`}</p>
-      </div>
+        <Eye className="w-3.5 h-3.5" />
+        Preview this flow
+      </button>
 
       <div className="flex items-center justify-between text-xs text-text-secondary">
         <span>{`~${activeJourney.estimatedDailyVolume.toLocaleString("en-IN")}/day`}</span>
         <span className="tabular-nums">{MARKETING_RATE}</span>
       </div>
+
+      <JourneyPreviewModal
+        journey={previewOpen ? activeJourney : null}
+        onClose={() => setPreviewOpen(false)}
+        onActivate={(id) => {
+          // "Activate Now" here means "add to selection" (this is the
+          // pre-recharge/pre-signup listing page, not the live dashboard) —
+          // idempotent so re-confirming an already-selected journey from the
+          // preview never silently deselects it the way the pill's toggle would.
+          if (!selected[id]) toggle(id);
+          setPreviewOpen(false);
+        }}
+      />
     </div>
   );
 }
