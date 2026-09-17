@@ -30,11 +30,14 @@ export default function JourneyListingCard({ journeyTypeConfig }) {
   };
 
   const activeJourney = variants[activeAudience];
+  const otherAudience = activeAudience === "Known" ? "Fastrr Identified" : "Known";
+  const isActivated = !!selected[activeJourney.id];
   const Icon = ICONS[journeyTypeConfig.icon];
 
-  function handlePillClick(audience) {
+  // Tabs only switch which audience you're looking at — no side effects.
+  // "Activate Now" is the one, explicit place selection actually happens.
+  function handleTabClick(audience) {
     setActiveAudience(audience);
-    toggle(variants[audience].id);
   }
 
   return (
@@ -54,23 +57,23 @@ export default function JourneyListingCard({ journeyTypeConfig }) {
         </div>
       </div>
 
-      <div className="flex gap-2 mb-3">
+      <div className="flex p-0.5 rounded-md bg-app-bg border border-border mb-3" role="tablist">
         {["Known", "Fastrr Identified"].map((audience) => {
-          const isSelected = !!selected[variants[audience].id];
           const isActive = activeAudience === audience;
           return (
             <button
               key={audience}
               type="button"
-              data-testid={`journey-listing-pill-${variants[audience].id}`}
-              onClick={() => handlePillClick(audience)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
-                isSelected
-                  ? "bg-primary text-white border-primary"
-                  : "bg-surface text-text-secondary border-border hover:border-primary"
-              } ${isActive ? "ring-2 ring-primary/30" : ""}`}
+              role="tab"
+              aria-selected={isActive}
+              data-testid={`journey-listing-tab-${variants[audience].id}`}
+              onClick={() => handleTabClick(audience)}
+              className={`flex-1 px-3 py-1.5 rounded text-xs font-semibold transition-colors ${
+                isActive
+                  ? "bg-surface text-text-primary shadow-sm"
+                  : "text-text-secondary hover:text-text-primary"
+              }`}
             >
-              {isSelected && <Check className="w-3 h-3" />}
               {audience}
             </button>
           );
@@ -81,12 +84,32 @@ export default function JourneyListingCard({ journeyTypeConfig }) {
 
       <button
         type="button"
-        className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-primary border border-dashed border-primary/40 rounded-md py-2.5 mb-3 hover:bg-primary-tint/40 transition-colors"
+        className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-primary border border-dashed border-primary/40 rounded-md py-2.5 mb-2 hover:bg-primary-tint/40 transition-colors"
         data-testid={`journey-listing-preview-trigger-${activeJourney.id}`}
         onClick={() => setPreviewOpen(true)}
       >
         <Eye className="w-3.5 h-3.5" />
-        Preview this flow
+        Preview Journey
+      </button>
+
+      <button
+        type="button"
+        data-testid={`journey-listing-activate-${activeJourney.id}`}
+        onClick={() => toggle(activeJourney.id)}
+        className={`w-full flex items-center justify-center gap-1.5 text-xs font-semibold rounded-md py-2.5 mb-3 transition-colors ${
+          isActivated
+            ? "bg-success-bg text-success border border-success/30 hover:bg-success-bg/70"
+            : "bg-primary text-white hover:bg-primary-hover"
+        }`}
+      >
+        {isActivated ? (
+          <>
+            <Check className="w-3.5 h-3.5" />
+            Activated — tap to remove
+          </>
+        ) : (
+          "Activate Now"
+        )}
       </button>
 
       <div className="flex items-center justify-between text-xs text-text-secondary">
@@ -96,12 +119,11 @@ export default function JourneyListingCard({ journeyTypeConfig }) {
 
       <JourneyPreviewModal
         journey={previewOpen ? activeJourney : null}
+        otherAudienceJourney={previewOpen ? variants[otherAudience] : null}
         onClose={() => setPreviewOpen(false)}
         onActivate={(id) => {
-          // "Activate Now" here means "add to selection" (this is the
-          // pre-recharge/pre-signup listing page, not the live dashboard) —
-          // idempotent so re-confirming an already-selected journey from the
-          // preview never silently deselects it the way the pill's toggle would.
+          // Idempotent — re-confirming from inside the preview never
+          // silently removes an already-activated journey.
           if (!selected[id]) toggle(id);
           setPreviewOpen(false);
         }}

@@ -51,4 +51,33 @@ describe("JourneyPreviewModal", () => {
     fireEvent.click(screen.getByTestId("journey-preview-activate"));
     expect(onActivate).toHaveBeenCalledWith(journey.id);
   });
+
+  it("shows both audience variants side by side when otherAudienceJourney is passed, instead of the single trigger/wait chain", () => {
+    const known = JOURNEYS.find((j) => j.id === "abandoned-cart-known");
+    const identified = JOURNEYS.find((j) => j.id === "abandoned-cart-identified");
+    render(
+      <JourneyPreviewModal
+        journey={known}
+        otherAudienceJourney={identified}
+        onClose={() => {}}
+        onActivate={() => {}}
+      />
+    );
+    expect(screen.getByTestId("preview-dual-audience")).toBeInTheDocument();
+    expect(screen.getByTestId("preview-dual-block-abandoned-cart-known")).toHaveTextContent(
+      "you left"
+    );
+    expect(screen.getByTestId("preview-dual-block-abandoned-cart-identified")).toHaveTextContent(
+      "We saved your cart"
+    );
+    expect(screen.queryByTestId("preview-trigger-block")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("preview-wait-block")).not.toBeInTheDocument();
+  });
+
+  it("omitting otherAudienceJourney keeps the original single-flow layout (dashboard usage unaffected)", () => {
+    const journey = JOURNEYS.find((j) => j.id === "abandoned-cart-known");
+    render(<JourneyPreviewModal journey={journey} onClose={() => {}} onActivate={() => {}} />);
+    expect(screen.queryByTestId("preview-dual-audience")).not.toBeInTheDocument();
+    expect(screen.getByTestId("preview-trigger-block")).toBeInTheDocument();
+  });
 });

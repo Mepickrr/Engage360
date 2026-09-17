@@ -31,9 +31,9 @@ describe("JourneyListingSection", () => {
     expect(screen.queryByTestId("cart-rail")).not.toBeInTheDocument();
   });
 
-  it("shows the cart rail with the cart total once a pill is selected", () => {
+  it("shows the cart rail with the cart total once a journey is activated", () => {
     render(<JourneyListingSection />);
-    fireEvent.click(screen.getByTestId("journey-listing-pill-abandoned-cart-known"));
+    fireEvent.click(screen.getByTestId("journey-listing-activate-abandoned-cart-known"));
     expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("1 journey selected");
     expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("₹18,000");
   });
