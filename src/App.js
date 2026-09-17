@@ -19,6 +19,7 @@ import FastrrEngagePanel2 from "@/components/engage2/FastrrEngagePanel2";
 import EngageAccountSetupPage2 from "@/pages/EngageAccountSetup2";
 import MetaEmbeddedSignup2 from "@/pages/MetaEmbeddedSignup2";
 import FastrrJourneyPage2 from "@/pages/FastrrJourney2";
+import RechargeStep2Page from "@/pages/RechargeStep2";
 import FlowsPage from "@/pages/Flows";
 import FlowBuilder from "@/pages/FlowBuilder";
 import FlowCreatePage from "@/pages/FlowCreate";
@@ -97,6 +98,7 @@ function App() {
           <Route path="/engage/account-setup" element={<EngageAccountSetupPage />} />
           <Route path="/engage/meta-embedded-signup" element={<MetaEmbeddedSignup />} />
           <Route path="/fastrr-journey" element={<FastrrJourneyPage />} />
+          <Route path="/engage-2/recharge" element={<RechargeStep2Page />} />
           <Route path="/engage-2/account-setup" element={<EngageAccountSetupPage2 />} />
           <Route path="/engage-2/meta-embedded-signup" element={<MetaEmbeddedSignup2 />} />
           <Route path="/fastrr-journey-2" element={<FastrrJourneyPage2 />} />

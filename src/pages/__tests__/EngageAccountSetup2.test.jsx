@@ -3,14 +3,8 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import EngageAccountSetupPage from "../EngageAccountSetup2";
 import { STORAGE_KEY } from "@/lib/metaSignupMock2";
-import { toast } from "sonner";
 
-jest.mock("sonner", () => ({ toast: { success: jest.fn(), error: jest.fn() } }));
-
-// react-router-dom cannot be resolved by Jest in this project (its package.json
-// "exports" map is ESM-only under Jest's default "node" condition). This page
-// only needs MemoryRouter as a passthrough wrapper and Link rendered as a
-// plain anchor — see e.g. BuilderTopbar.test.jsx for the same workaround.
+const mockNavigate = jest.fn();
 jest.mock(
   "react-router-dom",
   () => ({
@@ -20,6 +14,7 @@ jest.mock(
         {children}
       </a>
     ),
+    useNavigate: () => mockNavigate,
   }),
   { virtual: true }
 );
@@ -32,6 +27,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   window.localStorage.clear();
+  mockNavigate.mockClear();
 });
 
 describe("EngageAccountSetupPage", () => {
@@ -48,8 +44,7 @@ describe("EngageAccountSetupPage", () => {
     expect(screen.getByTestId("exit-setup-link")).toHaveAttribute("href", "/fastrr-engage-2");
   });
 
-  it("clicking either signup CTA writes the current form snapshot to localStorage and opens the signup popup", () => {
-    const openSpy = jest.spyOn(window, "open").mockImplementation(() => {});
+  it("clicking either signup CTA writes the current form snapshot to localStorage and navigates to Meta Embedded Signup in-tab", () => {
     render(
       <MemoryRouter>
         <EngageAccountSetupPage />
@@ -61,38 +56,15 @@ describe("EngageAccountSetupPage", () => {
     const stored = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
     expect(stored.brandName).toBe("Avimee");
     expect(stored.phoneNumber).toBe("+91 98765 43210");
-    expect(openSpy).toHaveBeenCalledWith(
-      "/engage-2/meta-embedded-signup",
-      "metaEmbeddedSignup",
-      "width=560,height=780"
-    );
+    expect(mockNavigate).toHaveBeenCalledWith("/engage-2/meta-embedded-signup");
 
     window.localStorage.clear();
-    openSpy.mockClear();
+    mockNavigate.mockClear();
     fireEvent.click(screen.getByTestId("setup-cta-ai"));
 
     const storedAgain = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
     expect(storedAgain.brandName).toBe("Avimee");
     expect(storedAgain.phoneNumber).toBe("+91 98765 43210");
-    expect(openSpy).toHaveBeenCalledWith(
-      "/engage-2/meta-embedded-signup",
-      "metaEmbeddedSignup",
-      "width=560,height=780"
-    );
-
-    openSpy.mockRestore();
-  });
-
-  it("shows an error toast when the popup is blocked", () => {
-    jest.spyOn(window, "open").mockImplementation(() => null);
-    render(
-      <MemoryRouter>
-        <EngageAccountSetupPage />
-      </MemoryRouter>
-    );
-    fireEvent.click(screen.getByTestId("setup-cta-manual"));
-    expect(toast.error).toHaveBeenCalledWith(
-      "Your browser blocked the signup popup. Please allow popups for this site and try again."
-    );
+    expect(mockNavigate).toHaveBeenCalledWith("/engage-2/meta-embedded-signup");
   });
 });

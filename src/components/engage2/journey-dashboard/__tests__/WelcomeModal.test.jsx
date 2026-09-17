@@ -3,14 +3,6 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import WelcomeModal from "../WelcomeModal";
 import { useJourneyWalletStore } from "@/store/journeyWalletStore2";
 
-jest.mock("@/components/common/PreviewHeader", () => ({
-  previewToast: jest.fn(),
-}));
-
-jest.mock("sonner", () => ({
-  toast: { success: jest.fn() },
-}));
-
 beforeAll(() => {
   window.HTMLElement.prototype.hasPointerCapture = jest.fn();
   window.HTMLElement.prototype.releasePointerCapture = jest.fn();
@@ -27,8 +19,9 @@ describe("WelcomeModal", () => {
     expect(screen.queryByTestId("welcome-modal")).not.toBeInTheDocument();
   });
 
-  it("renders the congratulations header, the 3 enabled channels by default, disabled channels hidden, and the shared wallet recharge card", () => {
-    render(<WelcomeModal open={true} onClose={() => {}} />);
+  it("renders the congratulations header, the 3 enabled channels by default, disabled channels hidden, and a funded/live recap", () => {
+    useJourneyWalletStore.setState({ balance: 18000 });
+    render(<WelcomeModal open={true} onClose={() => {}} activatedCount={2} />);
     expect(screen.getByTestId("welcome-modal")).toBeInTheDocument();
     expect(screen.getByText("Your WhatsApp Channel Is Live! 🎉")).toBeInTheDocument();
 
@@ -40,8 +33,13 @@ describe("WelcomeModal", () => {
     expect(screen.queryByTestId("welcome-rate-row-rcs")).not.toBeInTheDocument();
     expect(screen.queryByTestId("welcome-rate-row-sms")).not.toBeInTheDocument();
 
-    expect(screen.getByTestId("wallet-recharge-card")).toBeInTheDocument();
-    expect(screen.getByText("Fund Your First Journey")).toBeInTheDocument();
+    expect(screen.getByTestId("welcome-recap")).toHaveTextContent("₹18,000 funded, 2 journeys live");
+    expect(screen.queryByTestId("wallet-recharge-card")).not.toBeInTheDocument();
+  });
+
+  it("singularizes the recap when exactly 1 journey is live", () => {
+    render(<WelcomeModal open={true} onClose={() => {}} activatedCount={1} />);
+    expect(screen.getByTestId("welcome-recap")).toHaveTextContent("1 journey live");
   });
 
   it("expanding the rate card reveals the 3 disabled channels", () => {
@@ -59,21 +57,16 @@ describe("WelcomeModal", () => {
     );
   });
 
-  it("clicking Add to Wallet in the shared recharge card closes the modal (via onDone)", () => {
+  it("clicking Got it closes the modal", () => {
     const onClose = jest.fn();
     render(<WelcomeModal open={true} onClose={onClose} />);
-    fireEvent.click(screen.getByTestId("wallet-recharge-add-cta"));
-
-    expect(useJourneyWalletStore.getState().balance).toBe(500);
+    fireEvent.click(screen.getByTestId("welcome-modal-done"));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it("clicking Skip for now closes the modal without crediting the wallet", () => {
-    const onClose = jest.fn();
-    render(<WelcomeModal open={true} onClose={onClose} />);
-    fireEvent.click(screen.getByTestId("welcome-modal-skip"));
-
-    expect(onClose).toHaveBeenCalledTimes(1);
-    expect(useJourneyWalletStore.getState().balance).toBe(0);
+  it("shows a funding nudge instead of a false 'funded' claim when the wallet balance is still zero", () => {
+    render(<WelcomeModal open={true} onClose={() => {}} activatedCount={1} />);
+    expect(screen.getByTestId("welcome-recap")).not.toHaveTextContent("funded");
+    expect(screen.getByTestId("welcome-recap")).toHaveTextContent("1 journey live");
   });
 });

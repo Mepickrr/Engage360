@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { toast } from "sonner";
+import { Link, useNavigate } from "react-router-dom";
 import SetupInstructions from "@/components/engage2/account-setup/SetupInstructions";
 import PhoneMockup from "@/components/engage2/account-setup/PhoneMockup";
 import WhatsAppProfilePreview from "@/components/engage2/account-setup/WhatsAppProfilePreview";
 import { DEFAULT_BUSINESS_CATEGORY } from "@/components/engage2/account-setup/data";
-import { buildSignupPayload, writeSignupPayload, openSignupPopup } from "@/lib/metaSignupMock2";
+import { buildSignupPayload, writeSignupPayload } from "@/lib/metaSignupMock2";
 
 export default function EngageAccountSetupPage() {
+  const navigate = useNavigate();
   const [numberMode, setNumberMode] = useState("has_number");
   const [numberValue, setNumberValue] = useState("");
   const [virtualNumberValue, setVirtualNumberValue] = useState("");
@@ -41,10 +41,7 @@ export default function EngageAccountSetupPage() {
       virtualNumberValue,
     });
     writeSignupPayload(payload);
-    const popup = openSignupPopup();
-    if (!popup) {
-      toast.error("Your browser blocked the signup popup. Please allow popups for this site and try again.");
-    }
+    navigate("/engage-2/meta-embedded-signup");
   }
 
   return (

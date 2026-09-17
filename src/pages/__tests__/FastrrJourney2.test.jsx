@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import FastrrJourneyPage from "../FastrrJourney2";
 import { JOURNEYS } from "@/components/engage2/journey-dashboard/data";
+import { useJourneySelectionStore2 } from "@/store/journeySelectionStore2";
 
 jest.mock(
   "react-router-dom",
@@ -29,6 +30,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   window.sessionStorage.clear();
+  useJourneySelectionStore2.getState().clear();
 });
 
 describe("FastrrJourneyPage", () => {
@@ -58,6 +60,17 @@ describe("FastrrJourneyPage", () => {
       </MemoryRouter>
     );
     expect(screen.queryByTestId("welcome-modal")).not.toBeInTheDocument();
+  });
+
+  it("seeds enabledMap from journeySelectionStore2's selections on mount, and clears the store after", () => {
+    useJourneySelectionStore2.getState().toggle(JOURNEYS[2].id); // abandoned-cart-known
+    render(
+      <MemoryRouter>
+        <FastrrJourneyPage />
+      </MemoryRouter>
+    );
+    expect(screen.getByTestId("journey-stat-active")).toHaveTextContent("1 / 6");
+    expect(useJourneySelectionStore2.getState().selectedJourneys()).toEqual([]);
   });
 
   it("renders the header, stats row, and journeys table together", () => {

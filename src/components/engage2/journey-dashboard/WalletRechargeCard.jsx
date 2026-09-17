@@ -27,17 +27,21 @@ function computeAiSuggestion() {
 }
 
 // Shared recharge experience — the AI-suggested amount, manual amount
-// entry, discount code, and the two recharge CTAs. Used both by
-// WelcomeModal (right after Meta Embedded Signup) and RechargeWalletModal
-// (opened any time from the journey dashboard header), so a seller always
-// gets the exact same recharge flow no matter where they start it from.
+// entry, discount code, and the two recharge CTAs. Used by
+// RechargeStep2 (the post-listing checkout step, with its own
+// cart-derived amount and showAiSuggestion={false}) and RechargeWalletModal
+// (opened any time from the journey dashboard header, whole-store AI
+// suggestion still shown), so a seller always gets the exact same recharge
+// mechanics no matter where they start it from.
 export default function WalletRechargeCard({
   eyebrow = "Fund Your Wallet",
   subtitle = "Add balance so your journeys keep sending without interruption.",
   onDone,
+  initialAmount = WALLET_TOPUP.defaultAmount,
+  showAiSuggestion = true,
 }) {
   const [expandCoupon, setExpandCoupon] = useState(false);
-  const [amount, setAmount] = useState(WALLET_TOPUP.defaultAmount);
+  const [amount, setAmount] = useState(initialAmount);
   const [couponInput, setCouponInput] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponError, setCouponError] = useState(null);
@@ -99,32 +103,34 @@ export default function WalletRechargeCard({
         <div className="text-sm text-text-secondary">{subtitle}</div>
       </div>
 
-      <div
-        className="rounded-md bg-surface border border-primary/30 p-3 mb-3"
-        data-testid="wallet-recharge-ai-suggestion"
-      >
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-primary mb-1">
-          <Sparkles className="w-3.5 h-3.5" />
-          AI Suggested for Your Store
-        </div>
-        <p className="text-xs text-text-secondary mb-2">
-          {`Your store sees ~${aiSuggestion.abandonedCheckoutPerDay.toLocaleString(
-            "en-IN"
-          )} abandoned carts a day. At current WhatsApp rates, that's ~${formatINR(
-            aiSuggestion.suggestedAmount
-          )} to keep recovery messages flowing for the next ${
-            WALLET_TOPUP.aiSuggestRunwayDays
-          } days without a gap.`}
-        </p>
-        <button
-          type="button"
-          data-testid="wallet-recharge-ai-suggestion-cta"
-          className="text-xs font-semibold text-primary hover:text-primary-hover transition-colors"
-          onClick={handleUseAiSuggestion}
+      {showAiSuggestion && (
+        <div
+          className="rounded-md bg-surface border border-primary/30 p-3 mb-3"
+          data-testid="wallet-recharge-ai-suggestion"
         >
-          Use {formatINR(aiSuggestion.suggestedAmount)}
-        </button>
-      </div>
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-primary mb-1">
+            <Sparkles className="w-3.5 h-3.5" />
+            AI Suggested for Your Store
+          </div>
+          <p className="text-xs text-text-secondary mb-2">
+            {`Your store sees ~${aiSuggestion.abandonedCheckoutPerDay.toLocaleString(
+              "en-IN"
+            )} abandoned carts a day. At current WhatsApp rates, that's ~${formatINR(
+              aiSuggestion.suggestedAmount
+            )} to keep recovery messages flowing for the next ${
+              WALLET_TOPUP.aiSuggestRunwayDays
+            } days without a gap.`}
+          </p>
+          <button
+            type="button"
+            data-testid="wallet-recharge-ai-suggestion-cta"
+            className="text-xs font-semibold text-primary hover:text-primary-hover transition-colors"
+            onClick={handleUseAiSuggestion}
+          >
+            Use {formatINR(aiSuggestion.suggestedAmount)}
+          </button>
+        </div>
+      )}
 
       <div className="relative mb-3">
         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-text-primary pointer-events-none">

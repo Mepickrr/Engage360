@@ -1,31 +1,23 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import HeroSection from "../HeroSection";
 
 describe("HeroSection", () => {
-  it("renders the eyebrow, headline, subhead, and chat preview mockup", () => {
-    render(<HeroSection onEnable={() => {}} />);
-    expect(screen.getByText("For D2C Brands on WhatsApp")).toBeInTheDocument();
-    expect(
-      screen.getByText("Convert Every Anonymous Visitor Into a Paying Customer")
-    ).toBeInTheDocument();
+  it("renders a personalized headline and subhead computed from the store's mock activity, and the chat preview mockup", () => {
+    render(<HeroSection />);
+    // monthlyRevenueAtRisk = 4,000/day * ₹100 AOV * 30 days = ₹1,20,00,000 -> formatCompactCurrency -> "₹1.2C"
+    expect(screen.getByTestId("hero-headline")).toHaveTextContent(
+      "₹1.2C a month is walking out through your checkout."
+    );
+    expect(screen.getByTestId("hero-subhead")).toHaveTextContent(
+      "4,000 shoppers a day abandon before paying"
+    );
     expect(screen.getByTestId("chat-preview-mockup")).toBeInTheDocument();
-    expect(screen.getByText("Cart reminder sent")).toBeInTheDocument();
-    expect(screen.getByText('"Yes, still interested!"')).toBeInTheDocument();
-    expect(screen.getByText("✅ Order confirmed")).toBeInTheDocument();
   });
 
-  it("clicking the primary CTA calls onEnable", () => {
-    const onEnable = jest.fn();
-    render(<HeroSection onEnable={onEnable} />);
-    fireEvent.click(screen.getByTestId("fastrr-engage-hero-cta"));
-    expect(onEnable).toHaveBeenCalledTimes(1);
-  });
-
-  it("the secondary CTA is a present, clickable no-op", () => {
-    const onEnable = jest.fn();
-    render(<HeroSection onEnable={onEnable} />);
-    fireEvent.click(screen.getByTestId("fastrr-engage-hero-secondary-cta"));
-    expect(onEnable).not.toHaveBeenCalled();
+  it("no longer renders the old CTA buttons", () => {
+    render(<HeroSection />);
+    expect(screen.queryByTestId("fastrr-engage-hero-cta")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("fastrr-engage-hero-secondary-cta")).not.toBeInTheDocument();
   });
 });
