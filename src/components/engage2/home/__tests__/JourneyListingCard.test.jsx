@@ -88,17 +88,13 @@ describe("JourneyListingCard", () => {
     ).toHaveTextContent("Activate Now");
   });
 
-  it("clicking the preview trigger opens a modal showing both audience variants side by side, without selecting either", () => {
+  it("clicking the preview trigger opens the flow chart for Known by default, with a toggle to see Fastrr Identified, without selecting either", () => {
     render(<JourneyListingCard journeyTypeConfig={cartConfig} />);
     fireEvent.click(screen.getByTestId("journey-listing-preview-trigger-abandoned-cart-known"));
     expect(screen.getByTestId("journey-preview-modal")).toBeInTheDocument();
-    expect(screen.getByTestId("preview-dual-audience")).toBeInTheDocument();
-    expect(screen.getByTestId("preview-dual-block-abandoned-cart-known")).toHaveTextContent(
-      "you left"
-    );
-    expect(screen.getByTestId("preview-dual-block-abandoned-cart-identified")).toHaveTextContent(
-      "We saved your cart"
-    );
+    expect(screen.getByTestId("preview-whatsapp-block")).toHaveTextContent("you left");
+    fireEvent.click(screen.getByTestId("journey-preview-audience-tab-identified"));
+    expect(screen.getByTestId("preview-whatsapp-block")).toHaveTextContent("We saved your cart");
     expect(useJourneySelectionStore2.getState().isSelected("abandoned-cart-known")).toBe(false);
     expect(useJourneySelectionStore2.getState().isSelected("abandoned-cart-identified")).toBe(
       false

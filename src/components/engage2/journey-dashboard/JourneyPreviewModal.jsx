@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Zap, Clock, ChevronRight } from "lucide-react";
 import {
   Dialog,
@@ -18,111 +18,118 @@ const MARKETING_RATE = RATE_CARD.enabled.find((c) => c.id === "wa-marketing").pr
 
 export default function JourneyPreviewModal({ journey, otherAudienceJourney, onClose, onActivate }) {
   const open = !!journey;
-  // Dual mode is listing-page-only (JourneyListingCard passes the sibling
-  // audience variant); the dashboard's JourneysTable never passes this prop,
-  // so its rendering below is untouched.
-  const isDual = open && !!otherAudienceJourney;
+  // otherAudienceJourney is listing-page-only (JourneyListingCard passes the
+  // sibling audience variant); the dashboard's JourneysTable never passes
+  // it, so this whole toggle is invisible there and displayedJourney always
+  // just equals journey — no behavior change for that consumer.
+  const hasBothAudiences = open && !!otherAudienceJourney;
+
+  const [previewAudience, setPreviewAudience] = useState("Known");
+  // Reset to Known every time the modal is freshly opened, regardless of
+  // which tab was active on the card that opened it.
+  useEffect(() => {
+    if (open) setPreviewAudience("Known");
+  }, [open]);
+
+  const displayedJourney = hasBothAudiences
+    ? [journey, otherAudienceJourney].find((j) => j.audience === previewAudience)
+    : journey;
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className={isDual ? "max-w-3xl" : "max-w-2xl"} data-testid="journey-preview-modal">
+      <DialogContent className="max-w-2xl" data-testid="journey-preview-modal">
         {journey && (
           <>
             <DialogHeader>
-              <DialogTitle>{journey.journeyType}</DialogTitle>
-              {!isDual && (
-                <>
-                  <Badge variant="outline" className="w-fit">
-                    {journey.audience}
-                  </Badge>
-                  <DialogDescription data-testid="journey-preview-description">
-                    {journey.tooltip}
-                  </DialogDescription>
-                </>
-              )}
+              <DialogTitle>{displayedJourney.journeyType}</DialogTitle>
+              <Badge variant="outline" className="w-fit">
+                {displayedJourney.audience}
+              </Badge>
+              <DialogDescription data-testid="journey-preview-description">
+                {displayedJourney.tooltip}
+              </DialogDescription>
             </DialogHeader>
 
-            {isDual ? (
-              <div className="py-4" data-testid="preview-dual-audience">
-                <p className="text-xs text-text-secondary text-center mb-4">
-                  {`Both reach the same moment after the same ${WAIT_LABEL} wait — only the audience and message differ.`}
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {[journey, otherAudienceJourney].map((j) => (
-                    <div
-                      key={j.id}
-                      className="border border-border rounded-lg p-3"
-                      data-testid={`preview-dual-block-${j.id}`}
-                    >
-                      <Badge variant="outline" className="w-fit mb-2">
-                        {j.audience}
-                      </Badge>
-                      <div className="text-[11px] font-semibold text-text-primary mb-2 leading-tight">
-                        {j.triggerLabel}
-                      </div>
-                      <WhatsAppBubblePreview draft={j.waDraft} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center gap-3 py-6 overflow-x-auto">
-                <div
-                  className="w-[200px] flex-shrink-0 bg-white border-2 rounded-xl"
-                  style={{ borderColor: "#6C3AE8" }}
-                  data-testid="preview-trigger-block"
-                >
-                  <div className="flex items-center gap-2.5 px-3 py-3">
-                    <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-white flex-shrink-0"
-                      style={{ backgroundColor: "#6C3AE8" }}
-                    >
-                      <Zap className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="text-[10px] uppercase tracking-wide text-text-muted font-semibold">
-                        Trigger
-                      </div>
-                      <div className="text-[12px] font-semibold text-text-primary leading-tight">
-                        {journey.triggerLabel}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <ChevronRight className="w-4 h-4 text-slate-400 flex-shrink-0" />
-
-                <div
-                  className="w-[140px] flex-shrink-0 bg-white border-2 rounded-lg"
-                  style={{ borderColor: "#64748B" }}
-                  data-testid="preview-wait-block"
-                >
-                  <div className="flex items-center gap-2 px-3 py-2.5">
-                    <div
-                      className="w-8 h-8 rounded-md flex items-center justify-center text-white flex-shrink-0"
-                      style={{ backgroundColor: "#64748B" }}
-                    >
-                      <Clock className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div
-                        className="text-[10px] uppercase tracking-wide font-semibold"
-                        style={{ color: "#64748B" }}
-                      >
-                        Wait
-                      </div>
-                      <div className="text-[12px] font-semibold text-text-primary">{WAIT_LABEL}</div>
-                    </div>
-                  </div>
-                </div>
-
-                <ChevronRight className="w-4 h-4 text-slate-400 flex-shrink-0" />
-
-                <div className="w-[240px] flex-shrink-0" data-testid="preview-whatsapp-block">
-                  <WhatsAppBubblePreview draft={journey.waDraft} />
-                </div>
+            {hasBothAudiences && (
+              <div className="flex p-0.5 rounded-md bg-app-bg border border-border" role="tablist">
+                {["Known", "Fastrr Identified"].map((audience) => (
+                  <button
+                    key={audience}
+                    type="button"
+                    role="tab"
+                    aria-selected={previewAudience === audience}
+                    data-testid={`journey-preview-audience-tab-${
+                      audience === "Known" ? "known" : "identified"
+                    }`}
+                    onClick={() => setPreviewAudience(audience)}
+                    className={`flex-1 px-3 py-1.5 rounded text-xs font-semibold transition-colors ${
+                      previewAudience === audience
+                        ? "bg-surface text-text-primary shadow-sm"
+                        : "text-text-secondary hover:text-text-primary"
+                    }`}
+                  >
+                    {audience}
+                  </button>
+                ))}
               </div>
             )}
+
+            <div className="flex items-center gap-3 py-6 overflow-x-auto">
+              <div
+                className="w-[200px] flex-shrink-0 bg-white border-2 rounded-xl"
+                style={{ borderColor: "#6C3AE8" }}
+                data-testid="preview-trigger-block"
+              >
+                <div className="flex items-center gap-2.5 px-3 py-3">
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center text-white flex-shrink-0"
+                    style={{ backgroundColor: "#6C3AE8" }}
+                  >
+                    <Zap className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wide text-text-muted font-semibold">
+                      Trigger
+                    </div>
+                    <div className="text-[12px] font-semibold text-text-primary leading-tight">
+                      {displayedJourney.triggerLabel}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <ChevronRight className="w-4 h-4 text-slate-400 flex-shrink-0" />
+
+              <div
+                className="w-[140px] flex-shrink-0 bg-white border-2 rounded-lg"
+                style={{ borderColor: "#64748B" }}
+                data-testid="preview-wait-block"
+              >
+                <div className="flex items-center gap-2 px-3 py-2.5">
+                  <div
+                    className="w-8 h-8 rounded-md flex items-center justify-center text-white flex-shrink-0"
+                    style={{ backgroundColor: "#64748B" }}
+                  >
+                    <Clock className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div
+                      className="text-[10px] uppercase tracking-wide font-semibold"
+                      style={{ color: "#64748B" }}
+                    >
+                      Wait
+                    </div>
+                    <div className="text-[12px] font-semibold text-text-primary">{WAIT_LABEL}</div>
+                  </div>
+                </div>
+              </div>
+
+              <ChevronRight className="w-4 h-4 text-slate-400 flex-shrink-0" />
+
+              <div className="w-[240px] flex-shrink-0" data-testid="preview-whatsapp-block">
+                <WhatsAppBubblePreview draft={displayedJourney.waDraft} />
+              </div>
+            </div>
 
             <div
               className="text-xs text-text-secondary mb-2"
@@ -142,7 +149,7 @@ export default function JourneyPreviewModal({ journey, otherAudienceJourney, onC
               </Button>
               <Button
                 type="button"
-                onClick={() => onActivate(journey.id)}
+                onClick={() => onActivate(displayedJourney.id)}
                 data-testid="journey-preview-activate"
               >
                 Activate Now

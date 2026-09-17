@@ -52,7 +52,26 @@ describe("JourneyPreviewModal", () => {
     expect(onActivate).toHaveBeenCalledWith(journey.id);
   });
 
-  it("shows both audience variants side by side when otherAudienceJourney is passed, instead of the single trigger/wait chain", () => {
+  it("when otherAudienceJourney is passed, shows the full flow chart for Known by default plus an audience toggle", () => {
+    const known = JOURNEYS.find((j) => j.id === "abandoned-cart-known");
+    const identified = JOURNEYS.find((j) => j.id === "abandoned-cart-identified");
+    render(
+      <JourneyPreviewModal
+        journey={identified}
+        otherAudienceJourney={known}
+        onClose={() => {}}
+        onActivate={() => {}}
+      />
+    );
+    // Known by default even though the *passed-in* journey is Identified —
+    // the card may have been on either tab when Preview Journey was clicked.
+    expect(screen.getByTestId("preview-trigger-block")).toHaveTextContent(known.triggerLabel);
+    expect(screen.getByTestId("preview-whatsapp-block")).toHaveTextContent("you left");
+    expect(screen.getByTestId("journey-preview-audience-tab-known")).toBeInTheDocument();
+    expect(screen.getByTestId("journey-preview-audience-tab-identified")).toBeInTheDocument();
+  });
+
+  it("clicking the Identified tab switches the full flow chart to that variant", () => {
     const known = JOURNEYS.find((j) => j.id === "abandoned-cart-known");
     const identified = JOURNEYS.find((j) => j.id === "abandoned-cart-identified");
     render(
@@ -63,21 +82,32 @@ describe("JourneyPreviewModal", () => {
         onActivate={() => {}}
       />
     );
-    expect(screen.getByTestId("preview-dual-audience")).toBeInTheDocument();
-    expect(screen.getByTestId("preview-dual-block-abandoned-cart-known")).toHaveTextContent(
-      "you left"
-    );
-    expect(screen.getByTestId("preview-dual-block-abandoned-cart-identified")).toHaveTextContent(
-      "We saved your cart"
-    );
-    expect(screen.queryByTestId("preview-trigger-block")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("preview-wait-block")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("journey-preview-audience-tab-identified"));
+    expect(screen.getByTestId("preview-trigger-block")).toHaveTextContent(identified.triggerLabel);
+    expect(screen.getByTestId("preview-whatsapp-block")).toHaveTextContent("We saved your cart");
   });
 
-  it("omitting otherAudienceJourney keeps the original single-flow layout (dashboard usage unaffected)", () => {
+  it("clicking 'Activate Now' after switching tabs activates the currently displayed audience, not the originally-passed one", () => {
+    const known = JOURNEYS.find((j) => j.id === "abandoned-cart-known");
+    const identified = JOURNEYS.find((j) => j.id === "abandoned-cart-identified");
+    const onActivate = jest.fn();
+    render(
+      <JourneyPreviewModal
+        journey={known}
+        otherAudienceJourney={identified}
+        onClose={() => {}}
+        onActivate={onActivate}
+      />
+    );
+    fireEvent.click(screen.getByTestId("journey-preview-audience-tab-identified"));
+    fireEvent.click(screen.getByTestId("journey-preview-activate"));
+    expect(onActivate).toHaveBeenCalledWith(identified.id);
+  });
+
+  it("omitting otherAudienceJourney keeps the original single-flow layout with no audience toggle (dashboard usage unaffected)", () => {
     const journey = JOURNEYS.find((j) => j.id === "abandoned-cart-known");
     render(<JourneyPreviewModal journey={journey} onClose={() => {}} onActivate={() => {}} />);
-    expect(screen.queryByTestId("preview-dual-audience")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("journey-preview-audience-tab-known")).not.toBeInTheDocument();
     expect(screen.getByTestId("preview-trigger-block")).toBeInTheDocument();
   });
 });
