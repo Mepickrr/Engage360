@@ -12,6 +12,12 @@ jest.mock(
   { virtual: true }
 );
 
+beforeAll(() => {
+  window.HTMLElement.prototype.hasPointerCapture = jest.fn();
+  window.HTMLElement.prototype.releasePointerCapture = jest.fn();
+  window.HTMLElement.prototype.scrollIntoView = jest.fn();
+});
+
 beforeEach(() => {
   useJourneySelectionStore2.getState().clear();
 });
@@ -36,5 +42,15 @@ describe("JourneyListingSection", () => {
     fireEvent.click(screen.getByTestId("journey-listing-activate-abandoned-cart-known"));
     expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("1 journey selected");
     expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("₹18,000");
+  });
+
+  it("clicking Continue to Recharge opens the Fund Wallet modal on this same page, without navigating away", () => {
+    render(<JourneyListingSection />);
+    fireEvent.click(screen.getByTestId("journey-listing-activate-abandoned-cart-known"));
+    expect(screen.queryByTestId("fund-wallet-modal")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("cart-rail-continue"));
+    expect(screen.getByTestId("fund-wallet-modal")).toBeInTheDocument();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });

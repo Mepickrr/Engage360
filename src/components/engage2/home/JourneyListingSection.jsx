@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import JourneyListingCard from "./JourneyListingCard";
 import CartRail from "./CartRail";
+import FundWalletModal from "./FundWalletModal";
 import { JOURNEY_TYPES } from "@/components/engage2/journey-dashboard/data";
 
 // Bottom clearance for the floating cart rail lives on the page root
@@ -8,6 +9,8 @@ import { JOURNEY_TYPES } from "@/components/engage2/journey-dashboard/data";
 // last one (TestimonialSection renders after it), so padding added at
 // this level doesn't guarantee the rail clears the page's true end.
 export default function JourneyListingSection() {
+  const [fundWalletOpen, setFundWalletOpen] = useState(false);
+
   return (
     <div className="mb-10" data-testid="journey-listing-section">
       <div className="text-center mb-6">
@@ -24,7 +27,8 @@ export default function JourneyListingSection() {
           <JourneyListingCard key={type.id} journeyTypeConfig={type} />
         ))}
       </div>
-      <CartRail />
+      <CartRail onContinue={() => setFundWalletOpen(true)} />
+      <FundWalletModal open={fundWalletOpen} onClose={() => setFundWalletOpen(false)} />
     </div>
   );
 }

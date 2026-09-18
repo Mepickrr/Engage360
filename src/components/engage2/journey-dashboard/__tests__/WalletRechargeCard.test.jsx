@@ -3,11 +3,6 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import WalletRechargeCard from "../WalletRechargeCard";
 import { useJourneyWalletStore } from "@/store/journeyWalletStore2";
 
-jest.mock("@/components/common/PreviewHeader", () => ({
-  previewToast: jest.fn(),
-}));
-import { previewToast } from "@/components/common/PreviewHeader";
-
 jest.mock("sonner", () => ({
   toast: { success: jest.fn() },
 }));
@@ -21,7 +16,6 @@ beforeAll(() => {
 
 beforeEach(() => {
   useJourneyWalletStore.setState({ balance: 0 });
-  previewToast.mockClear();
   toast.success.mockClear();
 });
 
@@ -32,16 +26,19 @@ describe("WalletRechargeCard", () => {
     expect(screen.getByText("Top up anytime.")).toBeInTheDocument();
   });
 
-  it("shows an AI-suggested amount computed from the store's mock traffic, and Use applies it", () => {
+  it("clicking the AI Suggest chip fills the AI-suggested amount computed from the store's mock traffic", () => {
     render(<WalletRechargeCard />);
     // 4,000 abandoned carts/day * ₹1.50/message * 3-day runway = ₹18,000
-    expect(screen.getByTestId("wallet-recharge-ai-suggestion")).toHaveTextContent(
-      "4,000 abandoned carts"
-    );
-    expect(screen.getByTestId("wallet-recharge-ai-suggestion")).toHaveTextContent("₹18,000");
-
-    fireEvent.click(screen.getByTestId("wallet-recharge-ai-suggestion-cta"));
+    fireEvent.click(screen.getByTestId("wallet-recharge-ai-suggest-chip"));
     expect(screen.getByTestId("wallet-recharge-amount-input")).toHaveValue(18000);
+  });
+
+  it("hovering (focusing) the AI Suggest chip shows a tooltip explaining the 3-day estimate", async () => {
+    render(<WalletRechargeCard />);
+    fireEvent.focus(screen.getByTestId("wallet-recharge-ai-suggest-chip"));
+    expect(await screen.findByTestId("wallet-recharge-ai-suggest-tooltip")).toHaveTextContent(
+      "next 3 days"
+    );
   });
 
   it("defaults the wallet amount to ₹500 and increments it via the +chips", () => {
@@ -65,12 +62,16 @@ describe("WalletRechargeCard", () => {
     expect(toast.success).toHaveBeenCalledWith("₹500 added to your wallet");
   });
 
-  it("clicking Transfer from Checkout Wallet calls previewToast and does not credit the wallet", () => {
-    render(<WalletRechargeCard />);
+  it("clicking Transfer from Checkout Wallet credits the wallet, calls onDone, and shows a distinct success toast", () => {
+    const onDone = jest.fn();
+    render(<WalletRechargeCard onDone={onDone} />);
     fireEvent.click(screen.getByTestId("wallet-recharge-transfer-cta"));
 
-    expect(previewToast).toHaveBeenCalledTimes(1);
-    expect(useJourneyWalletStore.getState().balance).toBe(0);
+    expect(useJourneyWalletStore.getState().balance).toBe(500);
+    expect(onDone).toHaveBeenCalledTimes(1);
+    expect(toast.success).toHaveBeenCalledWith(
+      "Success: Amount is transferred from Checkout wallet"
+    );
   });
 
   it("the discount code field is hidden until 'Have a discount code?' is clicked", () => {
@@ -144,8 +145,27 @@ describe("WalletRechargeCard", () => {
     expect(screen.getByTestId("wallet-recharge-amount-input")).toHaveValue(18000);
   });
 
-  it("hides the AI suggestion block when showAiSuggestion is false", () => {
-    render(<WalletRechargeCard showAiSuggestion={false} />);
-    expect(screen.queryByTestId("wallet-recharge-ai-suggestion")).not.toBeInTheDocument();
+  it("hideSubtitleOnChange keeps the subtitle visible until the amount changes from initialAmount", () => {
+    render(
+      <WalletRechargeCard
+        subtitle="This covers the journeys you just picked for their first 3 days."
+        initialAmount={5400}
+        hideSubtitleOnChange
+      />
+    );
+    expect(
+      screen.getByText("This covers the journeys you just picked for their first 3 days.")
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("wallet-recharge-increment-100"));
+    expect(
+      screen.queryByText("This covers the journeys you just picked for their first 3 days.")
+    ).not.toBeInTheDocument();
+  });
+
+  it("without hideSubtitleOnChange, the subtitle stays visible even after the amount changes", () => {
+    render(<WalletRechargeCard subtitle="Recharge anytime." />);
+    fireEvent.click(screen.getByTestId("wallet-recharge-increment-100"));
+    expect(screen.getByText("Recharge anytime.")).toBeInTheDocument();
   });
 });

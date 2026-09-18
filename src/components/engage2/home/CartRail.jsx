@@ -1,12 +1,10 @@
 import React from "react";
 import { createPortal } from "react-dom";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useJourneySelectionStore2 } from "@/store/journeySelectionStore2";
 import { computeCartFunding, formatINR } from "./cartFunding";
 
-export default function CartRail() {
-  const navigate = useNavigate();
+export default function CartRail({ onContinue }) {
   const selectedJourneys = useJourneySelectionStore2((s) => s.selectedJourneys());
 
   if (selectedJourneys.length === 0) return null;
@@ -33,7 +31,7 @@ export default function CartRail() {
           type="button"
           className="bg-white text-slate-900 hover:bg-white/90 flex-shrink-0"
           data-testid="cart-rail-continue"
-          onClick={() => navigate("/engage-2/recharge")}
+          onClick={onContinue}
         >
           Continue to Recharge
         </Button>

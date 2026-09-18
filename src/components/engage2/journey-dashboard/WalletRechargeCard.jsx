@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { previewToast } from "@/components/common/PreviewHeader";
 import { useJourneyWalletStore } from "@/store/journeyWalletStore2";
 import { computeRevenueOpportunity } from "@/components/engage2/RevenueOpportunityCard2";
 import { RATE_CARD, WALLET_TOPUP, COUPONS } from "./data";
@@ -28,17 +27,16 @@ function computeAiSuggestion() {
 
 // Shared recharge experience — the AI-suggested amount, manual amount
 // entry, discount code, and the two recharge CTAs. Used by
-// RechargeStep2 (the post-listing checkout step, with its own
-// cart-derived amount and showAiSuggestion={false}) and RechargeWalletModal
-// (opened any time from the journey dashboard header, whole-store AI
-// suggestion still shown), so a seller always gets the exact same recharge
-// mechanics no matter where they start it from.
+// FundWalletModal (the post-listing checkout step, cart-derived amount,
+// hideSubtitleOnChange={true}) and RechargeWalletModal (opened any time
+// from the journey dashboard header), so a seller always gets the exact
+// same recharge mechanics no matter where they start it from.
 export default function WalletRechargeCard({
   eyebrow = "Fund Your Wallet",
   subtitle = "Add balance so your journeys keep sending without interruption.",
   onDone,
   initialAmount = WALLET_TOPUP.defaultAmount,
-  showAiSuggestion = true,
+  hideSubtitleOnChange = false,
 }) {
   const [expandCoupon, setExpandCoupon] = useState(false);
   const [amount, setAmount] = useState(initialAmount);
@@ -91,6 +89,15 @@ export default function WalletRechargeCard({
     toast.success(`${formatINR(totalCredit)} added to your wallet`);
   }
 
+  function handleTransferFromCheckoutWallet() {
+    if (amount <= 0) return;
+    credit(totalCredit);
+    if (onDone) onDone();
+    toast.success("Success: Amount is transferred from Checkout wallet");
+  }
+
+  const subtitleVisible = !hideSubtitleOnChange || amount === initialAmount;
+
   return (
     <div
       className="rounded-lg bg-primary-tint/40 border border-border p-4"
@@ -100,37 +107,8 @@ export default function WalletRechargeCard({
         <div className="text-xs font-semibold uppercase tracking-wide text-text-muted">
           {eyebrow}
         </div>
-        <div className="text-sm text-text-secondary">{subtitle}</div>
+        {subtitleVisible && <div className="text-sm text-text-secondary">{subtitle}</div>}
       </div>
-
-      {showAiSuggestion && (
-        <div
-          className="rounded-md bg-surface border border-primary/30 p-3 mb-3"
-          data-testid="wallet-recharge-ai-suggestion"
-        >
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-primary mb-1">
-            <Sparkles className="w-3.5 h-3.5" />
-            AI Suggested for Your Store
-          </div>
-          <p className="text-xs text-text-secondary mb-2">
-            {`Your store sees ~${aiSuggestion.abandonedCheckoutPerDay.toLocaleString(
-              "en-IN"
-            )} abandoned carts a day. At current WhatsApp rates, that's ~${formatINR(
-              aiSuggestion.suggestedAmount
-            )} to keep recovery messages flowing for the next ${
-              WALLET_TOPUP.aiSuggestRunwayDays
-            } days without a gap.`}
-          </p>
-          <button
-            type="button"
-            data-testid="wallet-recharge-ai-suggestion-cta"
-            className="text-xs font-semibold text-primary hover:text-primary-hover transition-colors"
-            onClick={handleUseAiSuggestion}
-          >
-            Use {formatINR(aiSuggestion.suggestedAmount)}
-          </button>
-        </div>
-      )}
 
       <div className="relative mb-3">
         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-text-primary pointer-events-none">
@@ -158,7 +136,7 @@ export default function WalletRechargeCard({
         )}
       </div>
 
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-4 flex-wrap">
         {WALLET_TOPUP.increments.map((inc) => (
           <button
             key={inc}
@@ -170,6 +148,27 @@ export default function WalletRechargeCard({
             +{formatINR(inc)}
           </button>
         ))}
+        <TooltipProvider delayDuration={150}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                data-testid="wallet-recharge-ai-suggest-chip"
+                className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-primary/40 bg-primary-tint text-xs font-semibold text-primary hover:bg-primary-tint/70 transition-colors"
+                onClick={handleUseAiSuggestion}
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                AI Suggest
+              </button>
+            </TooltipTrigger>
+            <TooltipContent
+              className="w-56 bg-surface text-text-primary border border-border p-3"
+              data-testid="wallet-recharge-ai-suggest-tooltip"
+            >
+              {`Based on your estimated abandoned-checkout volume over the next ${WALLET_TOPUP.aiSuggestRunwayDays} days.`}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       <TooltipProvider delayDuration={150}>
@@ -280,7 +279,8 @@ export default function WalletRechargeCard({
           type="button"
           variant="outline"
           className="flex-1"
-          onClick={() => previewToast()}
+          disabled={amount <= 0}
+          onClick={handleTransferFromCheckoutWallet}
           data-testid="wallet-recharge-transfer-cta"
         >
           Transfer from Checkout Wallet

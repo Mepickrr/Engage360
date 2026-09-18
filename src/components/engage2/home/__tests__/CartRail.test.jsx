@@ -3,18 +3,8 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import CartRail from "../CartRail";
 import { useJourneySelectionStore2 } from "@/store/journeySelectionStore2";
 
-const mockNavigate = jest.fn();
-jest.mock(
-  "react-router-dom",
-  () => ({
-    useNavigate: () => mockNavigate,
-  }),
-  { virtual: true }
-);
-
 beforeEach(() => {
   useJourneySelectionStore2.getState().clear();
-  mockNavigate.mockClear();
 });
 
 describe("CartRail", () => {
@@ -42,11 +32,12 @@ describe("CartRail", () => {
     expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("₹25,200");
   });
 
-  it("clicking Continue to Recharge navigates to /engage-2/recharge", () => {
+  it("clicking Continue to Recharge calls onContinue", () => {
     useJourneySelectionStore2.getState().toggle("abandoned-cart-known");
-    render(<CartRail />);
+    const onContinue = jest.fn();
+    render(<CartRail onContinue={onContinue} />);
     fireEvent.click(screen.getByTestId("cart-rail-continue"));
-    expect(mockNavigate).toHaveBeenCalledWith("/engage-2/recharge");
+    expect(onContinue).toHaveBeenCalledTimes(1);
   });
 
   it("counts a journey type's daily volume once even when both audience variants are selected", () => {
