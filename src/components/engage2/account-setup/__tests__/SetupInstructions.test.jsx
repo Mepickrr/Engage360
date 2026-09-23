@@ -13,6 +13,14 @@ describe("SetupInstructions", () => {
     expect(screen.getByText("Verify & Go Live")).toBeInTheDocument();
     expect(screen.getByTestId("setup-cta-manual")).toBeInTheDocument();
     expect(screen.getByTestId("setup-cta-ai")).toBeInTheDocument();
+    expect(screen.getByTestId("setup-cta-manual")).toHaveTextContent(
+      "Confirm & Start WhatsApp Setup Manually"
+    );
+    expect(screen.getByTestId("setup-cta-ai")).toHaveTextContent(
+      "Confirm & Start WhatsApp Setup with AI"
+    );
+    expect(screen.getByTestId("setup-prerequisites")).toBeInTheDocument();
+    expect(screen.getByTestId("setup-prerequisites")).toHaveTextContent("WhatsApp");
   });
 
   it("both CTAs call the onStart prop when clicked", () => {

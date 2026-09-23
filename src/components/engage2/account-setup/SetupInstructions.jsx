@@ -13,6 +13,11 @@ const TIPS = [
   },
 ];
 
+const PREREQUISITES = [
+  "A phone number that can receive WhatsApp — not already active on the WhatsApp app or Business app.",
+  "Your business name, category, and a support email or phone number.",
+];
+
 const STEPS = [
   {
     title: "Add Your Business Details",
@@ -50,6 +55,20 @@ export default function SetupInstructions({ onStart }) {
         ))}
       </div>
 
+      <div className="mb-8" data-testid="setup-prerequisites">
+        <div className="text-xs font-semibold uppercase tracking-wide text-text-muted mb-2">
+          Before you start
+        </div>
+        <ul className="flex flex-col gap-1.5">
+          {PREREQUISITES.map((p) => (
+            <li key={p} className="text-[13px] text-text-secondary flex gap-2">
+              <span className="text-primary">•</span>
+              {p}
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <div className="flex flex-col gap-5 mb-8" data-testid="setup-steps">
         {STEPS.map((step, i) => (
           <div key={step.title} className="flex gap-3">
@@ -71,7 +90,7 @@ export default function SetupInstructions({ onStart }) {
           data-testid="setup-cta-manual"
           onClick={onStart}
         >
-          Start Meta Embedded Signup
+          Confirm & Start WhatsApp Setup Manually
         </Button>
         <Button
           type="button"
@@ -80,9 +99,13 @@ export default function SetupInstructions({ onStart }) {
           data-testid="setup-cta-ai"
           onClick={onStart}
         >
-          Set Up With AI Instead
+          Confirm & Start WhatsApp Setup with AI
         </Button>
       </div>
+      <p className="text-xs text-text-muted mt-3 text-center">
+        Meta verification opens right after — it only takes a few seconds, and you'll land back
+        here automatically once it's done.
+      </p>
     </div>
   );
 }
