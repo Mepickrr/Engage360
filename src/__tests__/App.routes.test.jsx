@@ -4,7 +4,7 @@ import path from "path";
 import { render, screen } from "@testing-library/react";
 
 import FastrrEngagePage2 from "@/pages/FastrrEngage2";
-import EngageAccountSetupPage2 from "@/pages/EngageAccountSetup2";
+import EngageSetupPage2 from "@/pages/EngageSetup2";
 import MetaEmbeddedSignup2 from "@/pages/MetaEmbeddedSignup2";
 import FastrrJourneyPage2 from "@/pages/FastrrJourney2";
 
@@ -61,10 +61,10 @@ describe("App.js v2 route wiring", () => {
     expect(screen.getByTestId("page-fastrr-engage")).toBeInTheDocument();
   });
 
-  it("wires /engage-2/account-setup to EngageAccountSetupPage2, whose wrapper testid is page-engage-account-setup", () => {
-    expectRouteWiredTo("/engage-2/account-setup", "EngageAccountSetupPage2");
-    render(<EngageAccountSetupPage2 />);
-    expect(screen.getByTestId("page-engage-account-setup")).toBeInTheDocument();
+  it("wires /engage-2/setup to EngageSetupPage2, whose wrapper testid is page-engage-setup", () => {
+    expectRouteWiredTo("/engage-2/setup", "EngageSetupPage2");
+    render(<EngageSetupPage2 />);
+    expect(screen.getByTestId("page-engage-setup")).toBeInTheDocument();
   });
 
   it("wires /engage-2/meta-embedded-signup to MetaEmbeddedSignup2, whose wrapper testid is page-meta-embedded-signup", () => {
