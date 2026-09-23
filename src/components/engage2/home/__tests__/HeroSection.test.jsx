@@ -2,22 +2,38 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import HeroSection from "../HeroSection";
 
+function mockMatchMedia(matches) {
+  window.matchMedia = jest.fn().mockImplementation((query) => ({
+    matches,
+    media: query,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+  }));
+}
+
+beforeEach(() => {
+  mockMatchMedia(false);
+});
+
 describe("HeroSection", () => {
-  it("renders a personalized headline and subhead computed from the store's mock activity, and the chat preview mockup", () => {
+  it("renders the headline, the animated phone mockup, and the 4-step story list", () => {
     render(<HeroSection />);
-    // monthlyRevenueAtRisk = 4,000/day * ₹100 AOV * 30 days = ₹1,20,00,000 -> formatCompactCurrency -> "₹1.2C"
     expect(screen.getByTestId("hero-headline")).toHaveTextContent(
-      "₹1.2C a month is walking out through your checkout."
+      "Recover abandoned revenue on WhatsApp"
     );
-    expect(screen.getByTestId("hero-subhead")).toHaveTextContent(
-      "4,000 shoppers a day abandon before paying"
-    );
-    expect(screen.getByTestId("chat-preview-mockup")).toBeInTheDocument();
+    expect(screen.getByTestId("phone-mockup")).toBeInTheDocument();
+    expect(screen.getByTestId("hero-story-steps").children).toHaveLength(4);
+    expect(screen.getByText("Shopper drops off")).toBeInTheDocument();
+    expect(screen.getByText("One tap back to purchase")).toBeInTheDocument();
   });
 
-  it("no longer renders the old CTA buttons", () => {
+  it("marks the story step matching the phone's current phase as active, and the rest as inactive", () => {
+    // With matchMedia mocked to non-reduced-motion, usePhonePhase starts at
+    // PHASE_CHECKOUT (0) on first render, before any timer has fired.
     render(<HeroSection />);
-    expect(screen.queryByTestId("fastrr-engage-hero-cta")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("fastrr-engage-hero-secondary-cta")).not.toBeInTheDocument();
+    expect(screen.getByTestId("hero-story-step-0")).toHaveAttribute("data-active", "true");
+    expect(screen.getByTestId("hero-story-step-1")).toHaveAttribute("data-active", "false");
+    expect(screen.getByTestId("hero-story-step-2")).toHaveAttribute("data-active", "false");
+    expect(screen.getByTestId("hero-story-step-3")).toHaveAttribute("data-active", "false");
   });
 });
