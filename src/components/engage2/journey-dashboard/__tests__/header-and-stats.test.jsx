@@ -45,7 +45,7 @@ describe("JourneyHeader", () => {
     expect(screen.getByTestId("journey-wallet-balance")).toHaveTextContent("₹0.00");
     expect(screen.getByTestId("journey-recharge-link")).toBeInTheDocument();
     expect(screen.getByTestId("journey-profile-icon")).toBeInTheDocument();
-    expect(screen.getByTestId("journey-open-engage-link")).toHaveAttribute("href", "/");
+    expect(screen.getByTestId("journey-open-engage-link")).toHaveAttribute("href", "/flows-v2");
   });
 
   it("clicking the wallet pill opens the recharge wallet modal", () => {

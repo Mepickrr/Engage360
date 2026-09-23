@@ -64,6 +64,13 @@ describe("JourneysTable", () => {
     fireEvent.click(screen.getByTestId(`journey-preview-${JOURNEYS[0].id}`));
     expect(props.onPreview).toHaveBeenCalledWith(JOURNEYS[0].id);
   });
+
+  it("gives each journey row a hover affordance", () => {
+    renderTable();
+    expect(screen.getByTestId(`journey-row-${JOURNEYS[0].id}`).className).toContain(
+      "hover:bg-app-bg"
+    );
+  });
 });
 
 describe.each([

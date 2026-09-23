@@ -35,7 +35,10 @@ function MetricCell({ enabled }) {
 
 function JourneyRow({ journey: j, enabled, onToggle, onPreview }) {
   return (
-    <TableRow data-testid={`journey-row-${j.id}`}>
+    <TableRow
+      data-testid={`journey-row-${j.id}`}
+      className="hover:bg-app-bg/60 transition-colors"
+    >
       <TableCell>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -48,7 +51,14 @@ function JourneyRow({ journey: j, enabled, onToggle, onPreview }) {
           </TooltipContent>
         </Tooltip>
         <div className="mt-1">
-          <Badge variant="outline" className="text-[10px]">
+          <Badge
+            variant="outline"
+            className={`text-[10px] ${
+              j.audience === "Known"
+                ? "border-primary/30 text-primary"
+                : "border-warning/40 text-warning"
+            }`}
+          >
             {j.audience}
           </Badge>
         </div>

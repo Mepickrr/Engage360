@@ -64,7 +64,7 @@ export default function JourneyHeader() {
         </button>
 
         <Link
-          to="/"
+          to="/flows-v2"
           data-testid="journey-open-engage-link"
           className="text-sm font-medium text-text-secondary hover:text-text-primary"
         >
