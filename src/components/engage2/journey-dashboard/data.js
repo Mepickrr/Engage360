@@ -113,6 +113,7 @@ export const JOURNEY_TYPES = [
     journeyType: "Abandoned Checkout",
     icon: "CreditCard",
     description: "Starts checkout but doesn't complete payment.",
+    recommended: true,
   },
 ];
 
