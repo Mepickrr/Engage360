@@ -20,13 +20,14 @@ beforeAll(() => {
 
 beforeEach(() => {
   useJourneySelectionStore2.getState().clear();
+  mockNavigate.mockClear();
 });
 
 describe("JourneyListingSection", () => {
   it("renders the heading and all 3 journey type cards", () => {
     render(<JourneyListingSection />);
     expect(screen.getByTestId("journey-listing-section")).toBeInTheDocument();
-    expect(screen.getByText("Pick the moments worth messaging")).toBeInTheDocument();
+    expect(screen.getByText("Select your recovery journeys")).toBeInTheDocument();
     expect(screen.getByTestId("journey-listing-card-abandoned-product")).toBeInTheDocument();
     expect(screen.getByTestId("journey-listing-card-abandoned-cart")).toBeInTheDocument();
     expect(screen.getByTestId("journey-listing-card-abandoned-checkout")).toBeInTheDocument();
@@ -37,20 +38,18 @@ describe("JourneyListingSection", () => {
     expect(screen.queryByTestId("cart-rail")).not.toBeInTheDocument();
   });
 
-  it("shows the cart rail with the cart total once a journey is activated", () => {
+  it("shows the cart rail with the cart total once a journey type is selected", () => {
     render(<JourneyListingSection />);
-    fireEvent.click(screen.getByTestId("journey-listing-activate-abandoned-cart-known"));
-    expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("1 journey selected");
+    fireEvent.click(screen.getByTestId("journey-listing-card-abandoned-cart"));
+    expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("2 journeys selected");
     expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("₹18,000");
   });
 
-  it("clicking Continue to Recharge opens the Fund Wallet modal on this same page, without navigating away", () => {
+  it("clicking Continue to Recharge navigates to /engage-2/setup, without opening any local modal", () => {
     render(<JourneyListingSection />);
-    fireEvent.click(screen.getByTestId("journey-listing-activate-abandoned-cart-known"));
-    expect(screen.queryByTestId("fund-wallet-modal")).not.toBeInTheDocument();
-
+    fireEvent.click(screen.getByTestId("journey-listing-card-abandoned-cart"));
     fireEvent.click(screen.getByTestId("cart-rail-continue"));
-    expect(screen.getByTestId("fund-wallet-modal")).toBeInTheDocument();
-    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(mockNavigate).toHaveBeenCalledWith("/engage-2/setup");
+    expect(screen.queryByTestId("fund-wallet-modal")).not.toBeInTheDocument();
   });
 });
