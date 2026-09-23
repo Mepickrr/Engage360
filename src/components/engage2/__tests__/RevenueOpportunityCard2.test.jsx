@@ -9,6 +9,7 @@ describe("computeRevenueOpportunity", () => {
   it("computes abandonment rate and revenue at risk from the mock activity", () => {
     const result = computeRevenueOpportunity(MOCK_STORE_ACTIVITY);
     expect(result.visitorsPerDay).toBe(10000);
+    expect(result.identifiedPerDay).toBe(3400);
     expect(result.abandonedCheckoutPerDay).toBe(4000);
     expect(result.abandonmentRate).toBe(40);
     expect(result.dailyRevenueAtRisk).toBe(400000);

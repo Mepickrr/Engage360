@@ -8,6 +8,7 @@ import { formatCompactCurrency, formatCompactNumber } from "@/lib/analyticsForma
 // edits these; they're presented as system-captured, per product decision.
 export const MOCK_STORE_ACTIVITY = {
   visitorsPerDay: 10000,
+  identifiedPerDay: 3400,
   abandonedCheckoutPerDay: 4000,
   aov: 100,
 };
@@ -15,12 +16,13 @@ export const MOCK_STORE_ACTIVITY = {
 const DAYS_PER_MONTH = 30;
 
 export function computeRevenueOpportunity(activity = MOCK_STORE_ACTIVITY) {
-  const { visitorsPerDay, abandonedCheckoutPerDay, aov } = activity;
+  const { visitorsPerDay, identifiedPerDay, abandonedCheckoutPerDay, aov } = activity;
   const abandonmentRate = Math.round((abandonedCheckoutPerDay / visitorsPerDay) * 100);
   const dailyRevenueAtRisk = abandonedCheckoutPerDay * aov;
   const monthlyRevenueAtRisk = dailyRevenueAtRisk * DAYS_PER_MONTH;
   return {
     visitorsPerDay,
+    identifiedPerDay,
     abandonedCheckoutPerDay,
     abandonmentRate,
     dailyRevenueAtRisk,
