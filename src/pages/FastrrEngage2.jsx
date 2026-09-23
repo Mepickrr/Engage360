@@ -1,8 +1,8 @@
 import React from "react";
+import StoreSelector from "@/components/engage2/home/StoreSelector";
+import FunnelStats from "@/components/engage2/home/FunnelStats";
 import HeroSection from "@/components/engage2/home/HeroSection";
-import PersonalizedStatStrip from "@/components/engage2/home/PersonalizedStatStrip";
 import JourneyListingSection from "@/components/engage2/home/JourneyListingSection";
-import TestimonialSection from "@/components/engage2/home/TestimonialSection";
 import { useJourneySelectionStore2 } from "@/store/journeySelectionStore2";
 
 export default function FastrrEngagePage() {
@@ -17,10 +17,12 @@ export default function FastrrEngagePage() {
       className={`max-w-[1100px] mx-auto ${hasSelection ? "pb-28" : ""}`}
       data-testid="page-fastrr-engage"
     >
+      <div className="flex justify-end mb-6">
+        <StoreSelector />
+      </div>
+      <FunnelStats />
       <HeroSection />
-      <PersonalizedStatStrip />
       <JourneyListingSection />
-      <TestimonialSection />
     </div>
   );
 }
