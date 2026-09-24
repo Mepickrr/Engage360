@@ -6,7 +6,7 @@ export default function SetupProgressBar({ currentStep, furthestStep, onStepClic
   return (
     <div className="flex items-center gap-2.5 mb-10" data-testid="setup-progress-bar">
       {STEPS.map((label, i) => {
-        const isDone = i < currentStep;
+        const isDone = i <= furthestStep && i !== currentStep;
         const isCurrent = i === currentStep;
         const canJump = i <= furthestStep;
         return (

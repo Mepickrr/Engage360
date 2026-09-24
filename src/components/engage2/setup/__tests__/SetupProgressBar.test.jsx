@@ -24,4 +24,12 @@ describe("SetupProgressBar", () => {
     fireEvent.click(screen.getByTestId("setup-progress-step-2"));
     expect(onStepClick).not.toHaveBeenCalled();
   });
+
+  it("shows an already-reached step as done even after jumping back to an earlier step", () => {
+    render(<SetupProgressBar currentStep={0} furthestStep={2} onStepClick={() => {}} />);
+    // Step 2 was already reached (furthestStep=2) but we've jumped back to
+    // step 0 — it should still render as "done" (green), not "upcoming".
+    const step2Bar = screen.getByTestId("setup-progress-step-2").querySelector("span");
+    expect(step2Bar).toHaveClass("bg-success");
+  });
 });

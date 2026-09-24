@@ -165,7 +165,7 @@ export default function FastrrEngagePanel() {
 
   function handleEnable() {
     close();
-    navigate("/engage-2/account-setup");
+    navigate("/engage-2/setup");
   }
 
   return (

@@ -47,7 +47,7 @@ describe("CartRail", () => {
     // Both variants share the same 4,000/day Abandoned Cart volume — selecting
     // both doesn't double it: 4,000 * ₹1.50 * 3 days = ₹18,000, same as
     // selecting just one.
-    expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("2 journeys selected");
+    expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("1 journey selected");
     expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("₹18,000");
   });
 });

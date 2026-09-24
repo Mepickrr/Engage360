@@ -18,10 +18,11 @@ const MARKETING_RATE = RATE_CARD.enabled.find((c) => c.id === "wa-marketing").pr
 
 export default function JourneyPreviewModal({ journey, otherAudienceJourney, onClose, onActivate }) {
   const open = !!journey;
-  // otherAudienceJourney is listing-page-only (JourneyListingCard passes the
-  // sibling audience variant); the dashboard's JourneysTable never passes
-  // it, so this whole toggle is invisible there and displayedJourney always
-  // just equals journey — no behavior change for that consumer.
+  // otherAudienceJourney is an optional prop with no current production
+  // caller — JourneyListingCard only ever passes the Known variant, and the
+  // dashboard's JourneysTable never passes it either, so this whole toggle
+  // is dead in practice today. It's kept as working, tested infrastructure
+  // for a possible future dual-audience preview use case.
   const hasBothAudiences = open && !!otherAudienceJourney;
 
   const [previewAudience, setPreviewAudience] = useState("Known");

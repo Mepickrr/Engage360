@@ -48,7 +48,7 @@ export default function MetaEmbeddedSignup() {
     if (window.opener) {
       window.close();
     } else {
-      navigate("/engage-2/account-setup");
+      navigate("/engage-2/setup");
     }
   }, [navigate]);
 

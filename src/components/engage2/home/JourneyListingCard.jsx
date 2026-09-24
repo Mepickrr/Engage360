@@ -35,9 +35,17 @@ export default function JourneyListingCard({ journeyTypeConfig }) {
     }
   }
 
+  function handleCardKeyDown(e) {
+    if (e.key === " " || e.key === "Enter") {
+      e.preventDefault();
+      handleToggleCard();
+    }
+  }
+
   return (
     <div
       onClick={handleToggleCard}
+      onKeyDown={handleCardKeyDown}
       role="checkbox"
       aria-checked={isSelected}
       tabIndex={0}

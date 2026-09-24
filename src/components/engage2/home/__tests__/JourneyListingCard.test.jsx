@@ -55,7 +55,7 @@ describe("JourneyListingCard", () => {
     expect(useJourneySelectionStore2.getState().isSelected("abandoned-cart-identified")).toBe(false);
   });
 
-  it("clicking a card that has only ONE of its two variants selected (a partial pre-existing state) ends with BOTH selected", () => {
+  it("clicking a card that has only ONE of its two variants selected (a partial pre-existing state) ends with BOTH deselected", () => {
     useJourneySelectionStore2.getState().toggle("abandoned-cart-known");
     render(<JourneyListingCard journeyTypeConfig={cartConfig} />);
     // The card already reads as selected (either true counts) — the spec's
@@ -63,6 +63,15 @@ describe("JourneyListingCard", () => {
     fireEvent.click(screen.getByTestId("journey-listing-card-abandoned-cart"));
     expect(useJourneySelectionStore2.getState().isSelected("abandoned-cart-known")).toBe(false);
     expect(useJourneySelectionStore2.getState().isSelected("abandoned-cart-identified")).toBe(false);
+  });
+
+  it("pressing Space on the card toggles selection the same way a click does", () => {
+    render(<JourneyListingCard journeyTypeConfig={cartConfig} />);
+    const card = screen.getByTestId("journey-listing-card-abandoned-cart");
+    fireEvent.keyDown(card, { key: " " });
+    expect(useJourneySelectionStore2.getState().isSelected("abandoned-cart-known")).toBe(true);
+    expect(useJourneySelectionStore2.getState().isSelected("abandoned-cart-identified")).toBe(true);
+    expect(card).toHaveAttribute("aria-checked", "true");
   });
 
   it("clicking the preview trigger opens the flow-chart preview for the Known variant, without selecting anything", () => {

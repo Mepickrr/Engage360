@@ -58,7 +58,7 @@ describe("FastrrEngagePanel", () => {
     render(<FastrrEngagePanel />);
     fireEvent.click(screen.getByTestId("fastrr-engage-hero-primary-cta"));
     expect(useFastrrEngagePanelStore.getState().isOpen).toBe(false);
-    expect(mockNavigate).toHaveBeenCalledWith("/engage-2/account-setup");
+    expect(mockNavigate).toHaveBeenCalledWith("/engage-2/setup");
   });
 
   it("clicking the footer CTA closes the panel and navigates to account setup", () => {
@@ -66,6 +66,6 @@ describe("FastrrEngagePanel", () => {
     render(<FastrrEngagePanel />);
     fireEvent.click(screen.getByTestId("fastrr-engage-footer-cta"));
     expect(useFastrrEngagePanelStore.getState().isOpen).toBe(false);
-    expect(mockNavigate).toHaveBeenCalledWith("/engage-2/account-setup");
+    expect(mockNavigate).toHaveBeenCalledWith("/engage-2/setup");
   });
 });

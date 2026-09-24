@@ -112,7 +112,7 @@ describe("MetaEmbeddedSignup", () => {
   it("Cancel (no opener) navigates to account setup instead of the journey dashboard", () => {
     render(<MetaEmbeddedSignup />);
     fireEvent.click(screen.getByTestId("intro-cancel"));
-    expect(mockNavigate).toHaveBeenCalledWith("/engage-2/account-setup");
+    expect(mockNavigate).toHaveBeenCalledWith("/engage-2/setup");
   });
 
   it("Cancel (with an opener) just closes the popup, without redirecting to the journey dashboard", () => {

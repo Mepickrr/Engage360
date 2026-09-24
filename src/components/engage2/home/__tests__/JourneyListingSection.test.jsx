@@ -41,7 +41,7 @@ describe("JourneyListingSection", () => {
   it("shows the cart rail with the cart total once a journey type is selected", () => {
     render(<JourneyListingSection />);
     fireEvent.click(screen.getByTestId("journey-listing-card-abandoned-cart"));
-    expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("2 journeys selected");
+    expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("1 journey selected");
     expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("₹18,000");
   });
 

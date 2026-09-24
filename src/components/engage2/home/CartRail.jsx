@@ -10,6 +10,11 @@ export default function CartRail({ onContinue }) {
   if (selectedJourneys.length === 0) return null;
 
   const { total, runwayDays } = computeCartFunding(selectedJourneys);
+  // Selecting a card toggles BOTH the Known and Fastrr Identified JOURNEYS
+  // entries for that type together — count distinct journey TYPES here,
+  // matching SelectRecapStep's dedup, not raw selectedJourneys.length (which
+  // would be exactly double the number of cards the seller actually chose).
+  const typeCount = new Set(selectedJourneys.map((j) => j.journeyType)).size;
 
   return createPortal(
     <div
@@ -19,8 +24,8 @@ export default function CartRail({ onContinue }) {
       <div className="w-full max-w-[900px] bg-slate-900 text-white rounded-xl shadow-2xl px-5 py-4 flex items-center justify-between gap-4">
         <div>
           <div className="text-sm font-semibold" data-testid="cart-rail-summary">
-            {`${selectedJourneys.length} journey${
-              selectedJourneys.length > 1 ? "s" : ""
+            {`${typeCount} journey${
+              typeCount > 1 ? "s" : ""
             } selected · est. ${formatINR(total)} to fund ${runwayDays} days`}
           </div>
           <div className="text-xs text-white/70 mt-0.5">
