@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Lock } from "lucide-react";
 import PhoneMockup from "@/components/engage2/account-setup/PhoneMockup";
+
+function BrowserChrome() {
+  return (
+    <div className="flex items-center gap-1.5 h-6 px-2.5 rounded-md bg-slate-100 text-[10px] text-slate-500 mb-3 flex-shrink-0">
+      <Lock className="w-2.5 h-2.5" />
+      <span className="font-mono">mystore1.in/checkout</span>
+    </div>
+  );
+}
 
 // 6 phases telling the same "checkout -> reminder -> recovered" story as
 // the story-steps list HeroSection renders beside this component.
@@ -50,8 +59,9 @@ export function usePhonePhase() {
 
 function CheckoutScreen() {
   return (
-    <div className="flex flex-col h-full p-4" data-testid="phone-phase-checkout">
-      <div className="flex items-center gap-3 pb-3 border-b border-border">
+    <div className="flex flex-col h-full p-3" data-testid="phone-phase-checkout">
+      <BrowserChrome />
+      <div className="flex items-center gap-3 pb-3 border-b border-border px-1">
         <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-200 to-amber-400 flex-shrink-0" />
         <div>
           <div className="text-xs font-semibold text-slate-900">Juniper Cotton Throw</div>
@@ -59,15 +69,18 @@ function CheckoutScreen() {
         </div>
         <span className="ml-auto text-xs font-semibold text-slate-900">₹1,240</span>
       </div>
-      <div className="flex flex-col gap-2 mt-3">
+      <div className="flex flex-col gap-2 mt-3 px-1">
         <div className="border border-border rounded-md px-2.5 py-2 text-[11px] text-slate-600">
           Aanya Sharma
         </div>
         <div className="border border-border rounded-md px-2.5 py-2 text-[11px] text-slate-600">
           +91 98••• ••210
         </div>
+        <div className="border border-dashed border-slate-300 rounded-md px-2.5 py-2 text-[11px] text-slate-400">
+          Delivery address
+        </div>
       </div>
-      <div className="mt-auto h-10 rounded-md bg-slate-200 text-slate-500 flex items-center justify-center text-xs font-semibold">
+      <div className="mt-auto mx-1 h-10 rounded-md bg-slate-200 text-slate-500 flex items-center justify-center text-xs font-semibold">
         Continue to payment
       </div>
     </div>
@@ -139,8 +152,9 @@ function RestoringScreen() {
 
 function PaymentScreen() {
   return (
-    <div className="flex flex-col h-full p-4" data-testid="phone-phase-payment">
-      <div className="flex items-center gap-3 pb-3 border-b border-border">
+    <div className="flex flex-col h-full p-3" data-testid="phone-phase-payment">
+      <BrowserChrome />
+      <div className="flex items-center gap-3 pb-3 border-b border-border px-1">
         <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-200 to-amber-400 flex-shrink-0" />
         <div>
           <div className="text-xs font-semibold text-slate-900">Juniper Cotton Throw</div>
@@ -148,7 +162,17 @@ function PaymentScreen() {
         </div>
         <span className="ml-auto text-xs font-semibold text-slate-900">₹1,240</span>
       </div>
-      <div className="mt-auto h-10 rounded-md bg-slate-900 text-white flex items-center justify-center text-xs font-semibold">
+      <div className="mx-1 mt-3 px-2.5 py-2 rounded-md bg-app-bg border border-border flex flex-col gap-1.5">
+        <div className="flex items-center justify-between text-[11px]">
+          <span className="text-slate-500">Deliver to</span>
+          <span className="font-semibold text-slate-900">Aanya · Indiranagar</span>
+        </div>
+        <div className="flex items-center justify-between text-[11px]">
+          <span className="text-slate-500">Pay with</span>
+          <span className="font-semibold text-slate-900">UPI</span>
+        </div>
+      </div>
+      <div className="mt-auto mx-1 h-10 rounded-md bg-slate-900 text-white flex items-center justify-center text-xs font-semibold">
         Buy now · ₹1,240
       </div>
     </div>

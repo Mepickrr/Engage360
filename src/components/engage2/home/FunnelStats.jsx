@@ -74,33 +74,42 @@ export default function FunnelStats() {
         </div>
         <span className="text-sm text-text-secondary">Live from your Fastrr checkout data</span>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-border border border-border rounded-lg overflow-hidden">
-      {stats.map((s) => (
-        <div
-          key={s.key}
-          className={`p-5 ${s.danger ? "bg-destructive/10" : "bg-surface"}`}
-          data-testid={`funnel-stat-${s.key}`}
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <span
-              className={`w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 ${s.iconClass}`}
-            >
-              <s.icon className="w-4 h-4" />
-            </span>
-            <span className="text-xs font-semibold text-text-secondary">{s.label}</span>
+      <div className="flex flex-wrap gap-4">
+        {[stats.slice(0, 2), stats.slice(2)].map((pair, pairIdx) => (
+          <div
+            key={pairIdx}
+            className="flex-1 min-w-[280px] grid grid-cols-2 gap-px bg-border border border-border rounded-lg overflow-hidden"
+          >
+            {pair.map((s) => (
+              <div
+                key={s.key}
+                className={`p-5 ${s.danger ? "bg-destructive/10" : "bg-surface"}`}
+                data-testid={`funnel-stat-${s.key}`}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span
+                    className={`w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 ${s.iconClass}`}
+                  >
+                    <s.icon className="w-4 h-4" />
+                  </span>
+                  <span className="text-xs font-semibold text-text-secondary">{s.label}</span>
+                </div>
+                <div
+                  className={`text-2xl font-bold ${s.danger ? "text-destructive" : "text-text-primary"}`}
+                >
+                  {s.value}
+                </div>
+                <div className="h-1.5 rounded-full bg-border mt-3 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${s.danger ? "bg-destructive" : "bg-primary"}`}
+                    style={{ width: `${Math.min(100, s.barPct)}%` }}
+                  />
+                </div>
+                <div className="text-xs text-text-secondary mt-2">{s.note}</div>
+              </div>
+            ))}
           </div>
-          <div className={`text-2xl font-bold ${s.danger ? "text-destructive" : "text-text-primary"}`}>
-            {s.value}
-          </div>
-          <div className="h-1.5 rounded-full bg-border mt-3 overflow-hidden">
-            <div
-              className={`h-full rounded-full ${s.danger ? "bg-destructive" : "bg-primary"}`}
-              style={{ width: `${Math.min(100, s.barPct)}%` }}
-            />
-          </div>
-          <div className="text-xs text-text-secondary mt-2">{s.note}</div>
-        </div>
-      ))}
+        ))}
       </div>
     </div>
   );
