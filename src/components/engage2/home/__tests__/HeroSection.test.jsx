@@ -25,6 +25,10 @@ describe("HeroSection", () => {
     expect(screen.getByTestId("hero-story-steps").children).toHaveLength(4);
     expect(screen.getByText("Shopper drops off")).toBeInTheDocument();
     expect(screen.getByText("One tap back to purchase")).toBeInTheDocument();
+    expect(screen.getByTestId("hero-cta")).toHaveTextContent("Set up recovery journeys");
+    expect(screen.getByTestId("hero-features")).toHaveTextContent("Pay per message");
+    expect(screen.getByTestId("hero-features")).toHaveTextContent("Zero code");
+    expect(screen.getByTestId("hero-features")).toHaveTextContent("Full control");
   });
 
   it("marks the story step matching the phone's current phase as active, and the rest as inactive", () => {

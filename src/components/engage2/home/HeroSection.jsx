@@ -49,6 +49,40 @@ export default function HeroSection() {
             them with a personalised WhatsApp message from your brand — one tap takes them
             straight back to purchase.
           </p>
+          <div className="flex items-center gap-3 mb-8">
+            <button
+              type="button"
+              data-testid="hero-cta"
+              onClick={() =>
+                document
+                  .getElementById("recovery-journeys")
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" })
+              }
+              className="bg-slate-900 text-white text-sm font-semibold px-5 py-3 rounded-md hover:bg-slate-800 transition-colors"
+            >
+              Set up recovery journeys
+            </button>
+            <span className="text-xs text-text-secondary">Live in under 5 minutes</span>
+          </div>
+          <div
+            className="grid grid-cols-3 gap-4 pt-5 border-t border-border mb-8"
+            data-testid="hero-features"
+          >
+            <div>
+              <div className="text-sm font-semibold text-text-primary">Pay per message</div>
+              <div className="text-xs text-text-secondary mt-0.5">No platform or setup fee</div>
+            </div>
+            <div>
+              <div className="text-sm font-semibold text-text-primary">Zero code</div>
+              <div className="text-xs text-text-secondary mt-0.5">
+                Pre-built, Meta-approved templates
+              </div>
+            </div>
+            <div>
+              <div className="text-sm font-semibold text-text-primary">Full control</div>
+              <div className="text-xs text-text-secondary mt-0.5">Pause any journey, any time</div>
+            </div>
+          </div>
           <div className="flex flex-col gap-3" data-testid="hero-story-steps">
             {STORY_STEPS.map((s, i) => {
               const isActive = s.phases.includes(phase);
@@ -68,7 +102,7 @@ export default function HeroSection() {
                         : "bg-surface border-border text-text-secondary"
                     }`}
                   >
-                    ✓
+                    {i + 1}
                   </span>
                   <div>
                     <div className="text-sm font-semibold text-text-primary">{s.title}</div>

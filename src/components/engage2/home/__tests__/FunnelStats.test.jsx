@@ -6,6 +6,7 @@ describe("FunnelStats", () => {
   it("shows total visitors, identified shoppers, abandoned carts+checkouts, and missed opportunity", () => {
     render(<FunnelStats />);
     expect(screen.getByTestId("funnel-stats")).toBeInTheDocument();
+    expect(screen.getByText("Where your shoppers drop off")).toBeInTheDocument();
     // visitorsPerDay = 10,000
     expect(screen.getByTestId("funnel-stat-total-visitors")).toHaveTextContent("10K");
     // identifiedPerDay = 3,400 -> 34% of visitors

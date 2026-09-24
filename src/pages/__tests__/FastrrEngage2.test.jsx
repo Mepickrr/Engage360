@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import FastrrEngagePage from "../FastrrEngage2";
 import { useJourneySelectionStore2 } from "@/store/journeySelectionStore2";
 
@@ -39,14 +39,16 @@ describe("FastrrEngagePage (v2 prototype home page)", () => {
     expect(screen.getByTestId("journey-listing-section")).toBeInTheDocument();
   });
 
-  it("adds bottom padding to the page root once a journey is selected, so the floating cart rail can't cover the last section", () => {
-    useJourneySelectionStore2.getState().toggle("abandoned-cart-known");
+  it("adds bottom padding to the page root by default, since all journeys start pre-selected", () => {
     render(<FastrrEngagePage />);
     expect(screen.getByTestId("page-fastrr-engage").className).toContain("pb-28");
   });
 
-  it("has no bottom padding on the page root when nothing is selected", () => {
+  it("removes bottom padding once every journey is manually deselected", () => {
     render(<FastrrEngagePage />);
+    fireEvent.click(screen.getByTestId("journey-listing-card-abandoned-product"));
+    fireEvent.click(screen.getByTestId("journey-listing-card-abandoned-cart"));
+    fireEvent.click(screen.getByTestId("journey-listing-card-abandoned-checkout"));
     expect(screen.getByTestId("page-fastrr-engage").className).not.toContain("pb-28");
   });
 });

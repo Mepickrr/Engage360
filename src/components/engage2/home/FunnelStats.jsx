@@ -62,10 +62,19 @@ export default function FunnelStats() {
   ];
 
   return (
-    <div
-      className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-border border border-border rounded-lg overflow-hidden mb-10"
-      data-testid="funnel-stats"
-    >
+    <div className="mb-10" data-testid="funnel-stats">
+      <div className="flex items-end justify-between gap-4 flex-wrap mb-6">
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+            Mystore1 · Last 30 days
+          </div>
+          <h2 className="text-2xl font-bold text-text-primary mt-1">
+            Where your shoppers drop off
+          </h2>
+        </div>
+        <span className="text-sm text-text-secondary">Live from your Fastrr checkout data</span>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-border border border-border rounded-lg overflow-hidden">
       {stats.map((s) => (
         <div
           key={s.key}
@@ -92,6 +101,7 @@ export default function FunnelStats() {
           <div className="text-xs text-text-secondary mt-2">{s.note}</div>
         </div>
       ))}
+      </div>
     </div>
   );
 }
