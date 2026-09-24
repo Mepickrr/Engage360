@@ -108,7 +108,20 @@ export default function JourneyListingCard({ journeyTypeConfig }) {
         data-testid={`journey-listing-preview-trigger-${journeyTypeConfig.id}`}
         className="flex items-center gap-2.5 w-full mt-4 p-2.5 rounded-md border border-border bg-app-bg hover:border-primary/40 hover:bg-primary-tint/20 transition-colors text-left"
       >
-        <span className="w-14 h-9 rounded-md bg-slate-800 flex-shrink-0" />
+        <span
+          className="w-14 h-9 rounded-md bg-app-bg flex items-center justify-center gap-1 flex-shrink-0"
+          aria-hidden="true"
+        >
+          <span className="w-2 h-2 rounded-sm bg-primary" />
+          <span className="w-1.5 h-px bg-border" />
+          <span className="w-2 h-2 rounded-full border border-text-muted bg-surface" />
+          <span className="w-1.5 h-px bg-border" />
+          <span className="w-5 h-7 rounded-sm bg-surface shadow-sm flex flex-col gap-0.5 p-1">
+            <span className="h-1.5 rounded-sm bg-gradient-to-br from-amber-200 to-amber-400" />
+            <span className="h-0.5 rounded-sm bg-border" />
+            <span className="h-0.5 w-2/3 rounded-sm bg-border" />
+          </span>
+        </span>
         <span className="flex-1 min-w-0">
           <span className="block text-xs font-semibold text-text-primary">Preview journey</span>
           <span className="block text-[11px] text-text-secondary">See the flow and the message</span>
