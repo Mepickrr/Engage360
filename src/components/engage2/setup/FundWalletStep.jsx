@@ -38,7 +38,7 @@ export default function FundWalletStep({ onDone, onSkip }) {
 
       <button
         type="button"
-        className="text-xs font-medium text-text-secondary hover:text-text-primary text-center mx-auto block mt-4"
+        className="text-sm font-semibold text-primary border border-primary/30 bg-primary-tint/40 hover:bg-primary-tint/70 rounded-md px-4 py-2.5 mx-auto block mt-4 transition-colors"
         onClick={onSkip}
         data-testid="fund-wallet-skip"
       >

@@ -98,8 +98,8 @@ describe("WhatsAppProfilePreview", () => {
 
   it("switching the number setup mode calls onNumberModeChange", () => {
     const props = renderPreview();
-    fireEvent.click(screen.getByTestId("number-setup-mode-has_app"));
-    expect(props.onNumberModeChange).toHaveBeenCalledWith("has_app");
+    fireEvent.click(screen.getByTestId("number-setup-mode-needs_virtual_number"));
+    expect(props.onNumberModeChange).toHaveBeenCalledWith("needs_virtual_number");
   });
 
   it("selecting a different business category calls onCategoryChange with the chosen value", () => {

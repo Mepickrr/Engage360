@@ -16,10 +16,6 @@ function renderCard(overrides = {}) {
     onNumberValueChange: jest.fn(),
     virtualNumberValue: "",
     onVirtualNumberChange: jest.fn(),
-    appId: "",
-    onAppIdChange: jest.fn(),
-    apiKeySecret: "",
-    onApiKeySecretChange: jest.fn(),
     ...overrides,
   };
   render(<NumberSetupCard {...props} />);
@@ -31,7 +27,17 @@ describe("NumberSetupCard", () => {
     renderCard();
     expect(screen.getByTestId("number-setup-has-number-fields")).toBeInTheDocument();
     expect(screen.queryByTestId("number-setup-virtual-number-fields")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("number-setup-has-app-fields")).not.toBeInTheDocument();
+  });
+
+  it("only shows the 'I have a number' and 'Need a number' modes — no 'I have an app'", () => {
+    renderCard();
+    expect(screen.getByTestId("number-setup-mode-has_number")).toHaveTextContent(
+      "I have a number"
+    );
+    expect(screen.getByTestId("number-setup-mode-needs_virtual_number")).toHaveTextContent(
+      "Need a number"
+    );
+    expect(screen.queryByTestId("number-setup-mode-has_app")).not.toBeInTheDocument();
   });
 
   it("typing in the phone input calls onNumberValueChange", () => {
@@ -40,7 +46,7 @@ describe("NumberSetupCard", () => {
     expect(props.onNumberValueChange).toHaveBeenCalledWith("9876543210");
   });
 
-  it("clicking the 'Need a virtual number' toggle button calls onModeChange", () => {
+  it("clicking the 'Need a number' toggle button calls onModeChange", () => {
     const props = renderCard();
     fireEvent.click(screen.getByTestId("number-setup-mode-needs_virtual_number"));
     expect(props.onModeChange).toHaveBeenCalledWith("needs_virtual_number");
@@ -50,26 +56,13 @@ describe("NumberSetupCard", () => {
     renderCard({ mode: "needs_virtual_number" });
     expect(screen.getByTestId("number-setup-virtual-number-fields")).toBeInTheDocument();
     expect(screen.queryByTestId("number-setup-has-number-fields")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("number-setup-has-app-fields")).not.toBeInTheDocument();
   });
 
-  it("selecting a virtual number calls onVirtualNumberChange with the chosen number", () => {
+  it("selecting a virtual number calls onVirtualNumberChange with the chosen number, and the option shows no price", () => {
     const props = renderCard({ mode: "needs_virtual_number" });
     fireEvent.click(screen.getByTestId("number-setup-virtual-number-select"));
-    fireEvent.click(screen.getByText("+91 63001 22456 — ₹500/mo"));
+    expect(screen.queryByText(/₹500\/mo/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText("+91 63001 22456"));
     expect(props.onVirtualNumberChange).toHaveBeenCalledWith("+91 63001 22456");
-  });
-
-  it("in has_app mode, shows only the App ID and API Key Secret inputs and calls their handlers", () => {
-    const props = renderCard({ mode: "has_app" });
-    expect(screen.getByTestId("number-setup-has-app-fields")).toBeInTheDocument();
-    expect(screen.queryByTestId("number-setup-has-number-fields")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("number-setup-virtual-number-fields")).not.toBeInTheDocument();
-
-    fireEvent.change(screen.getByTestId("number-setup-app-id-input"), { target: { value: "app-123" } });
-    expect(props.onAppIdChange).toHaveBeenCalledWith("app-123");
-
-    fireEvent.change(screen.getByTestId("number-setup-api-key-input"), { target: { value: "secret-xyz" } });
-    expect(props.onApiKeySecretChange).toHaveBeenCalledWith("secret-xyz");
   });
 });

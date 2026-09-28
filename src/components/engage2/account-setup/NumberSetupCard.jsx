@@ -11,8 +11,7 @@ import { MOCK_VIRTUAL_NUMBERS } from "./data";
 
 const MODES = [
   { value: "has_number", label: "I have a number" },
-  { value: "needs_virtual_number", label: "Need a virtual number" },
-  { value: "has_app", label: "I have an app" },
+  { value: "needs_virtual_number", label: "Need a number" },
 ];
 
 export default function NumberSetupCard({
@@ -22,17 +21,13 @@ export default function NumberSetupCard({
   onNumberValueChange,
   virtualNumberValue,
   onVirtualNumberChange,
-  appId,
-  onAppIdChange,
-  apiKeySecret,
-  onApiKeySecretChange,
 }) {
   return (
     <div
       className="bg-primary-tint border border-primary/20 rounded-lg p-2.5"
       data-testid="number-setup-card"
     >
-      <div className="grid grid-cols-3 gap-1 mb-2" data-testid="number-setup-mode-toggle">
+      <div className="grid grid-cols-2 gap-1 mb-2" data-testid="number-setup-mode-toggle">
         {MODES.map((m) => (
           <button
             key={m.value}
@@ -72,31 +67,11 @@ export default function NumberSetupCard({
             <SelectContent>
               {MOCK_VIRTUAL_NUMBERS.map((vn) => (
                 <SelectItem key={vn.number} value={vn.number}>
-                  {`${vn.number} — ${vn.priceLabel}`}
+                  {vn.number}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-        </div>
-      )}
-
-      {mode === "has_app" && (
-        <div className="flex flex-col gap-2" data-testid="number-setup-has-app-fields">
-          <Input
-            value={appId}
-            onChange={(e) => onAppIdChange(e.target.value)}
-            placeholder="App ID"
-            data-testid="number-setup-app-id-input"
-            className="bg-white"
-          />
-          <Input
-            type="password"
-            value={apiKeySecret}
-            onChange={(e) => onApiKeySecretChange(e.target.value)}
-            placeholder="API Key Secret"
-            data-testid="number-setup-api-key-input"
-            className="bg-white"
-          />
         </div>
       )}
     </div>

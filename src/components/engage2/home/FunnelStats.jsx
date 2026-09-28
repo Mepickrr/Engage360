@@ -45,7 +45,7 @@ export default function FunnelStats() {
       icon: ShoppingCart,
       iconClass: "bg-warning-bg text-warning",
       value: formatCompactNumber(cartCheckoutPerDay),
-      label: "Abandoned carts & checkouts",
+      label: "Abandoned products, carts & checkouts",
       note: "Left with items, without paying",
       barPct: cartCheckoutPct,
     },

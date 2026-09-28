@@ -18,10 +18,10 @@ export default function CartRail({ onContinue }) {
 
   return createPortal(
     <div
-      className="fixed left-0 right-0 bottom-0 z-40 flex justify-center pb-5 px-4"
+      className="fixed left-0 right-0 bottom-0 z-40 bg-slate-900 text-white border-t border-white/10 shadow-[0_-8px_24px_rgba(0,0,0,0.18)]"
       data-testid="cart-rail"
     >
-      <div className="w-full max-w-[900px] bg-slate-900 text-white rounded-xl shadow-2xl px-5 py-4 flex items-center justify-between gap-4">
+      <div className="max-w-[1100px] mx-auto px-6 py-4 flex items-center justify-between gap-4">
         <div>
           <div className="text-sm font-semibold" data-testid="cart-rail-summary">
             {`${typeCount} journey${
@@ -38,7 +38,7 @@ export default function CartRail({ onContinue }) {
           data-testid="cart-rail-continue"
           onClick={onContinue}
         >
-          Continue to Recharge
+          Set up Journey
         </Button>
       </div>
     </div>,
