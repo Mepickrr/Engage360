@@ -3,14 +3,13 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import SetupInstructions from "../SetupInstructions";
 
 describe("SetupInstructions", () => {
-  it("renders the heading, both tips, all 3 steps, and both CTAs", () => {
+  it("renders the heading, both tips, both steps, and both CTAs", () => {
     render(<SetupInstructions onStart={() => {}} />);
     expect(screen.getByText("Let's Get Your WhatsApp Business Ready")).toBeInTheDocument();
     expect(screen.getByTestId("setup-tips").children).toHaveLength(2);
-    expect(screen.getByTestId("setup-steps").children).toHaveLength(3);
-    expect(screen.getByText("Add Your Business Details")).toBeInTheDocument();
-    expect(screen.getByText("Start Embedded Signup")).toBeInTheDocument();
-    expect(screen.getByText("Verify & Go Live")).toBeInTheDocument();
+    expect(screen.getByTestId("setup-steps").children).toHaveLength(2);
+    expect(screen.getByText("Confirm Your Business Details")).toBeInTheDocument();
+    expect(screen.getByText("Start Meta Signup")).toBeInTheDocument();
     expect(screen.getByTestId("setup-cta-manual")).toBeInTheDocument();
     expect(screen.getByTestId("setup-cta-ai")).toBeInTheDocument();
     expect(screen.getByTestId("setup-cta-manual")).toHaveTextContent(

@@ -731,7 +731,7 @@ import { Button } from "@/components/ui/button";
 const TIPS = [
   {
     icon: Sparkles,
-    text: "No WhatsApp number yet? Grab an SR Virtual Number for just ₹500/month — no SIM required, fully WhatsApp-ready from day one.",
+    text: "No WhatsApp number yet? Grab an SR Virtual Number for free — no SIM required, fully WhatsApp-ready from day one.",
   },
   {
     icon: Link2,

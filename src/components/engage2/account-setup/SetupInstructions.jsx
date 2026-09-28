@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 const TIPS = [
   {
     icon: Sparkles,
-    text: "No WhatsApp number yet? Grab an SR Virtual Number for just ₹500/month — no SIM required, fully WhatsApp-ready from day one.",
+    text: "No WhatsApp number yet? Grab an SR Virtual Number for free — no SIM required, fully WhatsApp-ready from day one.",
   },
   {
     icon: Link2,
@@ -20,16 +20,12 @@ const PREREQUISITES = [
 
 const STEPS = [
   {
-    title: "Add Your Business Details",
-    desc: "Fill in what WhatsApp needs to approve your account: name, category, and contact info.",
+    title: "Confirm Your Business Details",
+    desc: "Check the brand name, category, and contact info on the right — edit anything that isn't right yet.",
   },
   {
-    title: "Start Embedded Signup",
-    desc: "Launch Meta's official signup yourself, or let our AI assistant fill it in for you in seconds.",
-  },
-  {
-    title: "Verify & Go Live",
-    desc: "Confirm your phone number, business details, and email — then you're ready to message customers.",
+    title: "Start Meta Signup",
+    desc: "Once it looks good, use one of the buttons below to begin secure verification with Meta.",
   },
 ];
 
