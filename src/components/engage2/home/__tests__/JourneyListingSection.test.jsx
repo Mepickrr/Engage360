@@ -52,6 +52,15 @@ describe("JourneyListingSection", () => {
     );
   });
 
+  it("still pre-selects all 3 journey types under React.StrictMode (this app's real root), where effects double-invoke in dev", () => {
+    render(
+      <React.StrictMode>
+        <JourneyListingSection />
+      </React.StrictMode>
+    );
+    expect(screen.getByTestId("cart-rail-summary")).toHaveTextContent("3 journeys selected");
+  });
+
   it("does not stomp an existing selection made before this section re-mounts", () => {
     useJourneySelectionStore2.getState().toggle("abandoned-cart-known");
     render(<JourneyListingSection />);
