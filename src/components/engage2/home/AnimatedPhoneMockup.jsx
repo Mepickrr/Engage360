@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useRef } from "react";
 import {
   Loader2,
   ChevronLeft,
@@ -13,6 +13,135 @@ import {
 } from "lucide-react";
 import PhoneMockup from "@/components/engage2/account-setup/PhoneMockup";
 
+// 7 scenes, in the exact order and with the exact in-scene beats (clock
+// flip, exit-intent fade-to-black, payment-confirming spinner) as the
+// reference "Recovery Activation" prototype this hero is built to match.
+export const SCENE_CHECKOUT = 0;
+export const SCENE_EXIT_INTENT = 1;
+export const SCENE_LOCKSCREEN = 2;
+export const SCENE_NOTIFICATION = 3;
+export const SCENE_WHATSAPP = 4;
+export const SCENE_RESTORED = 5;
+export const SCENE_DONE = 6;
+const SCENE_COUNT = 7;
+
+const DURATIONS_MS = [2200, 2700, 2000, 2700, 3900, 3100, 6200];
+
+// One-off beats fired a fixed delay after a scene is entered: the exit
+// sheet fades the screen to black just before cutting to the lock screen,
+// the lock-screen clock flips to the reminder's send time, and the
+// restored-checkout CTA swaps to a "confirming payment" spinner.
+const BEATS = {
+  [SCENE_EXIT_INTENT]: [["exiting", 2200]],
+  [SCENE_LOCKSCREEN]: [["flip", 900]],
+  [SCENE_RESTORED]: [["paying", 1900]],
+};
+
+const INITIAL_BEATS = { exiting: false, flip: false, paying: false };
+
+// Exported (not private to this file) so HeroSection can own a single
+// player and drive the phone, the step list, and the playback controls
+// from the same state — independent hook calls would run un-synced timers.
+export function useHeroPlayer() {
+  const [, forceRender] = useReducer((c) => c + 1, 0);
+  const ref = useRef({ scene: SCENE_CHECKOUT, paused: false, ...INITIAL_BEATS });
+  const tickTimer = useRef(null);
+  const beatTimers = useRef([]);
+
+  const clearBeatTimers = () => {
+    beatTimers.current.forEach(clearTimeout);
+    beatTimers.current = [];
+  };
+
+  const armBeats = () => {
+    clearBeatTimers();
+    (BEATS[ref.current.scene] || []).forEach(([key, ms]) => {
+      beatTimers.current.push(
+        setTimeout(() => {
+          ref.current = { ...ref.current, [key]: true };
+          forceRender();
+        }, ms)
+      );
+    });
+  };
+
+  const tick = () => {
+    clearTimeout(tickTimer.current);
+    clearBeatTimers();
+    if (ref.current.paused) return;
+    armBeats();
+    tickTimer.current = setTimeout(() => {
+      ref.current = {
+        ...ref.current,
+        scene: (ref.current.scene + 1) % SCENE_COUNT,
+        ...INITIAL_BEATS,
+      };
+      forceRender();
+      tick();
+    }, DURATIONS_MS[ref.current.scene]);
+  };
+
+  useEffect(() => {
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      // Freeze on the frame that most directly shows the product's value —
+      // the WhatsApp reminder — instead of cycling through the story.
+      ref.current = { ...ref.current, scene: SCENE_WHATSAPP };
+      forceRender();
+      return undefined;
+    }
+    tick();
+    return () => {
+      clearTimeout(tickTimer.current);
+      clearBeatTimers();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const jump = (scene) => {
+    clearTimeout(tickTimer.current);
+    ref.current = { scene, paused: false, ...INITIAL_BEATS };
+    forceRender();
+    tick();
+  };
+
+  const toggle = () => {
+    ref.current = { ...ref.current, paused: !ref.current.paused };
+    forceRender();
+    tick();
+  };
+
+  return { ...ref.current, jump, toggle };
+}
+
+// Keyframes for the scenes below: a sheet sliding up, a notification
+// dropping in, the order-confirmed card stack scrolling into view, and its
+// confetti burst. Mounted once (not per-screen) so cycling scenes never
+// re-inserts it.
+function AnimationStyles() {
+  return (
+    <style>{`
+      @keyframes engage-fade-in { from { opacity: 0 } to { opacity: 1 } }
+      @keyframes engage-sheet-up { from { transform: translateY(100%) } to { transform: translateY(0) } }
+      @keyframes engage-drop-in { 0% { opacity: 0; transform: translateY(-28px) scale(.96) } 100% { opacity: 1; transform: none } }
+      @keyframes engage-rise { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: none } }
+      @keyframes engage-scroll-up { from { transform: translateY(0) } to { transform: translateY(-180px) } }
+      @keyframes engage-confetti { 0% { opacity: 0; transform: translateY(-10px) rotate(0) } 10% { opacity: 1 } 100% { opacity: 0; transform: translateY(130px) rotate(300deg) } }
+      @keyframes engage-pop { 0% { transform: scale(0) } 70% { transform: scale(1.12) } 100% { transform: scale(1) } }
+      .engage-fade-in { animation: engage-fade-in .4s ease both }
+      .engage-sheet-up { animation: engage-sheet-up .4s cubic-bezier(.2,.8,.2,1) both }
+      .engage-drop-in { animation: engage-drop-in .5s cubic-bezier(.2,.9,.25,1.05) both }
+      .engage-rise { animation: engage-rise .45s cubic-bezier(.2,.8,.2,1) both }
+      .engage-scroll-up { animation: engage-scroll-up 1.3s cubic-bezier(.45,0,.2,1) 2.6s both }
+      .engage-pop { animation: engage-pop .45s cubic-bezier(.2,.9,.3,1.3) both }
+      .engage-confetti { position: absolute; top: 0; width: 5px; height: 8px; border-radius: 2px; opacity: 0; animation: engage-confetti 1.4s ease-in both; pointer-events: none }
+    `}</style>
+  );
+}
+
 function StoreHeader() {
   return (
     <div className="flex items-center justify-between px-3 py-3 bg-slate-900 text-white flex-shrink-0">
@@ -23,55 +152,10 @@ function StoreHeader() {
   );
 }
 
-// 6 phases telling the same "checkout -> reminder -> recovered" story as
-// the story-steps list HeroSection renders beside this component.
-// Durations (ms) are how long each phase holds before advancing.
-export const PHASE_CHECKOUT = 0;
-export const PHASE_LOCKSCREEN = 1;
-export const PHASE_WHATSAPP = 2;
-export const PHASE_RESTORING = 3;
-export const PHASE_PAYMENT = 4;
-export const PHASE_DONE = 5;
-const DURATIONS_MS = [2800, 2600, 2600, 1500, 2400, 2800];
-const PHASE_COUNT = DURATIONS_MS.length;
-
-// Exported (not private to this file) so HeroSection can own a single
-// phase timeline and pass it both to this phone and to its own
-// story-steps highlighting — two independent calls to this hook would
-// run two un-synced timers that drift apart.
-export function usePhonePhase() {
-  const [phase, setPhase] = useState(PHASE_CHECKOUT);
-
-  useEffect(() => {
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReducedMotion) {
-      // Freeze on the frame that most directly shows the product's value —
-      // the WhatsApp reminder — instead of cycling through the story.
-      setPhase(PHASE_WHATSAPP);
-      return undefined;
-    }
-    let timer;
-    let current = PHASE_CHECKOUT;
-    function tick() {
-      timer = setTimeout(() => {
-        current = (current + 1) % PHASE_COUNT;
-        setPhase(current);
-        tick();
-      }, DURATIONS_MS[current]);
-    }
-    tick();
-    return () => clearTimeout(timer);
-  }, []);
-
-  return phase;
-}
-
-function CheckoutScreen() {
+function CheckoutScreen({ scene, exiting }) {
+  const showSheet = scene === SCENE_EXIT_INTENT;
   return (
-    <div className="flex flex-col h-full bg-white" data-testid="phone-phase-checkout">
+    <div className="relative flex flex-col h-full bg-white" data-testid="phone-phase-checkout">
       <StoreHeader />
 
       <div className="bg-primary-tint/50 px-3 py-2">
@@ -145,11 +229,33 @@ function CheckoutScreen() {
           Pay ₹1,178
         </div>
       </div>
+
+      {showSheet && (
+        <div className="absolute inset-0 z-10" data-testid="phone-exit-intent-sheet">
+          <div className="engage-fade-in absolute inset-0 bg-black/50" />
+          <div className="engage-sheet-up absolute inset-x-0 bottom-0 bg-white rounded-t-2xl px-4 pt-3 pb-8 flex flex-col gap-2.5">
+            <div className="self-center w-9 h-1 rounded-full bg-slate-300" />
+            <div className="text-[15px] font-semibold text-slate-900 mt-1">Leaving already?</div>
+            <div className="text-[11px] text-slate-500 leading-snug">
+              We'll keep your cart saved, along with your extra 5% off on UPI.
+            </div>
+            <div className="h-10 rounded-md bg-slate-900 text-white flex items-center justify-center text-[12px] font-semibold mt-1">
+              Continue to pay
+            </div>
+            <div className="h-10 rounded-md border border-border flex items-center justify-center text-[12px] font-semibold text-slate-900">
+              Yes, exit checkout
+            </div>
+          </div>
+          {exiting && <div className="engage-fade-in absolute inset-0 bg-black" />}
+        </div>
+      )}
     </div>
   );
 }
 
-function LockScreen() {
+function LockScreen({ scene, flip }) {
+  const showNotification = scene === SCENE_NOTIFICATION;
+  const clockIsNew = showNotification || flip;
   return (
     <div
       className="flex flex-col items-center h-full pt-14 text-white relative"
@@ -157,25 +263,34 @@ function LockScreen() {
       data-testid="phone-phase-lockscreen"
     >
       <div className="text-xs opacity-70">Tuesday, 24 September</div>
-      <div className="text-4xl font-medium mt-1 tabular-nums">7:42</div>
-      <span className="mt-3 inline-flex items-center gap-1.5 bg-white/15 px-3 py-1.5 rounded-full text-[10px] font-medium">
-        <Clock className="w-2.5 h-2.5" />
-        30 minutes later
-      </span>
-      <div className="absolute left-3 right-3 top-48 bg-white text-slate-900 rounded-2xl px-3 py-2.5 flex gap-2.5 shadow-xl">
-        <span className="w-8 h-8 rounded-lg bg-success flex items-center justify-center flex-shrink-0 text-white text-sm">
-          ✓
+      <div className="text-4xl font-medium mt-1 tabular-nums">{clockIsNew ? "8:12" : "7:42"}</div>
+
+      {!showNotification && (
+        <span className="engage-rise mt-3 inline-flex items-center gap-1.5 bg-white/15 px-3 py-1.5 rounded-full text-[10px] font-medium">
+          <Clock className="w-2.5 h-2.5" />
+          30 minutes later
         </span>
-        <span className="min-w-0">
-          <span className="flex justify-between gap-1.5 text-[11px] font-semibold">
-            <span>Mystore1</span>
-            <span className="text-slate-400 font-normal">now</span>
+      )}
+
+      {showNotification && (
+        <div
+          className="engage-drop-in absolute left-3 right-3 top-44 bg-white text-slate-900 rounded-2xl px-3 py-2.5 flex gap-2.5 shadow-xl"
+          data-testid="phone-lock-notification"
+        >
+          <span className="w-8 h-8 rounded-lg bg-success flex items-center justify-center flex-shrink-0 text-white">
+            <Check className="w-4 h-4" />
           </span>
-          <span className="block text-[11px] leading-tight text-slate-600 mt-0.5">
-            Hi Aanya, your Juniper throw is reserved for you…
+          <span className="min-w-0">
+            <span className="flex justify-between gap-1.5 text-[11px] font-semibold">
+              <span>Mystore1</span>
+              <span className="text-slate-400 font-normal">now</span>
+            </span>
+            <span className="block text-[11px] leading-tight text-slate-600 mt-0.5">
+              Hi Aanya, your Juniper throw is reserved for you…
+            </span>
           </span>
-        </span>
-      </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -231,19 +346,7 @@ function WhatsAppScreen() {
   );
 }
 
-function RestoringScreen() {
-  return (
-    <div
-      className="flex flex-col items-center justify-center h-full gap-2 text-xs text-slate-500"
-      data-testid="phone-phase-restoring"
-    >
-      <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
-      Restoring your cart
-    </div>
-  );
-}
-
-function PaymentScreen() {
+function RestoredScreen({ paying }) {
   return (
     <div className="flex flex-col h-full bg-white" data-testid="phone-phase-payment">
       <StoreHeader />
@@ -281,8 +384,15 @@ function PaymentScreen() {
       </div>
 
       <div className="mt-auto px-3 py-3 border-t border-border flex flex-col gap-1.5 flex-shrink-0">
-        <div className="h-10 rounded-md bg-slate-900 text-white flex items-center justify-center text-[11px] font-semibold">
-          Pay ₹1,178
+        <div className="relative h-10 rounded-md bg-slate-900 text-white flex items-center justify-center text-[11px] font-semibold overflow-hidden">
+          {paying ? (
+            <span className="engage-fade-in flex items-center gap-2" data-testid="phone-paying">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              Confirming payment
+            </span>
+          ) : (
+            <span className="engage-fade-in">Pay ₹1,178</span>
+          )}
         </div>
         <span className="text-[8.5px] text-slate-400 text-center">Secured checkout by Fastrr</span>
       </div>
@@ -290,36 +400,98 @@ function PaymentScreen() {
   );
 }
 
+const CONFETTI = [
+  { left: "12%", bg: "#F59E0B", delay: ".3s" },
+  { left: "24%", bg: "#F97066", delay: ".45s" },
+  { left: "38%", bg: "#7C5CFC", delay: ".38s" },
+  { left: "52%", bg: "#22C55E", delay: ".55s" },
+  { left: "66%", bg: "#F59E0B", delay: ".33s" },
+  { left: "80%", bg: "#7C5CFC", delay: ".5s" },
+  { left: "90%", bg: "#22C55E", delay: ".6s" },
+];
+
 function DoneScreen() {
   return (
     <div className="flex flex-col h-full bg-white" data-testid="phone-phase-done">
       <StoreHeader />
 
-      <div className="flex-1 overflow-hidden px-3 py-3 flex flex-col items-center gap-2 text-center">
-        <span className="w-11 h-11 rounded-full bg-success-bg text-success flex items-center justify-center flex-shrink-0">
-          <Check className="w-5 h-5" />
-        </span>
-        <div className="text-[13px] font-bold text-slate-900">Order placed!</div>
-        <div className="text-[9.5px] text-slate-500 leading-snug">
-          Thanks, Aanya. Order <span className="font-semibold text-slate-900">#MB-2048</span> is confirmed.
-        </div>
-        <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-success bg-success-bg px-2 py-1 rounded-full">
-          <Check className="w-2.5 h-2.5" />
-          ₹1,178 paid via GPay UPI
-        </span>
+      <div className="flex-1 overflow-hidden relative">
+        <div className="engage-scroll-up flex flex-col gap-2 px-3 py-3">
+          <div className="relative flex flex-col items-center text-center pb-2">
+            {CONFETTI.map((c, i) => (
+              <span
+                key={i}
+                className="engage-confetti"
+                style={{ left: c.left, background: c.bg, animationDelay: c.delay }}
+              />
+            ))}
+            <span className="engage-pop w-11 h-11 rounded-full bg-success-bg text-success flex items-center justify-center flex-shrink-0">
+              <Check className="w-5 h-5" />
+            </span>
+            <div className="text-[13px] font-bold text-slate-900 mt-2">Order placed!</div>
+            <div className="text-[9.5px] text-slate-500 leading-snug mt-1">
+              Thanks, Aanya. Order <span className="font-semibold text-slate-900">#MB-2048</span> is
+              confirmed.
+            </div>
+            <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-success bg-success-bg px-2 py-1 rounded-full mt-2">
+              <Check className="w-2.5 h-2.5" />
+              ₹1,178 paid via GPay UPI
+            </span>
+          </div>
 
-        <div className="w-full rounded-md border border-border px-2.5 py-2 flex items-center justify-between mt-1">
-          <span className="text-[9px] text-slate-500">Arriving by</span>
-          <span className="text-[10.5px] font-semibold text-slate-900">Thu, 9 Oct</span>
-        </div>
+          <div className="rounded-md border border-border px-2.5 py-2 flex flex-col gap-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] text-slate-500">Estimated delivery</span>
+              <span className="text-[9px] font-semibold text-primary">Track</span>
+            </div>
+            <span className="text-[11px] font-bold text-slate-900">Arriving by Thu, 9 Oct</span>
+            <div className="grid grid-cols-4 text-[8px] text-slate-400 mt-0.5">
+              <span className="font-semibold text-slate-900">Placed</span>
+              <span className="text-center">Packed</span>
+              <span className="text-center">Shipped</span>
+              <span className="text-right">Delivered</span>
+            </div>
+          </div>
 
-        <div className="w-full rounded-md border border-border px-2.5 py-2 flex items-center gap-2">
-          <span className="w-6 h-6 rounded-md bg-[#25D366] flex items-center justify-center flex-shrink-0">
-            <MessageCircle className="w-3.5 h-3.5 text-white" />
-          </span>
-          <span className="text-[9.5px] text-slate-600 text-left leading-snug">
-            We'll message you on WhatsApp when your order ships.
-          </span>
+          <div className="rounded-md border border-border px-2.5 py-2 flex items-center gap-2">
+            <span className="w-6 h-6 rounded-md bg-[#25D366] flex items-center justify-center flex-shrink-0">
+              <MessageCircle className="w-3.5 h-3.5 text-white" />
+            </span>
+            <span className="text-[9.5px] text-slate-600 text-left leading-snug">
+              We'll message you on WhatsApp when your order ships.
+            </span>
+          </div>
+
+          <div className="rounded-md border border-border px-2.5 py-2 flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-200 to-amber-400 flex-shrink-0" />
+            <span className="flex-1 text-[11px] font-semibold text-slate-900">Juniper Cotton Throw</span>
+            <span className="text-[11px] font-bold text-slate-900">₹1,178</span>
+          </div>
+
+          <div className="rounded-md border border-border px-2.5 py-2 flex flex-col gap-1 text-[10px]">
+            <div className="flex justify-between text-slate-500">
+              <span>Item total</span>
+              <span>₹1,240</span>
+            </div>
+            <div className="flex justify-between text-slate-500">
+              <span>UPI discount (5%)</span>
+              <span className="text-success">−₹62</span>
+            </div>
+            <div className="flex justify-between text-slate-500">
+              <span>Delivery</span>
+              <span className="text-success">Free</span>
+            </div>
+            <div className="border-t border-dashed border-border my-0.5" />
+            <div className="flex justify-between text-[11px] font-bold text-slate-900">
+              <span>Amount paid</span>
+              <span>₹1,178</span>
+            </div>
+          </div>
+
+          <div className="rounded-md border border-border px-2.5 py-2 flex flex-col gap-0.5">
+            <span className="text-[9px] text-slate-500">Delivering to</span>
+            <span className="text-[10.5px] font-semibold text-slate-900">Aanya · Indiranagar</span>
+          </div>
         </div>
       </div>
 
@@ -335,23 +507,38 @@ function DoneScreen() {
   );
 }
 
-const SCREENS = {
-  [PHASE_CHECKOUT]: CheckoutScreen,
-  [PHASE_LOCKSCREEN]: LockScreen,
-  [PHASE_WHATSAPP]: WhatsAppScreen,
-  [PHASE_RESTORING]: RestoringScreen,
-  [PHASE_PAYMENT]: PaymentScreen,
-  [PHASE_DONE]: DoneScreen,
-};
+export default function AnimatedPhoneMockup({ scene, exiting, flip, paying }) {
+  let screen;
+  switch (scene) {
+    case SCENE_LOCKSCREEN:
+    case SCENE_NOTIFICATION:
+      screen = <LockScreen scene={scene} flip={flip} />;
+      break;
+    case SCENE_WHATSAPP:
+      screen = <WhatsAppScreen />;
+      break;
+    case SCENE_RESTORED:
+      screen = <RestoredScreen paying={paying} />;
+      break;
+    case SCENE_DONE:
+      screen = <DoneScreen />;
+      break;
+    case SCENE_CHECKOUT:
+    case SCENE_EXIT_INTENT:
+    default:
+      screen = <CheckoutScreen scene={scene} exiting={exiting} />;
+      break;
+  }
 
-export default function AnimatedPhoneMockup({ phase }) {
-  const Screen = SCREENS[phase];
+  // Every scene but the WhatsApp chat opens with a colored/dark header
+  // flush against the very top of the screen, so the status bar needs
+  // white icons there to stay legible.
+  const statusVariant = scene === SCENE_WHATSAPP ? "dark" : "light";
 
   return (
-    <div data-phone-phase={phase}>
-      <PhoneMockup>
-        <Screen />
-      </PhoneMockup>
+    <div data-phone-scene={scene}>
+      <AnimationStyles />
+      <PhoneMockup statusVariant={statusVariant}>{screen}</PhoneMockup>
     </div>
   );
 }

@@ -6,7 +6,7 @@ const FRAME_HEIGHT = 720;
 
 function SignalBars() {
   return (
-    <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" className="text-slate-900">
+    <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor">
       <rect x="0" y="6" width="3" height="5" rx="0.5" />
       <rect x="4.5" y="4" width="3" height="7" rx="0.5" />
       <rect x="9" y="2" width="3" height="9" rx="0.5" />
@@ -15,18 +15,24 @@ function SignalBars() {
   );
 }
 
-function StatusBar() {
+// "light" is for a screen whose own top edge is a colored/dark header (the
+// status bar then needs white icons to stay legible over it); "dark" (the
+// default) is the plain white-bar/black-icon look every other caller uses.
+function StatusBar({ variant = "dark" }) {
+  const light = variant === "light";
   return (
     <div
-      className="relative h-11 flex items-end justify-between px-5 pb-2 bg-white flex-shrink-0"
+      className={`relative h-11 flex items-end justify-between px-5 pb-2 flex-shrink-0 ${
+        light ? "bg-slate-900 text-white" : "bg-white text-slate-900"
+      }`}
       data-testid="phone-mockup-status-bar"
     >
-      <span className="text-[13px] font-semibold text-slate-900 tabular-nums">9:41</span>
+      <span className="text-[13px] font-semibold tabular-nums">9:41</span>
       <div
         className="w-[100px] h-6 bg-black rounded-full absolute left-1/2 -translate-x-1/2 top-1"
         data-testid="phone-mockup-notch"
       />
-      <div className="flex items-center gap-1.5 text-slate-900">
+      <div className="flex items-center gap-1.5">
         <SignalBars />
         <Wifi className="w-3.5 h-3.5" />
         <Battery className="w-5 h-3.5" />
@@ -35,7 +41,7 @@ function StatusBar() {
   );
 }
 
-export default function PhoneMockup({ children }) {
+export default function PhoneMockup({ children, statusVariant = "dark" }) {
   return (
     <div className="relative" data-testid="phone-mockup">
       <div
@@ -49,7 +55,7 @@ export default function PhoneMockup({ children }) {
         className="relative bg-slate-100 rounded-[3rem] border-[8px] border-slate-800 shadow-2xl overflow-hidden flex flex-col"
         style={{ width: FRAME_WIDTH, height: FRAME_HEIGHT, maxHeight: "calc(100vh - 5rem)" }}
       >
-        <StatusBar />
+        <StatusBar variant={statusVariant} />
         <div className="flex-1 overflow-y-auto bg-white" data-testid="phone-mockup-screen">
           {children}
         </div>

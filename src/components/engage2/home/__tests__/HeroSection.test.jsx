@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import HeroSection from "../HeroSection";
 
 function mockMatchMedia(matches) {
@@ -31,13 +31,28 @@ describe("HeroSection", () => {
     expect(screen.getByTestId("hero-features")).toHaveTextContent("Full control");
   });
 
-  it("marks the story step matching the phone's current phase as active, and the rest as inactive", () => {
-    // With matchMedia mocked to non-reduced-motion, usePhonePhase starts at
-    // PHASE_CHECKOUT (0) on first render, before any timer has fired.
+  it("marks the story step matching the phone's current scene as active, and the rest as inactive", () => {
+    // With matchMedia mocked to non-reduced-motion, the player starts at
+    // SCENE_CHECKOUT (scene 0, step 0) on first render, before any timer fires.
     render(<HeroSection />);
     expect(screen.getByTestId("hero-story-step-0")).toHaveAttribute("data-active", "true");
     expect(screen.getByTestId("hero-story-step-1")).toHaveAttribute("data-active", "false");
     expect(screen.getByTestId("hero-story-step-2")).toHaveAttribute("data-active", "false");
     expect(screen.getByTestId("hero-story-step-3")).toHaveAttribute("data-active", "false");
+  });
+
+  it("clicking a story step jumps the phone to that step's scene and re-highlights it", () => {
+    render(<HeroSection />);
+    fireEvent.click(screen.getByTestId("hero-story-step-3"));
+    expect(screen.getByTestId("hero-story-step-3")).toHaveAttribute("data-active", "true");
+    expect(screen.getByTestId("hero-story-step-0")).toHaveAttribute("data-active", "false");
+    expect(screen.getByTestId("phone-phase-done")).toBeInTheDocument();
+  });
+
+  it("the play/pause control pauses the animation and updates its label", () => {
+    render(<HeroSection />);
+    const toggle = screen.getByLabelText("Pause animation");
+    fireEvent.click(toggle);
+    expect(screen.getByLabelText("Play animation")).toBeInTheDocument();
   });
 });
