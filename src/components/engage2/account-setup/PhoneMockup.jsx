@@ -1,7 +1,19 @@
 import React from "react";
+import { Wifi, Battery } from "lucide-react";
 
 const FRAME_WIDTH = 360;
 const FRAME_HEIGHT = 720;
+
+function SignalBars() {
+  return (
+    <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" className="text-slate-900">
+      <rect x="0" y="6" width="3" height="5" rx="0.5" />
+      <rect x="4.5" y="4" width="3" height="7" rx="0.5" />
+      <rect x="9" y="2" width="3" height="9" rx="0.5" />
+      <rect x="13" y="0" width="3" height="11" rx="0.5" />
+    </svg>
+  );
+}
 
 function StatusBar() {
   return (
@@ -9,15 +21,15 @@ function StatusBar() {
       className="relative h-11 flex items-end justify-between px-5 pb-2 bg-white flex-shrink-0"
       data-testid="phone-mockup-status-bar"
     >
-      <span className="text-[11px] font-semibold text-slate-900">9:41</span>
+      <span className="text-[13px] font-semibold text-slate-900 tabular-nums">9:41</span>
       <div
         className="w-[100px] h-6 bg-black rounded-full absolute left-1/2 -translate-x-1/2 top-1"
         data-testid="phone-mockup-notch"
       />
-      <div className="flex items-center gap-1 text-[10px] text-slate-900">
-        <span>●●●</span>
-        <span>Wi-Fi</span>
-        <span>100%</span>
+      <div className="flex items-center gap-1.5 text-slate-900">
+        <SignalBars />
+        <Wifi className="w-3.5 h-3.5" />
+        <Battery className="w-5 h-3.5" />
       </div>
     </div>
   );
