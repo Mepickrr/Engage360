@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from "react";
 import {
   Loader2,
-  Lock,
   ChevronLeft,
   Minus,
   Plus,
   BadgeCheck,
   ExternalLink,
+  ShoppingBag,
+  Check,
+  MessageCircle,
+  Clock,
 } from "lucide-react";
 import PhoneMockup from "@/components/engage2/account-setup/PhoneMockup";
 
-function BrowserChrome() {
+function StoreHeader() {
   return (
-    <div className="flex items-center gap-1.5 h-6 px-2.5 rounded-md bg-slate-100 text-[10px] text-slate-500 mb-3 flex-shrink-0">
-      <Lock className="w-2.5 h-2.5" />
-      <span className="font-mono">mystore1.in/checkout</span>
+    <div className="flex items-center justify-between px-3 py-3 bg-slate-900 text-white flex-shrink-0">
+      <ChevronLeft className="w-4 h-4 flex-shrink-0" />
+      <span className="font-serif italic text-[15px] tracking-wide">Mystore1</span>
+      <ShoppingBag className="w-4 h-4 flex-shrink-0" />
     </div>
   );
 }
@@ -68,14 +72,10 @@ export function usePhonePhase() {
 function CheckoutScreen() {
   return (
     <div className="flex flex-col h-full bg-white" data-testid="phone-phase-checkout">
-      <BrowserChrome />
-      <div className="flex items-center gap-2 px-3 pb-2.5 border-b border-border">
-        <ChevronLeft className="w-4 h-4 text-slate-700 flex-shrink-0" />
-        <span className="text-[13px] font-semibold text-slate-900">Shopping Bag (1)</span>
-      </div>
+      <StoreHeader />
 
-      <div className="bg-primary-tint/50 px-3 py-2.5">
-        <div className="text-[10px] font-semibold text-primary mb-1.5">
+      <div className="bg-primary-tint/50 px-3 py-2">
+        <div className="text-[10px] font-semibold text-primary mb-1">
           You're ₹200 away from free shipping 🎁
         </div>
         <div className="h-1 rounded-full bg-white/80 overflow-hidden">
@@ -83,45 +83,66 @@ function CheckoutScreen() {
         </div>
       </div>
 
-      <div className="flex items-center gap-2.5 px-3 py-3 border-b border-border">
-        <div className="relative w-14 h-14 rounded-lg bg-gradient-to-br from-amber-200 to-amber-400 flex-shrink-0">
-          <span className="absolute -top-1.5 -left-1.5 bg-success text-white text-[8px] font-bold px-1 py-0.5 rounded shadow-sm">
-            13% OFF
+      <div className="flex-1 overflow-hidden px-3 py-2 flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-semibold text-slate-900">
+            Order summary <span className="text-slate-400 font-normal">· 1 item</span>
+          </span>
+          <span className="text-[11px] font-semibold text-slate-900">₹1,240</span>
+        </div>
+
+        <div className="flex items-center gap-2.5">
+          <div className="relative w-12 h-12 rounded-lg bg-gradient-to-br from-amber-200 to-amber-400 flex-shrink-0">
+            <span className="absolute -top-1.5 -left-1.5 bg-success text-white text-[8px] font-bold px-1 py-0.5 rounded shadow-sm">
+              13% OFF
+            </span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[11px] font-semibold text-slate-900 leading-tight truncate">
+              Juniper Cotton Throw
+            </div>
+            <div className="text-[9px] text-slate-500 mt-0.5">Qty 1 · Ivory</div>
+            <div className="flex items-center gap-1.5 mt-1">
+              <span className="text-[11px] font-bold text-slate-900">₹1,240</span>
+              <span className="text-[9px] text-slate-400 line-through">₹1,420</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 border border-border rounded-md px-1.5 py-1 flex-shrink-0">
+            <Minus className="w-2.5 h-2.5 text-slate-500" />
+            <span className="text-[10px] font-semibold text-slate-900 w-2.5 text-center">1</span>
+            <Plus className="w-2.5 h-2.5 text-slate-500" />
+          </div>
+        </div>
+
+        <div className="rounded-md bg-success-bg/70 text-success text-[9px] font-semibold text-center py-1.5">
+          ✨ You're saving ₹180 on this order ✨
+        </div>
+
+        <div className="rounded-md border border-border px-2.5 py-2 flex items-center justify-between">
+          <span className="text-[10px] text-slate-500">Deliver to</span>
+          <span className="text-[10px] font-semibold text-slate-900 truncate max-w-[55%] text-right">
+            Aanya · Indiranagar
           </span>
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-[12px] font-semibold text-slate-900 leading-tight truncate">
-            Juniper Cotton Throw
-          </div>
-          <div className="text-[10px] text-slate-500 mt-0.5">Qty 1 · Ivory</div>
-          <div className="flex items-center gap-1.5 mt-1">
-            <span className="text-[12px] font-bold text-slate-900">₹1,240</span>
-            <span className="text-[10px] text-slate-400 line-through">₹1,420</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 border border-border rounded-md px-1.5 py-1 flex-shrink-0">
-          <Minus className="w-2.5 h-2.5 text-slate-500" />
-          <span className="text-[11px] font-semibold text-slate-900 w-2.5 text-center">1</span>
-          <Plus className="w-2.5 h-2.5 text-slate-500" />
+
+        <div className="rounded-md border border-border px-2.5 py-2 flex items-center gap-2">
+          <span className="w-3.5 h-3.5 rounded-full border-[4px] border-primary flex-shrink-0" />
+          <span className="flex-1 text-[10px] font-medium text-slate-700">UPI · GPay, PhonePe, Paytm</span>
+          <span className="text-[9px] font-semibold text-success bg-success-bg px-1.5 py-0.5 rounded">
+            5% off
+          </span>
         </div>
       </div>
 
-      <div className="px-3 py-2.5 border-b border-border flex items-center justify-between">
-        <span className="text-[11px] text-slate-500">Have a coupon code?</span>
-        <span className="text-[11px] font-semibold text-primary">Apply</span>
-      </div>
-
-      <div className="px-3 py-2 text-center text-[10px] text-success font-semibold bg-success-bg/70">
-        ✨ You're saving ₹180 on this order ✨
-      </div>
-
-      <div className="mt-auto flex items-center justify-between gap-3 px-3 py-3 border-t border-border">
+      <div className="mt-auto flex items-center justify-between gap-3 px-3 py-3 border-t border-border flex-shrink-0">
         <div>
           <div className="text-[9px] text-slate-500">Total</div>
-          <div className="text-[13px] font-bold text-slate-900">₹1,240</div>
+          <div className="text-[13px] font-bold text-slate-900">
+            ₹1,178 <span className="text-[9px] font-medium text-slate-400 line-through">₹1,240</span>
+          </div>
         </div>
         <div className="flex-1 h-9 rounded-md bg-slate-900 text-white flex items-center justify-center text-[11px] font-semibold">
-          Continue to payment
+          Pay ₹1,178
         </div>
       </div>
     </div>
@@ -137,7 +158,11 @@ function LockScreen() {
     >
       <div className="text-xs opacity-70">Tuesday, 24 September</div>
       <div className="text-4xl font-medium mt-1 tabular-nums">7:42</div>
-      <div className="absolute left-3 right-3 top-44 bg-white text-slate-900 rounded-2xl px-3 py-2.5 flex gap-2.5 shadow-xl">
+      <span className="mt-3 inline-flex items-center gap-1.5 bg-white/15 px-3 py-1.5 rounded-full text-[10px] font-medium">
+        <Clock className="w-2.5 h-2.5" />
+        30 minutes later
+      </span>
+      <div className="absolute left-3 right-3 top-48 bg-white text-slate-900 rounded-2xl px-3 py-2.5 flex gap-2.5 shadow-xl">
         <span className="w-8 h-8 rounded-lg bg-success flex items-center justify-center flex-shrink-0 text-white text-sm">
           ✓
         </span>
@@ -192,11 +217,15 @@ function WhatsAppScreen() {
             <ExternalLink className="w-3 h-3" />
             Complete My Order
           </div>
+          <div className="flex items-center justify-center gap-1.5 text-[12px] font-semibold text-[#00a5f4] border-t border-black/5 mt-1 pt-2">
+            <Clock className="w-3 h-3" />
+            Remind Me Tomorrow
+          </div>
         </div>
       </div>
 
       <div className="px-3 py-1.5 text-center text-[9px] text-slate-500 border-t border-black/5 flex-shrink-0">
-        Type STOP to unsubscribe
+        Reply STOP to opt out
       </div>
     </div>
   );
@@ -216,28 +245,46 @@ function RestoringScreen() {
 
 function PaymentScreen() {
   return (
-    <div className="flex flex-col h-full p-3" data-testid="phone-phase-payment">
-      <BrowserChrome />
-      <div className="flex items-center gap-3 pb-3 border-b border-border px-1">
-        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-200 to-amber-400 flex-shrink-0" />
-        <div>
-          <div className="text-xs font-semibold text-slate-900">Juniper Cotton Throw</div>
-          <div className="text-[11px] text-success font-medium">Welcome back</div>
+    <div className="flex flex-col h-full bg-white" data-testid="phone-phase-payment">
+      <StoreHeader />
+
+      <div className="flex-1 overflow-hidden px-3 py-2.5 flex flex-col gap-2">
+        <div className="rounded-lg bg-slate-900 text-white px-3 py-2.5 flex items-center gap-2">
+          <span className="w-5 h-5 rounded-full bg-success flex items-center justify-center flex-shrink-0">
+            <Check className="w-3 h-3 text-white" />
+          </span>
+          <span className="text-[10.5px] leading-snug">
+            Welcome back, Aanya. Your cart is just as you left it.
+          </span>
         </div>
-        <span className="ml-auto text-xs font-semibold text-slate-900">₹1,240</span>
+
+        <div className="rounded-md border border-border px-2.5 py-2 flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-200 to-amber-400 flex-shrink-0" />
+          <span className="flex-1 text-[11px] font-semibold text-slate-900">1 item</span>
+          <span className="text-[9px] text-slate-400 line-through">₹1,240</span>
+          <span className="text-[11px] font-bold text-slate-900">₹1,178</span>
+        </div>
+
+        <div className="rounded-md border border-border px-2.5 py-2 flex flex-col gap-0.5">
+          <span className="flex items-center gap-1 text-[9px] font-semibold text-success">
+            <Check className="w-2.5 h-2.5" />
+            Saved address
+          </span>
+          <span className="text-[10.5px] font-semibold text-slate-900">Aanya · Indiranagar</span>
+        </div>
+
+        <div className="rounded-md border border-border px-2.5 py-2 flex items-center gap-2">
+          <span className="w-3.5 h-3.5 rounded-full border-[4px] border-primary flex-shrink-0" />
+          <span className="flex-1 text-[10.5px] font-semibold text-slate-900">GPay UPI</span>
+          <span className="text-[9px] font-semibold text-success">₹62 off applied</span>
+        </div>
       </div>
-      <div className="mx-1 mt-3 px-2.5 py-2 rounded-md bg-app-bg border border-border flex flex-col gap-1.5">
-        <div className="flex items-center justify-between text-[11px]">
-          <span className="text-slate-500">Deliver to</span>
-          <span className="font-semibold text-slate-900">Aanya · Indiranagar</span>
+
+      <div className="mt-auto px-3 py-3 border-t border-border flex flex-col gap-1.5 flex-shrink-0">
+        <div className="h-10 rounded-md bg-slate-900 text-white flex items-center justify-center text-[11px] font-semibold">
+          Pay ₹1,178
         </div>
-        <div className="flex items-center justify-between text-[11px]">
-          <span className="text-slate-500">Pay with</span>
-          <span className="font-semibold text-slate-900">UPI</span>
-        </div>
-      </div>
-      <div className="mt-auto mx-1 h-10 rounded-md bg-slate-900 text-white flex items-center justify-center text-xs font-semibold">
-        Buy now · ₹1,240
+        <span className="text-[8.5px] text-slate-400 text-center">Secured checkout by Fastrr</span>
       </div>
     </div>
   );
@@ -245,15 +292,45 @@ function PaymentScreen() {
 
 function DoneScreen() {
   return (
-    <div
-      className="flex flex-col items-center justify-center h-full gap-3 px-6 text-center"
-      data-testid="phone-phase-done"
-    >
-      <span className="w-14 h-14 rounded-full bg-success-bg text-success flex items-center justify-center text-2xl">
-        ✓
-      </span>
-      <div className="text-sm font-semibold text-slate-900">Order placed</div>
-      <div className="text-[11px] text-slate-500">Thanks, Aanya. We'll share tracking on WhatsApp.</div>
+    <div className="flex flex-col h-full bg-white" data-testid="phone-phase-done">
+      <StoreHeader />
+
+      <div className="flex-1 overflow-hidden px-3 py-3 flex flex-col items-center gap-2 text-center">
+        <span className="w-11 h-11 rounded-full bg-success-bg text-success flex items-center justify-center flex-shrink-0">
+          <Check className="w-5 h-5" />
+        </span>
+        <div className="text-[13px] font-bold text-slate-900">Order placed!</div>
+        <div className="text-[9.5px] text-slate-500 leading-snug">
+          Thanks, Aanya. Order <span className="font-semibold text-slate-900">#MB-2048</span> is confirmed.
+        </div>
+        <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-success bg-success-bg px-2 py-1 rounded-full">
+          <Check className="w-2.5 h-2.5" />
+          ₹1,178 paid via GPay UPI
+        </span>
+
+        <div className="w-full rounded-md border border-border px-2.5 py-2 flex items-center justify-between mt-1">
+          <span className="text-[9px] text-slate-500">Arriving by</span>
+          <span className="text-[10.5px] font-semibold text-slate-900">Thu, 9 Oct</span>
+        </div>
+
+        <div className="w-full rounded-md border border-border px-2.5 py-2 flex items-center gap-2">
+          <span className="w-6 h-6 rounded-md bg-[#25D366] flex items-center justify-center flex-shrink-0">
+            <MessageCircle className="w-3.5 h-3.5 text-white" />
+          </span>
+          <span className="text-[9.5px] text-slate-600 text-left leading-snug">
+            We'll message you on WhatsApp when your order ships.
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-auto px-3 py-3 border-t border-border flex gap-2 flex-shrink-0">
+        <div className="flex-1 h-9 rounded-md border border-border flex items-center justify-center text-[10.5px] font-semibold text-slate-900">
+          Keep shopping
+        </div>
+        <div className="flex-1 h-9 rounded-md bg-slate-900 text-white flex items-center justify-center text-[10.5px] font-semibold">
+          Track order
+        </div>
+      </div>
     </div>
   );
 }
