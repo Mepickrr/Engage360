@@ -15,12 +15,12 @@ const STEP_STARTS = [SCENE_CHECKOUT, SCENE_LOCKSCREEN, SCENE_RESTORED, SCENE_DON
 
 const CAPTIONS = [
   "9:41 · Aanya reaches payment",
-  "She exits with ₹1,240 in her cart",
+  "She exits with ₹848 in her cart",
   "Engage waits 30 minutes",
   "The reminder lands on her lock screen",
   "Her cart and offer, inside WhatsApp",
   "Cart restored, details pre-filled",
-  "Order placed · ₹1,178 recovered",
+  "Order placed · ₹806 recovered",
 ];
 
 const STORY_STEPS = [

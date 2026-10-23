@@ -2,8 +2,6 @@ import React, { useEffect, useReducer, useRef } from "react";
 import {
   Loader2,
   ChevronLeft,
-  Minus,
-  Plus,
   BadgeCheck,
   ExternalLink,
   ShoppingBag,
@@ -12,6 +10,21 @@ import {
   Clock,
 } from "lucide-react";
 import PhoneMockup from "@/components/engage2/account-setup/PhoneMockup";
+
+// The exact cart from the reference "Recovery Activation" prototype: 2
+// items, ₹848 subtotal, a 5% UPI discount (₹42) bringing it to ₹806, and
+// a ₹96 MRP saving on top — ₹138 saved in total. Kept as named constants
+// so every screen's numbers agree with each other and with the reference.
+const ITEM_1 = { name: "Vitamin C Glow Serum", meta: "30 ml · Qty 1", price: 549 };
+const ITEM_2 = { name: "Rose Clay Mask", meta: "50 g · Qty 1", price: 299 };
+const SUBTOTAL = 848;
+const UPI_DISCOUNT = 42;
+const TOTAL = 806;
+const MRP_SAVINGS = 96;
+const TOTAL_SAVINGS = UPI_DISCOUNT + MRP_SAVINGS;
+const ADDRESS_NAME = "Aanya Sharma · Home";
+const ADDRESS_LINE = "Flat 4B, 12th Main, Indiranagar, Bengaluru 560038";
+const ORDER_ID = "#MS-20481";
 
 // 7 scenes, in the exact order and with the exact in-scene beats (clock
 // flip, exit-intent fade-to-black, payment-confirming spinner) as the
@@ -152,81 +165,92 @@ function StoreHeader() {
   );
 }
 
+// The two swatches below stand in for the reference's two product photos
+// (a serum bottle, a clay-mask jar) — distinct colors so the "2 items"
+// framing reads clearly everywhere the cart is shown.
+function ItemSwatch({ variant, className = "" }) {
+  const palette =
+    variant === "clay" ? "from-rose-200 to-rose-400" : "from-amber-200 to-amber-400";
+  return <div className={`rounded-lg bg-gradient-to-br ${palette} flex-shrink-0 ${className}`} />;
+}
+
 function CheckoutScreen({ scene, exiting }) {
   const showSheet = scene === SCENE_EXIT_INTENT;
   return (
     <div className="relative flex flex-col h-full bg-white" data-testid="phone-phase-checkout">
       <StoreHeader />
 
-      <div className="bg-primary-tint/50 px-3 py-2">
-        <div className="text-[10px] font-semibold text-primary mb-1">
-          You're ₹200 away from free shipping 🎁
-        </div>
-        <div className="h-1 rounded-full bg-white/80 overflow-hidden">
-          <div className="h-full w-[70%] rounded-full bg-primary" />
-        </div>
+      <div className="bg-success-bg text-success text-[11px] font-semibold text-center py-1.5 px-2">
+        Extra 5% off when you pay via UPI
       </div>
 
       <div className="flex-1 overflow-hidden px-3 py-2 flex flex-col gap-2">
         <div className="flex items-center justify-between">
           <span className="text-[11px] font-semibold text-slate-900">
-            Order summary <span className="text-slate-400 font-normal">· 1 item</span>
+            Order summary <span className="text-slate-400 font-normal">· 2 items</span>
           </span>
-          <span className="text-[11px] font-semibold text-slate-900">₹1,240</span>
+          <span className="text-[11px] font-semibold text-slate-900">₹{SUBTOTAL}</span>
         </div>
 
         <div className="flex items-center gap-2.5">
-          <div className="relative w-12 h-12 rounded-lg bg-gradient-to-br from-amber-200 to-amber-400 flex-shrink-0">
-            <span className="absolute -top-1.5 -left-1.5 bg-success text-white text-[8px] font-bold px-1 py-0.5 rounded shadow-sm">
-              13% OFF
-            </span>
-          </div>
+          <ItemSwatch variant="serum" className="w-11 h-11" />
           <div className="flex-1 min-w-0">
             <div className="text-[11px] font-semibold text-slate-900 leading-tight truncate">
-              Juniper Cotton Throw
+              {ITEM_1.name}
             </div>
-            <div className="text-[9px] text-slate-500 mt-0.5">Qty 1 · Ivory</div>
-            <div className="flex items-center gap-1.5 mt-1">
-              <span className="text-[11px] font-bold text-slate-900">₹1,240</span>
-              <span className="text-[9px] text-slate-400 line-through">₹1,420</span>
+            <div className="text-[9px] text-slate-500 mt-0.5">{ITEM_1.meta}</div>
+          </div>
+          <span className="text-[11px] font-semibold text-slate-900">₹{ITEM_1.price}</span>
+        </div>
+
+        <div className="flex items-center gap-2.5">
+          <ItemSwatch variant="clay" className="w-11 h-11" />
+          <div className="flex-1 min-w-0">
+            <div className="text-[11px] font-semibold text-slate-900 leading-tight truncate">
+              {ITEM_2.name}
             </div>
+            <div className="text-[9px] text-slate-500 mt-0.5">{ITEM_2.meta}</div>
           </div>
-          <div className="flex items-center gap-1.5 border border-border rounded-md px-1.5 py-1 flex-shrink-0">
-            <Minus className="w-2.5 h-2.5 text-slate-500" />
-            <span className="text-[10px] font-semibold text-slate-900 w-2.5 text-center">1</span>
-            <Plus className="w-2.5 h-2.5 text-slate-500" />
+          <span className="text-[11px] font-semibold text-slate-900">₹{ITEM_2.price}</span>
+        </div>
+
+        <div className="rounded-md bg-success-bg text-success text-[9px] font-semibold text-center py-1.5">
+          You're saving ₹{MRP_SAVINGS} on MRP
+        </div>
+
+        <div className="rounded-md border border-border px-2.5 py-2 flex flex-col gap-0.5">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] text-slate-500">Deliver to</span>
+            <span className="text-[9px] font-semibold text-primary">Change</span>
           </div>
+          <span className="text-[10.5px] font-semibold text-slate-900">{ADDRESS_NAME}</span>
+          <span className="text-[9px] text-slate-500 leading-snug">{ADDRESS_LINE}</span>
         </div>
 
-        <div className="rounded-md bg-success-bg/70 text-success text-[9px] font-semibold text-center py-1.5">
-          ✨ You're saving ₹180 on this order ✨
-        </div>
-
-        <div className="rounded-md border border-border px-2.5 py-2 flex items-center justify-between">
-          <span className="text-[10px] text-slate-500">Deliver to</span>
-          <span className="text-[10px] font-semibold text-slate-900 truncate max-w-[55%] text-right">
-            Aanya · Indiranagar
-          </span>
-        </div>
-
-        <div className="rounded-md border border-border px-2.5 py-2 flex items-center gap-2">
-          <span className="w-3.5 h-3.5 rounded-full border-[4px] border-primary flex-shrink-0" />
-          <span className="flex-1 text-[10px] font-medium text-slate-700">UPI · GPay, PhonePe, Paytm</span>
-          <span className="text-[9px] font-semibold text-success bg-success-bg px-1.5 py-0.5 rounded">
-            5% off
-          </span>
+        <div className="rounded-md border border-border px-2.5 py-2 flex flex-col gap-1.5">
+          <div className="flex items-center gap-2">
+            <span className="w-3.5 h-3.5 rounded-full border-[4px] border-primary flex-shrink-0" />
+            <span className="flex-1 text-[10px] font-medium text-slate-700">UPI · GPay, PhonePe, Paytm</span>
+            <span className="text-[9px] font-semibold text-success bg-success-bg px-1.5 py-0.5 rounded">
+              5% off
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-3.5 h-3.5 rounded-full border border-slate-300 flex-shrink-0" />
+            <span className="text-[10px] text-slate-500">Cash on delivery</span>
+          </div>
         </div>
       </div>
 
       <div className="mt-auto flex items-center justify-between gap-3 px-3 py-3 border-t border-border flex-shrink-0">
         <div>
-          <div className="text-[9px] text-slate-500">Total</div>
+          <div className="text-[9px] text-slate-500">To pay</div>
           <div className="text-[13px] font-bold text-slate-900">
-            ₹1,178 <span className="text-[9px] font-medium text-slate-400 line-through">₹1,240</span>
+            ₹{TOTAL} <span className="text-[9px] font-medium text-slate-400 line-through">₹{SUBTOTAL}</span>
           </div>
         </div>
         <div className="flex-1 h-9 rounded-md bg-slate-900 text-white flex items-center justify-center text-[11px] font-semibold">
-          Pay ₹1,178
+          Pay ₹{TOTAL}
         </div>
       </div>
 
@@ -262,8 +286,8 @@ function LockScreen({ scene, flip }) {
       style={{ background: "linear-gradient(180deg, #3b3550, #221f30)" }}
       data-testid="phone-phase-lockscreen"
     >
-      <div className="text-xs opacity-70">Tuesday, 24 September</div>
-      <div className="text-4xl font-medium mt-1 tabular-nums">{clockIsNew ? "8:12" : "7:42"}</div>
+      <div className="text-xs opacity-70">Tuesday, 6 October</div>
+      <div className="text-4xl font-medium mt-1 tabular-nums">{clockIsNew ? "10:12" : "9:42"}</div>
 
       {!showNotification && (
         <span className="engage-rise mt-3 inline-flex items-center gap-1.5 bg-white/15 px-3 py-1.5 rounded-full text-[10px] font-medium">
@@ -286,7 +310,7 @@ function LockScreen({ scene, flip }) {
               <span className="text-slate-400 font-normal">now</span>
             </span>
             <span className="block text-[11px] leading-tight text-slate-600 mt-0.5">
-              Hi Aanya, your Juniper throw is reserved for you…
+              Hi Aanya, you left something in your bag. Your extra 5% off is held until midnight.
             </span>
           </span>
         </div>
@@ -316,17 +340,26 @@ function WhatsAppScreen() {
           Today
         </span>
         <div className="bg-white rounded-xl rounded-tl-sm p-1.5 shadow-sm max-w-[88%]">
-          <div className="h-24 rounded-lg bg-gradient-to-br from-amber-200 to-amber-400 relative overflow-hidden">
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/40 to-transparent px-2 py-1.5">
-              <span className="text-white text-[11px] font-bold">Juniper Cotton Throw</span>
+          <div className="h-20 rounded-lg bg-gradient-to-br from-amber-200 via-rose-200 to-rose-300 relative overflow-hidden flex items-center px-3">
+            <div>
+              <div className="font-serif italic text-[18px] leading-none text-slate-800">Still in</div>
+              <div className="font-serif italic text-[18px] leading-none text-slate-800">your bag</div>
+              <div className="text-[8px] tracking-[2px] uppercase text-slate-700 mt-1.5">Mystore1</div>
             </div>
           </div>
-          <p className="text-[12px] leading-snug mt-2 px-1 text-slate-800">
-            Hi Aanya, your Juniper throw is reserved for you — complete your order in one tap
-            before it's gone.
-          </p>
+          <div className="px-1 pt-2 flex flex-col gap-1.5">
+            <p className="text-[12px] font-semibold leading-snug text-slate-900">
+              Hi Aanya, you left something behind.
+            </p>
+            <p className="text-[11.5px] leading-snug text-slate-800">
+              Your Vitamin C Glow Serum and Rose Clay Mask are saved in your cart.
+            </p>
+            <p className="text-[11.5px] leading-snug text-slate-800">
+              Pay via UPI before 11:59 pm tonight and your extra 5% off still applies.
+            </p>
+          </div>
           <div className="flex justify-end px-1 mt-1">
-            <span className="text-[9px] text-slate-400">8:12 pm</span>
+            <span className="text-[9px] text-slate-400">10:12</span>
           </div>
           <div className="flex items-center justify-center gap-1.5 text-[12px] font-semibold text-[#00a5f4] border-t border-black/5 mt-1 pt-2">
             <ExternalLink className="w-3 h-3" />
@@ -362,10 +395,13 @@ function RestoredScreen({ paying }) {
         </div>
 
         <div className="rounded-md border border-border px-2.5 py-2 flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-200 to-amber-400 flex-shrink-0" />
-          <span className="flex-1 text-[11px] font-semibold text-slate-900">1 item</span>
-          <span className="text-[9px] text-slate-400 line-through">₹1,240</span>
-          <span className="text-[11px] font-bold text-slate-900">₹1,178</span>
+          <div className="flex">
+            <ItemSwatch variant="serum" className="w-9 h-9 border-2 border-white" />
+            <ItemSwatch variant="clay" className="w-9 h-9 border-2 border-white -ml-2.5" />
+          </div>
+          <span className="flex-1 text-[11px] font-semibold text-slate-900">2 items</span>
+          <span className="text-[9px] text-slate-400 line-through">₹{SUBTOTAL}</span>
+          <span className="text-[11px] font-bold text-slate-900">₹{TOTAL}</span>
         </div>
 
         <div className="rounded-md border border-border px-2.5 py-2 flex flex-col gap-0.5">
@@ -373,13 +409,14 @@ function RestoredScreen({ paying }) {
             <Check className="w-2.5 h-2.5" />
             Saved address
           </span>
-          <span className="text-[10.5px] font-semibold text-slate-900">Aanya · Indiranagar</span>
+          <span className="text-[10.5px] font-semibold text-slate-900">{ADDRESS_NAME}</span>
+          <span className="text-[9px] text-slate-500 leading-snug">{ADDRESS_LINE}</span>
         </div>
 
         <div className="rounded-md border border-border px-2.5 py-2 flex items-center gap-2">
           <span className="w-3.5 h-3.5 rounded-full border-[4px] border-primary flex-shrink-0" />
           <span className="flex-1 text-[10.5px] font-semibold text-slate-900">GPay UPI</span>
-          <span className="text-[9px] font-semibold text-success">₹62 off applied</span>
+          <span className="text-[9px] font-semibold text-success">₹{UPI_DISCOUNT} off applied</span>
         </div>
       </div>
 
@@ -391,7 +428,7 @@ function RestoredScreen({ paying }) {
               Confirming payment
             </span>
           ) : (
-            <span className="engage-fade-in">Pay ₹1,178</span>
+            <span className="engage-fade-in">Pay ₹{TOTAL}</span>
           )}
         </div>
         <span className="text-[8.5px] text-slate-400 text-center">Secured checkout by Fastrr</span>
@@ -430,12 +467,12 @@ function DoneScreen() {
             </span>
             <div className="text-[13px] font-bold text-slate-900 mt-2">Order placed!</div>
             <div className="text-[9.5px] text-slate-500 leading-snug mt-1">
-              Thanks, Aanya. Order <span className="font-semibold text-slate-900">#MB-2048</span> is
+              Thanks, Aanya. Order <span className="font-semibold text-slate-900">{ORDER_ID}</span> is
               confirmed.
             </div>
             <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-success bg-success-bg px-2 py-1 rounded-full mt-2">
               <Check className="w-2.5 h-2.5" />
-              ₹1,178 paid via GPay UPI
+              ₹{TOTAL} paid via GPay UPI
             </span>
           </div>
 
@@ -458,24 +495,32 @@ function DoneScreen() {
               <MessageCircle className="w-3.5 h-3.5 text-white" />
             </span>
             <span className="text-[9.5px] text-slate-600 text-left leading-snug">
-              We'll message you on WhatsApp when your order ships.
+              We'll message +91 98••• ••521 when your order ships.
             </span>
           </div>
 
-          <div className="rounded-md border border-border px-2.5 py-2 flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-200 to-amber-400 flex-shrink-0" />
-            <span className="flex-1 text-[11px] font-semibold text-slate-900">Juniper Cotton Throw</span>
-            <span className="text-[11px] font-bold text-slate-900">₹1,178</span>
+          <div className="rounded-md border border-border px-2.5 py-2 flex flex-col gap-2">
+            <span className="text-[10.5px] font-semibold text-slate-900">2 items</span>
+            <div className="flex items-center gap-2.5">
+              <ItemSwatch variant="serum" className="w-8 h-8" />
+              <span className="flex-1 text-[10.5px] text-slate-700 truncate">{ITEM_1.name}</span>
+              <span className="text-[10.5px] font-semibold text-slate-900">₹{ITEM_1.price}</span>
+            </div>
+            <div className="flex items-center gap-2.5">
+              <ItemSwatch variant="clay" className="w-8 h-8" />
+              <span className="flex-1 text-[10.5px] text-slate-700 truncate">{ITEM_2.name}</span>
+              <span className="text-[10.5px] font-semibold text-slate-900">₹{ITEM_2.price}</span>
+            </div>
           </div>
 
           <div className="rounded-md border border-border px-2.5 py-2 flex flex-col gap-1 text-[10px]">
             <div className="flex justify-between text-slate-500">
               <span>Item total</span>
-              <span>₹1,240</span>
+              <span>₹{SUBTOTAL}</span>
             </div>
             <div className="flex justify-between text-slate-500">
               <span>UPI discount (5%)</span>
-              <span className="text-success">−₹62</span>
+              <span className="text-success">−₹{UPI_DISCOUNT}</span>
             </div>
             <div className="flex justify-between text-slate-500">
               <span>Delivery</span>
@@ -484,13 +529,17 @@ function DoneScreen() {
             <div className="border-t border-dashed border-border my-0.5" />
             <div className="flex justify-between text-[11px] font-bold text-slate-900">
               <span>Amount paid</span>
-              <span>₹1,178</span>
+              <span>₹{TOTAL}</span>
+            </div>
+            <div className="rounded-md bg-success-bg text-success text-[9px] font-semibold text-center py-1.5 mt-0.5">
+              You saved ₹{TOTAL_SAVINGS} on this order
             </div>
           </div>
 
           <div className="rounded-md border border-border px-2.5 py-2 flex flex-col gap-0.5">
             <span className="text-[9px] text-slate-500">Delivering to</span>
-            <span className="text-[10.5px] font-semibold text-slate-900">Aanya · Indiranagar</span>
+            <span className="text-[10.5px] font-semibold text-slate-900">{ADDRESS_NAME}</span>
+            <span className="text-[9px] text-slate-500 leading-snug">{ADDRESS_LINE}</span>
           </div>
         </div>
       </div>
