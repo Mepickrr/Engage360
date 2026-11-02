@@ -26,19 +26,26 @@ export const DISPLAY_TYPES = [
 ];
 
 // ── Platform options ───────────────────────────────────────────
+// Onsite is web-only; Android/iOS belong to the In-App node.
 export const PLATFORM_OPTIONS = [
   { id: "web",        label: "Web",         icon: "🌐" },
   { id: "mobile_web", label: "Mobile Web",  icon: "📱" },
-  { id: "android",    label: "Android",     icon: "🤖" },
-  { id: "ios",        label: "iOS",         icon: "🍎" },
 ];
 
 // ── Trigger types ──────────────────────────────────────────────
 export const TRIGGER_TYPES = [
-  { id: "page_load",    label: "On Page / Screen Load",  desc: "Show when a page or screen loads" },
-  { id: "session_start",label: "On Session Start",       desc: "Show when user opens the app or site" },
-  { id: "custom_event", label: "On Custom Event",        desc: "Show when a specific event fires" },
-  { id: "exit_intent",  label: "On Exit Intent",         desc: "Show when user moves to close tab (web only)" },
+  { id: "page_load",    label: "On Page Load",    desc: "When the shopper loads a web page" },
+  { id: "custom_event", label: "On Custom Event", desc: "When the shopper performs a custom event on the page" },
+  { id: "exit_intent",  label: "On Exit Intent",  desc: "When the shopper tries to leave the page" },
+];
+
+export const WEB_EVENTS = [
+  "add_to_cart", "product_viewed", "checkout_started", "collection_viewed",
+  "search_performed", "coupon_applied", "wishlist_added",
+];
+
+export const URL_OPERATORS = [
+  "contains", "does not contain", "starts with", "ends with", "is exactly", "matches regex",
 ];
 
 // ── Output delivery options ────────────────────────────────────
@@ -46,6 +53,7 @@ export const ONSITE_DELIVERY_OPTIONS = [
   { id: "next_step",  label: "Next Step",    isDefault: true  },
   { id: "shown",      label: "Shown",        isDefault: false },
   { id: "cta_clicked",label: "CTA Clicked",  isDefault: false },
+  { id: "form_submitted", label: "Form Submitted", isDefault: false, smartOnly: true },
   { id: "dismissed",  label: "Dismissed",    isDefault: false },
   { id: "timed_out",  label: "Timed Out",    isDefault: false },
   { id: "not_ordered",label: "Not Ordered",  isDefault: false },
@@ -247,12 +255,18 @@ export const defaultOnsiteNodeData = {
   label:       "Onsite Message",
   displayType: null,          // "popup" | "banner" | "nudge" — null = picker shown
   template:    null,
-  platforms:   ["web"],
+  platforms:   ["web", "mobile_web"],
+  smartPopup:  false,         // prefill name + phone for recognised shoppers
   triggerType: "page_load",
   triggerEvent: "",           // used when triggerType === "custom_event"
-  triggerDelay: 0,            // seconds after trigger condition
+  triggerTime: { mode: "immediate", value: 5, unit: "sec" }, // mode: immediate | delay | scroll
   pageTarget:  "all",         // "all" | "specific"
-  pageRules:   [],            // [{ operator, value }]
+  pageConditions: { match: "all", rules: [] }, // rules: [{ operator, values: [] }]
+  delivery: {
+    maxShows:    { on: true, value: 1 },
+    minGap:      { on: true, value: 15, unit: "min" },
+    autoDismiss: { on: true, seconds: 60 },
+  },
   outputConfig: {
     routingMode:      "next_step",
     deliveryOutputs:  [],

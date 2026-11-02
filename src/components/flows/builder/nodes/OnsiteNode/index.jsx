@@ -73,7 +73,10 @@ export default function OnsiteNode({ id, data, selected }) {
   const label        = data?.label ?? "Onsite Message";
   const platforms    = data?.platforms ?? ["web"];
   const triggerType  = data?.triggerType ?? "page_load";
-  const triggerDelay = data?.triggerDelay ?? 0;
+  const triggerTime  = data?.triggerTime ?? (data?.triggerDelay > 0 ? { mode: "delay", value: data.triggerDelay, unit: "sec" } : { mode: "immediate" });
+  const timeSuffix   = triggerType === "exit_intent" ? ""
+    : triggerTime.mode === "delay"  ? ` +${triggerTime.value}${triggerTime.unit === "min" ? "m" : "s"}`
+    : triggerTime.mode === "scroll" ? ` · ${triggerTime.value}% scroll` : "";
   const outputCfg    = data?.outputConfig ?? { routingMode: "next_step", deliveryOutputs: [], wiredPorts: [] };
   const wiredPorts   = outputCfg.wiredPorts ?? [];
   const analyticsData = data?.analyticsData ?? null;
@@ -158,7 +161,7 @@ export default function OnsiteNode({ id, data, selected }) {
           {/* Trigger + platform row */}
           <div style={{ margin: "0 8px 8px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6 }}>
             <span style={{ fontSize: 10, color: "#64748B", background: "#F8FAFC", borderRadius: 5, padding: "2px 7px", border: `1px solid ${BORDER}`, flexShrink: 0 }}>
-              {triggerLabel}{triggerDelay > 0 ? ` +${triggerDelay}s` : ""}
+              {triggerLabel}{timeSuffix}
             </span>
             <PlatformPills platforms={platforms} />
           </div>

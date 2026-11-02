@@ -1,0 +1,85 @@
+import os
+import csv
+import requests
+
+# Configuration
+ACCESS_TOKEN = os.environ.get("META_ACCESS_TOKEN")
+WABA_ID = "655465767302120"
+
+if not ACCESS_TOKEN:
+    raise ValueError(
+        "Please set the META_ACCESS_TOKEN environment variable."
+    )
+
+url = f"https://graph.facebook.com/v26.0/{WABA_ID}/message_templates"
+
+params = {
+    "access_token": ACCESS_TOKEN,
+    "limit": 200,
+    "fields": "name,previous_category,category,correct_category"
+}
+
+all_templates = []
+page_number = 0
+
+while url:
+    page_number += 1
+
+    print(f"Fetching page {page_number}...")
+
+    response = requests.get(
+        url,
+        params=params if page_number == 1 else {
+            "access_token": ACCESS_TOKEN
+        },
+        timeout=60
+    )
+
+    # Stop if Meta returns an API error
+    if response.status_code != 200:
+        print("API request failed.")
+        print(response.text)
+        response.raise_for_status()
+
+    result = response.json()
+
+    templates = result.get("data", [])
+    all_templates.extend(templates)
+
+    print(f"Templates on this page: {len(templates)}")
+    print(f"Total templates fetched: {len(all_templates)}")
+
+    # Follow the next page URL
+    url = result.get("paging", {}).get("next")
+
+    # The next URL already contains the pagination cursor.
+    # Remove the initial parameters for subsequent requests.
+    params = None
+
+print(f"\nTotal templates fetched: {len(all_templates)}")
+
+# Export the requested columns
+output_file = "all_template_categories.csv"
+
+with open(output_file, "w", newline="", encoding="utf-8-sig") as file:
+    writer = csv.DictWriter(
+        file,
+        fieldnames=[
+            "name",
+            "previous_category",
+            "category",
+            "current_category"
+        ]
+    )
+
+    writer.writeheader()
+
+    for template in all_templates:
+        writer.writerow({
+            "name": template.get("name", ""),
+            "previous_category": template.get("previous_category", ""),
+            "category": template.get("category", ""),
+            "current_category": template.get("correct_category", "")
+        })
+
+print(f"Export completed: {output_file}")
