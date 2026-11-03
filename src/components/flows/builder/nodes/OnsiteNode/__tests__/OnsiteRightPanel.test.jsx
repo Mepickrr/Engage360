@@ -9,23 +9,42 @@ function StatefulHarness({ initialData }) {
   return <OnsiteRightPanel node={node} updateNodeData={updateNodeData} removeNode={() => {}} />;
 }
 
-describe("OnsiteRightPanel — Template tab", () => {
-  it("opens the template browse modal directly on the same click that picks a Display Type", () => {
-    const modalHeading = (_, el) => el.tagName.toLowerCase() === "h2" && /select a popup template/i.test(el.textContent);
+describe("OnsiteRightPanel — template step", () => {
+  it("opens the template library and applies a template as-is", () => {
     render(<StatefulHarness initialData={{ ...defaultOnsiteNodeData }} />);
-    expect(screen.queryByText(modalHeading)).not.toBeInTheDocument();
-    fireEvent.click(screen.getByText("Popup"));
-    expect(screen.getByText(modalHeading)).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Browse template library"));
+    const card = screen.getByTestId("onsite-template-lib_cart_recovery");
+    fireEvent.mouseEnter(card);
+    fireEvent.click(within(card).getByRole("button", { name: /use as is/i }));
+    expect(screen.queryByRole("dialog", { name: /template library/i })).not.toBeInTheDocument();
+    expect(screen.getByText("Popup: Cart Recovery")).toBeInTheDocument();
+    expect(screen.getByText("Still thinking it over?")).toBeInTheDocument();
   });
 
-  it("shows hover Edit/Analytics/Select actions on a template card in the modal", () => {
+  it("filters the library by display type", () => {
     render(<StatefulHarness initialData={{ ...defaultOnsiteNodeData }} />);
-    fireEvent.click(screen.getByText("Popup"));
-    const card = screen.getByText("Cart Recovery Popup").closest("div[style*='position: relative']");
+    fireEvent.click(screen.getByText("Browse template library"));
+    fireEvent.click(screen.getByLabelText(/^Banner \(/));
+    expect(screen.getByText("Banner: Free Shipping Bar")).toBeInTheDocument();
+    expect(screen.queryByText("Popup: Cart Recovery")).not.toBeInTheDocument();
+  });
+
+  it("offers blank Popup, Banner and Nudge templates under Start from scratch, opening the editor", () => {
+    render(<StatefulHarness initialData={{ ...defaultOnsiteNodeData }} />);
+    fireEvent.click(screen.getByText("Start from scratch"));
+    expect(screen.getByText("Blank Popup Template")).toBeInTheDocument();
+    expect(screen.getByText("Blank Banner Template")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Blank Nudge Template"));
+    expect(screen.getByText("Visual Editor", { exact: false })).toBeInTheDocument();
+  });
+
+  it("turns on Smart Pop-up when a template with a smart form is used", () => {
+    render(<StatefulHarness initialData={{ ...defaultOnsiteNodeData }} />);
+    fireEvent.click(screen.getByText("Browse template library"));
+    const card = screen.getByTestId("onsite-template-lib_smart_lead");
     fireEvent.mouseEnter(card);
-    expect(within(card).getByRole("button", { name: /edit/i })).toBeInTheDocument();
-    expect(within(card).getByRole("button", { name: /analytics/i })).toBeInTheDocument();
-    expect(within(card).getByRole("button", { name: /select/i })).toBeInTheDocument();
+    fireEvent.click(within(card).getByRole("button", { name: /use as is/i }));
+    expect(screen.getByRole("checkbox", { name: /prefill shopper details/i })).toBeChecked();
   });
 
   it("shows the real selected template content (not just a display-type emoji) in the right panel's preview card", () => {

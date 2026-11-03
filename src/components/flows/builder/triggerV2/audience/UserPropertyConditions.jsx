@@ -16,17 +16,22 @@ import {
   operatorIsRange,
   OPERATOR_DESCRIPTIONS,
 } from "../triggerHelpers";
+import { useFlowVariant } from "@/components/flows/FlowVariantContext";
+import { SIGNALS_SOURCE_GROUP, SIGNALS_LABEL } from "@/components/signals/fastrrSignals";
 
 // Flatten to a lookup by name and a grouped { category: [{name, description}] }
-// for the TwoPanelDropdown.
-function buildAttrIndex() {
+// for the TwoPanelDropdown. With `fastrrSignals`, the Shiprocket Buyer group
+// is relabelled "Fastrr Signals" and each of its items carries an inline tag.
+function buildAttrIndex(fastrrSignals) {
   const groups = userAttrsData.groups || {};
   const byName = {};
   const grouped = {};
   for (const cat of Object.keys(groups)) {
-    grouped[cat] = (groups[cat] || []).map((a) => ({
+    const isSignals = fastrrSignals && cat === SIGNALS_SOURCE_GROUP;
+    grouped[isSignals ? SIGNALS_LABEL : cat] = (groups[cat] || []).map((a) => ({
       name: a.name,
       description: a.description || "",
+      ...(isSignals && { tag: SIGNALS_LABEL }),
     }));
     for (const a of groups[cat] || []) byName[a.name] = { ...a, category: cat };
   }
@@ -38,7 +43,8 @@ export default function UserPropertyConditions({
   onChange,
   testIdPrefix,
 }) {
-  const { byName, grouped } = React.useMemo(buildAttrIndex, []);
+  const { fastrrSignals } = useFlowVariant();
+  const { byName, grouped } = React.useMemo(() => buildAttrIndex(fastrrSignals), [fastrrSignals]);
   const conditions = block.conditions || [];
   const combinator = block.combinator || "AND";
 

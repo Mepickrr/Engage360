@@ -53,7 +53,8 @@ export default function TwoPanelDropdown({
     );
   }, [search, flatItems]);
 
-  const activeItem = hoverItem || flatItems.find((it) => it.name === value) || null;
+  const selectedItem = flatItems.find((it) => it.name === value) || null;
+  const activeItem = hoverItem || selectedItem;
 
   const handleSelect = useCallback(
     (name) => {
@@ -79,6 +80,7 @@ export default function TwoPanelDropdown({
           <span className={value ? "text-text-primary truncate" : "text-text-muted"}>
             {value || placeholder}
           </span>
+          {selectedItem?.tag && <InlineTag className="ml-auto">{selectedItem.tag}</InlineTag>}
           <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className="flex-shrink-0">
             <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
@@ -225,7 +227,18 @@ function ItemRow({ it, selected, onHover, onSelect, testId }) {
           : "hover:bg-slate-100 text-text-primary"
       }`}
     >
-      {it.name}
+      <span className="flex items-center justify-between gap-2">
+        <span className="truncate">{it.name}</span>
+        {it.tag && <InlineTag>{it.tag}</InlineTag>}
+      </span>
     </li>
+  );
+}
+
+function InlineTag({ children, className = "" }) {
+  return (
+    <span className={`shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-[#F3EEFF] text-[#6C3AE8] border border-[#E2D6FF] ${className}`}>
+      {children}
+    </span>
   );
 }

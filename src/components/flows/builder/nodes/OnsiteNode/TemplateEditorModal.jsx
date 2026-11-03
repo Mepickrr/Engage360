@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {
   X, Monitor, Smartphone, Tablet, Save, Eye,
-  Undo2, Redo2, ChevronRight, GripVertical, Trash2,
+  Undo2, Redo2, ChevronRight, Trash2,
   Plus, Type, Image, Square, Minus, Star, AlignLeft,
   FileText, Video, Volume2, Timer, LayoutGrid, AlertTriangle,
   Zap, Ticket, ChevronDown,
@@ -9,6 +9,7 @@ import {
 import {
   ONSITE_TEAL, DISPLAY_TYPES, EDITOR_BLOCK_GROUPS, SYSTEM_VARIABLES,
 } from "./data/mockData";
+import { PreviewBlock, TemplateBody, resolveTheme } from "./OnsitePreview";
 
 // ── Device preview sizes ───────────────────────────────────────
 const DEVICES = [
@@ -43,11 +44,13 @@ function SideTab({ active, onClick, children }) {
 }
 
 // ── Block chip ─────────────────────────────────────────────────
-function BlockChip({ block }) {
+function BlockChip({ block, onAdd }) {
   const Icon = BLOCK_ICON_MAP[block.type] || Type;
   return (
     <div
       draggable
+      onClick={() => onAdd(block.type)}
+      title={`Add ${block.label}`}
       style={{
         display: "flex", flexDirection: "column", alignItems: "center",
         gap: 5, padding: "10px 6px", background: "#fff",
@@ -65,7 +68,7 @@ function BlockChip({ block }) {
 }
 
 // ── Collapsible block group ────────────────────────────────────
-function BlockGroup({ group }) {
+function BlockGroup({ group, onAdd }) {
   const [open, setOpen] = useState(true);
   return (
     <div style={{ marginBottom: 12 }}>
@@ -78,7 +81,7 @@ function BlockGroup({ group }) {
       </button>
       {open && (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6 }}>
-          {group.blocks.map((b) => <BlockChip key={b.type} block={b} />)}
+          {group.blocks.map((b) => <BlockChip key={b.type} block={b} onAdd={onAdd} />)}
         </div>
       )}
     </div>
@@ -86,107 +89,47 @@ function BlockGroup({ group }) {
 }
 
 // ── Canvas block renderer ──────────────────────────────────────
-function CanvasBlock({ block, index, onDelete }) {
-  const [hovered, setHovered] = useState(false);
-  let content = null;
+// Renders through the shared PreviewBlock so the canvas matches the library
+// thumbnail exactly; text-bearing blocks are editable in place.
+const EDITABLE_FIELD = { title: "content", text: "content", badge: "text", button: "label", coupon: "code" };
 
-  if (block.type === "title") {
-    content = (
-      <div contentEditable suppressContentEditableWarning style={{ fontSize: 18, fontWeight: 700, color: "#0F172A", outline: "none" }}>
-        {block.content || "Your headline here"}
-      </div>
-    );
-  } else if (block.type === "text") {
-    content = (
-      <p contentEditable suppressContentEditableWarning style={{ fontSize: 13, color: "#475569", lineHeight: 1.6, margin: 0, outline: "none" }}>
-        {block.content || "Your message body…"}
-      </p>
-    );
-  } else if (block.type === "image") {
-    content = (
-      <div style={{ width: "100%", height: 130, background: "#F1F5F9", borderRadius: 8, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6, cursor: "pointer", border: "2px dashed #CBD5E1" }}>
-        <Image size={24} color="#CBD5E1" />
-        <span style={{ fontSize: 11, color: "#94A3B8" }}>Click to upload image</span>
-      </div>
-    );
-  } else if (block.type === "button") {
-    content = (
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <button style={{ padding: "11px 28px", background: ONSITE_TEAL, color: "#fff", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
-          {block.label || "Click Here"}
-        </button>
-      </div>
-    );
-  } else if (block.type === "form") {
-    content = (
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        <input disabled placeholder="Enter your email…" style={{ padding: "9px 12px", border: "1px solid #E5E7EB", borderRadius: 8, fontSize: 13, background: "#F8FAFC" }} />
-        <button disabled style={{ padding: "10px", background: ONSITE_TEAL, color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 700 }}>
-          {block.cta || "Submit"}
-        </button>
-      </div>
-    );
-  } else if (block.type === "countdown") {
-    content = (
-      <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-        {["00", "12", "34", "56"].map((v, i) => (
-          <div key={i} style={{ textAlign: "center" }}>
-            <div style={{ width: 44, height: 44, background: ONSITE_TEAL, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 18 }}>{v}</div>
-            <div style={{ fontSize: 9, color: "#94A3B8", marginTop: 3 }}>{["Days","Hrs","Min","Sec"][i]}</div>
-          </div>
-        ))}
-      </div>
-    );
-  } else if (block.type === "line") {
-    content = <hr style={{ border: "none", borderTop: "1px solid #E5E7EB", margin: "4px 0" }} />;
-  } else if (block.type === "spacer") {
-    content = <div style={{ height: 20 }} />;
-  } else if (block.type === "spin_wheel") {
-    content = (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-        <div style={{ width: 100, height: 100, borderRadius: "50%", background: `conic-gradient(${ONSITE_TEAL} 0deg 60deg, #F59E0B 60deg 120deg, #EF4444 120deg 180deg, #8B5CF6 180deg 240deg, #3B82F6 240deg 300deg, #10B981 300deg 360deg)`, border: "4px solid #fff", boxShadow: "0 2px 12px rgba(0,0,0,0.15)" }} />
-        <span style={{ fontSize: 11, color: "#64748B" }}>Spin the Wheel</span>
-      </div>
-    );
-  } else if (block.type === "scratch_card") {
-    content = (
-      <div style={{ width: "100%", height: 80, background: "#CBD5E1", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>🎟 Scratch to Reveal</span>
-      </div>
-    );
-  } else {
-    content = (
-      <div style={{ padding: "12px 0", textAlign: "center", fontSize: 12, color: "#94A3B8" }}>
-        [{block.type}] block
-      </div>
-    );
-  }
+function CanvasBlock({ block, index, theme, compact, onDelete, onChange }) {
+  const [hovered, setHovered] = useState(false);
+  const field = EDITABLE_FIELD[block.type];
 
   return (
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        position: "relative", padding: "10px 12px",
-        background: hovered ? "#F8FAFC" : "transparent",
-        border: `1.5px solid ${hovered ? ONSITE_TEAL : "transparent"}`,
-        borderRadius: 8, marginBottom: 4, transition: "all 0.1s",
+        position: "relative", padding: "6px 8px",
+        border: `1.5px ${hovered ? "dashed" : "solid"} ${hovered ? ONSITE_TEAL : "transparent"}`,
+        borderRadius: 8, transition: "border-color 0.1s",
       }}
     >
       {hovered && (
-        <>
-          <button onClick={() => onDelete(index)} style={{ position: "absolute", top: 6, right: 8, width: 22, height: 22, borderRadius: 4, background: "#FEE2E2", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1 }}>
-            <Trash2 size={11} color="#EF4444" />
-          </button>
-          <div style={{ position: "absolute", left: 4, top: "50%", transform: "translateY(-50%)", cursor: "grab" }}>
-            <GripVertical size={13} color="#CBD5E1" />
-          </div>
-        </>
+        <button onClick={() => onDelete(index)} title="Delete block" style={{ position: "absolute", top: -10, right: -10, width: 22, height: 22, borderRadius: "50%", background: "#FEE2E2", border: "1px solid #FECACA", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2 }}>
+          <Trash2 size={11} color="#EF4444" />
+        </button>
       )}
-      {content}
+      <div
+        contentEditable={!!field}
+        suppressContentEditableWarning
+        onBlur={(e) => field && onChange(index, { [field]: e.currentTarget.innerText.trim() })}
+        style={{ outline: "none", cursor: field ? "text" : "default" }}
+      >
+        <PreviewBlock block={block} theme={theme} compact={compact} />
+      </div>
     </div>
   );
 }
+
+const NEW_BLOCK_DEFAULTS = {
+  title: { content: "Your headline here" }, text: { content: "Your message body" },
+  button: { label: "Click here" }, form: { fields: ["name", "phone"], cta: "Submit" },
+  image: { emoji: "🖼️", bg: "linear-gradient(135deg, #E2E8F0, #CBD5E1)" },
+  spin_wheel: { type: "custom", subtype: "spin_wheel" }, scratch_card: { type: "custom", subtype: "scratch_card" },
+};
 
 // ── Display canvas wrapper ─────────────────────────────────────
 function DisplayWrapper({ displayType, device, children, bgColor }) {
@@ -217,7 +160,7 @@ function DisplayWrapper({ displayType, device, children, bgColor }) {
     );
   }
 
-  const popupW = device === "mobile" ? 280 : device === "tablet" ? 340 : 400;
+  const popupW = device === "mobile" ? 280 : device === "tablet" ? 360 : 440;
 
   return (
     <div style={{ position: "relative", width: DEVICES.find((d) => d.id === device)?.w ?? 600, borderRadius: 12, overflow: "hidden", boxShadow: "0 4px 24px rgba(0,0,0,0.12)" }}>
@@ -229,7 +172,7 @@ function DisplayWrapper({ displayType, device, children, bgColor }) {
         <div style={{ flex: 1, height: 16, background: "#fff", borderRadius: 4, marginLeft: 8 }} />
       </div>
       {/* Page background */}
-      <div style={{ background: "#CBD5E1", height: 280, position: "relative", display: "flex", alignItems: isNudge ? "flex-end" : "center", justifyContent: isNudge ? "flex-end" : "center", padding: 16 }}>
+      <div style={{ background: "#CBD5E1", minHeight: 280, position: "relative", display: "flex", alignItems: isNudge ? "flex-end" : "center", justifyContent: isNudge ? "flex-end" : "center", padding: 16 }}>
         {/* Fake page content behind */}
         <div style={{ position: "absolute", inset: 0, padding: 16 }}>
           {[40, 100, 80, 60, 90].map((w, i) => (
@@ -241,7 +184,7 @@ function DisplayWrapper({ displayType, device, children, bgColor }) {
           <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)" }} />
         )}
         {/* The popup/nudge card */}
-        <div style={{ position: "relative", zIndex: 1, width: isNudge ? 200 : popupW, background: bgColor, borderRadius: 12, overflow: "hidden", boxShadow: "0 8px 32px rgba(0,0,0,0.2)", marginBottom: isNudge ? 0 : 0 }}>
+        <div style={{ position: "relative", zIndex: 1, width: isNudge ? 250 : popupW, background: bgColor, borderRadius: 12, overflow: "hidden", boxShadow: "0 8px 32px rgba(0,0,0,0.2)", marginBottom: isNudge ? 0 : 0 }}>
           {/* Close button */}
           <button style={{ position: "absolute", top: 8, right: 8, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.15)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2 }}>
             <X size={10} color="#fff" />
@@ -308,7 +251,11 @@ export default function OnsiteTemplateEditorModal({ template, displayType, onSav
   const [device,  setDevice]  = useState("desktop");
   const [sideTab, setSideTab] = useState("content");
   const [blocks,  setBlocks]  = useState(template?.blocks ?? defaultBlocks(displayType));
-  const [bgColor, setBgColor] = useState("#FFFFFF");
+  const initialTheme = resolveTheme(template);
+  const [bgColor, setBgColor] = useState(initialTheme.bg);
+  const [accent,  setAccent]  = useState(initialTheme.accent);
+  const [ink,     setInk]     = useState(initialTheme.ink);
+  const theme = { ...initialTheme, bg: bgColor, accent, ink };
   const [overlayColor, setOverlayColor] = useState("rgba(0,0,0,0.5)");
   const [varSearch, setVarSearch] = useState("");
   const [borderRadius, setBorderRadius] = useState(12);
@@ -317,7 +264,8 @@ export default function OnsiteTemplateEditorModal({ template, displayType, onSav
   const dt = DISPLAY_TYPES.find((d) => d.id === displayType);
 
   const deleteBlock = (idx) => setBlocks((b) => b.filter((_, i) => i !== idx));
-  const addBlock = (type) => setBlocks((b) => [...b, { type }]);
+  const addBlock = (type) => setBlocks((b) => [...b, { type, ...NEW_BLOCK_DEFAULTS[type] }]);
+  const updateBlock = (idx, p) => setBlocks((b) => b.map((x, i) => (i === idx ? { ...x, ...p } : x)));
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "stretch", fontFamily: "Inter, system-ui, sans-serif" }}>
@@ -368,7 +316,7 @@ export default function OnsiteTemplateEditorModal({ template, displayType, onSav
               <Eye size={13} /> Preview
             </button>
             <button
-              onClick={() => { onSave({ blocks, bgColor }); onClose(); }}
+              onClick={() => { onSave({ blocks, bgColor, theme }); onClose(); }}
               style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 18px", border: "none", borderRadius: 8, background: ONSITE_TEAL, color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}
             >
               <Save size={13} /> Save Template
@@ -391,15 +339,18 @@ export default function OnsiteTemplateEditorModal({ template, displayType, onSav
             </div>
 
             <DisplayWrapper displayType={displayType} device={device} bgColor={bgColor}>
-              {blocks.map((block, i) => (
-                <CanvasBlock key={i} block={block} index={i} onDelete={deleteBlock} />
-              ))}
-              <div style={{ paddingTop: 8 }}>
+              <TemplateBody
+                draft={{ ...template, displayType, blocks, theme }}
+                renderBlock={(block, i, th) => (
+                  <CanvasBlock key={i} block={block} index={i} theme={th} compact={displayType !== "popup"} onDelete={deleteBlock} onChange={updateBlock} />
+                )}
+              />
+              <div style={{ paddingTop: 10 }}>
                 <button
                   onClick={() => addBlock("text")}
                   style={{ width: "100%", padding: "8px", border: `2px dashed ${ONSITE_TEAL}66`, borderRadius: 8, background: `${ONSITE_TEAL}0D`, cursor: "pointer", fontSize: 11, color: ONSITE_TEAL, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}
                 >
-                  <Plus size={13} /> Add Block
+                  <Plus size={13} /> Add text block · or click any element on the right
                 </button>
               </div>
             </DisplayWrapper>
@@ -421,7 +372,7 @@ export default function OnsiteTemplateEditorModal({ template, displayType, onSav
               {sideTab === "content" && (
                 <div>
                   {EDITOR_BLOCK_GROUPS.map((group) => (
-                    <BlockGroup key={group.id} group={group} />
+                    <BlockGroup key={group.id} group={group} onAdd={addBlock} />
                   ))}
                 </div>
               )}
@@ -466,8 +417,10 @@ export default function OnsiteTemplateEditorModal({ template, displayType, onSav
               {/* SETTINGS tab */}
               {sideTab === "settings" && (
                 <div>
-                  <SettingsSection label="Background" defaultOpen>
+                  <SettingsSection label="Colours" defaultOpen>
                     <ColorRow label="Background color" value={bgColor} onChange={setBgColor} />
+                    <ColorRow label="Button / accent color" value={accent} onChange={setAccent} />
+                    <ColorRow label="Heading color" value={ink} onChange={setInk} />
                   </SettingsSection>
 
                   <SettingsSection label="Shape" defaultOpen>

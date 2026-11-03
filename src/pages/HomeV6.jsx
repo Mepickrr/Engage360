@@ -1,4 +1,5 @@
-import React, { useRef, useState, useLayoutEffect, useCallback } from "react";
+import React, { useRef, useState, useLayoutEffect, useCallback, useEffect } from "react";
+import { openFastrrSignals } from "@/components/signals/FastrrSignalsModal";
 import { AGENT_META, getAgentMeta, hexAlpha } from "@/lib/agentMeta";
 import { RefreshCcw, Cpu, Plus } from "lucide-react";
 import StoreStatsRow from "@/components/agents/StoreStatsRow";
@@ -358,6 +359,9 @@ function MeetTheTeam() {
 
 // ─── Page ─────────────────────────────────────────────────────
 export default function HomeV6Page() {
+  // Placement/trigger TBD — for now Fastrr Signals opens on every visit to Home V6.
+  useEffect(() => { openFastrrSignals({ source: "home-v6" }); }, []);
+
   return (
     <div className="space-y-6 animate-fade-in-up max-w-[1400px] mx-auto" data-testid="page-home-v6">
       <header className="flex items-start justify-between">

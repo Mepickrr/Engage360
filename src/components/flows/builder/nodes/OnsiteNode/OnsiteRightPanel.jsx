@@ -4,13 +4,13 @@ import {
 } from "lucide-react";
 import { useFlowBuilderStore } from "@/store/flowBuilderStore";
 import {
-  ONSITE_TEAL, DISPLAY_TYPES, MOCK_ONSITE_TEMPLATES, ONSITE_TEMPLATE_STYLE_CONFIGS,
+  ONSITE_TEAL, DISPLAY_TYPES,
   PLATFORM_OPTIONS, TRIGGER_TYPES, ONSITE_DELIVERY_OPTIONS, WEB_EVENTS, URL_OPERATORS,
   defaultOnsiteNodeData,
 } from "./data/mockData";
-import { getOnsiteTemplateAnalytics, ONSITE_ANALYTICS_METRICS } from "./data/mockOnsiteAnalytics";
+import { ONSITE_TEMPLATE_LIBRARY, loadSavedTemplates, saveTemplateToLibrary } from "./data/templateLibrary";
 import OnsiteTemplateEditorModal from "./TemplateEditorModal";
-import UnifiedTemplateModal from "../WhatsAppNode/UnifiedTemplateModal";
+import OnsiteTemplateLibrary from "./OnsiteTemplateLibrary";
 import OnsitePreview from "./OnsitePreview";
 
 const BORDER = "#E5E7EB";
@@ -301,10 +301,10 @@ export default function OnsiteRightPanel({ node, updateNodeData, removeNode }) {
   const resolvedUpdateNodeData = updateNodeData ?? storeUpdateNodeData;
   const resolvedRemoveNode     = removeNode ?? storeRemoveNode;
 
-  const [showPicker,  setShowPicker]  = useState(false);
+  const [libraryTab,  setLibraryTab]  = useState(null); // null = closed | "library" | "scratch"
   const [showEditor,  setShowEditor]  = useState(false);
   const [editorInitialTemplate, setEditorInitialTemplate] = useState(null);
-  const [customTemplatesByType, setCustomTemplatesByType] = useState({});
+  const [savedTemplates, setSavedTemplates] = useState(loadSavedTemplates);
 
   if (!resolvedNode) return null;
 
@@ -387,51 +387,45 @@ export default function OnsiteRightPanel({ node, updateNodeData, removeNode }) {
           </Step>
 
           {/* 2 — Template */}
-          <Step
-            n={2} title="Select template" required
-            aside={dt && !data.template && (
-              <button onClick={() => patch({ displayType: null, template: null })} style={{ fontSize: 11, color: "#64748B", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-                {dt.emoji} {dt.label} · Change
-              </button>
-            )}
-          >
-            {!dt ? (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
-                {DISPLAY_TYPES.map((d) => (
-                  <button
-                    key={d.id}
-                    onClick={() => { patch({ displayType: d.id }); setShowPicker(true); }}
-                    style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "12px 4px", border: `1.5px solid ${BORDER}`, borderRadius: 9, background: "#fff", cursor: "pointer" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = ONSITE_TEAL; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; }}
-                  >
-                    <span style={{ fontSize: 20 }}>{d.emoji}</span>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: INK }}>{d.label}</span>
-                  </button>
-                ))}
-              </div>
-            ) : data.template ? (
+          <Step n={2} title="Select template" required>
+            {data.template ? (
               <TemplatePreviewCard
                 template={data.template}
-                onBrowse={() => setShowPicker(true)}
+                onBrowse={() => setLibraryTab("library")}
                 onEdit={() => { setEditorInitialTemplate(data.template); setShowEditor(true); }}
-                onClear={() => patch({ template: null })}
+                onClear={() => patch({ template: null, displayType: null })}
               />
             ) : (
-              <div style={{ display: "flex", gap: 8 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <button
-                  onClick={() => setShowPicker(true)}
-                  style={{ flex: 1, padding: "11px 10px", border: `1.5px dashed ${ONSITE_TEAL}`, borderRadius: 9, background: `${ONSITE_TEAL}0A`, cursor: "pointer", textAlign: "left" }}
+                  onClick={() => setLibraryTab("library")}
+                  style={{ padding: "12px 12px", border: `1.5px dashed ${ONSITE_TEAL}`, borderRadius: 9, background: `${ONSITE_TEAL}0A`, cursor: "pointer", textAlign: "left", display: "flex", alignItems: "center", gap: 10 }}
                 >
-                  <div style={{ fontSize: 12.5, fontWeight: 700, color: ONSITE_TEAL }}>Browse templates</div>
-                  <div style={{ fontSize: 11, color: `${ONSITE_TEAL}aa` }}>{MOCK_ONSITE_TEMPLATES.filter((t) => t.displayType === data.displayType).length} {dt.label.toLowerCase()} templates</div>
+                  <div style={{ display: "flex", flexShrink: 0 }}>
+                    {DISPLAY_TYPES.map((d, i) => (
+                      <span key={d.id} style={{ width: 26, height: 26, borderRadius: "50%", background: "#fff", border: `1.5px solid ${ONSITE_TEAL}55`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, marginLeft: i ? -8 : 0 }}>{d.emoji}</span>
+                    ))}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 12.5, fontWeight: 700, color: ONSITE_TEAL }}>Browse template library</div>
+                    <div style={{ fontSize: 11, color: `${ONSITE_TEAL}aa` }}>
+                      {ONSITE_TEMPLATE_LIBRARY.length} popups, banners & nudges{savedTemplates.length ? ` · ${savedTemplates.length} saved` : ""}
+                    </div>
+                  </div>
                 </button>
                 <button
-                  onClick={() => { setEditorInitialTemplate(null); setShowEditor(true); }}
-                  style={{ flex: 1, padding: "11px 10px", border: `1.5px solid ${BORDER}`, borderRadius: 9, background: "#fff", cursor: "pointer", textAlign: "left" }}
+                  onClick={() => setLibraryTab("scratch")}
+                  style={{ padding: "10px 12px", border: `1.5px solid ${BORDER}`, borderRadius: 9, background: "#fff", cursor: "pointer", textAlign: "left", display: "flex", alignItems: "center", gap: 10 }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = ONSITE_TEAL; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; }}
                 >
-                  <div style={{ fontSize: 12.5, fontWeight: 700, color: INK, display: "flex", alignItems: "center", gap: 4 }}><Plus size={13} /> From scratch</div>
-                  <div style={{ fontSize: 11, color: MUTED }}>Blank {dt.label.toLowerCase()}</div>
+                  <div style={{ width: 26, height: 26, borderRadius: 7, background: "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Plus size={14} color="#64748B" />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 12.5, fontWeight: 700, color: INK }}>Start from scratch</div>
+                    <div style={{ fontSize: 11, color: MUTED }}>Blank popup, banner or nudge</div>
+                  </div>
                 </button>
               </div>
             )}
@@ -581,21 +575,13 @@ export default function OnsiteRightPanel({ node, updateNodeData, removeNode }) {
           </div>
         </div>
 
-        {showPicker && (
-          <UnifiedTemplateModal
-            open
-            styleId={data.displayType}
-            styleLabel={dt?.label || "Template"}
-            customTemplates={customTemplatesByType[data.displayType] || []}
-            configRegistry={ONSITE_TEMPLATE_STYLE_CONFIGS}
-            accentColor={ONSITE_TEAL}
-            PreviewComponent={OnsitePreview}
-            metaInsightsStyleIds={[]}
-            getAnalytics={getOnsiteTemplateAnalytics}
-            analyticsMetrics={ONSITE_ANALYTICS_METRICS}
-            onRequestExternalEditor={(tpl) => { setEditorInitialTemplate(tpl); setShowEditor(true); }}
-            onSave={(t) => { patch({ template: t }); setShowPicker(false); }}
-            onClose={() => setShowPicker(false)}
+        {libraryTab && (
+          <OnsiteTemplateLibrary
+            initialTab={libraryTab}
+            savedTemplates={savedTemplates}
+            onUse={(t) => { patch({ template: t, displayType: t.displayType, smartPopup: smartPopup || t.blocks.some((b) => b.type === "form" && b.smart) }); setLibraryTab(null); }}
+            onEdit={(t) => { setEditorInitialTemplate(t); setShowEditor(true); setLibraryTab(null); }}
+            onClose={() => setLibraryTab(null)}
           />
         )}
       </div>
@@ -603,27 +589,26 @@ export default function OnsiteRightPanel({ node, updateNodeData, removeNode }) {
       {showEditor && (
         <OnsiteTemplateEditorModal
           template={editorInitialTemplate}
-          displayType={data.displayType}
+          displayType={(editorInitialTemplate ?? data.template)?.displayType ?? data.displayType ?? "popup"}
           onSave={(editorData) => {
-            const base = editorInitialTemplate ?? {
-              id: `osm_custom_${Date.now()}`,
-              name: `Custom ${dt?.label}`,
-              displayType: data.displayType,
-              useCase: "Custom",
-              thumbnailBg: `${ONSITE_TEAL}22`,
-              thumbnailAccent: ONSITE_TEAL,
-              platforms,
-              status: "Active",
-              lastUpdated: new Date().toISOString().split("T")[0],
-              blocks: [],
+            const base = editorInitialTemplate ?? data.template;
+            const displayType = base?.displayType ?? data.displayType ?? "popup";
+            const isSaved = base?.saved;
+            const tpl = {
+              ...base,
+              id: isSaved ? base.id : `saved_${Date.now()}`,
+              name: isSaved ? base.name : base?.id?.startsWith("blank_")
+                ? `Custom ${DISPLAY_TYPES.find((d) => d.id === displayType)?.label}`
+                : `${base?.name ?? "Onsite template"} (custom)`,
+              displayType,
+              useCase: base?.useCase ?? "Custom",
+              blocks: editorData.blocks,
+              bgColor: editorData.bgColor,
+              theme: editorData.theme,
+              saved: true,
             };
-            const tpl = { ...base, blocks: editorData.blocks, bgColor: editorData.bgColor };
-            setCustomTemplatesByType((prev) => {
-              const existing = prev[data.displayType] || [];
-              const already = existing.find((t) => t.id === tpl.id);
-              return { ...prev, [data.displayType]: already ? existing.map((t) => (t.id === tpl.id ? tpl : t)) : [...existing, tpl] };
-            });
-            patch({ template: tpl });
+            setSavedTemplates(saveTemplateToLibrary(tpl));
+            patch({ template: tpl, displayType });
             setEditorInitialTemplate(null);
           }}
           onClose={() => { setShowEditor(false); setEditorInitialTemplate(null); }}
