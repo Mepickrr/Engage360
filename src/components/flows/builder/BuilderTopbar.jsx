@@ -35,6 +35,8 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "@/components/ui/tooltip";
+import { openFastrrSignals } from "@/components/signals/FastrrSignalsModal";
+import { isSignalsActive, nodesUseSignals } from "@/components/signals/fastrrSignals";
 
 // ── Status config ────────────────────────────────────────────────────────────
 export const STATUS_CONFIG = {
@@ -370,6 +372,15 @@ export default function BuilderTopbar({ basePath = "/flows", locked = false }) {
 
   const [saveJourneyOpen, setSaveJourneyOpen] = useState(false);
 
+  // Journeys filtering on Fastrr Signals need the add-on — activate first.
+  const openSaveJourney = () => {
+    if (nodesUseSignals(nodes) && !isSignalsActive()) {
+      openFastrrSignals({ source: "flow-save-journey", onActivate: () => setSaveJourneyOpen(true) });
+      return;
+    }
+    setSaveJourneyOpen(true);
+  };
+
   // Derive trigger event name from the first trigger node in the canvas
   const triggerEventName = (() => {
     const triggerNode = nodes.find(
@@ -397,7 +408,7 @@ export default function BuilderTopbar({ basePath = "/flows", locked = false }) {
     if (!flowId) return;
     if (isActive) pauseMut.mutate();
     else if (status === "paused") resumeMut.mutate();
-    else setSaveJourneyOpen(true); // draft → open Save Journey modal
+    else openSaveJourney(); // draft → open Save Journey modal
   };
 
   const handleGoLive = (payload) => {
@@ -571,7 +582,7 @@ export default function BuilderTopbar({ basePath = "/flows", locked = false }) {
           <button
             type="button"
             data-testid="builder-save-journey"
-            onClick={() => setSaveJourneyOpen(true)}
+            onClick={openSaveJourney}
             disabled={!flowId}
             className="inline-flex items-center gap-1.5 px-4 h-8 rounded-md bg-primary text-white text-[12px] font-semibold hover:bg-primary-hover disabled:opacity-50 transition-colors"
           >

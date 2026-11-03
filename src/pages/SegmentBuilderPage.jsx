@@ -9,7 +9,6 @@ import SegmentReachabilityPanel from "@/components/segments/SegmentReachabilityP
 import SampleUsersModal from "@/components/segments/SampleUsersModal";
 import SegmentQueryResults from "@/components/segments/SegmentQueryResults";
 import { renderBlockSetSummary } from "@/components/flows/builder/triggerV2/triggerHelpers";
-import { FlowVariantContext } from "@/components/flows/FlowVariantContext";
 import { openFastrrSignals } from "@/components/signals/FastrrSignalsModal";
 import { audienceUsesSignals, enhanceAudience, isSignalsActive } from "@/components/signals/fastrrSignals";
 import {
@@ -21,9 +20,6 @@ import {
   logQueryRun,
   estimateAudience,
 } from "@/data/segmentsData";
-
-// Segments surface the Shiprocket Buyer attributes as "Fastrr Signals".
-const SEGMENT_VARIANT = { fastrrSignals: true };
 
 const BLOCK_TYPES = [
   { id: "property", label: "User property" },
@@ -56,6 +52,8 @@ export default function SegmentBuilderPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [showSampleUsers, setShowSampleUsers] = useState(false);
   const [queryHistory, setQueryHistory] = useState(() => listQueryHistory());
+  // New segments start on an empty "Estimated reach" card until Show count runs.
+  const [countShown, setCountShown] = useState(!!id);
 
   const isCreateMode = !id;
 
@@ -64,6 +62,7 @@ export default function SegmentBuilderPage() {
     if (isDirty && !window.confirm("Reset all filters and the segment name?")) return;
     setName("");
     setAudience(emptySegmentAudience());
+    setCountShown(false);
   };
 
   const handleSave = ({ skipSignalsCheck = false } = {}) => {
@@ -111,6 +110,7 @@ export default function SegmentBuilderPage() {
       return;
     }
     logQueryRun({ audience, source: "Segment Builder" });
+    setCountShown(true);
     setQueryHistory(listQueryHistory());
     toast("Count updated — logged below in Query results.");
   };
@@ -146,203 +146,219 @@ export default function SegmentBuilderPage() {
     navigate("/segments");
   };
 
+  // Show count + Enhance Segment: inside the empty reach card, below it once counted.
+  const ctas = (
+    <div className="grid grid-cols-2 gap-2">
+      <button
+        type="button"
+        onClick={handleShowCount}
+        disabled={!hasAnyCondition(audience.include)}
+        data-testid="segment-builder-show-count"
+        className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-md bg-primary hover:bg-primary-hover text-white text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        <BarChart3 className="w-3.5 h-3.5" />
+        Show count
+      </button>
+      <button
+        type="button"
+        onClick={handleEnhance}
+        data-testid="segment-builder-enhance"
+        className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-md border border-[#D9C9FF] bg-[#F7F3FF] text-[#6C3AE8] hover:bg-[#EFE7FF] text-sm font-medium"
+      >
+        <Sparkles className="w-3.5 h-3.5" />
+        Enhance Segment
+      </button>
+    </div>
+  );
+
   return (
-    <FlowVariantContext.Provider value={SEGMENT_VARIANT}>
-      <div className="max-w-[1400px] mx-auto" data-testid="page-segment-builder">
-        <header className="flex items-start justify-between gap-4 mb-6">
-          <div className="min-w-0 flex-1">
-            <button
-              type="button"
-              onClick={() => navigate("/segments")}
-              data-testid="segment-builder-back"
-              className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-2"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Segments
-            </button>
-            {isEditing ? (
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Untitled segment"
-                data-testid="segment-builder-name-input"
-                className="text-[28px] font-semibold tracking-tight text-text-primary bg-transparent border-b border-transparent focus:border-border focus:outline-none w-full max-w-xl"
-              />
-            ) : (
-              <h1 className="text-[28px] font-semibold tracking-tight text-text-primary" data-testid="segment-builder-name">
-                {name}
-              </h1>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2 flex-shrink-0 pt-1">
-            {isEditing ? (
-              <>
-                <button
-                  type="button"
-                  onClick={handleResetFilter}
-                  data-testid="segment-builder-reset"
-                  className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-text-secondary border border-border rounded-md hover:bg-slate-50"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  Reset filter
-                </button>
-                <button
-                  type="button"
-                  onClick={() => previewToast()}
-                  data-testid="segment-builder-create-campaign"
-                  className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-text-secondary border border-border rounded-md hover:bg-slate-50"
-                >
-                  <Megaphone className="w-3.5 h-3.5" />
-                  Create campaign
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSave()}
-                  data-testid="segment-builder-save"
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md bg-primary hover:bg-primary-hover text-white text-sm font-medium"
-                >
-                  {isCreateMode ? "Create segment" : "Save changes"}
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  onClick={handleRefresh}
-                  disabled={refreshing}
-                  data-testid="segment-builder-refresh"
-                  className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-text-secondary border border-border rounded-md hover:bg-slate-50 disabled:opacity-50"
-                >
-                  <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
-                  Refresh
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsEditing(true)}
-                  data-testid="segment-builder-edit"
-                  className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-text-secondary border border-border rounded-md hover:bg-slate-50"
-                >
-                  <Pencil className="w-3.5 h-3.5" />
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  onClick={() => previewToast()}
-                  data-testid="segment-builder-export"
-                  className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-text-secondary border border-border rounded-md hover:bg-slate-50"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  Export
-                </button>
-                <button
-                  type="button"
-                  onClick={() => previewToast()}
-                  data-testid="segment-builder-create-campaign"
-                  className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-text-secondary border border-border rounded-md hover:bg-slate-50"
-                >
-                  <Megaphone className="w-3.5 h-3.5" />
-                  Create campaign
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowSampleUsers(true)}
-                  data-testid="segment-builder-sample-users"
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md bg-primary hover:bg-primary-hover text-white text-sm font-medium"
-                >
-                  <Users className="w-3.5 h-3.5" />
-                  Show sample users
-                </button>
-              </>
-            )}
-          </div>
-        </header>
-
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
-          <div className="space-y-6">
-            {isEditing ? (
-              <>
-                <div>
-                  <div className="text-[11px] uppercase tracking-wide text-text-muted font-medium mb-2">
-                    Filter users by
-                  </div>
-                  <AudienceFilterBuilder
-                    blockSet={audience.include}
-                    onChange={setIncludeBlockSet}
-                    testIdPrefix="segment-include"
-                    blockTypes={BLOCK_TYPES}
-                    excludeSegmentName={name}
-                  />
-                </div>
-
-                <div className="border-t border-border pt-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={!!audience.exclude_enabled}
-                      onChange={(e) => setExcludeEnabled(e.target.checked)}
-                      data-testid="segment-exclude-toggle"
-                      className="accent-primary"
-                    />
-                    <span className="text-sm font-medium text-text-primary">Exclude users</span>
-                  </label>
-                  {audience.exclude_enabled && (
-                    <div className="mt-3">
-                      <AudienceFilterBuilder
-                        blockSet={audience.exclude}
-                        onChange={setExcludeBlockSet}
-                        testIdPrefix="segment-exclude"
-                        blockTypes={BLOCK_TYPES}
-                        excludeSegmentName={name}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={handleEnhance}
-                    data-testid="segment-builder-enhance"
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md border border-[#D9C9FF] bg-[#F7F3FF] text-[#6C3AE8] hover:bg-[#EFE7FF] text-sm font-medium"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    Enhance Segment
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleShowCount}
-                    data-testid="segment-builder-show-count"
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md bg-primary hover:bg-primary-hover text-white text-sm font-medium"
-                  >
-                    <BarChart3 className="w-3.5 h-3.5" />
-                    Show count
-                  </button>
-                </div>
-              </>
-            ) : (
-              <SegmentSummaryView audience={audience} />
-            )}
-          </div>
-
-          <SegmentReachabilityPanel
-            audience={audience}
-            staleUpdatedAt={!isEditing ? existing?.updatedAt : null}
-            recomputing={refreshing}
-          />
+    <div className="max-w-[1400px] mx-auto" data-testid="page-segment-builder">
+      <header className="flex items-start justify-between gap-4 mb-6">
+        <div className="min-w-0 flex-1">
+          <button
+            type="button"
+            onClick={() => navigate("/segments")}
+            data-testid="segment-builder-back"
+            className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary mb-2"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Segments
+          </button>
+          {isEditing ? (
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Untitled segment"
+              data-testid="segment-builder-name-input"
+              className="text-[28px] font-semibold tracking-tight text-text-primary bg-transparent border-b border-transparent focus:border-border focus:outline-none w-full max-w-xl"
+            />
+          ) : (
+            <h1 className="text-[28px] font-semibold tracking-tight text-text-primary" data-testid="segment-builder-name">
+              {name}
+            </h1>
+          )}
         </div>
 
-        <SegmentQueryResults
-          entries={queryHistory}
-          onEdit={handleEditQueryEntry}
-          onCreateSegment={handleCreateSegmentFromEntry}
-          onCreateCampaign={() => previewToast()}
-          onShowSampleUsers={() => setShowSampleUsers(true)}
-        />
+        <div className="flex items-center gap-2 flex-shrink-0 pt-1">
+          {isEditing ? (
+            <>
+              <button
+                type="button"
+                onClick={handleResetFilter}
+                data-testid="segment-builder-reset"
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-text-secondary border border-border rounded-md hover:bg-slate-50"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                Reset filter
+              </button>
+              <button
+                type="button"
+                onClick={() => previewToast()}
+                data-testid="segment-builder-create-campaign"
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-text-secondary border border-border rounded-md hover:bg-slate-50"
+              >
+                <Megaphone className="w-3.5 h-3.5" />
+                Create campaign
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSave()}
+                data-testid="segment-builder-save"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md bg-primary hover:bg-primary-hover text-white text-sm font-medium"
+              >
+                {isCreateMode ? "Create segment" : "Save changes"}
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={handleRefresh}
+                disabled={refreshing}
+                data-testid="segment-builder-refresh"
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-text-secondary border border-border rounded-md hover:bg-slate-50 disabled:opacity-50"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
+                Refresh
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsEditing(true)}
+                data-testid="segment-builder-edit"
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-text-secondary border border-border rounded-md hover:bg-slate-50"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+                Edit
+              </button>
+              <button
+                type="button"
+                onClick={() => previewToast()}
+                data-testid="segment-builder-export"
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-text-secondary border border-border rounded-md hover:bg-slate-50"
+              >
+                <Download className="w-3.5 h-3.5" />
+                Export
+              </button>
+              <button
+                type="button"
+                onClick={() => previewToast()}
+                data-testid="segment-builder-create-campaign"
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-text-secondary border border-border rounded-md hover:bg-slate-50"
+              >
+                <Megaphone className="w-3.5 h-3.5" />
+                Create campaign
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSampleUsers(true)}
+                data-testid="segment-builder-sample-users"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md bg-primary hover:bg-primary-hover text-white text-sm font-medium"
+              >
+                <Users className="w-3.5 h-3.5" />
+                Show sample users
+              </button>
+            </>
+          )}
+        </div>
+      </header>
 
-        {showSampleUsers && <SampleUsersModal onClose={() => setShowSampleUsers(false)} />}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
+        <div className="space-y-6">
+          {isEditing ? (
+            <>
+              <div>
+                <div className="text-[11px] uppercase tracking-wide text-text-muted font-medium mb-2">
+                  Filter users by
+                </div>
+                <AudienceFilterBuilder
+                  blockSet={audience.include}
+                  onChange={setIncludeBlockSet}
+                  testIdPrefix="segment-include"
+                  blockTypes={BLOCK_TYPES}
+                  excludeSegmentName={name}
+                />
+              </div>
+
+              <div className="border-t border-border pt-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={!!audience.exclude_enabled}
+                    onChange={(e) => setExcludeEnabled(e.target.checked)}
+                    data-testid="segment-exclude-toggle"
+                    className="accent-primary"
+                  />
+                  <span className="text-sm font-medium text-text-primary">Exclude users</span>
+                </label>
+                {audience.exclude_enabled && (
+                  <div className="mt-3">
+                    <AudienceFilterBuilder
+                      blockSet={audience.exclude}
+                      onChange={setExcludeBlockSet}
+                      testIdPrefix="segment-exclude"
+                      blockTypes={BLOCK_TYPES}
+                      excludeSegmentName={name}
+                    />
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <SegmentSummaryView audience={audience} />
+          )}
+        </div>
+
+        <div className="space-y-3 lg:sticky lg:top-4">
+          {countShown || !isEditing ? (
+            <SegmentReachabilityPanel
+              audience={audience}
+              staleUpdatedAt={!isEditing ? existing?.updatedAt : null}
+              recomputing={refreshing}
+              sticky={false}
+            />
+          ) : (
+            <div className="bg-surface border border-border rounded-lg p-4" data-testid="segment-reach-empty">
+              <div className="text-[11px] uppercase tracking-wide text-text-muted font-semibold">Estimated reach</div>
+              <p className="mt-3 text-sm text-text-secondary leading-relaxed">
+                Add your conditions, then show the count to see how many customers match.
+              </p>
+              <div className="mt-4">{ctas}</div>
+            </div>
+          )}
+          {isEditing && countShown && ctas}
+        </div>
       </div>
-    </FlowVariantContext.Provider>
+
+      <SegmentQueryResults
+        entries={queryHistory}
+        onEdit={handleEditQueryEntry}
+        onCreateSegment={handleCreateSegmentFromEntry}
+        onCreateCampaign={() => previewToast()}
+        onShowSampleUsers={() => setShowSampleUsers(true)}
+      />
+
+      {showSampleUsers && <SampleUsersModal onClose={() => setShowSampleUsers(false)} />}
+    </div>
   );
 }

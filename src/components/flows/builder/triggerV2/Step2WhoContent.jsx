@@ -1,6 +1,7 @@
 import React from "react";
 import AudienceFilterBuilder from "./audience/AudienceFilterBuilder";
 import { emptyConditionBlock } from "./triggerHelpers";
+import SignalsRecommendationButton from "@/components/signals/SignalsRecommendationButton";
 
 const TRIGGER_BLOCK_TYPES = [
   { id: "property", label: "User property" },
@@ -112,6 +113,9 @@ export default function Step2WhoContent({ audience, setAudience }) {
             testIdPrefix="audience-include"
             blockTypes={TRIGGER_BLOCK_TYPES}
           />
+          <div className="flex justify-end">
+            <SignalsRecommendationButton audience={audience} setAudience={setAudience} />
+          </div>
 
           {/* Exclude Users — only shown while filtering */}
           <div className="border-t border-border pt-4">

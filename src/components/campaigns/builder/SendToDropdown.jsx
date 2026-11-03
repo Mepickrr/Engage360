@@ -3,8 +3,8 @@ import { Search, Check, PlusCircle, Upload, Users, Info, Sparkles } from "lucide
 import { BROADCAST_MOCK_SEGMENTS, MOCK_HISTORICAL_CSVS } from "@/components/flows/builder/broadcastAudienceData";
 import CreateSegmentModal from "./CreateSegmentModal";
 import UploadListModal from "./UploadListModal";
-import { openFastrrSignals } from "@/components/signals/FastrrSignalsModal";
-import { FASTRR_SEGMENTS, SIGNALS_LABEL, recommendSegments, isSignalsActive } from "@/components/signals/fastrrSignals";
+import { toast } from "sonner";
+import { FASTRR_SEGMENTS, SIGNALS_LABEL, nextRecommendedSegment } from "@/components/signals/fastrrSignals";
 
 function SignalsTag() {
   return (
@@ -48,25 +48,23 @@ export default function SendToDropdown({
   const isSegmentSel = (id) => selectedSegments.some((s) => s.id === id);
   const isListSel = (id) => selectedLists.some((l) => l.id === id);
 
-  const promptSignals = () => {
-    if (!isSignalsActive()) openFastrrSignals({ source: "campaign-send-to" });
-  };
-
-  const toggleSegment = (seg) => {
-    const adding = !isSegmentSel(seg.id);
+  const toggleSegment = (seg) =>
     setConfig((prev) => ({
       ...prev,
-      selectedSegments: adding
-        ? [...(prev.selectedSegments || []), seg]
-        : (prev.selectedSegments || []).filter((s) => s.id !== seg.id),
+      selectedSegments: isSegmentSel(seg.id)
+        ? (prev.selectedSegments || []).filter((s) => s.id !== seg.id)
+        : [...(prev.selectedSegments || []), seg],
     }));
-    if (adding && seg.fastrr) promptSignals();
-  };
 
   const applyRecommended = () => {
-    setConfig((prev) => ({ ...prev, selectedSegments: recommendSegments(prev.selectedSegments || []) }));
+    const next = nextRecommendedSegment(selectedSegments);
+    if (!next) {
+      toast("All recommended Fastrr segments are already selected.");
+      return;
+    }
+    setConfig((prev) => ({ ...prev, selectedSegments: [...(prev.selectedSegments || []), next] }));
     setTab("segments");
-    promptSignals();
+    toast.success(`Added ${next.name}`, { description: `+${next.userCount.toLocaleString("en-IN")} users · click again for another recommendation` });
   };
 
   const toggleList = (list) =>

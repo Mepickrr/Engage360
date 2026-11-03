@@ -16,6 +16,24 @@ export const ENHANCE_PRESETS = [
   { property: "RTO_RISK", operator: "is equal to", value: "0" },
 ];
 
+export function blockSetHasConditions(blockSet) {
+  return (blockSet?.blocks || []).some((b) =>
+    b.type === "segment" ? (b.segments || []).some(Boolean) : (b.conditions || []).some((c) => c.property || c.event),
+  );
+}
+
+// True when any node in a flow (start trigger audience, conditional split…)
+// filters on a Fastrr Signals attribute.
+export function nodesUseSignals(nodes = []) {
+  const walk = (v) => {
+    if (!v || typeof v !== "object") return false;
+    if (Array.isArray(v)) return v.some(walk);
+    if (typeof v.property === "string" && SIGNAL_ATTRIBUTES.has(v.property)) return true;
+    return Object.values(v).some(walk);
+  };
+  return nodes.some((n) => walk(n.data));
+}
+
 function blockSetUsesSignals(blockSet) {
   return (blockSet?.blocks || []).some(
     (b) => b.type === "property" && (b.conditions || []).some((c) => SIGNAL_ATTRIBUTES.has(c.property)),
@@ -29,7 +47,7 @@ export function audienceUsesSignals(audience) {
 // Appends the next preset not yet in the include set as an OR'd Fastrr
 // Signals block. Returns null once every preset is already present.
 export function enhanceAudience(audience) {
-  const include = audience.include;
+  const include = audience.include || { blocks: [], blocksCombinator: "AND" };
   const blocks = include.blocks || [];
   const enhanceIdx = blocks.findIndex((b) => b.fastrrEnhance);
   const used = new Set(
@@ -66,16 +84,13 @@ export const FASTRR_SEGMENTS = [
   { id: "fseg_purchase_aff",  name: "Fastrr Signals Purchase Affinity", userCount: 7315, type: "dynamic", updatedAt: "Live", source: SIGNALS_LABEL, fastrr: true },
 ];
 
-// "Recommended segments": alongside an existing selection, add the
-// growth-friendly Fastrr segments; on an empty selection, just one.
-const RECOMMENDED_WITH_EXISTING = ["fseg_high_aov", "fseg_low_rto", "fseg_purchase_aff"];
-const RECOMMENDED_ALONE = ["fseg_high_aov"];
+// "Recommended segments": each click adds the next Fastrr segment not yet
+// selected, keeping whatever the seller already picked.
+const RECOMMENDED_ORDER = ["fseg_high_aov", "fseg_low_rto", "fseg_purchase_aff", "fseg_high_rto"];
 
-export function recommendSegments(selected = []) {
-  const hasOwn = selected.some((s) => !s.fastrr);
-  const ids = hasOwn ? RECOMMENDED_WITH_EXISTING : RECOMMENDED_ALONE;
-  const additions = FASTRR_SEGMENTS.filter((s) => ids.includes(s.id) && !selected.some((x) => x.id === s.id));
-  return [...selected, ...additions];
+export function nextRecommendedSegment(selected = []) {
+  const id = RECOMMENDED_ORDER.find((rid) => !selected.some((s) => s.id === rid));
+  return FASTRR_SEGMENTS.find((s) => s.id === id) || null;
 }
 
 export const usesFastrrSegments = (segments = []) => segments.some((s) => s.fastrr);

@@ -1,4 +1,4 @@
-import { audienceUsesSignals, enhanceAudience, recommendSegments, usesFastrrSegments } from "../fastrrSignals";
+import { audienceUsesSignals, enhanceAudience, nextRecommendedSegment, usesFastrrSegments, nodesUseSignals } from "../fastrrSignals";
 import { emptySegmentAudience, estimateAudience } from "@/data/segmentsData";
 
 const withCondition = (cond) => {
@@ -36,15 +36,25 @@ describe("fastrrSignals", () => {
     expect(enhanceAudience(a)).toBeNull();
   });
 
-  it("recommends one Fastrr segment alone, or three alongside the seller's own", () => {
-    expect(recommendSegments([]).map((s) => s.name)).toEqual(["Fastrr Signals High AOV"]);
+  it("recommends one Fastrr segment per click, keeping the seller's own", () => {
     const own = { id: "bseg_001", name: "VIP Customers", userCount: 5430 };
-    const withOwn = recommendSegments([own]);
-    expect(withOwn.map((s) => s.name)).toEqual([
-      "VIP Customers", "Fastrr Signals High AOV", "Fastrr Signals Low RTO Risk", "Fastrr Signals Purchase Affinity",
+    let selected = [own];
+    const names = [];
+    for (let next = nextRecommendedSegment(selected); next; next = nextRecommendedSegment(selected)) {
+      names.push(next.name);
+      selected = [...selected, next];
+    }
+    expect(names).toEqual([
+      "Fastrr Signals High AOV", "Fastrr Signals Low RTO Risk", "Fastrr Signals Purchase Affinity", "Fastrr Signals High RTO Risk",
     ]);
-    expect(recommendSegments(withOwn)).toHaveLength(4);
     expect(usesFastrrSegments([own])).toBe(false);
-    expect(usesFastrrSegments(withOwn)).toBe(true);
+    expect(usesFastrrSegments(selected)).toBe(true);
+  });
+
+  it("finds Fastrr Signals anywhere in a flow's node data", () => {
+    const start = { id: "start", data: { audience: withCondition({ property: "Last Known City", operator: "is", value: "Pune" }) } };
+    expect(nodesUseSignals([start])).toBe(false);
+    const enhanced = { ...start, data: { audience: enhanceAudience(start.data.audience).audience } };
+    expect(nodesUseSignals([enhanced])).toBe(true);
   });
 });

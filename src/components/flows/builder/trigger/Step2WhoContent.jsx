@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Loader2 } from "lucide-react";
 import AudienceFilterBuilder from "./audience/AudienceFilterBuilder";
 import { emptyConditionBlock } from "./triggerHelpers";
+import SignalsRecommendationButton from "@/components/signals/SignalsRecommendationButton";
 
 const TRIGGER_BLOCK_TYPES = [
   { id: "property", label: "User property" },
@@ -67,6 +68,9 @@ export default function Step2WhoContent({
             testIdPrefix="audience-include"
             blockTypes={TRIGGER_BLOCK_TYPES}
           />
+          <div className="flex justify-end">
+            <SignalsRecommendationButton audience={audience} setAudience={setAudience} />
+          </div>
         </>
       )}
 

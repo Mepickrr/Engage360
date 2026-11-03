@@ -9,6 +9,8 @@ import CenterConfigPanel from "@/components/campaigns/builder/CenterConfigPanel"
 import CampaignContentPanel from "@/components/campaigns/builder/CampaignContentPanel";
 import TestModeModal from "@/components/campaigns/builder/TestModeModal";
 import SaveAndScheduleModal from "@/components/campaigns/builder/SaveAndScheduleModal";
+import { openFastrrSignals } from "@/components/signals/FastrrSignalsModal";
+import { isSignalsActive, usesFastrrSegments } from "@/components/signals/fastrrSignals";
 
 const AUTOSAVE_DEBOUNCE_MS = 1500;
 
@@ -100,6 +102,16 @@ export default function CampaignBuilderPage() {
 
   const selectedStep = sequence.find((s) => s.id === selectedStepId) || sequence[0] || null;
 
+  // Fastrr segments are free to pick; the add-on is activated before scheduling.
+  const handleSaveSchedule = () => {
+    const usesSignals = sequence.some((st) => usesFastrrSegments(st.audience?.broadcastSourceConfig?.selectedSegments));
+    if (usesSignals && !isSignalsActive()) {
+      openFastrrSignals({ source: "campaign-save-schedule", onActivate: () => setSaveScheduleOpen(true) });
+      return;
+    }
+    setSaveScheduleOpen(true);
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-3rem)] -m-6 bg-app-bg" data-testid="campaign-builder">
       <div className="flex items-center gap-3 px-4 py-2.5 border-b border-border bg-white">
@@ -147,7 +159,7 @@ export default function CampaignBuilderPage() {
         <button
           type="button"
           data-testid="header-save-schedule-btn"
-          onClick={() => setSaveScheduleOpen(true)}
+          onClick={handleSaveSchedule}
           className="px-4 py-2 rounded-md bg-primary text-white text-[12px] font-medium"
         >
           Save & Schedule

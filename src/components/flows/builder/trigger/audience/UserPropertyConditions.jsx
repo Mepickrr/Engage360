@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/select";
 import { Trash2 } from "lucide-react";
 import userAttrsData from "@/data/userAttributes.json";
+import { SIGNALS_SOURCE_GROUP, SIGNALS_LABEL } from "@/components/signals/fastrrSignals";
 import TwoPanelDropdown from "../TwoPanelDropdown";
 import CombinatorPill from "./CombinatorPill";
 import {
@@ -18,15 +19,18 @@ import {
 } from "../triggerHelpers";
 
 // Flatten to a lookup by name and a grouped { category: [{name, description}] }
-// for the TwoPanelDropdown.
+// for the TwoPanelDropdown. The Shiprocket Buyer group is relabelled
+// "Fastrr Signals" and each of its items carries an inline tag.
 function buildAttrIndex() {
   const groups = userAttrsData.groups || {};
   const byName = {};
   const grouped = {};
   for (const cat of Object.keys(groups)) {
-    grouped[cat] = (groups[cat] || []).map((a) => ({
+    const isSignals = cat === SIGNALS_SOURCE_GROUP;
+    grouped[isSignals ? SIGNALS_LABEL : cat] = (groups[cat] || []).map((a) => ({
       name: a.name,
       description: a.description || "",
+      ...(isSignals && { tag: SIGNALS_LABEL }),
     }));
     for (const a of groups[cat] || []) byName[a.name] = { ...a, category: cat };
   }
