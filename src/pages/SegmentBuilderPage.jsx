@@ -11,7 +11,7 @@ import SegmentQueryResults from "@/components/segments/SegmentQueryResults";
 import { renderBlockSetSummary } from "@/components/flows/builder/triggerV2/triggerHelpers";
 import { FlowVariantContext } from "@/components/flows/FlowVariantContext";
 import { openFastrrSignals } from "@/components/signals/FastrrSignalsModal";
-import { audienceUsesSignals, enhanceAudience } from "@/components/signals/fastrrSignals";
+import { audienceUsesSignals, enhanceAudience, isSignalsActive } from "@/components/signals/fastrrSignals";
 import {
   getSegment,
   createSegment,
@@ -56,7 +56,6 @@ export default function SegmentBuilderPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [showSampleUsers, setShowSampleUsers] = useState(false);
   const [queryHistory, setQueryHistory] = useState(() => listQueryHistory());
-  const [signalsActive, setSignalsActive] = useState(false);
 
   const isCreateMode = !id;
 
@@ -77,13 +76,10 @@ export default function SegmentBuilderPage() {
       return;
     }
     // Fastrr Signals attributes need the add-on — gate creation on activation.
-    if (isCreateMode && !signalsActive && !skipSignalsCheck && audienceUsesSignals(audience)) {
+    if (isCreateMode && !isSignalsActive() && !skipSignalsCheck && audienceUsesSignals(audience)) {
       openFastrrSignals({
         source: "segment-builder",
-        onActivate: () => {
-          setSignalsActive(true);
-          handleSave({ skipSignalsCheck: true });
-        },
+        onActivate: () => handleSave({ skipSignalsCheck: true }),
       });
       return;
     }

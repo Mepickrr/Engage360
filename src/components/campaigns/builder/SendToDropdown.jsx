@@ -1,8 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Search, Check, PlusCircle, Upload, Users, Info } from "lucide-react";
+import { Search, Check, PlusCircle, Upload, Users, Info, Sparkles } from "lucide-react";
 import { BROADCAST_MOCK_SEGMENTS, MOCK_HISTORICAL_CSVS } from "@/components/flows/builder/broadcastAudienceData";
 import CreateSegmentModal from "./CreateSegmentModal";
 import UploadListModal from "./UploadListModal";
+import { openFastrrSignals } from "@/components/signals/FastrrSignalsModal";
+import { FASTRR_SEGMENTS, SIGNALS_LABEL, recommendSegments, isSignalsActive } from "@/components/signals/fastrrSignals";
+
+function SignalsTag() {
+  return (
+    <span className="shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F3EEFF] text-[#6C3AE8] border border-[#E2D6FF]">
+      {SIGNALS_LABEL}
+    </span>
+  );
+}
 
 export default function SendToDropdown({
   config,
@@ -29,7 +39,7 @@ export default function SendToDropdown({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
-  const allSegments = [...BROADCAST_MOCK_SEGMENTS, ...customSegments];
+  const allSegments = [...FASTRR_SEGMENTS, ...BROADCAST_MOCK_SEGMENTS, ...customSegments];
   const allLists = [...MOCK_HISTORICAL_CSVS, ...customLists];
 
   const selectedSegments = config.selectedSegments || [];
@@ -38,13 +48,26 @@ export default function SendToDropdown({
   const isSegmentSel = (id) => selectedSegments.some((s) => s.id === id);
   const isListSel = (id) => selectedLists.some((l) => l.id === id);
 
-  const toggleSegment = (seg) =>
+  const promptSignals = () => {
+    if (!isSignalsActive()) openFastrrSignals({ source: "campaign-send-to" });
+  };
+
+  const toggleSegment = (seg) => {
+    const adding = !isSegmentSel(seg.id);
     setConfig((prev) => ({
       ...prev,
-      selectedSegments: isSegmentSel(seg.id)
-        ? (prev.selectedSegments || []).filter((s) => s.id !== seg.id)
-        : [...(prev.selectedSegments || []), seg],
+      selectedSegments: adding
+        ? [...(prev.selectedSegments || []), seg]
+        : (prev.selectedSegments || []).filter((s) => s.id !== seg.id),
     }));
+    if (adding && seg.fastrr) promptSignals();
+  };
+
+  const applyRecommended = () => {
+    setConfig((prev) => ({ ...prev, selectedSegments: recommendSegments(prev.selectedSegments || []) }));
+    setTab("segments");
+    promptSignals();
+  };
 
   const toggleList = (list) =>
     setConfig((prev) => ({
@@ -118,6 +141,15 @@ export default function SendToDropdown({
                 <Upload className="w-3.5 h-3.5" />
                 Upload New List
               </button>
+              <button
+                type="button"
+                data-testid={`${testIdPrefix}-recommended`}
+                onClick={applyRecommended}
+                className="ml-auto flex items-center gap-1.5 text-[12px] font-semibold text-[#6C3AE8] bg-[#F7F3FF] border border-[#D9C9FF] rounded-full px-2.5 py-1 hover:bg-[#EFE7FF]"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Recommended segments
+              </button>
             </div>
 
             <div className="flex rounded-lg border border-border overflow-hidden mb-3">
@@ -173,9 +205,13 @@ export default function SendToDropdown({
                       </span>
                       <input type="checkbox" checked={isSegmentSel(seg.id)} onChange={() => toggleSegment(seg)} className="sr-only" />
                       <span className="flex-1 text-[13px] text-text-primary truncate">{seg.name}</span>
-                      <span className="text-[10px] font-medium text-text-secondary border border-border rounded-full px-2 py-0.5 shrink-0">
-                        {seg.source || "Segment"}
-                      </span>
+                      {seg.fastrr ? (
+                        <SignalsTag />
+                      ) : (
+                        <span className="text-[10px] font-medium text-text-secondary border border-border rounded-full px-2 py-0.5 shrink-0">
+                          {seg.source || "Segment"}
+                        </span>
+                      )}
                       <span className="text-[12px] text-text-secondary shrink-0 w-12 text-right">
                         {seg.userCount.toLocaleString("en-IN")}
                       </span>
@@ -213,6 +249,7 @@ export default function SendToDropdown({
         <div className="flex flex-wrap gap-1.5 mt-2" data-testid={`${testIdPrefix}-chips`}>
           {selectedSegments.map((s) => (
             <span key={s.id} className="flex items-center gap-1 bg-primary-tint text-primary text-[12px] font-medium rounded-full pl-2.5 pr-1.5 py-1">
+              {s.fastrr && <Sparkles className="w-3 h-3 text-[#6C3AE8]" />}
               {s.name}
               <button type="button" data-testid={`${testIdPrefix}-remove-chip-segment-${s.id}`} onClick={() => removeChip("segment", s.id)} className="hover:text-red-600">
                 ×

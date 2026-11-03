@@ -1,4 +1,4 @@
-import { audienceUsesSignals, enhanceAudience } from "../fastrrSignals";
+import { audienceUsesSignals, enhanceAudience, recommendSegments, usesFastrrSegments } from "../fastrrSignals";
 import { emptySegmentAudience, estimateAudience } from "@/data/segmentsData";
 
 const withCondition = (cond) => {
@@ -34,5 +34,17 @@ describe("fastrrSignals", () => {
     expect(block.combinator).toBe("OR");
     expect(block.conditions).toHaveLength(3);
     expect(enhanceAudience(a)).toBeNull();
+  });
+
+  it("recommends one Fastrr segment alone, or three alongside the seller's own", () => {
+    expect(recommendSegments([]).map((s) => s.name)).toEqual(["Fastrr Signals High AOV"]);
+    const own = { id: "bseg_001", name: "VIP Customers", userCount: 5430 };
+    const withOwn = recommendSegments([own]);
+    expect(withOwn.map((s) => s.name)).toEqual([
+      "VIP Customers", "Fastrr Signals High AOV", "Fastrr Signals Low RTO Risk", "Fastrr Signals Purchase Affinity",
+    ]);
+    expect(recommendSegments(withOwn)).toHaveLength(4);
+    expect(usesFastrrSegments([own])).toBe(false);
+    expect(usesFastrrSegments(withOwn)).toBe(true);
   });
 });

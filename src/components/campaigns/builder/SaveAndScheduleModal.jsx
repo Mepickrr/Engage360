@@ -4,6 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useCampaignBuilderStore } from "@/store/campaignBuilderStore";
 import { updateCampaign } from "@/lib/campaignsApi";
 import TestModeModal from "./TestModeModal";
+import { openFastrrSignals } from "@/components/signals/FastrrSignalsModal";
+import { isSignalsActive, usesFastrrSegments } from "@/components/signals/fastrrSignals";
 
 function resolveAudienceCount(step) {
   if (!step) return 0;
@@ -28,7 +30,14 @@ export default function SaveAndScheduleModal({ open, onClose }) {
   const primaryStep = sequence.find((s) => s.is_primary);
   const resolvedCount = resolveAudienceCount(primaryStep);
 
-  const handleConfirm = async () => {
+  const usesSignals = sequence.some((st) => usesFastrrSegments(st.audience?.broadcastSourceConfig?.selectedSegments));
+
+  const handleConfirm = async ({ skipSignalsCheck = false } = {}) => {
+    // Fastrr segments need the add-on — activate before the campaign goes out.
+    if (usesSignals && !skipSignalsCheck && !isSignalsActive()) {
+      openFastrrSignals({ source: "campaign-publish", onActivate: () => handleConfirm({ skipSignalsCheck: true }) });
+      return;
+    }
     const status = schedule.mode === "now" ? "sending" : "scheduled";
     setStatus(status);
     await updateCampaign(campaignId, { meta, sequence, status, schedule });
@@ -107,7 +116,7 @@ export default function SaveAndScheduleModal({ open, onClose }) {
             type="button"
             data-testid="confirm-schedule-btn"
             disabled={!schedule.mode}
-            onClick={handleConfirm}
+            onClick={() => handleConfirm()}
             className="w-full px-4 py-2 rounded-md bg-primary text-white text-sm font-medium disabled:opacity-40"
           >
             Confirm & Schedule

@@ -5,6 +5,7 @@ import {
   Wallet, Shapes, Sparkles, ArrowRight, Check,
 } from "lucide-react";
 import { toast } from "sonner";
+import { markSignalsActive } from "./fastrrSignals";
 
 // ─── Open from anywhere ───────────────────────────────────────
 // <FastrrSignalsModalHost /> is mounted once in App.js. Any surface opens the
@@ -163,6 +164,7 @@ export default function FastrrSignalsModal({ open, onClose, source, onActivate }
   if (!open) return null;
 
   const activate = () => {
+    markSignalsActive();
     toast.success("Fastrr Signals activated", { description: `Billed at ${PRICE}/month · source: ${source ?? "direct"}` });
     onClose();
     onActivate?.();

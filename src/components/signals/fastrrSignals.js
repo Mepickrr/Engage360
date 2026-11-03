@@ -56,3 +56,31 @@ export function enhanceAudience(audience) {
   }
   return { audience: { ...audience, include: { ...include, blocks: nextBlocks, blocksCombinator: "OR" } }, added: next };
 }
+
+// Predefined segments built on Fastrr Signals, offered in the campaign
+// "Send To" picker alongside the seller's own segments.
+export const FASTRR_SEGMENTS = [
+  { id: "fseg_high_aov",      name: "Fastrr Signals High AOV",          userCount: 6240, type: "dynamic", updatedAt: "Live", source: SIGNALS_LABEL, fastrr: true },
+  { id: "fseg_high_rto",      name: "Fastrr Signals High RTO Risk",     userCount: 2180, type: "dynamic", updatedAt: "Live", source: SIGNALS_LABEL, fastrr: true },
+  { id: "fseg_low_rto",       name: "Fastrr Signals Low RTO Risk",      userCount: 9870, type: "dynamic", updatedAt: "Live", source: SIGNALS_LABEL, fastrr: true },
+  { id: "fseg_purchase_aff",  name: "Fastrr Signals Purchase Affinity", userCount: 7315, type: "dynamic", updatedAt: "Live", source: SIGNALS_LABEL, fastrr: true },
+];
+
+// "Recommended segments": alongside an existing selection, add the
+// growth-friendly Fastrr segments; on an empty selection, just one.
+const RECOMMENDED_WITH_EXISTING = ["fseg_high_aov", "fseg_low_rto", "fseg_purchase_aff"];
+const RECOMMENDED_ALONE = ["fseg_high_aov"];
+
+export function recommendSegments(selected = []) {
+  const hasOwn = selected.some((s) => !s.fastrr);
+  const ids = hasOwn ? RECOMMENDED_WITH_EXISTING : RECOMMENDED_ALONE;
+  const additions = FASTRR_SEGMENTS.filter((s) => ids.includes(s.id) && !selected.some((x) => x.id === s.id));
+  return [...selected, ...additions];
+}
+
+export const usesFastrrSegments = (segments = []) => segments.some((s) => s.fastrr);
+
+// Session-level activation flag (prototype — no backend).
+let signalsActive = false;
+export const isSignalsActive = () => signalsActive;
+export const markSignalsActive = () => { signalsActive = true; };
