@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { blockSetHasConditions, enhanceAudience } from "./fastrrSignals";
 
 // Appends the next Fastrr Signals OR-condition to an audience's include
-// filters — same rotation as "Enhance Segment" on the segment builder.
+// filters — same rotation as "Fastrr Enhance" on the segment builder.
 export default function SignalsRecommendationButton({ audience, setAudience, testId = "signals-recommendation" }) {
   const handleClick = () => {
     if (!blockSetHasConditions(audience.include)) {

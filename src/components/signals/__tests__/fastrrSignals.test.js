@@ -57,4 +57,15 @@ describe("fastrrSignals", () => {
     const enhanced = { ...start, data: { audience: enhanceAudience(start.data.audience).audience } };
     expect(nodesUseSignals([enhanced])).toBe(true);
   });
+
+  it("starts an empty filter with LIFETIME_AOV alone, then ORs the rest", () => {
+    const first = enhanceAudience(emptySegmentAudience());
+    expect(first.started).toBe(true);
+    expect(first.audience.include.blocks).toHaveLength(1);
+    expect(first.audience.include.blocks[0].conditions).toEqual([{ property: "LIFETIME_AOV", operator: "is greater than", value: "2000" }]);
+    const second = enhanceAudience(first.audience);
+    expect(second.started).toBeUndefined();
+    expect(second.added.property).toBe("THREE_MONTHS_ORDERS");
+    expect(second.audience.include.blocks[0].conditions).toHaveLength(2);
+  });
 });

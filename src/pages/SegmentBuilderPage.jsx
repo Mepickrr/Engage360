@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { ArrowLeft, RefreshCw, Pencil, Download, Megaphone, Users, RotateCcw, BarChart3, Sparkles } from "lucide-react";
@@ -54,6 +54,12 @@ export default function SegmentBuilderPage() {
   const [queryHistory, setQueryHistory] = useState(() => listQueryHistory());
   // New segments start on an empty "Estimated reach" card until Show count runs.
   const [countShown, setCountShown] = useState(!!id);
+  const hasConditions = hasAnyCondition(audience.include);
+  // Clearing every condition hides the numbers again until the next Show count.
+  useEffect(() => {
+    if (!hasConditions) setCountShown(false);
+  }, [hasConditions]);
+  const showReach = hasConditions && (countShown || !isEditing);
 
   const isCreateMode = !id;
 
@@ -116,10 +122,6 @@ export default function SegmentBuilderPage() {
   };
 
   const handleEnhance = () => {
-    if (!hasAnyCondition(audience.include)) {
-      toast("Add at least one condition, then enhance it with Fastrr Signals.");
-      return;
-    }
     const result = enhanceAudience(audience);
     if (!result) {
       toast("All Fastrr Signals suggestions are already in this segment.");
@@ -129,6 +131,10 @@ export default function SegmentBuilderPage() {
     const after = estimateAudience(result.audience).userCount;
     setAudience(result.audience);
     const { property, operator, value } = result.added;
+    if (result.started) {
+      toast.success(`Started with ${property} ${operator} ${value}`, { description: "Click Fastrr Enhance again to add more Fastrr Signals" });
+      return;
+    }
     toast.success(`Added OR ${property} ${operator} ${value}`, {
       description: `Estimated reach ${before.toLocaleString("en-IN")} → ${after.toLocaleString("en-IN")} users`,
     });
@@ -146,13 +152,13 @@ export default function SegmentBuilderPage() {
     navigate("/segments");
   };
 
-  // Show count + Enhance Segment: inside the empty reach card, below it once counted.
+  // Show count + Fastrr Enhance: inside the empty reach card, below it once counted.
   const ctas = (
     <div className="grid grid-cols-2 gap-2">
       <button
         type="button"
         onClick={handleShowCount}
-        disabled={!hasAnyCondition(audience.include)}
+        disabled={!hasConditions}
         data-testid="segment-builder-show-count"
         className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-md bg-primary hover:bg-primary-hover text-white text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
       >
@@ -166,7 +172,7 @@ export default function SegmentBuilderPage() {
         className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-md border border-[#D9C9FF] bg-[#F7F3FF] text-[#6C3AE8] hover:bg-[#EFE7FF] text-sm font-medium"
       >
         <Sparkles className="w-3.5 h-3.5" />
-        Enhance Segment
+        Fastrr Enhance
       </button>
     </div>
   );
@@ -330,7 +336,7 @@ export default function SegmentBuilderPage() {
         </div>
 
         <div className="space-y-3 lg:sticky lg:top-4">
-          {countShown || !isEditing ? (
+          {showReach ? (
             <SegmentReachabilityPanel
               audience={audience}
               staleUpdatedAt={!isEditing ? existing?.updatedAt : null}
@@ -346,7 +352,7 @@ export default function SegmentBuilderPage() {
               <div className="mt-4">{ctas}</div>
             </div>
           )}
-          {isEditing && countShown && ctas}
+          {isEditing && showReach && ctas}
         </div>
       </div>
 

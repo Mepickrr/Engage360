@@ -9,7 +9,7 @@ export const SIGNAL_ATTRIBUTES = new Set(
   (userAttrsData.groups?.[SIGNALS_SOURCE_GROUP] || []).map((a) => a.name),
 );
 
-// Conditions "Enhance Segment" appends, in rotation.
+// Conditions "Fastrr Enhance" appends, in rotation.
 export const ENHANCE_PRESETS = [
   { property: "LIFETIME_AOV", operator: "is greater than", value: "2000" },
   { property: "THREE_MONTHS_ORDERS", operator: "is greater than", value: "1" },
@@ -48,6 +48,19 @@ export function audienceUsesSignals(audience) {
 // Signals block. Returns null once every preset is already present.
 export function enhanceAudience(audience) {
   const include = audience.include || { blocks: [], blocksCombinator: "AND" };
+  // Nothing filtered yet: start the filter with the first preset, no OR.
+  if (!blockSetHasConditions(include)) {
+    const first = ENHANCE_PRESETS[0];
+    const block = {
+      id: `blk_${Date.now()}_${Math.random().toString(36).slice(2, 5)}`,
+      type: "property",
+      combinator: "OR",
+      conditions: [{ ...first }],
+      segments: [],
+      fastrrEnhance: true,
+    };
+    return { audience: { ...audience, include: { blocks: [block], blocksCombinator: "AND" } }, added: first, started: true };
+  }
   const blocks = include.blocks || [];
   const enhanceIdx = blocks.findIndex((b) => b.fastrrEnhance);
   const used = new Set(
