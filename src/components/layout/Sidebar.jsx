@@ -84,6 +84,7 @@ export const SIDEBAR_ITEMS = [
   { label: "Fastrr Engage V2", icon: Sparkles, route: "/fastrr-engage-2", testId: "nav-fastrr-engage-2" },
   { label: "Templates", icon: FileText, route: "/templates", testId: "nav-templates" },
   { label: "Campaigns", icon: Megaphone, route: "/campaigns", testId: "nav-campaigns" },
+  { label: "Broadcasts", icon: Megaphone, route: "/fastrr/broadcasts", testId: "nav-broadcasts" },
   { label: "Push", icon: Bell, route: "/push", testId: "nav-push", hidden: true },
   { label: "Flows", icon: GitBranch, route: "/flows", testId: "nav-flows" },
   { label: "Flows V2", icon: GitBranch, route: "/flows-v2", testId: "nav-flows-v2", matchPaths: ["/flows-v2", "/flows-v2/create", "/flows-v2/builder"] },
