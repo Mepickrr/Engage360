@@ -222,50 +222,79 @@ function Carousel({ children, testId, itemClassName = "w-[86%]" }) {
   );
 }
 
-// Side-by-side counters, one column per template version. `highlight` marks the active column.
-// `showTotal` adds a Total column (rate left blank — it isn't a single per-message rate).
-function CompareTable({ templates, highlight, testId, showTotal }) {
-  const rows = [
-    { label: "Sent count", get: (t) => num(t.sent), total: () => num(templates.reduce((s, t) => s + t.sent, 0)) },
-    { label: "Delivered count", get: (t) => num(t.delivered), total: () => num(templates.reduce((s, t) => s + t.delivered, 0)) },
-    { label: "Rate", get: (t) => `₹${t.rate.toFixed(2)}`, total: () => "" },
-    { label: "Spent", get: (t) => rupees(spentOf(t)), total: () => rupees(templates.reduce((s, t) => s + spentOf(t), 0)) },
-  ];
-  const gridTemplateColumns = `96px repeat(${templates.length + (showTotal ? 1 : 0)}, minmax(0,1fr))`;
+// Side-by-side comparison as cards: one card per template category (+ optional Total).
+// Each metric is label-over-value inside its card, so it reads as a comparison rather than a grid.
+// `highlight` marks the template the surrounding preview belongs to; others are dimmed.
+// Total leaves Rate blank — there's no single per-message rate across categories.
+function MetricLine({ label, value, sub, testId }) {
   return (
-    <div className="rounded-lg border border-slate-200 overflow-hidden text-[12px]" data-testid={testId}>
-      <div className="grid bg-slate-50 border-b border-slate-200" style={{ gridTemplateColumns }}>
-        <div className="px-3 py-2 text-[11px] text-slate-400" />
-        {templates.map((t, i) => (
-          <div key={i} className={`px-3 py-2 ${highlight === i ? "bg-white" : ""}`}>
-            <CategoryChip category={t.category} small />
-            <div className="mt-0.5 text-[10px] text-slate-400">{i === 0 ? "Original category" : "Updated category"}</div>
-          </div>
-        ))}
-        {showTotal && (
-          <div className="px-3 py-2 border-l border-slate-200">
-            <span className="inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold bg-violet-100 text-violet-700">Total</span>
-          </div>
-        )}
+    <div className="py-2 border-t border-slate-100 first:border-t-0">
+      <div className="text-[10px] uppercase tracking-wide text-slate-400">{label}</div>
+      <div className="mt-0.5 text-[13px] font-semibold text-slate-900 tabular-nums min-h-[18px]" data-testid={testId}>
+        {value}
+        {sub && <span className="ml-1 text-[10px] font-normal text-slate-400">{sub}</span>}
       </div>
-      {rows.map((r) => (
-        <div key={r.label} className="grid border-b last:border-b-0 border-slate-100" style={{ gridTemplateColumns }}>
-          <div className="px-3 py-2 text-slate-500">{r.label}</div>
-          {templates.map((t, i) => (
-            <div
-              key={i}
-              className={`px-3 py-2 tabular-nums font-semibold ${highlight === i ? "bg-violet-50/60 text-slate-900" : "text-slate-500"}`}
-            >
-              {r.get(t)}
+    </div>
+  );
+}
+
+function CompareCards({ templates, highlight, testId, showTotal }) {
+  const totalSpent = templates.reduce((s, t) => s + spentOf(t), 0);
+  const totals = {
+    sent: templates.reduce((s, t) => s + t.sent, 0),
+    delivered: templates.reduce((s, t) => s + t.delivered, 0),
+  };
+  const cols = templates.length + (showTotal ? 1 : 0);
+  const hasHighlight = highlight !== undefined;
+
+  return (
+    <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }} data-testid={testId}>
+      {templates.map((t, i) => {
+        const c = CATEGORY_META[t.category];
+        const spent = spentOf(t);
+        const share = totalSpent ? (spent / totalSpent) * 100 : 0;
+        const active = !hasHighlight || highlight === i;
+        return (
+          <div
+            key={t.category}
+            className={`rounded-xl border px-3 pt-3 pb-2.5 transition-opacity ${
+              active ? `bg-white border-slate-200 ${hasHighlight ? `ring-2 ${c.ring}` : ""}` : "bg-slate-50 border-slate-100 opacity-60"
+            }`}
+          >
+            <CategoryChip category={t.category} small />
+            <div className="mt-1 mb-1.5 text-[10px] text-slate-400">
+              {templates.length > 1 ? (i === 0 ? "Original category" : "Updated category") : "Template category"}
             </div>
-          ))}
-          {showTotal && (
-            <div className="px-3 py-2 tabular-nums font-semibold text-slate-900 border-l border-slate-200" data-testid={`compare-total-${r.label}`}>
-              {r.total()}
+            <MetricLine label="Sent" value={num(t.sent)} />
+            <MetricLine label="Delivered" value={num(t.delivered)} sub={`${pct(t.delivered, t.sent)}%`} />
+            <MetricLine label="Rate" value={`₹${t.rate.toFixed(2)}`} sub="/ msg" />
+            <div className="pt-2 border-t border-slate-100">
+              <div className="text-[10px] uppercase tracking-wide text-slate-400">Spent</div>
+              <div className="mt-0.5 text-[14px] font-bold text-slate-900 tabular-nums">{rupees(spent)}</div>
+              {templates.length > 1 && (
+                <div className="mt-1.5 h-1 rounded-full bg-slate-100 overflow-hidden" title={`${share.toFixed(1)}% of spend`}>
+                  <div className="h-full rounded-full" style={{ width: `${share}%`, background: c.bar }} />
+                </div>
+              )}
             </div>
-          )}
+          </div>
+        );
+      })}
+      {showTotal && (
+        <div className="rounded-xl px-3 pt-3 pb-2.5 bg-violet-50/70 border border-violet-100">
+          <span className="inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold bg-violet-100 text-violet-700">Total</span>
+          <div className="mt-1 mb-1.5 text-[10px] text-violet-400">All categories</div>
+          <MetricLine label="Sent" value={num(totals.sent)} testId="compare-total-Sent count" />
+          <MetricLine label="Delivered" value={num(totals.delivered)} testId="compare-total-Delivered count" />
+          <MetricLine label="Rate" value="" testId="compare-total-Rate" />
+          <div className="pt-2 border-t border-violet-100">
+            <div className="text-[10px] uppercase tracking-wide text-slate-400">Spent</div>
+            <div className="mt-0.5 text-[14px] font-bold text-violet-800 tabular-nums" data-testid="compare-total-Spent">
+              {rupees(totalSpent)}
+            </div>
+          </div>
         </div>
-      ))}
+      )}
     </div>
   );
 }
@@ -379,8 +408,7 @@ export default function BroadcastDetailDrawer({ broadcast, open, onOpenChange })
               ) : null
             }
           >
-            {changed && <div className="text-[12px] font-semibold text-slate-700 mb-2">Side-by-side comparison</div>}
-            <CompareTable templates={b.templates} testId="broadcast-split-compare" showTotal={changed} />
+            <CompareCards templates={b.templates} testId="broadcast-split-compare" showTotal={changed} />
           </Section>
 
           <Section
@@ -457,7 +485,7 @@ export default function BroadcastDetailDrawer({ broadcast, open, onOpenChange })
                     <span className="text-[12px] text-slate-500">{t.version} template · {t.active}</span>
                   </div>
                   <MessagePreview preview={t.preview} />
-                  <CompareTable templates={b.templates} highlight={i} testId={`broadcast-preview-compare-${t.category}`} />
+                  <CompareCards templates={b.templates} highlight={i} testId={`broadcast-preview-compare-${t.category}`} />
                 </div>
               ))}
             </Carousel>

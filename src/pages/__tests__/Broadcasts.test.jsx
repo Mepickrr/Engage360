@@ -50,4 +50,24 @@ describe("BroadcastsPage", () => {
     expect(compare.textContent).toContain("Marketing");
     expect(within(compare).queryByTestId("compare-total-Spent")).toBeNull();
   });
+
+  it("lists broadcasts as cards grouped by day and filters by search and category change", () => {
+    render(<BroadcastsPage />);
+    expect(screen.queryByRole("table")).toBeNull();
+    expect(screen.getAllByTestId(/^broadcasts-row-/)).toHaveLength(5);
+
+    fireEvent.click(screen.getByTestId("broadcasts-filter-changed"));
+    expect(screen.getAllByTestId(/^broadcasts-row-/).map((el) => el.dataset.testid)).toEqual([
+      "broadcasts-row-271606",
+      "broadcasts-row-271355",
+    ]);
+
+    fireEvent.click(screen.getByTestId("broadcasts-filter-all"));
+    fireEvent.change(screen.getByTestId("broadcasts-search"), { target: { value: "cart_reminder" } });
+    expect(screen.getAllByTestId(/^broadcasts-row-/)).toHaveLength(1);
+    expect(screen.getByTestId("broadcasts-row-271489")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByTestId("broadcasts-search"), { target: { value: "zzz" } });
+    expect(screen.getByText("No broadcasts match your search.")).toBeInTheDocument();
+  });
 });
