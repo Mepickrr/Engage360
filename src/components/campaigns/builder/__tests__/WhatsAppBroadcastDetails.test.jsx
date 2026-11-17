@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import WhatsAppBroadcastDetails from "../WhatsAppBroadcastDetails";
 import { useCampaignBuilderStore } from "@/store/campaignBuilderStore";
 
@@ -29,7 +29,7 @@ describe("WhatsAppBroadcastDetails", () => {
 
     fireEvent.click(screen.getByTestId("send-to-trigger"));
     rerender(<WhatsAppBroadcastDetails step={getStep()} />);
-    fireEvent.click(screen.getAllByRole("checkbox")[0]);
+    fireEvent.click(within(screen.getByTestId("send-to-panel")).getAllByRole("checkbox")[0]);
     rerender(<WhatsAppBroadcastDetails step={getStep()} />);
 
     expect(screen.getByTestId("send-to-chips")).toBeInTheDocument();
@@ -57,7 +57,7 @@ describe("WhatsAppBroadcastDetails", () => {
 
     fireEvent.click(screen.getByTestId("dont-send-to-trigger"));
     rerender(<WhatsAppBroadcastDetails step={getStep()} />);
-    fireEvent.click(screen.getAllByRole("checkbox")[0]);
+    fireEvent.click(within(screen.getByTestId("dont-send-to-panel")).getAllByRole("checkbox")[0]);
     rerender(<WhatsAppBroadcastDetails step={getStep()} />);
 
     expect(screen.getByTestId("dont-send-to-chips")).toBeInTheDocument();

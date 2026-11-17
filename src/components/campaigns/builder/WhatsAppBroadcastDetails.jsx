@@ -2,6 +2,7 @@ import React from "react";
 import { WABA_NUMBERS } from "@/components/flows/builder/nodes/WhatsAppNode/data/mockTemplates";
 import { FallbackTemplateSection } from "@/components/flows/builder/nodes/WhatsAppNode/WhatsAppRightPanel";
 import SendToDropdown from "./SendToDropdown";
+import PauseOnCategoryChangeCheck from "./PauseOnCategoryChangeCheck";
 import { useCampaignBuilderStore } from "@/store/campaignBuilderStore";
 
 const WABA_QUALITY_META = {
@@ -74,6 +75,14 @@ export default function WhatsAppBroadcastDetails({ step }) {
           )}
         </div>
       </div>
+
+      <PauseOnCategoryChangeCheck
+        template={cc.template}
+        enabled={cc.pauseOnCategoryChange?.enabled}
+        onChange={(enabled) => patch({ pauseOnCategoryChange: { ...cc.pauseOnCategoryChange, enabled } })}
+        audienceCount={resolvedCount}
+        fallbackOnCategoryChange={!!(cc.fallback?.categoryChanged?.enabled || cc.fallback?.categoryChangeEnabled)}
+      />
 
       <SendToDropdown config={audienceConfig} setConfig={setAudienceConfig} />
 
