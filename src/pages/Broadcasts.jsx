@@ -1,18 +1,28 @@
 import React, { useMemo, useState } from "react";
-import { Search, RefreshCw, ArrowRight, ChevronRight, Users, Clock } from "lucide-react";
+import { Search, Info, MoreHorizontal, Eye, Download, Copy } from "lucide-react";
+import { toast } from "sonner";
 import PreviewHeader, { KpiTile } from "@/components/common/PreviewHeader";
 import BroadcastDetailDrawer, { BroadcastStatusPill, WhatsAppPill } from "@/components/broadcasts/BroadcastDetailDrawer";
-import { BROADCASTS } from "@/components/broadcasts/data";
+import { BROADCASTS, CATEGORY_META } from "@/components/broadcasts/data";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const num = (n) => Number(n).toLocaleString("en-IN");
 const pct = (a, b) => (b ? (a / b) * 100 : 0);
-const short = (n) => {
-  if (n >= 1e7) return `${(n / 1e7).toFixed(1)}Cr`;
-  if (n >= 1e5) return `${(n / 1e5).toFixed(1)}L`;
-  if (n >= 1e3) return `${(n / 1e3).toFixed(1)}K`;
-  return String(Math.round(n));
+const rupees = (n) => `₹${Number(n).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const rupeesShort = (n) => {
+  if (n >= 1e7) return `₹${(n / 1e7).toFixed(1)}Cr`;
+  if (n >= 1e5) return `₹${(n / 1e5).toFixed(1)}L`;
+  if (n >= 1e3) return `₹${(n / 1e3).toFixed(1)}K`;
+  return `₹${Math.round(n)}`;
 };
-const spentOf = (b) => b.templates.reduce((s, t) => s + t.delivered * t.rate, 0);
+const spentOfTemplate = (t) => t.delivered * t.rate;
+const spentOf = (b) => b.templates.reduce((s, t) => s + spentOfTemplate(t), 0);
 const sum = (key) => BROADCASTS.reduce((s, b) => s + b[key], 0);
 
 const KPIS = [
@@ -28,124 +38,126 @@ const FILTERS = [
   { id: "retry", label: "Retry on", test: (b) => b.retryEnabled },
 ];
 
-// "15 Nov 2026, 12:01 PM" -> { day: "15 Nov 2026", time: "12:01 PM" }
-const splitWhen = (s) => {
-  const [day, time] = s.split(", ");
-  return { day, time };
-};
-const dayLabel = (day) => {
-  const d = new Date(`${day} 00:00`);
-  return Number.isNaN(d.getTime()) ? day : d.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "short" });
-};
-
-const FUNNEL = [
-  { key: "sent", label: "Sent", color: "#7C6CF0" },
-  { key: "delivered", label: "Delivered", color: "#9F94F4", of: "sent" },
-  { key: "read", label: "Read", color: "#BDB5F8", of: "delivered" },
-  { key: "clicked", label: "Clicked", color: "#D3CDFA", of: "read" },
-];
-
-// Nested bars: each stage drawn as a share of Sent, so the drop-off reads left-to-right.
-function FunnelStrip({ b }) {
+// Count with a muted "% of previous stage" underneath.
+function StageCell({ value, of, testId }) {
   return (
-    <div className="min-w-0">
-      <div className="relative h-2 rounded-full bg-slate-100 overflow-hidden">
-        {FUNNEL.map((f) => (
-          <div
-            key={f.key}
-            className="absolute inset-y-0 left-0 rounded-full"
-            style={{ width: `${Math.max(pct(b[f.key], b.sent), b[f.key] ? 1 : 0)}%`, background: f.color }}
-          />
-        ))}
-      </div>
-      <div className="mt-2.5 grid grid-cols-4 gap-2">
-        {FUNNEL.map((f) => (
-          <div key={f.key} className="min-w-0">
-            <div className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-text-muted">
-              <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: f.color }} />
-              {f.label}
-            </div>
-            <div className="text-[13px] font-semibold text-text-primary tabular-nums truncate">{short(b[f.key])}</div>
-            <div className="text-[10px] text-text-muted tabular-nums">
-              {f.of ? `${pct(b[f.key], b[f.of]).toFixed(1)}%` : " "}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+    <td className="px-3 py-3 text-right" data-testid={testId}>
+      <div className="text-[13px] font-medium text-text-primary tabular-nums">{num(value)}</div>
+      {of !== undefined && <div className="text-[11px] text-text-muted tabular-nums">{pct(value, of).toFixed(1)}%</div>}
+    </td>
   );
 }
 
-function BroadcastCard({ b, selected, onOpen }) {
-  const changed = b.templates.length > 1;
+// Spent, plus an ⓘ for broadcasts whose template changed category; hovering/focusing it
+// shows the Utility vs Marketing split.
+function SpentCell({ b }) {
   const spent = spentOf(b);
-  const roi = spent ? b.revenue / spent : 0;
-  const { time } = splitWhen(b.startedAt);
-
+  const changed = b.templates.length > 1;
   return (
-    <button
-      type="button"
-      data-testid={`broadcasts-row-${b.id}`}
-      onClick={onOpen}
-      className={`group relative w-full text-left bg-surface border rounded-xl p-4 md:p-5 transition-all hover:shadow-md hover:border-violet-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
-        selected ? "border-violet-300 ring-2 ring-violet-100" : "border-border"
-      }`}
-    >
-      {changed && <span className="absolute left-0 top-4 bottom-4 w-1 rounded-r bg-amber-400" aria-hidden />}
-
-      <div className="grid gap-5 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1.35fr)_auto] md:items-center">
-        {/* Identity */}
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <BroadcastStatusPill status={b.status} />
-            <WhatsAppPill />
-            {changed && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium bg-amber-50 text-amber-800">
-                <RefreshCw className="w-3 h-3" />
-                Utility <ArrowRight className="w-3 h-3" /> Marketing
-              </span>
-            )}
-          </div>
-          <div className="mt-2 font-semibold text-[14px] text-text-primary truncate">{b.name}</div>
-          <div className="mt-0.5 text-[12px] text-text-muted truncate">
-            #{b.id} · {b.templateName}
-          </div>
-          <div className="mt-2 flex items-center gap-3 text-[11px] text-text-muted">
-            <span className="inline-flex items-center gap-1">
-              <Clock className="w-3 h-3" /> {time}
-            </span>
-            <span className="inline-flex items-center gap-1 truncate">
-              <Users className="w-3 h-3 shrink-0" /> {b.segments.join(", ")}
-            </span>
-          </div>
-        </div>
-
-        {/* Delivery */}
-        <FunnelStrip b={b} />
-
-        {/* Return */}
-        <div className="flex md:flex-col items-end md:items-end justify-between gap-1 md:pl-5 md:border-l border-border">
-          <div className="text-left md:text-right">
-            <div className="text-[10px] uppercase tracking-wide text-text-muted">Revenue</div>
-            <div className="text-[18px] font-semibold text-text-primary tabular-nums">₹{short(b.revenue)}</div>
-          </div>
-          <div className="text-right text-[11px] text-text-muted tabular-nums">
-            {num(b.orders)} orders · ₹{short(spent)} spent
-          </div>
-          <span
-            className={`mt-1 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold tabular-nums ${
-              roi >= 1 ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
-            }`}
-          >
-            {roi.toFixed(2)}× ROI
-          </span>
-        </div>
+    <td className="px-3 py-3 text-right" data-testid={`broadcasts-spent-${b.id}`}>
+      <div className="inline-flex items-center justify-end gap-1.5 text-[13px] font-medium text-text-primary tabular-nums">
+        {rupees(spent)}
+        {changed && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                data-testid={`broadcasts-spent-info-${b.id}`}
+                aria-label="Spent split by template category"
+                onClick={(e) => e.stopPropagation()}
+                className="text-amber-600 hover:text-amber-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 rounded-full"
+              >
+                <Info className="w-3.5 h-3.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent
+              side="bottom"
+              align="end"
+              className="w-64 p-0 bg-white text-slate-900 border border-slate-200 shadow-lg"
+            >
+              <div data-testid={`broadcasts-spent-split-${b.id}`}>
+                <div className="px-3 py-2 border-b border-slate-100 text-[11px] font-medium text-amber-800 bg-amber-50 rounded-t-md">
+                  Category changed during send
+                </div>
+                <div className="px-3 py-2 space-y-2">
+                  {b.templates.map((t) => {
+                    const c = CATEGORY_META[t.category];
+                    const s = spentOfTemplate(t);
+                    return (
+                      <div key={t.category}>
+                        <div className="flex items-center justify-between text-[12px]">
+                          <span className={`px-1.5 py-0.5 rounded font-semibold ${c.bg} ${c.fg}`}>{c.label}</span>
+                          <span className="tabular-nums">
+                            <span className="font-semibold">{rupees(s)}</span>
+                            <span className="ml-1.5 text-[11px] text-slate-400" data-testid={`broadcasts-spent-share-${b.id}-${t.category}`}>
+                              {pct(s, spent).toFixed(1)}%
+                            </span>
+                          </span>
+                        </div>
+                        <div className="mt-0.5 text-[11px] text-slate-400 tabular-nums">
+                          {num(t.delivered)} delivered × ₹{t.rate.toFixed(2)}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="px-3 py-2 border-t border-slate-100 flex items-center justify-between text-[12px]">
+                  <span className="text-slate-500">Total</span>
+                  <span className="font-bold tabular-nums">{rupees(spent)}</span>
+                </div>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        )}
       </div>
-
-      <ChevronRight className="hidden md:block absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
-    </button>
+    </td>
   );
 }
+
+function ActionsCell({ b, onView }) {
+  return (
+    <td className="px-3 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            data-testid={`broadcasts-actions-${b.id}`}
+            aria-label={`Actions for ${b.name}`}
+            className="p-1.5 rounded-md text-text-muted hover:bg-slate-100 hover:text-text-primary"
+          >
+            <MoreHorizontal className="w-4 h-4" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem onClick={onView}>
+            <Eye className="w-4 h-4 mr-2" /> View report
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => toast.success(`Downloading report for ${b.name}`)}>
+            <Download className="w-4 h-4 mr-2" /> Download report
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => toast.success(`Duplicated ${b.name}`)}>
+            <Copy className="w-4 h-4 mr-2" /> Duplicate
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </td>
+  );
+}
+
+const COLUMNS = [
+  { label: "Broadcast", align: "left" },
+  { label: "Channel", align: "left" },
+  { label: "Status", align: "left" },
+  { label: "Sent" },
+  { label: "Delivered" },
+  { label: "Read" },
+  { label: "Clicked" },
+  { label: "Orders" },
+  { label: "Revenue" },
+  { label: "Spent" },
+  { label: "ROI" },
+  { label: "Actions" },
+];
 
 export default function BroadcastsPage() {
   const [selectedId, setSelectedId] = useState(null);
@@ -153,93 +165,136 @@ export default function BroadcastsPage() {
   const [filter, setFilter] = useState("all");
   const selected = BROADCASTS.find((b) => b.id === selectedId);
 
-  const groups = useMemo(() => {
+  const rows = useMemo(() => {
     const q = query.trim().toLowerCase();
     const test = FILTERS.find((f) => f.id === filter).test;
-    const list = BROADCASTS.filter(
+    return BROADCASTS.filter(
       (b) => test(b) && (!q || [b.name, b.id, b.templateName].some((v) => v.toLowerCase().includes(q))),
     );
-    const byDay = new Map();
-    list.forEach((b) => {
-      const { day } = splitWhen(b.startedAt);
-      if (!byDay.has(day)) byDay.set(day, []);
-      byDay.get(day).push(b);
-    });
-    return [...byDay.entries()];
   }, [query, filter]);
 
   return (
-    <div className="max-w-[1400px] mx-auto" data-testid="page-broadcasts">
-      <PreviewHeader
-        title="Broadcasts"
-        subtitle="One-time WhatsApp broadcasts. Open a broadcast to see its full report."
-        testIdPrefix="broadcasts"
-      />
+    <TooltipProvider delayDuration={100}>
+      <div className="max-w-[1400px] mx-auto" data-testid="page-broadcasts">
+        <PreviewHeader
+          title="Broadcasts"
+          subtitle="One-time WhatsApp broadcasts. Click a broadcast to see its full report."
+          testIdPrefix="broadcasts"
+        />
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        {KPIS.map((k) => (
-          <KpiTile key={k.testId} {...k} />
-        ))}
-      </div>
-
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-          <input
-            type="search"
-            data-testid="broadcasts-search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search name, ID or template"
-            className="w-full pl-9 pr-3 py-2 rounded-lg border border-border bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-violet-200"
-          />
-        </div>
-        <div className="flex gap-2" role="group" aria-label="Filter broadcasts">
-          {FILTERS.map((f) => (
-            <button
-              key={f.id}
-              type="button"
-              data-testid={`broadcasts-filter-${f.id}`}
-              onClick={() => setFilter(f.id)}
-              aria-pressed={filter === f.id}
-              className={`px-3 py-1.5 rounded-full text-[12px] font-medium border transition-colors ${
-                filter === f.id
-                  ? "bg-violet-600 border-violet-600 text-white"
-                  : "bg-surface border-border text-text-secondary hover:border-violet-300"
-              }`}
-            >
-              {f.label}
-            </button>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          {KPIS.map((k) => (
+            <KpiTile key={k.testId} {...k} />
           ))}
         </div>
-      </div>
 
-      <div className="space-y-6" data-testid="broadcasts-list">
-        {groups.map(([day, items]) => (
-          <section key={day}>
-            <h2 className="mb-2.5 flex items-center gap-2 text-[12px] font-semibold text-text-secondary">
-              {dayLabel(day)}
-              <span className="text-text-muted font-normal">· {items.length}</span>
-            </h2>
-            <div className="space-y-3">
-              {items.map((b) => (
-                <BroadcastCard key={b.id} b={b} selected={selectedId === b.id} onOpen={() => setSelectedId(b.id)} />
-              ))}
-            </div>
-          </section>
-        ))}
-        {groups.length === 0 && (
-          <div className="rounded-xl border border-dashed border-border py-12 text-center text-sm text-text-muted">
-            No broadcasts match your search.
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+            <input
+              type="search"
+              data-testid="broadcasts-search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search name, ID or template"
+              className="w-full pl-9 pr-3 py-2 rounded-lg border border-border bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-violet-200"
+            />
           </div>
-        )}
-      </div>
+          <div className="flex gap-2" role="group" aria-label="Filter broadcasts">
+            {FILTERS.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                data-testid={`broadcasts-filter-${f.id}`}
+                onClick={() => setFilter(f.id)}
+                aria-pressed={filter === f.id}
+                className={`px-3 py-1.5 rounded-full text-[12px] font-medium border transition-colors ${
+                  filter === f.id
+                    ? "bg-violet-600 border-violet-600 text-white"
+                    : "bg-surface border-border text-text-secondary hover:border-violet-300"
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
-      <BroadcastDetailDrawer
-        broadcast={selected}
-        open={!!selected}
-        onOpenChange={(o) => !o && setSelectedId(null)}
-      />
-    </div>
+        <div className="bg-surface border border-border rounded-lg overflow-x-auto" data-testid="broadcasts-table">
+          <table className="w-full min-w-[1100px] text-left">
+            <thead className="bg-slate-50 text-[11px] uppercase tracking-wide text-text-muted">
+              <tr>
+                {COLUMNS.map((c) => (
+                  <th
+                    key={c.label}
+                    className={`px-3 py-2.5 font-medium whitespace-nowrap ${c.align === "left" ? "text-left" : "text-right"} ${
+                      c.label === "Broadcast" ? "pl-4" : ""
+                    }`}
+                  >
+                    {c.label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((b) => {
+                const spent = spentOf(b);
+                const roi = spent ? b.revenue / spent : 0;
+                return (
+                  <tr
+                    key={b.id}
+                    data-testid={`broadcasts-row-${b.id}`}
+                    onClick={() => setSelectedId(b.id)}
+                    className={`border-t border-border hover:bg-slate-50/60 transition-colors cursor-pointer align-top ${
+                      selectedId === b.id ? "bg-violet-50/50" : ""
+                    }`}
+                  >
+                    <td className="pl-4 pr-3 py-3 max-w-[260px]">
+                      <div className="font-semibold text-text-primary text-[13px] truncate">{b.name}</div>
+                      <div className="text-[11px] text-text-muted truncate">
+                        #{b.id} · {b.templateName}
+                      </div>
+                      <div className="text-[11px] text-text-muted">{b.startedAt}</div>
+                    </td>
+                    <td className="px-3 py-3"><WhatsAppPill /></td>
+                    <td className="px-3 py-3"><BroadcastStatusPill status={b.status} /></td>
+                    <StageCell value={b.sent} />
+                    <StageCell value={b.delivered} of={b.sent} />
+                    <StageCell value={b.read} of={b.delivered} />
+                    <StageCell value={b.clicked} of={b.read} />
+                    <td className="px-3 py-3 text-right text-[13px] font-medium tabular-nums">{num(b.orders)}</td>
+                    <td className="px-3 py-3 text-right text-[13px] font-medium tabular-nums">{rupeesShort(b.revenue)}</td>
+                    <SpentCell b={b} />
+                    <td className="px-3 py-3 text-right">
+                      <span
+                        className={`inline-flex px-2 py-0.5 rounded-full text-[12px] font-semibold tabular-nums ${
+                          roi >= 1 ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
+                        }`}
+                      >
+                        {roi.toFixed(2)}
+                      </span>
+                    </td>
+                    <ActionsCell b={b} onView={() => setSelectedId(b.id)} />
+                  </tr>
+                );
+              })}
+              {rows.length === 0 && (
+                <tr>
+                  <td colSpan={COLUMNS.length} className="px-4 py-12 text-center text-sm text-text-muted">
+                    No broadcasts match your search.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <BroadcastDetailDrawer
+          broadcast={selected}
+          open={!!selected}
+          onOpenChange={(o) => !o && setSelectedId(null)}
+        />
+      </div>
+    </TooltipProvider>
   );
 }

@@ -272,8 +272,8 @@ function CompareCards({ templates, highlight, testId, showTotal }) {
               <div className="text-[10px] uppercase tracking-wide text-slate-400">Spent</div>
               <div className="mt-0.5 text-[14px] font-bold text-slate-900 tabular-nums">{rupees(spent)}</div>
               {templates.length > 1 && (
-                <div className="mt-1.5 h-1 rounded-full bg-slate-100 overflow-hidden" title={`${share.toFixed(1)}% of spend`}>
-                  <div className="h-full rounded-full" style={{ width: `${share}%`, background: c.bar }} />
+                <div className="mt-0.5 text-[10px] text-slate-400 tabular-nums" data-testid={`compare-share-${t.category}`}>
+                  {share.toFixed(1)}% of spend
                 </div>
               )}
             </div>

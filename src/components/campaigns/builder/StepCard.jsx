@@ -2,6 +2,7 @@ import React from "react";
 import { CHANNEL_META } from "@/lib/flowMeta";
 
 const BEHAVIOR_BADGE_LABELS = {
+  all: "ON ALL",
   delivered_not_viewed: "ON NOT VIEWED",
   viewed_not_clicked: "ON NOT CLICKED",
   clicked: "ON CLICK",

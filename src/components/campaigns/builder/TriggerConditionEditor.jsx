@@ -2,6 +2,7 @@ import React from "react";
 import { useCampaignBuilderStore } from "@/store/campaignBuilderStore";
 
 const BEHAVIOR_OPTIONS = [
+  { value: "all", label: "All Primary broadcast" },
   { value: "delivered_not_viewed", label: "Primary broadcast received, but not viewed" },
   { value: "viewed_not_clicked", label: "Primary broadcast viewed, but CTA not clicked" },
   { value: "clicked", label: "Primary broadcast CTA clicked" },

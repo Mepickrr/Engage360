@@ -29,6 +29,7 @@ describe("BroadcastsPage", () => {
     expect(d.getByTestId("broadcast-category-changed")).toBeInTheDocument();
     expect(d.getByTestId("broadcast-category-change-count").textContent).toContain("Changed 1×");
     expect(d.queryByTestId("broadcast-split-carousel")).toBeNull();
+    expect(within(d.getByTestId("broadcast-split-compare")).getByTestId("compare-share-marketing").textContent).toBe("93.8% of spend");
     const compare = within(d.getByTestId("broadcast-split-compare"));
     expect(compare.getByTestId("compare-total-Sent count").textContent).toBe("2,26,210");
     expect(compare.getByTestId("compare-total-Delivered count").textContent).toBe("1,62,845");
@@ -51,9 +52,13 @@ describe("BroadcastsPage", () => {
     expect(within(compare).queryByTestId("compare-total-Spent")).toBeNull();
   });
 
-  it("lists broadcasts as cards grouped by day and filters by search and category change", () => {
+  it("lists broadcasts in a table with the wireframe columns and filters by search and category change", () => {
     render(<BroadcastsPage />);
-    expect(screen.queryByRole("table")).toBeNull();
+    const headers = screen.getAllByRole("columnheader").map((th) => th.textContent);
+    expect(headers).toEqual([
+      "Broadcast", "Channel", "Status", "Sent", "Delivered", "Read", "Clicked",
+      "Orders", "Revenue", "Spent", "ROI", "Actions",
+    ]);
     expect(screen.getAllByTestId(/^broadcasts-row-/)).toHaveLength(5);
 
     fireEvent.click(screen.getByTestId("broadcasts-filter-changed"));
@@ -69,5 +74,22 @@ describe("BroadcastsPage", () => {
 
     fireEvent.change(screen.getByTestId("broadcasts-search"), { target: { value: "zzz" } });
     expect(screen.getByText("No broadcasts match your search.")).toBeInTheDocument();
+  });
+
+  it("shows a spent info icon only for category-changed broadcasts, revealing the Utility/Marketing split", async () => {
+    render(<BroadcastsPage />);
+    expect(screen.getByTestId("broadcasts-spent-271606").textContent).toContain("₹1,07,434.85");
+    expect(screen.queryByTestId("broadcasts-spent-info-271544")).toBeNull();
+    expect(screen.getByTestId("broadcasts-spent-info-271355")).toBeInTheDocument();
+
+    fireEvent.focus(screen.getByTestId("broadcasts-spent-info-271606"));
+    const split = (await screen.findAllByTestId("broadcasts-spent-split-271606"))[0];
+    expect(split.textContent).toContain("₹6,639.30");
+    expect(split.textContent).toContain("₹1,00,795.55");
+    expect(within(split).getByTestId("broadcasts-spent-share-271606-utility").textContent).toBe("6.2%");
+    expect(within(split).getByTestId("broadcasts-spent-share-271606-marketing").textContent).toBe("93.8%");
+    // clicking the icon must not open the drawer
+    fireEvent.click(screen.getByTestId("broadcasts-spent-info-271606"));
+    expect(screen.queryByTestId("broadcast-detail-drawer")).toBeNull();
   });
 });
