@@ -1,0 +1,161 @@
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import BroadcastBuilderPage from "../BroadcastBuilderPage";
+import { useBroadcastBuilderStore } from "@/store/broadcastBuilderStore";
+import { fetchBroadcast } from "@/lib/broadcastsApi";
+
+// react-router-dom cannot be resolved by Jest in this project (its package.json
+// "exports" map is ESM-only under Jest's default "node" condition, and forcing
+// resolution to its CJS build in turn requires browser globals — TextEncoder,
+// ReadableStream, etc. — that jsdom's test environment doesn't provide). Every
+// other test in this repo works around this by mocking "react-router-dom" as a
+// virtual module (see e.g. BuilderTopbar.test.jsx). This suite is the first to
+// need real route-matching behavior (switching between /fastrr/broadcasts/builder/new,
+// /fastrr/broadcasts/builder/:id, and /campaigns), so the mock below reimplements just
+// enough of MemoryRouter/Routes/Route/useNavigate/useParams to do real path
+// matching (including ":id" params) against an in-memory current path.
+jest.mock(
+  "react-router-dom",
+  () => {
+    const React = require("react");
+    const RouterCtx = React.createContext(null);
+    const ParamsCtx = React.createContext({});
+
+    function matchPath(pattern, pathname) {
+      const patternParts = pattern.split("/").filter(Boolean);
+      const pathParts = pathname.split("/").filter(Boolean);
+      if (patternParts.length !== pathParts.length) return null;
+      const params = {};
+      for (let i = 0; i < patternParts.length; i++) {
+        const part = patternParts[i];
+        const seg = pathParts[i];
+        if (part.startsWith(":")) {
+          params[part.slice(1)] = seg;
+        } else if (part !== seg) {
+          return null;
+        }
+      }
+      return params;
+    }
+
+    function MemoryRouter({ initialEntries = ["/"], children }) {
+      const [path, setPath] = React.useState(initialEntries[0]);
+      const value = React.useMemo(() => ({ path, setPath }), [path]);
+      return React.createElement(RouterCtx.Provider, { value }, children);
+    }
+
+    function Routes({ children }) {
+      const ctx = React.useContext(RouterCtx);
+      const routes = React.Children.toArray(children);
+      for (const route of routes) {
+        const params = matchPath(route.props.path, ctx.path);
+        if (params) {
+          return React.createElement(ParamsCtx.Provider, { value: params }, route.props.element);
+        }
+      }
+      return null;
+    }
+
+    function Route() {
+      return null;
+    }
+
+    function useNavigate() {
+      const ctx = React.useContext(RouterCtx);
+      return (to) => ctx.setPath(typeof to === "string" ? to : to.pathname);
+    }
+
+    function useParams() {
+      return React.useContext(ParamsCtx);
+    }
+
+    return { MemoryRouter, Routes, Route, useNavigate, useParams };
+  },
+  { virtual: true },
+);
+
+beforeEach(() => {
+  window.localStorage.clear();
+  useBroadcastBuilderStore.getState().reset();
+});
+
+function renderAt(path) {
+  return render(
+    <MemoryRouter initialEntries={[path]}>
+      <Routes>
+        <Route path="/fastrr/broadcasts/builder/new" element={<BroadcastBuilderPage />} />
+        <Route path="/fastrr/broadcasts/builder/:id" element={<BroadcastBuilderPage />} />
+        <Route path="/fastrr/broadcasts" element={<div data-testid="campaigns-list-page" />} />
+      </Routes>
+    </MemoryRouter>,
+  );
+}
+
+describe("BroadcastBuilderPage", () => {
+  it("opens the channel picker immediately for a new campaign", () => {
+    renderAt("/fastrr/broadcasts/builder/new");
+    expect(screen.getByTestId("channel-picker-modal")).toBeInTheDocument();
+  });
+
+  it("navigates back to /campaigns when the picker is closed without selecting", () => {
+    renderAt("/fastrr/broadcasts/builder/new");
+    fireEvent.click(screen.getByRole("button", { name: /close/i }));
+    expect(screen.getByTestId("campaigns-list-page")).toBeInTheDocument();
+  });
+
+  it("creates the primary step and campaign on channel selection", async () => {
+    renderAt("/fastrr/broadcasts/builder/new");
+    fireEvent.click(screen.getByTestId("channel-option-whatsapp"));
+    fireEvent.click(screen.getByTestId("channel-picker-continue"));
+
+    await waitFor(() => expect(useBroadcastBuilderStore.getState().campaignId).toBeTruthy());
+    expect(useBroadcastBuilderStore.getState().sequence).toHaveLength(1);
+    expect(useBroadcastBuilderStore.getState().sequence[0].channel).toBe("whatsapp");
+    expect(screen.queryByTestId("channel-picker-modal")).not.toBeInTheDocument();
+  });
+
+  it("binds the header name input to store.meta.name", () => {
+    renderAt("/fastrr/broadcasts/builder/new");
+    const input = screen.getByTestId("campaign-name-input");
+    fireEvent.change(input, { target: { value: "Diwali Blast" } });
+    expect(useBroadcastBuilderStore.getState().meta.name).toBe("Diwali Blast");
+  });
+
+  it("flushes a pending autosave on unmount instead of losing the edit", async () => {
+    const { unmount } = renderAt("/fastrr/broadcasts/builder/new");
+    fireEvent.click(screen.getByTestId("channel-option-whatsapp"));
+    fireEvent.click(screen.getByTestId("channel-picker-continue"));
+
+    await waitFor(() => expect(useBroadcastBuilderStore.getState().campaignId).toBeTruthy());
+    const campaignId = useBroadcastBuilderStore.getState().campaignId;
+
+    // Edit the name — this schedules a 1.5s debounced autosave that has not
+    // fired yet.
+    const input = screen.getByTestId("campaign-name-input");
+    fireEvent.change(input, { target: { value: "Flush Me" } });
+
+    // Unmount immediately, well before AUTOSAVE_DEBOUNCE_MS elapses.
+    unmount();
+
+    // The pending edit must still have been persisted via the unmount flush,
+    // not silently dropped with the cleared debounce timer.
+    const persisted = await fetchBroadcast(campaignId);
+    expect(persisted.meta.name).toBe("Flush Me");
+  });
+
+  it("shows created-at once the campaign exists, and opens Test Mode / Save & Schedule from the header", async () => {
+    renderAt("/fastrr/broadcasts/builder/new");
+    fireEvent.click(screen.getByTestId("channel-option-whatsapp"));
+    fireEvent.click(screen.getByTestId("channel-picker-continue"));
+    await waitFor(() => expect(useBroadcastBuilderStore.getState().campaignId).toBeTruthy());
+
+    expect(screen.getByTestId("campaign-created-at")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("header-test-mode-btn"));
+    expect(screen.getByTestId("test-mode-modal")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("header-save-schedule-btn"));
+    expect(screen.getByTestId("save-schedule-modal")).toBeInTheDocument();
+  });
+});

@@ -1,18 +1,36 @@
 import React from "react";
 import { useCampaignBuilderStore } from "@/store/campaignBuilderStore";
 
-const BEHAVIOR_OPTIONS = [
+export const BEHAVIOR_OPTIONS = [
   { value: "all", label: "All Primary broadcast" },
+  { value: "failed", label: "Primary broadcast failed" },
   { value: "delivered_not_viewed", label: "Primary broadcast received, but not viewed" },
   { value: "viewed_not_clicked", label: "Primary broadcast viewed, but CTA not clicked" },
-  { value: "clicked", label: "Primary broadcast CTA clicked" },
-  { value: "failed", label: "Primary broadcast failed" },
+  { value: "clicked_not_ordered", label: "Primary broadcast clicked, but not ordered" },
+  { value: "ordered", label: "Primary broadcast ordered" },
 ];
+
+// Older drafts stored a single `behavior` string; newer ones store `behaviors` (array).
+export function selectedBehaviors(tc) {
+  if (Array.isArray(tc?.behaviors)) return tc.behaviors;
+  return tc?.behavior ? [tc.behavior] : [];
+}
+
+// "all" is exclusive; every other option can be combined. At least one stays selected.
+export function toggleBehavior(current, value) {
+  if (value === "all") return ["all"];
+  const set = new Set(current.filter((v) => v !== "all"));
+  if (set.has(value)) set.delete(value);
+  else set.add(value);
+  if (set.size === 0) return current;
+  return BEHAVIOR_OPTIONS.map((o) => o.value).filter((v) => set.has(v));
+}
 
 export default function TriggerConditionEditor({ step }) {
   const sequence = useCampaignBuilderStore((s) => s.sequence);
   const updateTriggerCondition = useCampaignBuilderStore((s) => s.updateTriggerCondition);
   const tc = step.trigger_condition;
+  const behaviors = selectedBehaviors(tc);
   const priorSteps = sequence.filter((s) => s.order_index < step.order_index);
 
   const setMode = (mode) => {
@@ -105,8 +123,8 @@ export default function TriggerConditionEditor({ step }) {
             <input
               type="checkbox"
               data-testid={`tc-behavior-${opt.value}`}
-              checked={tc.behavior === opt.value}
-              onChange={() => updateTriggerCondition(step.id, { behavior: opt.value })}
+              checked={behaviors.includes(opt.value)}
+              onChange={() => updateTriggerCondition(step.id, { behaviors: toggleBehavior(behaviors, opt.value) })}
               className="accent-primary"
             />
             {opt.label}

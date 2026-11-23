@@ -10,6 +10,7 @@ import AppShell from "@/components/layout/AppShell";
 import CampaignsPage from "@/pages/Campaigns";
 import BroadcastsPage from "@/pages/Broadcasts";
 import CampaignBuilderPage from "@/pages/CampaignBuilderPage";
+import BroadcastBuilderPage from "@/pages/BroadcastBuilderPage";
 import PushPage from "@/pages/Push";
 import FastrrEngagePage from "@/pages/FastrrEngage";
 import FastrrEngagePanel from "@/components/engage/FastrrEngagePanel";
@@ -71,6 +72,8 @@ function App() {
             <Route path="/home-v5" element={<HomeV5Page />} />
             <Route path="/campaigns" element={<CampaignsPage />} />
             <Route path="/fastrr/broadcasts" element={<BroadcastsPage />} />
+            <Route path="/fastrr/broadcasts/builder/new" element={<BroadcastBuilderPage />} />
+            <Route path="/fastrr/broadcasts/builder/:id" element={<BroadcastBuilderPage />} />
             <Route path="/campaigns/builder/new" element={<CampaignBuilderPage />} />
             <Route path="/campaigns/builder/:id" element={<CampaignBuilderPage />} />
             <Route path="/push" element={<PushPage />} />

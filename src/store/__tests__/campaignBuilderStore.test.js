@@ -104,7 +104,7 @@ describe("campaignBuilderStore", () => {
     getState().addPrimaryStep("whatsapp");
     getState().addFollowupStep("sms");
     const tc = getState().sequence[1].trigger_condition;
-    expect(tc.behavior).toBe("delivered_not_viewed");
+    expect(tc.behaviors).toEqual(["delivered_not_viewed"]);
     expect(tc.condition_type).toBeUndefined();
   });
 

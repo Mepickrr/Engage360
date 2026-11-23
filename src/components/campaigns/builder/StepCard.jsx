@@ -1,17 +1,21 @@
 import React from "react";
 import { CHANNEL_META } from "@/lib/flowMeta";
+import { selectedBehaviors } from "./TriggerConditionEditor";
 
 const BEHAVIOR_BADGE_LABELS = {
   all: "ON ALL",
+  failed: "ON FAILED",
   delivered_not_viewed: "ON NOT VIEWED",
   viewed_not_clicked: "ON NOT CLICKED",
-  clicked: "ON CLICK",
-  failed: "ON FAILED",
+  clicked_not_ordered: "ON NOT ORDERED",
+  ordered: "ON ORDERED",
 };
 
 function badgeFor(step) {
   if (step.is_primary) return "PRIMARY";
-  return BEHAVIOR_BADGE_LABELS[step.trigger_condition.behavior] || "ON FAILED";
+  const behaviors = selectedBehaviors(step.trigger_condition);
+  if (behaviors.length > 1) return `ON ${behaviors.length} CONDITIONS`;
+  return BEHAVIOR_BADGE_LABELS[behaviors[0]] || "ON ALL";
 }
 
 export default function StepCard({ step, selected, onSelect }) {

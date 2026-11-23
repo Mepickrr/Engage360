@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
-import { Search, Info, MoreHorizontal, Eye, Download, Copy } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Search, Info, MoreHorizontal, Eye, Download, Copy, Plus } from "lucide-react";
 import { toast } from "sonner";
 import PreviewHeader, { KpiTile } from "@/components/common/PreviewHeader";
 import BroadcastDetailDrawer, { BroadcastStatusPill, WhatsAppPill } from "@/components/broadcasts/BroadcastDetailDrawer";
@@ -161,6 +162,7 @@ const COLUMNS = [
 
 export default function BroadcastsPage() {
   const [selectedId, setSelectedId] = useState(null);
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
   const selected = BROADCASTS.find((b) => b.id === selectedId);
@@ -180,6 +182,17 @@ export default function BroadcastsPage() {
           title="Broadcasts"
           subtitle="One-time WhatsApp broadcasts. Click a broadcast to see its full report."
           testIdPrefix="broadcasts"
+          actions={
+            <button
+              type="button"
+              data-testid="broadcasts-new-btn"
+              onClick={() => navigate("/fastrr/broadcasts/builder/new")}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md bg-primary hover:bg-primary-hover text-white text-sm font-medium"
+            >
+              <Plus className="w-4 h-4" />
+              Create broadcast
+            </button>
+          }
         />
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">

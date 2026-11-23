@@ -10,7 +10,7 @@ function nextStepId() {
 function defaultTriggerCondition(referenceStepId) {
   return {
     reference_step_id: referenceStepId,
-    behavior: "delivered_not_viewed",
+    behaviors: ["delivered_not_viewed"],
     mode: "delay",
     delay: { value: 1, unit: "hours" },
     fire_at: null,

@@ -46,18 +46,35 @@ describe("CenterConfigPanel", () => {
     expect(useCampaignBuilderStore.getState().sequence[1].trigger_condition.fire_at).toBeNull();
   });
 
-  it("shows the behavior selector alongside the timing UI, single-select", () => {
+  it("shows the behavior selector alongside the timing UI, multi-select with exclusive 'All'", () => {
     useCampaignBuilderStore.getState().addPrimaryStep("whatsapp");
     useCampaignBuilderStore.getState().addFollowupStep("sms");
-    const step = useCampaignBuilderStore.getState().sequence[1];
-    render(<CenterConfigPanel step={step} />);
+    const behaviors = () => useCampaignBuilderStore.getState().sequence[1].trigger_condition.behaviors;
+    const { rerender } = render(<CenterConfigPanel step={useCampaignBuilderStore.getState().sequence[1]} />);
+    const click = (v) => {
+      fireEvent.click(screen.getByTestId(`tc-behavior-${v}`));
+      rerender(<CenterConfigPanel step={useCampaignBuilderStore.getState().sequence[1]} />);
+    };
 
     expect(screen.getByTestId("tc-behavior-delivered_not_viewed")).toBeChecked();
     expect(screen.getByTestId("tc-behavior-failed")).not.toBeChecked();
-
-    fireEvent.click(screen.getByTestId("tc-behavior-failed"));
-    expect(useCampaignBuilderStore.getState().sequence[1].trigger_condition.behavior).toBe("failed");
     expect(screen.getByTestId("tc-mode-delay")).toBeInTheDocument();
+
+    click("failed");
+    expect(behaviors()).toEqual(["failed", "delivered_not_viewed"]);
+    click("ordered");
+    expect(behaviors()).toEqual(["failed", "delivered_not_viewed", "ordered"]);
+
+    click("all");
+    expect(behaviors()).toEqual(["all"]);
+    expect(screen.getByTestId("tc-behavior-failed")).not.toBeChecked();
+
+    click("clicked_not_ordered");
+    expect(behaviors()).toEqual(["clicked_not_ordered"]);
+    expect(screen.getByTestId("tc-behavior-all")).not.toBeChecked();
+
+    click("clicked_not_ordered"); // last one can't be unchecked
+    expect(behaviors()).toEqual(["clicked_not_ordered"]);
   });
 
   it("renders WhatsAppBroadcastDetails below the Broadcast Name field for a primary WhatsApp step", () => {

@@ -1,10 +1,26 @@
 import React from "react";
 import { render, screen, fireEvent, within } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import BroadcastsPage from "@/pages/Broadcasts";
 
+const mockNavigate = jest.fn();
+jest.mock("react-router-dom", () => {
+  const React = require("react");
+  return {
+    MemoryRouter: ({ children }) => React.createElement(React.Fragment, null, children),
+    useNavigate: () => mockNavigate,
+  };
+}, { virtual: true });
+
 describe("BroadcastsPage", () => {
+  it("Create broadcast button opens the broadcast builder", () => {
+    render(<MemoryRouter><BroadcastsPage /></MemoryRouter>);
+    fireEvent.click(screen.getByTestId("broadcasts-new-btn"));
+    expect(mockNavigate).toHaveBeenCalledWith("/fastrr/broadcasts/builder/new");
+  });
+
   it("opens the detail drawer with full stats when a broadcast row is clicked", () => {
-    render(<BroadcastsPage />);
+    render(<MemoryRouter><BroadcastsPage /></MemoryRouter>);
     expect(screen.queryByTestId("broadcast-detail-drawer")).toBeNull();
     fireEvent.click(screen.getByTestId("broadcasts-row-271606"));
     const drawer = screen.getByTestId("broadcast-detail-drawer");
@@ -23,7 +39,7 @@ describe("BroadcastsPage", () => {
   });
 
   it("shows the Utility -> Marketing category change, side-by-side comparisons", () => {
-    render(<BroadcastsPage />);
+    render(<MemoryRouter><BroadcastsPage /></MemoryRouter>);
     fireEvent.click(screen.getByTestId("broadcasts-row-271606"));
     const d = within(screen.getByTestId("broadcast-detail-drawer"));
     expect(d.getByTestId("broadcast-category-changed")).toBeInTheDocument();
@@ -43,7 +59,7 @@ describe("BroadcastsPage", () => {
   });
 
   it("shows a single-column comparison and no change badge when the category never changed", () => {
-    render(<BroadcastsPage />);
+    render(<MemoryRouter><BroadcastsPage /></MemoryRouter>);
     fireEvent.click(screen.getByTestId("broadcasts-row-271544"));
     const d = within(screen.getByTestId("broadcast-detail-drawer"));
     expect(d.queryByTestId("broadcast-category-changed")).toBeNull();
@@ -53,7 +69,7 @@ describe("BroadcastsPage", () => {
   });
 
   it("lists broadcasts in a table with the wireframe columns and filters by search and category change", () => {
-    render(<BroadcastsPage />);
+    render(<MemoryRouter><BroadcastsPage /></MemoryRouter>);
     const headers = screen.getAllByRole("columnheader").map((th) => th.textContent);
     expect(headers).toEqual([
       "Broadcast", "Channel", "Status", "Sent", "Delivered", "Read", "Clicked",
@@ -77,7 +93,7 @@ describe("BroadcastsPage", () => {
   });
 
   it("shows a spent info icon only for category-changed broadcasts, revealing the Utility/Marketing split", async () => {
-    render(<BroadcastsPage />);
+    render(<MemoryRouter><BroadcastsPage /></MemoryRouter>);
     expect(screen.getByTestId("broadcasts-spent-271606").textContent).toContain("₹1,07,434.85");
     expect(screen.queryByTestId("broadcasts-spent-info-271544")).toBeNull();
     expect(screen.getByTestId("broadcasts-spent-info-271355")).toBeInTheDocument();
