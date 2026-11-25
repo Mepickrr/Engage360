@@ -4,7 +4,7 @@ import { Search, Info, MoreHorizontal, Eye, Download, Copy, Plus } from "lucide-
 import { toast } from "sonner";
 import PreviewHeader, { KpiTile } from "@/components/common/PreviewHeader";
 import BroadcastDetailDrawer, { BroadcastStatusPill, WhatsAppPill } from "@/components/broadcasts/BroadcastDetailDrawer";
-import { BROADCASTS, CATEGORY_META } from "@/components/broadcasts/data";
+import { BROADCASTS, CATEGORY_META, estimatedSpendOf } from "@/components/broadcasts/data";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   DropdownMenu,
@@ -50,7 +50,7 @@ function StageCell({ value, of, testId }) {
 }
 
 // Spent, plus an ⓘ for broadcasts whose template changed category; hovering/focusing it
-// shows the Utility vs Marketing split.
+// shows the Utility vs Marketing split. A muted pre-send estimate sits underneath.
 function SpentCell({ b }) {
   const spent = spentOf(b);
   const changed = b.templates.length > 1;
@@ -110,6 +110,9 @@ function SpentCell({ b }) {
             </TooltipContent>
           </Tooltip>
         )}
+      </div>
+      <div className="text-[11px] text-text-muted tabular-nums" data-testid={`broadcasts-est-spent-${b.id}`}>
+        Est. {rupees(estimatedSpendOf(b))}
       </div>
     </td>
   );

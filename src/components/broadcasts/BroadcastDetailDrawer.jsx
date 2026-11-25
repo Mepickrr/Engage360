@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import { FAILURE_REASONS, CATEGORY_META } from "./data";
+import { FAILURE_REASONS, CATEGORY_META, estimatedRateOf, estimatedSpendOf } from "./data";
 
 const num = (n) => Number(n).toLocaleString("en-IN");
 const pct = (a, b) => (b ? ((a / b) * 100).toFixed(1) : "0.0");
@@ -389,6 +389,17 @@ export default function BroadcastDetailDrawer({ broadcast, open, onOpenChange })
             <div className="flex items-center justify-between pt-4">
               <span className="text-[13px] text-slate-700">Total estimated audience</span>
               <span className="text-[16px] font-semibold text-slate-900 tabular-nums">{num(b.estimatedAudience)}</span>
+            </div>
+            <div className="flex items-start justify-between pt-3" data-testid="broadcast-estimated-spend">
+              <div>
+                <div className="text-[13px] text-slate-700">Total estimated spend</div>
+                <div className="text-[11px] text-slate-400 tabular-nums">
+                  {num(b.estimatedAudience)} × ₹{estimatedRateOf(b).toFixed(2)} ({CATEGORY_META[b.templates[0].category].label} rate)
+                </div>
+              </div>
+              <span className="text-[16px] font-semibold text-slate-900 tabular-nums">
+                ₹{estimatedSpendOf(b).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
             </div>
           </Section>
 

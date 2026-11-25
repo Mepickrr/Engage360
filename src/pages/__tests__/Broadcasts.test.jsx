@@ -19,6 +19,17 @@ describe("BroadcastsPage", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/fastrr/broadcasts/builder/new");
   });
 
+  it("shows the pre-send estimated spend under actual spend and in the drawer's audience section", () => {
+    render(<MemoryRouter><BroadcastsPage /></MemoryRouter>);
+    // 239,934 estimated audience x ₹0.15 (Utility rate at schedule time)
+    expect(screen.getByTestId("broadcasts-est-spent-271606").textContent).toBe("Est. ₹35,990.10");
+    fireEvent.click(screen.getByTestId("broadcasts-row-271606"));
+    const est = within(screen.getByTestId("broadcast-detail-drawer")).getByTestId("broadcast-estimated-spend");
+    expect(est.textContent).toContain("Total estimated spend");
+    expect(est.textContent).toContain("₹35,990.10");
+    expect(est.textContent).toContain("Utility rate");
+  });
+
   it("opens the detail drawer with full stats when a broadcast row is clicked", () => {
     render(<MemoryRouter><BroadcastsPage /></MemoryRouter>);
     expect(screen.queryByTestId("broadcast-detail-drawer")).toBeNull();

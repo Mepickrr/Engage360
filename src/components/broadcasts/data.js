@@ -8,6 +8,12 @@
 const DIWALI_BODY =
   "*4 PRODUCTS @ JUST ₹499!* 🪔\nHey {{$1}} 👋 Your festive deal is here! 🎉\n\n*Get 3 Magic Soaps + 50ml Magic Face Wash for just ₹499!* 😍\n✨ Enjoy this special Festive deal before it ends!\n\n⏳ *Hurry! Limited-time festive offer!*\n🎁 *Claim Your Offer Now & Grab Your Freebies at Checkout!*";
 
+// Pre-send estimate: the whole estimated audience at the rate of the template's category
+// when the broadcast was scheduled (the first template entry). Actual spend can differ:
+// only delivered messages are charged, and Meta may re-categorise the template mid-run.
+export const estimatedRateOf = (b) => b.templates[0].rate;
+export const estimatedSpendOf = (b) => b.estimatedAudience * estimatedRateOf(b);
+
 export const BROADCASTS = [
   {
     id: "271606",
